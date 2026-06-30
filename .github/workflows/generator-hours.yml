@@ -1,0 +1,87 @@
+name: Parse Generator Hours from Slack
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  parse-and-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch and parse Slack messages
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+        run: |
+          python3 - <<'EOF'
+          import os, json, re, urllib.request, urllib.parse
+          from datetime import datetime, timezone, timedelta
+
+          token = os.environ["SLACK_TOKEN"]
+          channel = "C08L1TWLU14"
+          oldest = str((datetime.now(timezone.utc) - timedelta(hours=6)).timestamp())
+
+          def slack_get(method, params):
+              url = f"https://slack.com/api/{method}?" + urllib.parse.urlencode(params)
+              req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+              with urllib.request.urlopen(req) as r:
+                  return json.loads(r.read())
+
+          resp = slack_get("conversations.history", {"channel": channel, "oldest": oldest, "limit": 200})
+          if not resp.get("ok"):
+              print(f"Slack error: {resp.get('error')}")
+              exit(0)
+
+          pattern = re.compile(
+              r'(HD\d+)\s+Generator hours:\s*(\d+)h\s*/\s*Hours scheduled for next change:\s*(\d+)h',
+              re.IGNORECASE
+          )
+
+          updates = {}
+          for msg in resp.get("messages", []):
+              ts = float(msg.get("ts", 0))
+              recorded_at = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
+              for match in pattern.finditer(msg.get("text", "")):
+                  truck_id = match.group(1).upper()
+                  entry = {
+                      "truck_id": truck_id,
+                      "generator_hours": int(match.group(2)),
+                      "hours_until_service": int(match.group(3)),
+                      "recorded_at": recorded_at,
+                  }
+                  updates.setdefault(truck_id, []).append(entry)
+
+          if not updates:
+              print("No matching messages found.")
+              exit(0)
+
+          os.makedirs("data", exist_ok=True)
+          for truck_id, entries in updates.items():
+              path = f"data/{truck_id}.json"
+              existing = []
+              if os.path.exists(path):
+                  with open(path) as f:
+                      existing = json.load(f)
+              existing.extend(entries)
+              with open(path, "w") as f:
+                  json.dump(existing, f, indent=2)
+              print(f"Updated {path} with {len(entries)} new reading(s).")
+
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "Nothing to commit."
+          else
+            git commit -m "chore: update generator hours $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
