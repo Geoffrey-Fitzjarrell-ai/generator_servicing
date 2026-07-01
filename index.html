@@ -33,6 +33,28 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .btn-ghost { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; padding:5px 12px; background:transparent; color:var(--text-dim); border:1px solid var(--border2); border-radius:var(--radius); cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
 .btn-ghost:hover { border-color:var(--blue); color:var(--blue); }
 
+/* FLEET OVERVIEW BAR */
+.fleet-bar { background:var(--surface); border-bottom:1px solid var(--border); padding:10px 24px 12px; }
+.fleet-bar-title { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-faint); margin-bottom:8px; text-align:center; }
+.fleet-chart { display:flex; flex-direction:column; gap:6px; }
+.fleet-row { display:flex; align-items:center; gap:10px; }
+.fleet-row-lbl { font-size:10px; color:var(--text-dim); letter-spacing:0.05em; width:60px; flex-shrink:0; text-align:right; font-family:var(--mono); }
+.fleet-row-track { flex:1; height:12px; background:#1a2235; border-radius:4px; overflow:hidden; border:1px solid var(--border2); }
+.fleet-row-fill { height:100%; border-radius:3px; animation:barGrow 0.8s cubic-bezier(0.22,1,0.36,1) both; position:relative; }
+.fleet-row-fill::after { content:''; position:absolute; right:0; top:0; bottom:0; width:3px; border-radius:0 3px 3px 0; background:rgba(255,255,255,0.2); }
+@keyframes barGrow { from{width:0%} }
+.fleet-row-fill.fs-overdue  { background:linear-gradient(90deg,#8b1f1f,var(--red)); }
+.fleet-row-fill.fs-warn     { background:linear-gradient(90deg,#7a5010,var(--amber)); }
+.fleet-row-fill.fs-ok       { background:linear-gradient(90deg,#0f4028,var(--green)); }
+.fleet-row-fill.fs-grounded { background:linear-gradient(90deg,#2a1845,#7060a0); }
+.fleet-row-fill.fs-nodata   { background:linear-gradient(90deg,var(--surface3),var(--border2)); }
+.fleet-row-pct { font-family:var(--mono); font-size:11px; font-weight:700; width:36px; flex-shrink:0; text-align:right; }
+.fs-overdue  .fleet-row-pct { color:var(--red); }
+.fs-warn     .fleet-row-pct { color:var(--amber); }
+.fs-ok       .fleet-row-pct { color:var(--green); }
+.fs-grounded .fleet-row-pct { color:#9880cc; }
+.fs-nodata   .fleet-row-pct { color:var(--text-faint); }
+
 /* TRUCK STRIP */
 .truck-strip { display:flex; background:var(--surface); border-bottom:1px solid var(--border); overflow-x:auto; scrollbar-width:none; }
 .truck-strip::-webkit-scrollbar { display:none; }
