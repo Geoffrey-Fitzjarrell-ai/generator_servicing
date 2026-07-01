@@ -9,453 +9,168 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg:         #080b12;
-  --bg-dot:     url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23ffffff08'/%3E%3C/svg%3E");
-  --surface:    #0d1117;
-  --surface2:   #131925;
-  --surface3:   #1a2235;
-  --border:     #1e2840;
-  --border2:    #28364f;
-  --amber:      #f0a500;
-  --amber-dim:  #3d2900;
-  --amber-glow: rgba(240,165,0,0.12);
-  --red:        #e04545;
-  --red-dim:    #3a1010;
-  --red-glow:   rgba(224,69,69,0.12);
-  --green:      #3da870;
-  --green-dim:  #0f2e1e;
-  --blue:       #4a7cf5;
-  --blue-dim:   #101e40;
-  --text:       #dde4f0;
-  --text-dim:   #6e7f99;
-  --text-faint: #38465a;
-  --mono:       'JetBrains Mono', monospace;
-  --sans:       'Inter', sans-serif;
-  --radius:     6px;
+  --bg:#080b12; --surface:#0d1117; --surface2:#131925; --surface3:#1a2235;
+  --border:#1e2840; --border2:#28364f;
+  --amber:#f0a500; --amber-dim:#3d2900; --amber-glow:rgba(240,165,0,0.12);
+  --red:#e04545; --red-dim:#3a1010; --red-glow:rgba(224,69,69,0.12);
+  --green:#3da870; --green-dim:#0f2e1e;
+  --blue:#4a7cf5; --blue-dim:#101e40;
+  --text:#dde4f0; --text-dim:#6e7f99; --text-faint:#38465a;
+  --mono:'JetBrains Mono',monospace; --sans:'Inter',sans-serif; --radius:6px;
 }
-html, body { height: 100%; background: var(--bg); background-image: var(--bg-dot); color: var(--text); font-family: var(--sans); }
+html,body { height:100%; background:var(--bg); color:var(--text); font-family:var(--sans);
+  background-image:url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23ffffff06'/%3E%3C/svg%3E"); }
 
-/* ── HEADER ── */
-.header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 24px; height: 52px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  position: relative;
-}
-.header::after {
-  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
-  background: linear-gradient(90deg, transparent, var(--blue) 40%, var(--amber) 60%, transparent);
-  opacity: 0.3;
-}
+/* HEADER */
+.header { display:flex; align-items:center; justify-content:space-between; padding:0 24px; height:52px; background:var(--surface); border-bottom:1px solid var(--border); position:relative; }
+.header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--blue) 40%,var(--amber) 60%,transparent); opacity:0.3; }
 .header-brand { display:flex; align-items:center; gap:12px; }
-.header-badge {
-  font-family: var(--mono); font-size:10px; font-weight:700;
-  letter-spacing:0.18em; color: var(--bg); background: var(--amber);
-  padding: 3px 8px; border-radius: 3px;
-}
-.header-title { font-size:13px; color: var(--text-dim); letter-spacing:0.04em; }
+.header-badge { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:0.18em; color:var(--bg); background:var(--amber); padding:3px 8px; border-radius:3px; }
+.header-title { font-size:13px; color:var(--text-dim); letter-spacing:0.04em; }
 .header-right { display:flex; align-items:center; gap:12px; }
-.sync-indicator { display:flex; align-items:center; gap:6px; }
-.sync-dot { width:5px; height:5px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation: pulse 2s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.sync-dot { width:5px; height:5px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:pulse 2s ease-in-out infinite; display:inline-block; margin-right:6px; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 .sync-time { font-family:var(--mono); font-size:11px; color:var(--text-faint); letter-spacing:0.06em; }
-.btn-ghost {
-  font-family:var(--mono); font-size:10px; letter-spacing:0.08em;
-  padding:5px 12px; background:transparent; color:var(--text-dim);
-  border:1px solid var(--border2); border-radius:var(--radius);
-  cursor:pointer; transition:all 0.15s; text-transform:uppercase;
-}
+.btn-ghost { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; padding:5px 12px; background:transparent; color:var(--text-dim); border:1px solid var(--border2); border-radius:var(--radius); cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
 .btn-ghost:hover { border-color:var(--blue); color:var(--blue); }
 
-/* ── TRUCK STRIP ── */
-.truck-strip {
-  display:flex; background:var(--surface); border-bottom:1px solid var(--border);
-  overflow-x:auto; scrollbar-width:none;
-}
+/* TRUCK STRIP */
+.truck-strip { display:flex; background:var(--surface); border-bottom:1px solid var(--border); overflow-x:auto; scrollbar-width:none; }
 .truck-strip::-webkit-scrollbar { display:none; }
-.truck-tab {
-  flex:1; min-width:80px; padding:12px 8px 14px;
-  display:flex; flex-direction:column; align-items:center; gap:4px;
-  cursor:pointer; border-right:1px solid var(--border);
-  position:relative; transition:background 0.15s;
-}
-.truck-tab::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:2px;
-  background:var(--text-faint); transition:background 0.15s;
-}
-.truck-tab.active { background:var(--surface2); }
+.truck-tab { flex:1; min-width:80px; padding:12px 8px 14px; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; border-right:1px solid var(--border); position:relative; transition:background 0.15s, transform 0.15s; }
+.truck-tab::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--text-faint); transition:background 0.3s, box-shadow 0.3s; }
+.truck-tab:last-child { border-right:none; }
+.truck-tab:hover:not(.active) { background:var(--surface2); transform:translateY(-1px); }
+.truck-tab.active { background:var(--surface2); transform:translateY(-1px); }
 .truck-tab.active::before { background:var(--amber); box-shadow:0 0 8px var(--amber); }
 .truck-tab.st-overdue::before { background:var(--red); box-shadow:0 0 8px var(--red); }
 .truck-tab.st-warn::before { background:var(--amber); }
 .truck-tab.st-ok::before { background:var(--green); }
-  .truck-tab.st-grounded::before { background:#7060a0; box-shadow:0 0 8px #7060a0; }
-  .truck-tab.st-grounded .truck-name { color:#9880cc; }
-  .truck-tab.st-grounded .truck-hours-badge { color:#4a3a66; }
-.truck-tab:last-child { border-right:none; }
-.truck-tab:hover:not(.active) { background:var(--surface2); }
-.truck-name {
-  font-family:var(--mono); font-size:13px; font-weight:700;
-  letter-spacing:0.06em; color:var(--text-dim);
-}
+.truck-tab.st-grounded::before { background:#7060a0; box-shadow:0 0 8px #7060a0; }
+.truck-tab.st-grounded .truck-name { color:#9880cc; }
+.truck-tab.st-grounded .truck-hours-badge { color:#4a3a66; }
+.truck-name { font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:0.06em; color:var(--text-dim); transition:color 0.2s; }
 .truck-tab.active .truck-name { color:var(--amber); }
 .truck-tab.st-overdue .truck-name { color:var(--red); }
 .truck-hours-badge { font-family:var(--mono); font-size:11px; color:var(--text-faint); }
 
-/* ── MAIN ── */
+/* MAIN */
 .main { display:grid; grid-template-columns:340px 1fr; height:calc(100vh - 108px); }
 
-/* ── LEFT PANEL ── */
-.left-panel {
-  background:var(--surface);
-  border-right:1px solid var(--border);
-  display:flex; flex-direction:column;
-  overflow-y:auto; padding:24px 20px;
-}
+/* LEFT */
+.left-panel { background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow-y:auto; padding:24px 20px; transition:box-shadow 0.5s; }
+.left-panel.is-overdue { animation:overdueGlow 2.8s ease-in-out infinite; }
+@keyframes overdueGlow { 0%,100%{box-shadow:inset -1px 0 0 var(--border)} 50%{box-shadow:inset -1px 0 30px rgba(224,69,69,0.18),inset 0 0 40px rgba(224,69,69,0.07)} }
+
 .truck-header { margin-bottom:20px; }
-.truck-id {
-  font-family:var(--mono); font-size:32px; font-weight:700;
-  letter-spacing:0.1em; line-height:1;
-}
+.truck-id { font-family:var(--mono); font-size:32px; font-weight:700; letter-spacing:0.1em; line-height:1; transition:color 0.3s; }
 .truck-sub { font-size:10px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-top:4px; }
 
-/* ── GAUGE + STATS ── */
 .gauge-stats-row { display:flex; gap:14px; align-items:stretch; margin-bottom:16px; }
 .gauge-col { display:flex; flex-direction:column; align-items:center; gap:6px; padding-top:2px; }
 .gauge-wrap { width:52px; flex:1; min-height:170px; position:relative; }
 .gauge-label { font-family:var(--mono); font-size:8px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; }
 .stats-col { flex:1; display:flex; flex-direction:column; gap:10px; }
 
-.stat-card {
-  background:var(--surface2); border:1px solid var(--border);
-  border-radius:var(--radius); padding:10px 12px;
-  position:relative; overflow:hidden;
-}
-.stat-card::before {
-  content:''; position:absolute; top:0; left:0; bottom:0; width:2px;
-}
+.stat-card { background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:10px 12px; position:relative; overflow:hidden; transition:border-color 0.3s; animation:statPop 0.35s cubic-bezier(0.22,1,0.36,1) both; }
+.stat-card:nth-child(2) { animation-delay:0.08s; }
+@keyframes statPop { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+.stat-card::before { content:''; position:absolute; top:0; left:0; bottom:0; width:2px; }
 .stat-card.s-ok::before { background:var(--green); }
 .stat-card.s-warn::before { background:var(--amber); }
 .stat-card.s-overdue::before { background:var(--red); }
 .stat-card.s-neutral::before { background:var(--border2); }
 .stat-lbl { font-size:11px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
-.stat-val { font-family:var(--mono); font-size:22px; font-weight:700; line-height:1; }
+.stat-val { font-family:var(--mono); font-size:22px; font-weight:700; line-height:1; transition:color 0.3s; }
 .stat-val .unit { font-size:11px; font-weight:400; color:var(--text-dim); margin-left:2px; }
-.stat-val.c-overdue { color:var(--red); }
-.stat-val.c-warn { color:var(--amber); }
-.stat-val.c-ok { color:var(--green); }
-
-/* ── DUE LIST ── */
+.stat-val.c-overdue{color:var(--red)} .stat-val.c-warn{color:var(--amber)} .stat-val.c-ok{color:var(--green)}
 .due-list { margin-top:4px; }
-.due-tag {
-  font-size:13px; padding:2px 0;
-  border-bottom:1px solid var(--border);
-  color: var(--text-dim); line-height:1.6;
-}
+.due-tag { font-size:13px; padding:2px 0; border-bottom:1px solid var(--border); color:var(--text-dim); line-height:1.6; }
 .due-tag:last-child { border-bottom:none; }
 
-/* ── ATTENTION ── */
-.attention {
-  padding:10px 12px; border-radius:var(--radius); margin-bottom:14px;
-  background: var(--red-dim); border:1px solid rgba(224,69,69,0.3);
-  display:flex; gap:10px; align-items:flex-start;
-}
-  .grounded-banner {
-  padding:16px; border-radius:var(--radius); margin-bottom:14px;
-  background:#1a1228; border:1px solid #7060a0;
-  display:flex; flex-direction:column; gap:6px;
-}
-  .grounded-title { font-family:var(--mono); font-size:12px; font-weight:700; color:#9880cc; letter-spacing:0.1em; }
-  .grounded-note { font-size:11px; color:#6a5a88; line-height:1.5; }
+.attention { padding:10px 12px; border-radius:var(--radius); margin-bottom:14px; background:var(--red-dim); border:1px solid rgba(224,69,69,0.3); display:flex; gap:10px; align-items:flex-start; animation:shake 0.55s cubic-bezier(0.36,0.07,0.19,0.97) 0.2s both; }
+@keyframes shake { 0%{transform:translateX(0)} 15%{transform:translateX(-7px)} 30%{transform:translateX(6px)} 45%{transform:translateX(-4px)} 60%{transform:translateX(3px)} 100%{transform:translateX(0)} }
 .attention-icon { color:var(--red); font-size:13px; margin-top:1px; }
 .attention-msg { font-size:11px; color:#ffc8c8; line-height:1.5; }
 
-/* ── REPORTER ── */
-.reporter {
-  padding:10px 12px; border-radius:var(--radius);
-  background:var(--surface2); border:1px solid var(--border);
-}
+.grounded-banner { padding:16px; border-radius:var(--radius); margin-bottom:14px; background:#1a1228; border:1px solid #7060a0; display:flex; flex-direction:column; gap:6px; animation:flicker 5s ease-in-out infinite, groundedBreath 3s ease-in-out infinite; }
+@keyframes flicker { 0%,89%,100%{opacity:1} 90%{opacity:0.35} 91%{opacity:1} 93%{opacity:0.5} 94%{opacity:1} 96%{opacity:0.7} 97%{opacity:1} }
+@keyframes groundedBreath { 0%,100%{box-shadow:0 0 0 rgba(112,96,160,0)} 50%{box-shadow:0 0 14px rgba(112,96,160,0.35)} }
+.grounded-title { font-family:var(--mono); font-size:12px; font-weight:700; color:#9880cc; letter-spacing:0.1em; }
+.grounded-note { font-size:11px; color:#6a5a88; line-height:1.5; }
+
+.reporter { padding:10px 12px; border-radius:var(--radius); background:var(--surface2); border:1px solid var(--border); }
 .reporter-lbl { font-size:9px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
 .reporter-name { font-size:14px; color:var(--text-dim); font-weight:500; }
 .reporter-time { font-family:var(--mono); font-size:9px; color:var(--text-faint); margin-top:2px; }
 
-/* ── RIGHT PANEL ── */
-.right-panel {
-  display:flex; flex-direction:column;
-  overflow-y:auto; padding:20px 24px; gap:20px;
-}
-.section-title {
-  font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
-  color:var(--text-faint); padding-bottom:8px;
-  border-bottom:1px solid var(--border); margin-bottom:2px;
-}
+/* RIGHT */
+.right-panel { display:flex; flex-direction:column; overflow-y:auto; padding:20px 24px; gap:20px; position:relative; }
+.section-title { font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-faint); padding-bottom:8px; border-bottom:1px solid var(--border); margin-bottom:2px; }
 
-/* ── TASK ROWS ── */
+/* TASKS */
 .task-list { display:flex; flex-direction:column; gap:4px; }
-.task-row {
-  display:grid; grid-template-columns:1fr 56px 88px 28px;
-  align-items:center; gap:10px;
-  padding:9px 12px; border-radius:var(--radius);
-  background:var(--surface2); border:1px solid var(--border);
-  border-left-width:3px; border-left-color:var(--border2);
-  transition:background 0.12s;
-}
+.task-row { display:grid; grid-template-columns:1fr 56px 90px 28px; align-items:center; gap:10px; padding:9px 12px; border-radius:var(--radius); background:var(--surface2); border:1px solid var(--border); border-left-width:3px; border-left-color:var(--border2); transition:background 0.12s; animation:slideInRight 0.28s cubic-bezier(0.22,1,0.36,1) both; }
+@keyframes slideInRight { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+.task-row:nth-child(1){animation-delay:0.04s} .task-row:nth-child(2){animation-delay:0.08s} .task-row:nth-child(3){animation-delay:0.12s} .task-row:nth-child(4){animation-delay:0.16s} .task-row:nth-child(5){animation-delay:0.20s} .task-row:nth-child(6){animation-delay:0.24s} .task-row:nth-child(7){animation-delay:0.28s}
 .task-row:hover { background:var(--surface3); }
 .task-row.r-overdue { border-left-color:var(--red); background:#160d0d; }
 .task-row.r-warn    { border-left-color:var(--amber); }
 .task-row.r-ok      { border-left-color:var(--green); }
 .task-name { font-size:14px; color:var(--text); }
 .task-interval { font-family:var(--mono); font-size:12px; color:var(--text-faint); }
-.badge {
-  font-family:var(--mono); font-size:11px; font-weight:700;
-  padding:3px 7px; border-radius:3px; text-align:center;
-  letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap;
-}
+.badge { font-family:var(--mono); font-size:11px; font-weight:700; padding:3px 7px; border-radius:3px; text-align:center; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; transition:background 0.3s, color 0.3s; }
 .badge.ok        { background:var(--green-dim); color:var(--green); }
 .badge.warn      { background:var(--amber-dim); color:var(--amber); }
-.badge.overdue   { background:var(--red-dim);   color:var(--red);   }
+.badge.overdue   { background:var(--red-dim);   color:var(--red); animation:overdueFlash 2.2s ease-in-out infinite; }
+@keyframes overdueFlash { 0%,100%{opacity:1} 50%{opacity:0.45} }
 .badge.no_record { background:var(--blue-dim); color:var(--blue); border:1px solid rgba(74,124,245,0.3); }
-.badge.unknown   { background:var(--surface);   color:var(--text-faint); }
+.badge.unknown   { background:var(--surface); color:var(--text-faint); }
 
-.task-check {
-  width:18px; height:18px; border-radius:3px;
-  border:1px solid var(--border2); background:var(--surface);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; transition:all 0.12s; flex-shrink:0;
-}
+.task-check { width:18px; height:18px; border-radius:3px; border:1px solid var(--border2); background:var(--surface); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.12s; flex-shrink:0; }
 .task-check.checked { background:var(--amber-dim); border-color:var(--amber); }
 .task-check.hidden { opacity:0; pointer-events:none; }
 .task-check-inner { width:8px; height:8px; background:var(--amber); border-radius:2px; display:none; }
 .task-check.checked .task-check-inner { display:block; }
 
-/* ── BUTTONS ── */
+/* BUTTONS */
 .btn-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-.btn-primary {
-  font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
-  padding:9px 18px; background:var(--amber-dim); color:var(--amber);
-  border:1px solid var(--amber); border-radius:var(--radius);
-  cursor:pointer; transition:all 0.15s;
-}
+.btn-primary { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:9px 18px; background:var(--amber-dim); color:var(--amber); border:1px solid var(--amber); border-radius:var(--radius); cursor:pointer; transition:all 0.15s; }
 .btn-primary:hover { background:var(--amber); color:#000; }
 .btn-primary:disabled { opacity:0.35; cursor:not-allowed; }
-.btn-cancel {
-  font-family:var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
-  padding:9px 14px; background:transparent; color:var(--text-dim);
-  border:1px solid var(--border2); border-radius:var(--radius);
-  cursor:pointer; transition:all 0.15s;
-}
+.btn-cancel { font-family:var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:9px 14px; background:transparent; color:var(--text-dim); border:1px solid var(--border2); border-radius:var(--radius); cursor:pointer; transition:all 0.15s; }
 .btn-cancel:hover { background:var(--surface3); }
 .save-hint { font-size:11px; color:var(--text-faint); }
 
-/* ── HISTORY TABLE ── */
+/* SUCCESS FLASH */
+.success-flash { position:absolute; inset:0; border-radius:var(--radius); background:linear-gradient(135deg,rgba(61,168,112,0.15),rgba(61,168,112,0.03)); border:1px solid rgba(61,168,112,0.4); pointer-events:none; z-index:10; animation:successFade 1.4s cubic-bezier(0.22,1,0.36,1) forwards; }
+@keyframes successFade { 0%{opacity:0;transform:scale(0.98)} 15%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:scale(1.01)} }
+
+/* PANEL TRANSITIONS */
+@keyframes panelEnter { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
+@keyframes panelExit  { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(-10px)} }
+.panel-enter { animation:panelEnter 0.28s cubic-bezier(0.22,1,0.36,1) both; }
+.panel-exit  { animation:panelExit  0.18s ease forwards; pointer-events:none; }
+
+/* GAUGE */
+@keyframes gaugeRise { from{clip-path:inset(100% 0 0 0)} to{clip-path:inset(0% 0 0 0)} }
+.gauge-fill { animation:gaugeRise 0.9s cubic-bezier(0.22,1,0.36,1) both 0.1s; }
+
+/* HISTORY */
 .history-table { width:100%; border-collapse:collapse; font-size:12px; }
-.history-table th {
-  text-align:left; padding:5px 10px;
-  font-size:10px; letter-spacing:0.08em; text-transform:uppercase;
-  color:var(--text-faint); border-bottom:1px solid var(--border);
-  font-weight:500; font-family:var(--sans);
-}
+.history-table th { text-align:left; padding:5px 10px; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-faint); border-bottom:1px solid var(--border); font-weight:500; }
 .history-table td { padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:top; font-size:13px; }
 .history-table tr:last-child td { border-bottom:none; }
 .history-table tr:hover td { background:var(--surface2); }
 .h-date { font-family:var(--mono); font-size:12px; color:var(--text-dim); white-space:nowrap; }
 .h-hours { font-family:var(--mono); font-size:14px; font-weight:700; color:var(--amber); }
-.h-tech { font-size:14px; color:var(--text-dim); }
+.h-tech { font-size:13px; color:var(--text-dim); }
 .h-tasks { display:flex; flex-wrap:wrap; gap:4px; }
 .h-task-tag { padding:3px 8px; background:var(--green-dim); color:var(--green); border-radius:3px; font-size:12px; }
-.h-note-tag { padding:2px 6px; background:var(--surface3); color:var(--text-faint); border-radius:3px; font-size:10px; border:1px solid var(--border); }
+.h-note-tag { padding:3px 8px; background:var(--surface3); color:var(--text-faint); border-radius:3px; font-size:12px; border:1px solid var(--border); }
 .empty-msg { padding:16px; color:var(--text-faint); font-size:12px; text-align:center; }
-
-/* ── FULL CENTER ── */
 .full-center { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; gap:14px; }
 .err-msg { font-size:13px; color:var(--red); max-width:340px; text-align:center; line-height:1.6; }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fillRise {
-    from { clip-path: inset(100% 0 0 0); opacity: 0; }
-    to   { clip-path: inset(0% 0 0 0);   opacity: 1; }
-  }
-  @keyframes overdueFlash {
-    0%,100% { opacity: 1; }
-    50%      { opacity: 0.5; }
-  }
-  @keyframes fadeSlideIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes groundedBreath {
-    0%,100% { box-shadow: 0 0 0 rgba(112,96,160,0); }
-    50%     { box-shadow: 0 0 12px rgba(112,96,160,0.35); }
-  }
-  @keyframes statPop {
-    0%   { transform: scale(0.95); opacity: 0; }
-    60%  { transform: scale(1.03); }
-    100% { transform: scale(1);    opacity: 1; }
-  }
-
-  .animate-fill { animation: fillRise 0.6s cubic-bezier(0.22,1,0.36,1) both; }
-  .badge.overdue { animation: overdueFlash 2.2s ease-in-out infinite; }
-  .task-row { animation: fadeSlideIn 0.25s ease both; }
-  .task-row:nth-child(1) { animation-delay: 0.04s; }
-  .task-row:nth-child(2) { animation-delay: 0.08s; }
-  .task-row:nth-child(3) { animation-delay: 0.12s; }
-  .task-row:nth-child(4) { animation-delay: 0.16s; }
-  .task-row:nth-child(5) { animation-delay: 0.20s; }
-  .task-row:nth-child(6) { animation-delay: 0.24s; }
-  .task-row:nth-child(7) { animation-delay: 0.28s; }
-  .stat-card { animation: statPop 0.3s cubic-bezier(0.22,1,0.36,1) both; }
-  .stat-card:nth-child(2) { animation-delay: 0.08s; }
-  .grounded-banner { animation: groundedBreath 3s ease-in-out infinite; }
-  .truck-id { transition: color 0.3s ease; }
-
-  /* ── SMOOTH TRANSITIONS ── */
-  @keyframes panelEnter {
-    from { opacity:0; transform:translateX(18px); }
-    to   { opacity:1; transform:translateX(0); }
-  }
-  @keyframes panelExit {
-    from { opacity:1; transform:translateX(0); }
-    to   { opacity:0; transform:translateX(-12px); }
-  }
-  @keyframes slideInRight {
-    from { opacity:0; transform:translateX(22px); }
-    to   { opacity:1; transform:translateX(0); }
-  }
-  @keyframes countPop {
-    0%   { transform:scale(1); }
-    40%  { transform:scale(1.06); }
-    100% { transform:scale(1); }
-  }
-
-  .panel-enter { animation: panelEnter 0.28s cubic-bezier(0.22,1,0.36,1) both; }
-  .panel-exit  { animation: panelExit  0.18s ease forwards; pointer-events:none; }
-
-  /* override task row animation for slide from right */
-  .task-row { animation: slideInRight 0.28s cubic-bezier(0.22,1,0.36,1) both; }
-  .task-row:nth-child(1) { animation-delay:0.04s; }
-  .task-row:nth-child(2) { animation-delay:0.09s; }
-  .task-row:nth-child(3) { animation-delay:0.14s; }
-  .task-row:nth-child(4) { animation-delay:0.19s; }
-  .task-row:nth-child(5) { animation-delay:0.24s; }
-  .task-row:nth-child(6) { animation-delay:0.29s; }
-  .task-row:nth-child(7) { animation-delay:0.34s; }
-
-  /* Truck tab hover lift */
-  .truck-tab { transition: background 0.15s ease, transform 0.15s ease; }
-  .truck-tab:hover:not(.active) { transform: translateY(-1px); }
-  .truck-tab.active { transform: translateY(-1px); }
-  .truck-tab::before { transition: background 0.3s ease, box-shadow 0.3s ease; }
-
-  /* Stat value count pop */
-  .stat-val { transition: color 0.3s ease; }
-  .stat-card { transition: border-color 0.3s ease, background 0.3s ease; }
-
-  /* Gauge fill smooth transition */
-  .gauge-fill-bar { transition: clip-path 0.7s cubic-bezier(0.22,1,0.36,1); }
-
-  /* Status badge color transitions */
-  .badge { transition: background 0.3s ease, color 0.3s ease; }
-
-  /* Truck ID smooth color */
-  .truck-id { transition: color 0.35s ease; }
-
-  /* ── EXTENDED ANIMATIONS ── */
-
-  /* Scanline sweep */
-  .scanline {
-    position:fixed; left:0; right:0; height:2px; z-index:999; pointer-events:none;
-    background:linear-gradient(90deg,transparent,rgba(74,124,245,0.4),rgba(240,165,0,0.3),transparent);
-    animation: scanSweep 9s linear infinite;
-  }
-  @keyframes scanSweep {
-    0%   { top:-2px; opacity:0; }
-    3%   { opacity:1; }
-    97%  { opacity:0.3; }
-    100% { top:100vh; opacity:0; }
-  }
-
-  /* Left panel overdue glow pulse */
-  .left-panel.is-overdue {
-    animation: panelOverdueGlow 2.8s ease-in-out infinite;
-  }
-  @keyframes panelOverdueGlow {
-    0%,100% { box-shadow: inset -1px 0 0 var(--border); }
-    50%     { box-shadow: inset -1px 0 30px rgba(224,69,69,0.18), inset 0 0 40px rgba(224,69,69,0.07); }
-  }
-
-  /* Attention banner shake on mount */
-  @keyframes shake {
-    0%  { transform:translateX(0); }
-    15% { transform:translateX(-7px); }
-    30% { transform:translateX(6px); }
-    45% { transform:translateX(-4px); }
-    60% { transform:translateX(3px); }
-    75% { transform:translateX(-2px); }
-    100%{ transform:translateX(0); }
-  }
-  .attention { animation: shake 0.55s cubic-bezier(0.36,0.07,0.19,0.97) 0.2s both; }
-
-  /* Grounded flicker */
-  @keyframes flicker {
-    0%,89%,100% { opacity:1; }
-    90%  { opacity:0.35; }
-    91%  { opacity:1; }
-    93%  { opacity:0.5; }
-    94%  { opacity:1; }
-    96%  { opacity:0.7; }
-    97%  { opacity:1; }
-  }
-  .grounded-banner { animation: flicker 5s ease-in-out infinite, groundedBreath 3s ease-in-out infinite; }
-
-  /* 3D tab ripple */
-  .tab-ripple {
-    position:absolute; border-radius:50%; pointer-events:none;
-    background:radial-gradient(circle, rgba(240,165,0,0.35) 0%, transparent 70%);
-    transform:scale(0) translateZ(0);
-    animation: tabRipple3D 0.6s cubic-bezier(0.22,1,0.36,1) forwards;
-  }
-  @keyframes tabRipple3D {
-    0%   { transform: scale(0) rotateX(40deg); opacity:1; }
-    60%  { opacity:0.6; }
-    100% { transform: scale(3.5) rotateX(0deg); opacity:0; }
-  }
-  .truck-tab { perspective: 400px; overflow:hidden; }
-
-  /* Task flash on status change */
-  @keyframes taskFlash {
-    0%   { background: rgba(240,165,0,0.22); }
-    100% { background: transparent; }
-  }
-  .task-flash { animation: taskFlash 0.7s ease forwards !important; }
-
-  /* Success flash overlay */
-  .success-flash {
-    position:absolute; inset:0; border-radius:var(--radius);
-    background:linear-gradient(135deg, rgba(61,168,112,0.18), rgba(61,168,112,0.04));
-    border:1px solid rgba(61,168,112,0.5);
-    pointer-events:none; z-index:10;
-    animation: successFade 1.4s cubic-bezier(0.22,1,0.36,1) forwards;
-  }
-  @keyframes successFade {
-    0%   { opacity:0; transform:scale(0.98); }
-    15%  { opacity:1; transform:scale(1); }
-    100% { opacity:0; transform:scale(1.01); }
-  }
-  .right-panel { position:relative; }
-
-  /* Gauge rise from 0 */
-  @keyframes gaugeRise {
-    from { clip-path: inset(100% 0 0 0); }
-    to   { clip-path: inset(0% 0 0 0); }
-  }
-  .gauge-fill-bar { animation: gaugeRise 0.9s cubic-bezier(0.22,1,0.36,1) both 0.1s; }
-
-  /* Background grid drift */
-  @keyframes bgDrift {
-    0%   { background-position: 0px 0px; }
-    100% { background-position: 20px 20px; }
-  }
-  body.drifting { animation: bgDrift 0.5s ease forwards; }
 </style>
 </head>
 <body>
@@ -488,60 +203,44 @@ function b64e(s){ return btoa(unescape(encodeURIComponent(s))); }
 function b64d(s){ return decodeURIComponent(escape(atob(s))); }
 
 async function writePending(entry) {
-  if (GITHUB_TOKEN === "PASTE_YOUR_GITHUB_PAT_HERE") return;
-  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${PENDING_PATH}`;
-  const h = {"Authorization":"Bearer "+GITHUB_TOKEN,"Accept":"application/vnd.github+json"};
-  let existing=[], sha=null;
-  try { const r=await fetch(url,{headers:h}); if(r.ok){const f=await r.json(); sha=f.sha; existing=JSON.parse(b64d(f.content.replace(/\n/g,"")));} } catch(e){}
+  if(GITHUB_TOKEN==="PASTE_YOUR_GITHUB_PAT_HERE") return;
+  const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${PENDING_PATH}`;
+  const h={"Authorization":"Bearer "+GITHUB_TOKEN,"Accept":"application/vnd.github+json"};
+  let existing=[],sha=null;
+  try{const r=await fetch(url,{headers:h});if(r.ok){const f=await r.json();sha=f.sha;existing=JSON.parse(b64d(f.content.replace(/\n/g,"")));}}catch(e){}
   existing.push(entry);
-  const body={message:"Log: "+entry.truck, content:b64e(JSON.stringify(existing,null,2))};
-  if(sha) body.sha=sha;
+  const body={message:"Log: "+entry.truck,content:b64e(JSON.stringify(existing,null,2))};
+  if(sha)body.sha=sha;
   await fetch(url,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});
 }
 
-/* ── VERTICAL GAUGE ── */
 function Gauge({ pct, overdue }) {
-  const W=52, H=170, bx=18, bw=20, by=8, bh=148;
-  const fillH = Math.max(0, Math.min(bh, bh * pct));
-  const fillY = by + bh - fillH;
-  const id = "gz" + Math.round(pct*100);
-  const zoneColor = overdue ? "#e04545" : pct > 0.75 ? "#f0a500" : "#3da870";
-
-  return React.createElement("svg", { width:W, height:H, viewBox:`0 0 ${W} ${H}`, style:{display:"block"} },
-    // zone gradient track
-    React.createElement("defs", null,
-      React.createElement("linearGradient", { id:"zoneGrad", x1:"0", y1:"1", x2:"0", y2:"0" },
-        React.createElement("stop", { offset:"0%",   stopColor:"#3da870" }),
-        React.createElement("stop", { offset:"50%",  stopColor:"#f0a500" }),
-        React.createElement("stop", { offset:"100%", stopColor:"#e04545" })
+  const W=52,H=170,bx=18,bw=20,by=8,bh=148;
+  const fillH=Math.max(0,Math.min(bh,bh*pct));
+  const fillY=by+bh-fillH;
+  const uid="g"+Math.round(pct*1000)+overdue;
+  return React.createElement("svg",{width:W,height:H,viewBox:`0 0 ${W} ${H}`,style:{display:"block"}},
+    React.createElement("defs",null,
+      React.createElement("linearGradient",{id:"zg"+uid,x1:"0",y1:"1",x2:"0",y2:"0"},
+        React.createElement("stop",{offset:"0%",stopColor:"#3da870"}),
+        React.createElement("stop",{offset:"50%",stopColor:"#f0a500"}),
+        React.createElement("stop",{offset:"100%",stopColor:"#e04545"})
       ),
-      React.createElement("clipPath", { id:"fillClip"+Math.round(pct*1000) },
-        React.createElement("rect", { x:bx, y:fillY, width:bw, height:fillH })
+      React.createElement("clipPath",{id:"cp"+uid},
+        React.createElement("rect",{x:bx,y:fillY,width:bw,height:fillH})
       )
     ),
-    // track bg
-    React.createElement("rect", { x:bx, y:by, width:bw, height:bh, rx:4, fill:"#1a2235" }),
-    // zone gradient (always visible faintly)
-    React.createElement("rect", { x:bx, y:by, width:bw, height:bh, rx:4, fill:"url(#zoneGrad)", opacity:0.12 }),
-    // actual fill clipped to current level
-    React.createElement("rect", { x:bx, y:by, width:bw, height:bh, rx:4, fill:"url(#zoneGrad)",
-      clipPath:`url(#fillClip${Math.round(pct*1000)})`, opacity:0.9, className:"gauge-fill-bar" }),
-    // glow on fill top edge
-    fillH > 4 ? React.createElement("rect", { x:bx, y:fillY, width:bw, height:3, rx:2, fill:"#fff", opacity:0.15 }) : null,
-    // track border
-    React.createElement("rect", { x:bx, y:by, width:bw, height:bh, rx:4, fill:"none", stroke:"#28364f", strokeWidth:1 }),
-    // tick marks
-    ...[0.25,0.5,0.75].map(t =>
-      React.createElement("line", { key:t, x1:bx+bw, y1:by+bh*(1-t), x2:bx+bw+5, y2:by+bh*(1-t), stroke:"#38465a", strokeWidth:1 })
-    ),
-    // 0 / max labels
-    React.createElement("text", { x:bx+bw+8, y:by+bh+3, fontFamily:"'JetBrains Mono',monospace", fontSize:8, fill:"#38465a" }, "0"),
-    React.createElement("text", { x:bx+bw+8, y:by+5,    fontFamily:"'JetBrains Mono',monospace", fontSize:8, fill:"#38465a" }, "1k")
+    React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:"#1a2235"}),
+    React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:`url(#zg${uid})`,opacity:0.1}),
+    React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:`url(#zg${uid})`,clipPath:`url(#cp${uid})`,opacity:0.9,className:"gauge-fill"}),
+    fillH>4?React.createElement("rect",{x:bx,y:fillY,width:bw,height:3,rx:2,fill:"#fff",opacity:0.15}):null,
+    React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:"none",stroke:"#28364f",strokeWidth:1}),
+    ...[0.25,0.5,0.75].map(t=>React.createElement("line",{key:t,x1:bx+bw,y1:by+bh*(1-t),x2:bx+bw+5,y2:by+bh*(1-t),stroke:"#38465a",strokeWidth:1})),
+    React.createElement("text",{x:bx+bw+8,y:by+bh+3,fontFamily:"'JetBrains Mono',monospace",fontSize:8,fill:"#38465a"},"0"),
+    React.createElement("text",{x:bx+bw+8,y:by+5,fontFamily:"'JetBrains Mono',monospace",fontSize:8,fill:"#38465a"},"1k")
   );
 }
 
-
-/* ── APP ── */
 function App() {
   const [fleet,      setFleet]      = useState(null);
   const [svcLogs,    setSvcLogs]    = useState({});
@@ -550,213 +249,163 @@ function App() {
   const [loaded,     setLoaded]     = useState(false);
   const [error,      setError]      = useState(null);
   const [syncedAt,   setSyncedAt]   = useState(null);
+  const [syncAgo,    setSyncAgo]    = useState('');
   const [logMode,    setLogMode]    = useState(false);
   const [checked,    setChecked]    = useState({});
-  const [transitioning,  setTransitioning]  = useState(false);
-  const [displayKey,     setDisplayKey]     = useState(0);
-  const [countedHours,   setCountedHours]   = useState(null);
-  const [showSuccess,    setShowSuccess]    = useState(false);
-  const [syncAgo,        setSyncAgo]        = useState('');
-  const [flashedTasks,   setFlashedTasks]   = useState({});
-  const prevHoursRef   = React.useRef(null);
-  const prevStatusRef  = React.useRef({});
+  const [showSuccess,setShowSuccess]= useState(false);
+  const [transitioning,setTransitioning]=useState(false);
+  const [displayKey, setDisplayKey] = useState(0);
+  const [countedHours,setCountedHours]=useState(null);
+  const prevHoursRef = useRef(null);
 
   async function loadAll() {
     setError(null);
     try {
-      const bust = "?_="+Date.now();
-      const [r1,r2,r3] = await Promise.all([fetch(DATA_URL+bust),fetch(LOGS_URL+bust),fetch(HISTORY_URL+bust)]);
+      const bust="?_="+Date.now();
+      const [r1,r2,r3]=await Promise.all([fetch(DATA_URL+bust),fetch(LOGS_URL+bust),fetch(HISTORY_URL+bust)]);
       if(!r1.ok) throw new Error();
-      const [data,seedLogs,hist] = await Promise.all([r1.json(), r2.ok?r2.json():{}, r3.ok?r3.json():{}]);
-      const fleet={};
-      for(const t of TRUCKS) fleet[t]={hours:null,intervalStart:0,overdue:false,technician:"",lastUpdated:null,postedBy:null,...(data[t]||{})};
-      setFleet(fleet);
+      const [data,seedLogs,hist]=await Promise.all([r1.json(),r2.ok?r2.json():{},r3.ok?r3.json():{}]);
+      const fl={};
+      for(const t of TRUCKS) fl[t]={hours:null,intervalStart:0,overdue:false,technician:"",lastUpdated:null,postedBy:null,...(data[t]||{})};
+      setFleet(fl);
       setSvcHistory(hist);
-      // merge seed + localStorage
       const logs={};
       for(const t of TRUCKS){
         const base=seedLogs[t]||{};
-        try{ const local=localStorage.getItem("svc:"+t); const lo=local?JSON.parse(local):{}; const merged={...base}; for(const[k,v] of Object.entries(lo)) if(!merged[k]||v>merged[k]) merged[k]=v; logs[t]=merged; }
-        catch(e){ logs[t]=base; }
+        try{const local=localStorage.getItem("svc:"+t);const lo=local?JSON.parse(local):{};const merged={...base};for(const[k,v]of Object.entries(lo))if(!merged[k]||v>merged[k])merged[k]=v;logs[t]=merged;}
+        catch(e){logs[t]=base;}
       }
       setSvcLogs(logs);
       setSyncedAt(new Date());
-    } catch(e) { setError("Fleet data unavailable."); }
+    } catch(e){setError("Fleet data unavailable.");}
     setLoaded(true);
   }
 
-  useEffect(()=>{ loadAll(); },[]);
+  useEffect(()=>{loadAll();},[]);
 
-  // Live sync clock
   useEffect(()=>{
-    function updateAgo(){
-      if(!syncedAt){ setSyncAgo(''); return; }
-      const mins = Math.floor((Date.now()-syncedAt.getTime())/60000);
-      setSyncAgo(mins===0?'just now':mins===1?'1 min ago':mins+' min ago');
-    }
-    updateAgo();
-    const t = setInterval(updateAgo, 30000);
-    return ()=>clearInterval(t);
+    function upd(){if(!syncedAt){setSyncAgo('');return;}const m=Math.floor((Date.now()-syncedAt.getTime())/60000);setSyncAgo(m===0?'just now':m===1?'1 min ago':m+' min ago');}
+    upd();const t=setInterval(upd,30000);return()=>clearInterval(t);
   },[syncedAt]);
 
-  if(!loaded) return React.createElement("div",{className:"full-center"},
-    React.createElement("div",{style:{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"#38465a",letterSpacing:"0.12em"}},"LOADING FLEET DATA...")
-  );
-  if(error) return React.createElement("div",{className:"full-center"},
-    React.createElement("div",{className:"err-msg"},error),
-    React.createElement("button",{className:"btn-ghost",onClick:loadAll},"RETRY")
-  );
+  useEffect(()=>{
+    if(!loaded) return;
+    const truck=fleet?fleet[selected]:null;
+    const hours=truck?.hours??null;
+    if(hours==null){setCountedHours(null);prevHoursRef.current=null;return;}
+    const start=prevHoursRef.current??hours,end=hours;
+    if(start===end){setCountedHours(hours);return;}
+    const dur=600,t0=performance.now();
+    function tick(now){const p=Math.min((now-t0)/dur,1);const ease=1-Math.pow(1-p,3);setCountedHours(Math.round(start+(end-start)*ease));if(p<1)requestAnimationFrame(tick);else prevHoursRef.current=end;}
+    requestAnimationFrame(tick);
+  },[selected,displayKey,loaded]);
 
-  const truck = fleet[selected];
-  const log   = svcLogs[selected]||{};
-  const hours = truck.hours;
+  function handleTabClick(t){
+    if(t===selected)return;
+    setTransitioning(true);
+    setTimeout(()=>{setSelected(t);setLogMode(false);setChecked({});setTransitioning(false);setDisplayKey(k=>k+1);},180);
+  }
 
-  const taskStatus = TASKS.map(task=>{
-    const last = log[task.key];
-    const hasRec = last != null;
-    const since = hasRec && hours!=null ? hours-last : null;
-    const rem   = since!=null ? task.interval-since : null;
-    const pct   = since!=null ? Math.min(since/task.interval,1) : (hours!=null && !hasRec && task.key!=="airfilter_clean" ? 1 : 0);
-    const status= hours==null?"unknown"
-                : !hasRec && task.key==="airfilter_clean" ? "no_record"
-                : !hasRec ? "overdue"
-                : since>=task.interval?"overdue"
-                : since>=task.interval*0.9?"warn":"ok";
+  if(!loaded)return React.createElement("div",{className:"full-center"},React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:"#38465a",letterSpacing:"0.12em"}},"LOADING FLEET DATA..."));
+  if(error)return React.createElement("div",{className:"full-center"},React.createElement("div",{className:"err-msg"},error),React.createElement("button",{className:"btn-ghost",onClick:loadAll},"RETRY"));
+
+  const truck=fleet[selected];
+  const log=svcLogs[selected]||{};
+  const hours=truck.hours;
+  const isGrounded=!!truck.grounded;
+
+  const taskStatus=TASKS.map(task=>{
+    const last=log[task.key];
+    const hasRec=last!=null;
+    const since=hasRec&&hours!=null?hours-last:null;
+    const rem=since!=null?task.interval-since:null;
+    const pct=since!=null?Math.min(since/task.interval,1):(hours!=null&&!hasRec&&task.key!=="airfilter_clean"?1:0);
+    const status=hours==null?"unknown":!hasRec&&task.key==="airfilter_clean"?"no_record":!hasRec?"overdue":since>=task.interval?"overdue":since>=task.interval*0.9?"warn":"ok";
     return {...task,last,hasRec,since,rem,pct,status};
   });
 
-  const isGrounded = !!truck.grounded;
-  const anyOverdue = !isGrounded && taskStatus.some(t=>t.status==="overdue");
-  const anyWarn    = !isGrounded && taskStatus.some(t=>t.status==="warn");
-  const gaugePct   = isGrounded ? 0 : taskStatus.reduce((m,t)=>Math.max(m,t.pct),0);
-  const isOverdue  = anyOverdue;
-
-  // Track task status changes for flash effect
-  useEffect(()=>{
-    const prev = prevStatusRef.current;
-    const flashed = {};
-    taskStatus.forEach(t=>{
-      if(prev[t.key] && prev[t.key]!==t.status) flashed[t.key]=Date.now();
-    });
-    if(Object.keys(flashed).length) setFlashedTasks(f=>({...f,...flashed}));
-    prevStatusRef.current = Object.fromEntries(taskStatus.map(t=>[t.key,t.status]));
-  },[selected, displayKey]);
-
-  // Animate hours counter
-  useEffect(()=>{
-    if(hours==null){ setCountedHours(null); prevHoursRef.current=null; return; }
-    const start = prevHoursRef.current ?? hours;
-    const end   = hours;
-    if(start===end){ setCountedHours(hours); return; }
-    const dur=600, t0=performance.now();
-    function tick(now){
-      const p=Math.min((now-t0)/dur,1);
-      const ease=1-Math.pow(1-p,3);
-      setCountedHours(Math.round(start+(end-start)*ease));
-      if(p<1) requestAnimationFrame(tick);
-      else prevHoursRef.current=end;
-    }
-    requestAnimationFrame(tick);
-    return ()=>{ prevHoursRef.current=hours; };
-  }, [selected, hours]);
+  const anyOverdue=!isGrounded&&taskStatus.some(t=>t.status==="overdue");
+  const anyWarn=!isGrounded&&taskStatus.some(t=>t.status==="warn");
+  const gaugePct=isGrounded?0:taskStatus.reduce((m,t)=>Math.max(m,t.pct),0);
+  const isOverdue=anyOverdue;
 
   function truckStatus(t){
-    const td=fleet[t]; const tl=svcLogs[t]||{};
-    if(td.grounded) return "grounded";
-    if(!td.hours) return "none";
-    if(TASKS.some(task=>{ const l=tl[task.key]; return l!=null&&(td.hours-l)>=task.interval; })) return "overdue";
-    if(TASKS.some(task=>{ const l=tl[task.key]; return l!=null&&(td.hours-l)>=task.interval*0.9; })) return "warn";
+    const td=fleet[t];const tl=svcLogs[t]||{};
+    if(td.grounded)return "grounded";
+    if(!td.hours)return "none";
+    if(TASKS.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval;}))return "overdue";
+    if(TASKS.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval*0.9;}))return "warn";
     return "ok";
   }
 
   function handleSave(){
-    if(!hours) return;
-    const newLog={...log}; const done=[];
-    for(const[k,v] of Object.entries(checked)){ if(v){ newLog[k]=hours; const t=TASKS.find(x=>x.key===k); if(t) done.push(t.name); } }
+    if(!hours)return;
+    const newLog={...log};const done=[];
+    for(const[k,v]of Object.entries(checked)){if(v){newLog[k]=hours;const t=TASKS.find(x=>x.key===k);if(t)done.push(t.name);}}
     setSvcLogs(p=>({...p,[selected]:newLog}));
-    try{ localStorage.setItem("svc:"+selected,JSON.stringify(newLog)); } catch(e){}
-    if(done.length) writePending({truck:selected,tasks:done,postedBy:truck.postedBy,loggedAt:new Date().toISOString()});
-    setChecked({}); setLogMode(false);
-    setShowSuccess(true);
-    setTimeout(()=>setShowSuccess(false),1400);
+    try{localStorage.setItem("svc:"+selected,JSON.stringify(newLog));}catch(e){}
+    if(done.length)writePending({truck:selected,tasks:done,postedBy:truck.postedBy,loggedAt:new Date().toISOString()});
+    setChecked({});setLogMode(false);
+    setShowSuccess(true);setTimeout(()=>setShowSuccess(false),1400);
   }
 
   const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"GUIDELINE"};
-  const overdueTasks = taskStatus.filter(t=>t.status==="overdue");
-  const warnTasks    = taskStatus.filter(t=>t.status==="warn");
-
-  const nextServiceCard = ()=>{
-    if(!hours) return React.createElement("div",{className:"stat-val"},"—");
-    if(overdueTasks.length) return React.createElement("div",null,
-      React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:10,fontWeight:700,color:"var(--red)",letterSpacing:"0.08em",marginBottom:5}},"DUE NOW"),
-      React.createElement("div",{className:"due-list"}, overdueTasks.map(t=>React.createElement("div",{key:t.key,className:"due-tag"},t.name)))
-    );
-    if(warnTasks.length) return React.createElement("div",null,
-      React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:10,fontWeight:700,color:"var(--amber)",letterSpacing:"0.08em",marginBottom:5}},"DUE SOON"),
-      React.createElement("div",{className:"due-list"}, warnTasks.map(t=>React.createElement("div",{key:t.key,className:"due-tag"},t.name)))
-    );
-    const known=taskStatus.filter(t=>t.rem!=null); const next=known.length?Math.round(Math.min(...known.map(t=>t.rem))):null;
-    return React.createElement("div",{className:"stat-val"},next??'—', next!=null?React.createElement("span",{className:"unit"},"h"):null);
-  };
-
+  const overdueTasks=taskStatus.filter(t=>t.status==="overdue");
+  const warnTasks=taskStatus.filter(t=>t.status==="warn");
   const histEntries=(svcHistory[selected]||[]).filter(e=>e.date||e.hours).slice().reverse();
 
-  function handleTabClick(t, e){
-    if(t===selected) return;
-    setTransitioning(true);
-    setTimeout(()=>{
-      setSelected(t);setLogMode(false);setChecked({});
-      setTransitioning(false);setDisplayKey(k=>k+1);
-    },180);
-  }
+  const nextServiceCard=()=>{
+    if(!hours)return React.createElement("div",{className:"stat-val"},"—");
+    if(overdueTasks.length)return React.createElement("div",null,
+      React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:10,fontWeight:700,color:"var(--red)",letterSpacing:"0.08em",marginBottom:5}},"DUE NOW"),
+      React.createElement("div",{className:"due-list"},overdueTasks.map(t=>React.createElement("div",{key:t.key,className:"due-tag"},t.name)))
+    );
+    if(warnTasks.length)return React.createElement("div",null,
+      React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:10,fontWeight:700,color:"var(--amber)",letterSpacing:"0.08em",marginBottom:5}},"DUE SOON"),
+      React.createElement("div",{className:"due-list"},warnTasks.map(t=>React.createElement("div",{key:t.key,className:"due-tag"},t.name)))
+    );
+    const known=taskStatus.filter(t=>t.rem!=null);const next=known.length?Math.round(Math.min(...known.map(t=>t.rem))):null;
+    return React.createElement("div",{className:"stat-val"},next??'—',next!=null?React.createElement("span",{className:"unit"},"h"):null);
+  };
 
   return React.createElement("div",null,
-    // HEADER
     React.createElement("header",{className:"header"},
       React.createElement("div",{className:"header-brand"},
         React.createElement("span",{className:"header-badge"},"HD GEN2"),
         React.createElement("span",{className:"header-title"},"Generator Service Monitor")
       ),
       React.createElement("div",{className:"header-right"},
-        React.createElement("div",{className:"sync-indicator"},
-          React.createElement("div",{className:"sync-dot"}),
-          React.createElement("span",{className:"sync-time"}, syncedAt?(syncAgo||"just now"):"—")
-        ),
+        React.createElement("span",{className:"sync-dot"}),
+        React.createElement("span",{className:"sync-time"},syncedAt?syncAgo:"—"),
         React.createElement("button",{className:"btn-ghost",onClick:loadAll},"↻ REFRESH")
       )
     ),
-    // TRUCK STRIP
     React.createElement("nav",{className:"truck-strip"},
       TRUCKS.map(t=>{
-        const st=truckStatus(t); const td=fleet[t];
-        const cls=["truck-tab", t===selected?"active":"", st!=="none"?"st-"+st:""].filter(Boolean).join(" ");
-        return React.createElement("div",{key:t,className:cls,onClick:(e)=>handleTabClick(t,e)},
+        const st=truckStatus(t);const td=fleet[t];
+        const cls=["truck-tab",t===selected?"active":"",st!=="none"?"st-"+st:""].filter(Boolean).join(" ");
+        return React.createElement("div",{key:t,className:cls,onClick:()=>handleTabClick(t)},
           React.createElement("div",{className:"truck-name"},t),
-          React.createElement("div",{className:"truck-hours-badge"}, td.hours!=null?td.hours+"h":"—")
+          React.createElement("div",{className:"truck-hours-badge"},td.hours!=null?td.hours+"h":"—")
         );
       })
     ),
-    // MAIN
     React.createElement("div",{className:"main"},
-      // LEFT
-      React.createElement("div",{className:"left-panel "+(isOverdue?"is-overdue ":"")+(isGrounded?"is-grounded ":"")+(transitioning?"panel-exit":"panel-enter"), key:"left-"+displayKey},
+      React.createElement("div",{className:"left-panel "+(isOverdue?"is-overdue ":"")+(transitioning?"panel-exit":"panel-enter"),key:"L"+displayKey},
         React.createElement("div",{className:"truck-header"},
           React.createElement("div",{className:"truck-id",style:{color:isGrounded?"#9880cc":isOverdue?"var(--red)":anyWarn?"var(--amber)":"var(--text)"}},selected),
           React.createElement("div",{className:"truck-sub"},"HD GEN2 · Japan Fleet")
         ),
         React.createElement("div",{className:"gauge-stats-row"},
           React.createElement("div",{className:"gauge-col"},
-            React.createElement("div",{className:"gauge-wrap"},
-              React.createElement(Gauge,{pct:gaugePct,overdue:isOverdue})
-            ),
+            React.createElement("div",{className:"gauge-wrap"},React.createElement(Gauge,{pct:gaugePct,overdue:isOverdue,key:displayKey})),
             React.createElement("div",{className:"gauge-label"},"INTERVAL")
           ),
           React.createElement("div",{className:"stats-col"},
             React.createElement("div",{className:"stat-card s-neutral"},
               React.createElement("div",{className:"stat-lbl"},"Total Hours"),
               React.createElement("div",{className:"stat-val "+(isOverdue?"c-overdue":anyWarn?"c-warn":"")},
-                countedHours!=null?countedHours:"—", countedHours!=null?React.createElement("span",{className:"unit"},"h"):null
-              )
+                countedHours!=null?countedHours:"—",countedHours!=null?React.createElement("span",{className:"unit"},"h"):null)
             ),
             React.createElement("div",{className:"stat-card "+(isOverdue?"s-overdue":anyWarn?"s-warn":"s-ok")},
               React.createElement("div",{className:"stat-lbl"},"Next Service"),
@@ -767,7 +416,7 @@ function App() {
         isGrounded?React.createElement("div",{className:"grounded-banner"},
           React.createElement("div",{className:"grounded-title"},"⬡  GROUNDED"),
           React.createElement("div",{className:"grounded-note"},truck.groundedNote||"Out of service")
-        ):isOverdue?React.createElement("div",{className:"attention"},
+        ):isOverdue?React.createElement("div",{className:"attention",key:"att"+displayKey},
           React.createElement("span",{className:"attention-icon"},"⚠"),
           React.createElement("div",{className:"attention-msg"},"Service required — get to this truck when available")
         ):null,
@@ -777,72 +426,56 @@ function App() {
           truck.lastUpdated?React.createElement("div",{className:"reporter-time"},new Date(truck.lastUpdated).toLocaleString()):null
         ):null
       ),
-      // RIGHT
-      React.createElement("div",{className:"right-panel "+(transitioning?"panel-exit":"panel-enter"), key:"right-"+displayKey, style:{position:"relative"}},
+      React.createElement("div",{className:"right-panel "+(transitioning?"panel-exit":"panel-enter"),key:"R"+displayKey},
         showSuccess?React.createElement("div",{className:"success-flash"}):null,
-        isGrounded?React.createElement("div",{style:{padding:"20px",color:"#4a3a66",fontSize:12,fontFamily:"var(--mono)",letterSpacing:"0.06em"}},"Maintenance paused — truck is grounded"):React.createElement("div",null,
+        isGrounded?React.createElement("div",{style:{padding:"20px",color:"#4a3a66",fontSize:12,fontFamily:"var(--mono)",letterSpacing:"0.06em"}},"Maintenance paused — truck is grounded"):
+        React.createElement("div",null,
           React.createElement("div",{className:"section-title"},"Maintenance Schedule"),
           React.createElement("div",{className:"task-list"},
-            taskStatus.map(task=>
-              React.createElement("div",{key:task.key,className:"task-row r-"+task.status+(flashedTasks[task.key]?" task-flash":"")},
-                React.createElement("div",{className:"task-name"},task.name),
-                React.createElement("div",{className:"task-interval"},task.interval+"h"),
-                React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
-                React.createElement("div",{
-                  className:"task-check"+(logMode?"":" hidden")+(checked[task.key]?" checked":""),
-                  onClick:()=>logMode&&setChecked(p=>({...p,[task.key]:!p[task.key]}))
-                }, React.createElement("div",{className:"task-check-inner"}))
-              )
-            )
+            taskStatus.map(task=>React.createElement("div",{key:task.key,className:"task-row r-"+task.status},
+              React.createElement("div",{className:"task-name"},task.name),
+              React.createElement("div",{className:"task-interval"},task.interval+"h"),
+              React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
+              React.createElement("div",{className:"task-check "+(logMode?"":"hidden")+(checked[task.key]?" checked":""),onClick:()=>logMode&&setChecked(p=>({...p,[task.key]:!p[task.key]}))},
+                React.createElement("div",{className:"task-check-inner"}))
+            ))
           )
         ),
-        // LOG BUTTON
         React.createElement("div",{className:"btn-row"},
-          !logMode
-            ?React.createElement("button",{className:"btn-primary",onClick:()=>setLogMode(true),disabled:!hours},"Log Service Performed")
-            :React.createElement(React.Fragment,null,
-              React.createElement("button",{className:"btn-primary",onClick:handleSave,disabled:Object.values(checked).every(v=>!v)},"Save Completed Tasks"),
-              React.createElement("button",{className:"btn-cancel",onClick:()=>{setLogMode(false);setChecked({})}},"Cancel"),
-              React.createElement("span",{className:"save-hint"},"Check tasks above, then save")
-            )
+          !logMode?React.createElement("button",{className:"btn-primary",onClick:()=>setLogMode(true),disabled:!hours},"Log Service Performed"):
+          React.createElement(React.Fragment,null,
+            React.createElement("button",{className:"btn-primary",onClick:handleSave,disabled:Object.values(checked).every(v=>!v)},"Save Completed Tasks"),
+            React.createElement("button",{className:"btn-cancel",onClick:()=>{setLogMode(false);setChecked({});}},"Cancel"),
+            React.createElement("span",{className:"save-hint"},"Check tasks above, then save")
+          )
         ),
-        // HISTORY
         React.createElement("div",null,
           React.createElement("div",{className:"section-title"},selected+" — Service Log"),
-          !histEntries.length
-            ?React.createElement("div",{className:"empty-msg"},"No service records found for this truck.")
-            :React.createElement("table",{className:"history-table"},
-              React.createElement("thead",null,
-                React.createElement("tr",null,
-                  React.createElement("th",null,"Date"),
-                  React.createElement("th",null,"Hours"),
-                  React.createElement("th",null,"Technician"),
-                  React.createElement("th",null,"Work Performed")
-                )
-              ),
-              React.createElement("tbody",null,
-                histEntries.map((e,i)=>
-                  React.createElement("tr",{key:i},
-                    React.createElement("td",{className:"h-date"},e.date||"—"),
-                    React.createElement("td",{className:"h-hours"},e.hours!=null?e.hours+"h":"—"),
-                    React.createElement("td",{className:"h-tech"},e.technician||"—"),
-                    React.createElement("td",null,
-                      React.createElement("div",{className:"h-tasks"},
-                        ...(e.tasks||[]).map(t=>React.createElement("span",{key:t.key,className:"h-task-tag"},t.label)),
-                        ...(e.notes||[]).map((n,ni)=>React.createElement("span",{key:"n"+ni,className:"h-note-tag"},n))
-                      )
-                    )
-                  )
-                )
+          !histEntries.length?React.createElement("div",{className:"empty-msg"},"No service records found for this truck."):
+          React.createElement("table",{className:"history-table"},
+            React.createElement("thead",null,React.createElement("tr",null,
+              React.createElement("th",null,"Date"),React.createElement("th",null,"Hours"),
+              React.createElement("th",null,"Technician"),React.createElement("th",null,"Work Performed")
+            )),
+            React.createElement("tbody",null,histEntries.map((e,i)=>
+              React.createElement("tr",{key:i},
+                React.createElement("td",{className:"h-date"},e.date||"—"),
+                React.createElement("td",{className:"h-hours"},e.hours!=null?e.hours+"h":"—"),
+                React.createElement("td",{className:"h-tech"},e.technician||"—"),
+                React.createElement("td",null,React.createElement("div",{className:"h-tasks"},
+                  ...(e.tasks||[]).map(t=>React.createElement("span",{key:t.key,className:"h-task-tag"},t.label)),
+                  ...(e.notes||[]).map((n,ni)=>React.createElement("span",{key:"n"+ni,className:"h-note-tag"},n))
+                ))
               )
-            )
+            ))
+          )
         )
       )
     )
   );
 }
 
-ReactDOM.render(React.createElement(App), document.getElementById("root"));
+ReactDOM.render(React.createElement(App),document.getElementById("root"));
 </script>
 </body>
 </html>
