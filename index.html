@@ -365,8 +365,8 @@ function App() {
     const hasRec=last!=null;
     const since=hasRec&&hours!=null?hours-last:null;
     const rem=since!=null?task.interval-since:null;
-    const pct=since!=null?Math.min(since/task.interval,1):(hours!=null&&!hasRec&&task.key!=="airfilter_clean"?1:0);
-    const status=hours==null?"unknown":!hasRec&&task.key==="airfilter_clean"?"no_record":!hasRec?"overdue":since>=task.interval?"overdue":since>=task.interval*0.9?"warn":"ok";
+    const pct=since!=null?Math.min(since/task.interval,1):(hours!=null&&!hasRec&&task.key!=="airfilter_clean"&&hours>=task.interval?1:0);
+    const status=hours==null?"unknown":!hasRec&&task.key==="airfilter_clean"?"no_record":!hasRec&&hours<task.interval?"no_record":!hasRec?"overdue":since>=task.interval?"overdue":since>=task.interval*0.9?"warn":"ok";
     return {...task,last,hasRec,since,rem,pct,status};
   });
 
