@@ -105,7 +105,17 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .due-tag { font-size:13px; padding:2px 0; border-bottom:1px solid var(--border); color:var(--text-dim); line-height:1.6; }
 .due-tag:last-child { border-bottom:none; }
 
-.attention { padding:10px 12px; border-radius:var(--radius); margin-bottom:14px; background:var(--red-dim); border:1px solid rgba(224,69,69,0.3); display:flex; gap:10px; align-items:flex-start; animation:shake 0.55s cubic-bezier(0.36,0.07,0.19,0.97) 0.2s both; }
+/* DUE SOON BANNER */
+.due-soon-banner {
+  padding:10px 12px; border-radius:var(--radius); margin-bottom:14px;
+  background:#2a1e00; border:1px solid rgba(240,165,0,0.3);
+  display:flex; gap:10px; align-items:flex-start;
+}
+.due-soon-icon { color:var(--amber); font-size:13px; margin-top:1px; }
+.due-soon-body { flex:1; }
+.due-soon-title { font-family:var(--mono); font-size:10px; font-weight:700; color:var(--amber); letter-spacing:0.08em; margin-bottom:4px; }
+.due-soon-item { font-size:11px; color:#ffe4a0; line-height:1.6; }
+ padding:10px 12px; border-radius:var(--radius); margin-bottom:14px; background:var(--red-dim); border:1px solid rgba(224,69,69,0.3); display:flex; gap:10px; align-items:flex-start; animation:shake 0.55s cubic-bezier(0.36,0.07,0.19,0.97) 0.2s both; }
 @keyframes shake { 0%{transform:translateX(0)} 15%{transform:translateX(-7px)} 30%{transform:translateX(6px)} 45%{transform:translateX(-4px)} 60%{transform:translateX(3px)} 100%{transform:translateX(0)} }
 .attention-icon { color:var(--red); font-size:13px; margin-top:1px; }
 .attention-msg { font-size:11px; color:#ffc8c8; line-height:1.5; }
@@ -500,6 +510,14 @@ function App() {
         ):isOverdue?React.createElement("div",{className:"attention",key:"att"+displayKey},
           React.createElement("span",{className:"attention-icon"},"⚠"),
           React.createElement("div",{className:"attention-msg"},"Service required — get to this truck when available")
+        ):anyWarn?React.createElement("div",{className:"due-soon-banner",key:"warn"+displayKey},
+          React.createElement("span",{className:"due-soon-icon"},"◎"),
+          React.createElement("div",{className:"due-soon-body"},
+            React.createElement("div",{className:"due-soon-title"},"COMING UP"),
+            ...warnTasks.map(t=>React.createElement("div",{key:t.key,className:"due-soon-item"},
+              t.name+" — "+Math.round(t.rem)+"h away"
+            ))
+          )
         ):null,
         React.createElement("div",{className:"ground-section"},
           React.createElement("div",{className:"ground-section-lbl"},isGrounded?"Status":"Ground Truck"),
