@@ -3,7 +3,7 @@
     {
       "date": "2026-06-15",
       "hours": 655,
-      "technician": "",
+      "technician": "Andy",
       "tasks": [
         {
           "key": "fuel_filter",
