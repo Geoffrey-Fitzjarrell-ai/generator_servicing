@@ -777,10 +777,11 @@ function App() {
       TRUCKS.map(t=>{
         const st=truckStatus(t); const td=fleet[t];
         const cls=["truck-tab", t===selected?"active":"", st!=="none"?"st-"+st:""].filter(Boolean).join(" ");
-        return React.createElement("div",{key:t,className:cls,onClick:(e)=>handleTabClick(t,e)},
-          ...ripples.filter(r=>r.truck===t).map(r=>
+        const tabRipples = ripples.filter(r=>r.truck===t).map(r=>
             React.createElement("div",{key:r.id,className:"tab-ripple",style:{left:r.x-40,top:r.y-40,width:80,height:80}})
-          ),
+          );
+        return React.createElement("div",{key:t,className:cls,onClick:(e)=>handleTabClick(t,e)},
+          ...tabRipples,
           React.createElement("div",{className:"truck-name"},t),
           React.createElement("div",{className:"truck-hours-badge"}, td.hours!=null?td.hours+"h":"—")
         );
@@ -829,6 +830,7 @@ function App() {
       ),
       // RIGHT
       React.createElement("div",{className:"right-panel "+(transitioning?"panel-exit":"panel-enter"), key:"right-"+displayKey, style:{position:"relative"}},
+        showSuccess?React.createElement("div",{className:"success-flash"}):null,
         isGrounded?React.createElement("div",{style:{padding:"20px",color:"#4a3a66",fontSize:12,fontFamily:"var(--mono)",letterSpacing:"0.06em"}},"Maintenance paused — truck is grounded"):React.createElement("div",null,
           React.createElement("div",{className:"section-title"},"Maintenance Schedule"),
           React.createElement("div",{className:"task-list"},
