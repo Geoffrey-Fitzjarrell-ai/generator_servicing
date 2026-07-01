@@ -307,6 +307,57 @@ html, body { height: 100%; background: var(--bg); background-image: var(--bg-dot
   .stat-card:nth-child(2) { animation-delay: 0.08s; }
   .grounded-banner { animation: groundedBreath 3s ease-in-out infinite; }
   .truck-id { transition: color 0.3s ease; }
+
+  /* ── SMOOTH TRANSITIONS ── */
+  @keyframes panelEnter {
+    from { opacity:0; transform:translateX(18px); }
+    to   { opacity:1; transform:translateX(0); }
+  }
+  @keyframes panelExit {
+    from { opacity:1; transform:translateX(0); }
+    to   { opacity:0; transform:translateX(-12px); }
+  }
+  @keyframes slideInRight {
+    from { opacity:0; transform:translateX(22px); }
+    to   { opacity:1; transform:translateX(0); }
+  }
+  @keyframes countPop {
+    0%   { transform:scale(1); }
+    40%  { transform:scale(1.06); }
+    100% { transform:scale(1); }
+  }
+
+  .panel-enter { animation: panelEnter 0.28s cubic-bezier(0.22,1,0.36,1) both; }
+  .panel-exit  { animation: panelExit  0.18s ease forwards; pointer-events:none; }
+
+  /* override task row animation for slide from right */
+  .task-row { animation: slideInRight 0.28s cubic-bezier(0.22,1,0.36,1) both; }
+  .task-row:nth-child(1) { animation-delay:0.04s; }
+  .task-row:nth-child(2) { animation-delay:0.09s; }
+  .task-row:nth-child(3) { animation-delay:0.14s; }
+  .task-row:nth-child(4) { animation-delay:0.19s; }
+  .task-row:nth-child(5) { animation-delay:0.24s; }
+  .task-row:nth-child(6) { animation-delay:0.29s; }
+  .task-row:nth-child(7) { animation-delay:0.34s; }
+
+  /* Truck tab hover lift */
+  .truck-tab { transition: background 0.15s ease, transform 0.15s ease; }
+  .truck-tab:hover:not(.active) { transform: translateY(-1px); }
+  .truck-tab.active { transform: translateY(-1px); }
+  .truck-tab::before { transition: background 0.3s ease, box-shadow 0.3s ease; }
+
+  /* Stat value count pop */
+  .stat-val { transition: color 0.3s ease; }
+  .stat-card { transition: border-color 0.3s ease, background 0.3s ease; }
+
+  /* Gauge fill smooth transition */
+  .gauge-fill-bar { transition: clip-path 0.7s cubic-bezier(0.22,1,0.36,1); }
+
+  /* Status badge color transitions */
+  .badge { transition: background 0.3s ease, color 0.3s ease; }
+
+  /* Truck ID smooth color */
+  .truck-id { transition: color 0.35s ease; }
 </style>
 </head>
 <body>
@@ -375,10 +426,8 @@ function Gauge({ pct, overdue }) {
     // zone gradient (always visible faintly)
     React.createElement("rect", { x:bx, y:by, width:bw, height:bh, rx:4, fill:"url(#zoneGrad)", opacity:0.12 }),
     // actual fill clipped to current level
-    React.createElement("g", { className:"animate-fill" },
-      React.createElement("rect", { x:bx, y:by, width:bw, height:bh, rx:4, fill:"url(#zoneGrad)",
-        clipPath:`url(#fillClip${Math.round(pct*1000)})`, opacity:0.9 })
-    ),
+    React.createElement("rect", { x:bx, y:by, width:bw, height:bh, rx:4, fill:"url(#zoneGrad)",
+      clipPath:`url(#fillClip${Math.round(pct*1000)})`, opacity:0.9, className:"gauge-fill-bar" }),
     // glow on fill top edge
     fillH > 4 ? React.createElement("rect", { x:bx, y:fillY, width:bw, height:3, rx:2, fill:"#fff", opacity:0.15 }) : null,
     // track border
@@ -404,6 +453,10 @@ function App() {
   const [syncedAt,   setSyncedAt]   = useState(null);
   const [logMode,    setLogMode]    = useState(false);
   const [checked,    setChecked]    = useState({});
+  const [transitioning, setTransitioning] = useState(false);
+  const [displayKey,    setDisplayKey]    = useState(0);
+  const [countedHours,  setCountedHours]  = useState(null);
+  const prevHoursRef = React.useRef(null);
 
   async function loadAll() {
     setError(null);
@@ -462,6 +515,24 @@ function App() {
   const anyWarn    = !isGrounded && taskStatus.some(t=>t.status==="warn");
   const gaugePct   = isGrounded ? 0 : taskStatus.reduce((m,t)=>Math.max(m,t.pct),0);
   const isOverdue  = anyOverdue;
+
+  // Animate hours counter
+  useEffect(()=>{
+    if(hours==null){ setCountedHours(null); prevHoursRef.current=null; return; }
+    const start = prevHoursRef.current ?? hours;
+    const end   = hours;
+    if(start===end){ setCountedHours(hours); return; }
+    const dur=600, t0=performance.now();
+    function tick(now){
+      const p=Math.min((now-t0)/dur,1);
+      const ease=1-Math.pow(1-p,3);
+      setCountedHours(Math.round(start+(end-start)*ease));
+      if(p<1) requestAnimationFrame(tick);
+      else prevHoursRef.current=end;
+    }
+    requestAnimationFrame(tick);
+    return ()=>{ prevHoursRef.current=hours; };
+  }, [selected, hours]);
 
   function truckStatus(t){
     const td=fleet[t]; const tl=svcLogs[t]||{};
@@ -522,7 +593,15 @@ function App() {
       TRUCKS.map(t=>{
         const st=truckStatus(t); const td=fleet[t];
         const cls=["truck-tab", t===selected?"active":"", st!=="none"?"st-"+st:""].filter(Boolean).join(" ");
-        return React.createElement("div",{key:t,className:cls,onClick:()=>{setSelected(t);setLogMode(false);setChecked({});}},
+        return React.createElement("div",{key:t,className:cls,onClick:()=>{
+            if(t===selected) return;
+            setTransitioning(true);
+            setTimeout(()=>{
+              setSelected(t);setLogMode(false);setChecked({});
+              setTransitioning(false);
+              setDisplayKey(k=>k+1);
+            }, 180);
+          }},
           React.createElement("div",{className:"truck-name"},t),
           React.createElement("div",{className:"truck-hours-badge"}, td.hours!=null?td.hours+"h":"—")
         );
@@ -531,7 +610,7 @@ function App() {
     // MAIN
     React.createElement("div",{className:"main"},
       // LEFT
-      React.createElement("div",{className:"left-panel"},
+      React.createElement("div",{className:"left-panel "+(transitioning?"panel-exit":"panel-enter"), key:"left-"+displayKey},
         React.createElement("div",{className:"truck-header"},
           React.createElement("div",{className:"truck-id",style:{color:isGrounded?"#9880cc":isOverdue?"var(--red)":anyWarn?"var(--amber)":"var(--text)"}},selected),
           React.createElement("div",{className:"truck-sub"},"HD GEN2 · Japan Fleet")
@@ -547,7 +626,7 @@ function App() {
             React.createElement("div",{className:"stat-card s-neutral"},
               React.createElement("div",{className:"stat-lbl"},"Total Hours"),
               React.createElement("div",{className:"stat-val "+(isOverdue?"c-overdue":anyWarn?"c-warn":"")},
-                hours!=null?hours:"—", hours!=null?React.createElement("span",{className:"unit"},"h"):null
+                countedHours!=null?countedHours:"—", countedHours!=null?React.createElement("span",{className:"unit"},"h"):null
               )
             ),
             React.createElement("div",{className:"stat-card "+(isOverdue?"s-overdue":anyWarn?"s-warn":"s-ok")},
@@ -570,7 +649,7 @@ function App() {
         ):null
       ),
       // RIGHT
-      React.createElement("div",{className:"right-panel"},
+      React.createElement("div",{className:"right-panel "+(transitioning?"panel-exit":"panel-enter"), key:"right-"+displayKey},
         isGrounded?React.createElement("div",{style:{padding:"20px",color:"#4a3a66",fontSize:12,fontFamily:"var(--mono)",letterSpacing:"0.06em"}},"Maintenance paused — truck is grounded"):React.createElement("div",null,
           React.createElement("div",{className:"section-title"},"Maintenance Schedule"),
           React.createElement("div",{className:"task-list"},
