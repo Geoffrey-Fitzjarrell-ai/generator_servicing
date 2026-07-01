@@ -90,14 +90,15 @@
   .status-pip.overdue { background: var(--red); box-shadow: 0 0 4px var(--red); }
 
   /* ── MAIN LAYOUT ── */
-  .main { display: grid; grid-template-columns: 380px 1fr; min-height: calc(100vh - 112px); }
+  .main { display: grid; grid-template-columns: 380px 1fr; height: calc(100vh - 112px); overflow: hidden; }
 
   /* ── LEFT PANEL ── */
   .left-panel {
     border-right: 1px solid var(--border);
     display: flex; flex-direction: column; align-items: center;
-    padding: 36px 28px 28px;
+    padding: 28px 28px 28px;
     background: var(--surface);
+    overflow-y: auto;
   }
   .truck-label {
     font-family: var(--mono); font-size: 22px; font-weight: 700;
@@ -106,8 +107,8 @@
   .truck-sublabel { font-size: 11px; color: var(--text-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 28px; }
 
   /* ── ARC GAUGE ── */
-  .gauge-wrap { position: relative; width: 260px; height: 200px; margin-bottom: 24px; }
-  .gauge-wrap svg { overflow: hidden; }
+  .gauge-wrap { position: relative; width: 260px; height: 155px; margin-bottom: 24px; overflow: hidden; }
+  .gauge-wrap svg { display: block; overflow: hidden; }
 
   /* ── STATS ROW ── */
   .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-bottom: 20px; }
@@ -137,7 +138,7 @@
   .reporter-time { font-family: var(--mono); font-size: 10px; color: var(--text-faint); margin-top: 2px; }
 
   /* ── RIGHT PANEL ── */
-  .right-panel { padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; }
+  .right-panel { padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; overflow-y: auto; }
 
   .panel-section-title {
     font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
@@ -270,67 +271,58 @@ async function writePendingCompletion(entry) {
 
 /* ── ARC GAUGE SVG ── */
 function ArcGauge({ pct, overdue, hours }) {
-  const W = 260, H = 200;
-  const cx = 130, cy = 162, r = 108;
-  const startAngle = Math.PI * 1.1;
-  const endAngle   = Math.PI * 1.9;
-  const totalAngle = endAngle - startAngle;
+  // Semicircle: left → top → right. Center at bottom-center of SVG.
+  // All arc points stay within SVG bounds.
+  const W = 260, H = 155;
+  const cx = 130, cy = 130, r = 108;
 
-  function polar(angle, radius) {
-    return [cx + radius * Math.cos(Math.PI - angle), cy - radius * Math.sin(Math.PI - angle)];
-  }
-  function arc(pct2, radius) {
-    const a = startAngle + totalAngle * Math.min(pct2, 1);
-    const [sx, sy] = polar(startAngle, radius);
-    const [ex, ey] = polar(a, radius);
-    const large = (a - startAngle) > Math.PI ? 1 : 0;
-    return `M ${sx} ${sy} A ${radius} ${radius} 0 ${large} 1 ${ex} ${ey}`;
+  // polar: standard math angle → SVG coords
+  function polar(deg, radius) {
+    const rad = deg * Math.PI / 180;
+    return [cx + radius * Math.cos(rad), cy - radius * Math.sin(rad)];
   }
 
-  const fillColor   = overdue ? "#e05252" : pct > 0.8 ? "#f5a623" : "#4caf7d";
-  const glowColor   = overdue ? "#e0525244" : pct > 0.8 ? "#f5a62344" : "#4caf7d44";
-  const needleAngle = startAngle + totalAngle * Math.min(pct, 1);
-  const [nx, ny]    = polar(needleAngle, 95);
-  const [nb1x, nb1y] = polar(needleAngle + Math.PI/2, 5);
-  const [nb2x, nb2y] = polar(needleAngle - Math.PI/2, 5);
+  // Arc from 180° clockwise to 0° (through 90° = top)
+  // pct 0 = left (180°), pct 1 = right (0°)
+  const startDeg = 180;
+  const currentDeg = 180 - pct * 180;
 
-  // tick marks
+  function arcPath(fromDeg, toDeg, radius) {
+    const [sx, sy] = polar(fromDeg, radius);
+    const [ex, ey] = polar(toDeg, radius);
+    const span = fromDeg - toDeg; // clockwise span
+    const large = span > 180 ? 1 : 0;
+    return `M ${sx} ${sy} A ${radius} ${radius} 0 ${large} 0 ${ex} ${ey}`;
+  }
+
+  const fillColor = overdue ? "#e05252" : pct > 0.8 ? "#f5a623" : "#4caf7d";
+  const glowColor = overdue ? "#e0525244" : pct > 0.8 ? "#f5a62344" : "#4caf7d44";
+  const [nx, ny] = polar(currentDeg, 92);
+  const perpDeg = currentDeg + 90;
+  const [nb1x, nb1y] = polar(perpDeg, 5);
+  const [nb2x, nb2y] = polar(perpDeg + 180, 5);
   const ticks = [0, 0.25, 0.5, 0.75, 1.0];
 
-  return React.createElement("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}` },
-    // background arc track
-    React.createElement("path", { d: arc(1, 100), fill:"none", stroke:"#1a1e28", strokeWidth:18, strokeLinecap:"round" }),
-    // glow layer
-    React.createElement("path", { d: arc(pct, 100), fill:"none", stroke: glowColor, strokeWidth:26, strokeLinecap:"round" }),
-    // fill arc
-    React.createElement("path", { d: arc(pct, 100), fill:"none", stroke: fillColor, strokeWidth:10, strokeLinecap:"round" }),
-    // tick marks
+  return React.createElement("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, style:{overflow:"hidden"} },
+    React.createElement("path", { d: arcPath(180, 0, 100), fill:"none", stroke:"#1a1e28", strokeWidth:16, strokeLinecap:"round" }),
+    React.createElement("path", { d: arcPath(180, currentDeg, 100), fill:"none", stroke:glowColor, strokeWidth:24, strokeLinecap:"round" }),
+    React.createElement("path", { d: arcPath(180, currentDeg, 100), fill:"none", stroke:fillColor, strokeWidth:9, strokeLinecap:"round" }),
     ...ticks.map(t => {
-      const a = startAngle + totalAngle * t;
-      const [ox, oy] = polar(a, 116);
-      const [ix, iy] = polar(a, 124);
-      return React.createElement("line", { key: t, x1:ox, y1:oy, x2:ix, y2:iy, stroke:"#2e3440", strokeWidth: t === 0 || t === 1 ? 2 : 1 });
+      const deg = 180 - t * 180;
+      const [ox, oy] = polar(deg, 113);
+      const [ix, iy] = polar(deg, 122);
+      return React.createElement("line", { key:t, x1:ox, y1:oy, x2:ix, y2:iy, stroke:"#2e3440", strokeWidth: t===0||t===1 ? 2 : 1 });
     }),
-    // needle
-    React.createElement("polygon", {
-      points: `${nx},${ny} ${nb1x},${nb1y} ${cx},${cy} ${nb2x},${nb2y}`,
-      fill: fillColor, opacity: 0.9
-    }),
-    // center cap
+    React.createElement("polygon", { points:`${nx},${ny} ${nb1x},${nb1y} ${cx},${cy} ${nb2x},${nb2y}`, fill:fillColor, opacity:0.9 }),
     React.createElement("circle", { cx, cy, r:8, fill:"#13161e", stroke:"#2e3440", strokeWidth:2 }),
-    React.createElement("circle", { cx, cy, r:3, fill: fillColor }),
-    // hour readout
-    React.createElement("text", { x: cx, y: cy - 28, textAnchor:"middle", fontFamily:"'Space Mono',monospace", fontSize:28, fontWeight:700, fill: fillColor },
+    React.createElement("circle", { cx, cy, r:3, fill:fillColor }),
+    React.createElement("text", { x:cx, y:cy-28, textAnchor:"middle", fontFamily:"'Space Mono',monospace", fontSize:26, fontWeight:700, fill:fillColor },
       hours != null ? hours + "h" : "—"
     ),
-    React.createElement("text", { x: cx, y: cy - 12, textAnchor:"middle", fontFamily:"'Inter',sans-serif", fontSize:10, fill:"#454c5e", letterSpacing:"0.1em" },
-      "GENERATOR HOURS"
-    ),
-    // labels
-    ...["0", "1000"].map((label, i) => {
-      const a = i === 0 ? startAngle : endAngle;
-      const [lx, ly] = polar(a, 135);
-      return React.createElement("text", { key: label, x: lx, y: ly + 4, textAnchor:"middle", fontFamily:"'Space Mono',monospace", fontSize:9, fill:"#454c5e" }, label);
+    React.createElement("text", { x:cx, y:cy-13, textAnchor:"middle", fontFamily:"'Inter',sans-serif", fontSize:9, fill:"#454c5e", letterSpacing:"0.1em" }, "GENERATOR HOURS"),
+    ...["0","1000"].map((label, i) => {
+      const [lx, ly] = polar(i === 0 ? 180 : 0, 127);
+      return React.createElement("text", { key:label, x:lx, y:ly+4, textAnchor:"middle", fontFamily:"'Space Mono',monospace", fontSize:9, fill:"#454c5e" }, label);
     })
   );
 }
@@ -553,41 +545,41 @@ function App() {
                 React.createElement("button", { className:"log-btn cancel", onClick: () => { setLogMode(false); setCheckedTasks({}); } }, "Cancel"),
                 React.createElement("span", { className:"save-note" }, "Check tasks performed above, then save")
               )
-        )
-      )
-    ),
-    // HISTORY LOG
-    React.createElement("div", { className:"history-section" },
-      React.createElement("div", { className:"panel-section-title" }, selected + " — Service Log"),
-      (() => {
-        const entries = (serviceHistory[selected] || []).filter(e => e.date || e.hours).slice().reverse();
-        if (!entries.length) return React.createElement("div", { className:"empty-history" }, "No service records found for this truck.");
-        return React.createElement("table", { className:"history-table" },
-          React.createElement("thead", null,
-            React.createElement("tr", null,
-              React.createElement("th", null, "Date"),
-              React.createElement("th", null, "Hours"),
-              React.createElement("th", null, "Technician"),
-              React.createElement("th", null, "Work Performed")
-            )
-          ),
-          React.createElement("tbody", null,
-            entries.map((e, i) =>
-              React.createElement("tr", { key: i },
-                React.createElement("td", { className:"history-date" }, e.date || "—"),
-                React.createElement("td", { className:"history-hours" }, e.hours != null ? e.hours + "h" : "—"),
-                React.createElement("td", { className:"history-tech" }, e.technician || "—"),
-                React.createElement("td", null,
-                  React.createElement("div", { className:"history-tasks" },
-                    ...(e.tasks || []).map(t => React.createElement("span", { key:t.key, className:"history-task-tag" }, t.label)),
-                    ...(e.notes || []).map((n,ni) => React.createElement("span", { key:"n"+ni, className:"history-note-tag" }, n))
+        ),
+        // HISTORY LOG — inside right panel, no blank space
+        React.createElement("div", null,
+          React.createElement("div", { className:"panel-section-title" }, selected + " — Service Log"),
+          (() => {
+            const entries = (serviceHistory[selected] || []).filter(e => e.date || e.hours).slice().reverse();
+            if (!entries.length) return React.createElement("div", { className:"empty-history" }, "No service records found for this truck.");
+            return React.createElement("table", { className:"history-table" },
+              React.createElement("thead", null,
+                React.createElement("tr", null,
+                  React.createElement("th", null, "Date"),
+                  React.createElement("th", null, "Hours"),
+                  React.createElement("th", null, "Technician"),
+                  React.createElement("th", null, "Work Performed")
+                )
+              ),
+              React.createElement("tbody", null,
+                entries.map((e, i) =>
+                  React.createElement("tr", { key: i },
+                    React.createElement("td", { className:"history-date" }, e.date || "—"),
+                    React.createElement("td", { className:"history-hours" }, e.hours != null ? e.hours + "h" : "—"),
+                    React.createElement("td", { className:"history-tech" }, e.technician || "—"),
+                    React.createElement("td", null,
+                      React.createElement("div", { className:"history-tasks" },
+                        ...(e.tasks || []).map(t => React.createElement("span", { key:t.key, className:"history-task-tag" }, t.label)),
+                        ...(e.notes || []).map((n,ni) => React.createElement("span", { key:"n"+ni, className:"history-note-tag" }, n))
+                      )
+                    )
                   )
                 )
               )
-            )
-          )
-        );
-      })()
+            );
+          })()
+        )
+      )
     )
   );
 }
