@@ -51,32 +51,40 @@ jobs:
                   r'(HD\d+)\s+Generator hours:\s*(\d+)h\s*/\s*Hours scheduled for next change:\s*(\d+)h',
                   re.IGNORECASE
               )
-              updates = {}
+
+              data_path = "data.json"
+              with open(data_path) as f:
+                  data = json.load(f)
+
+              updated = False
               for msg in resp.get("messages", []):
                   ts = float(msg.get("ts", 0))
                   recorded_at = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
+                  posted_by = msg.get("user") or msg.get("bot_id") or None
                   for match in pattern.finditer(msg.get("text", "")):
                       truck_id = match.group(1).upper()
-                      entry = {
-                          "truck_id": truck_id,
-                          "generator_hours": int(match.group(2)),
-                          "hours_until_service": int(match.group(3)),
-                          "recorded_at": recorded_at,
-                      }
-                      updates.setdefault(truck_id, []).append(entry)
+                      generator_hours = int(match.group(2))
+                      hours_until_service = int(match.group(3))
+                      if truck_id not in data:
+                          data[truck_id] = {
+                              "hours": None,
+                              "intervalStart": 0,
+                              "overdue": False,
+                              "technician": "",
+                              "lastUpdated": None,
+                              "postedBy": None,
+                          }
+                      data[truck_id]["hours"] = generator_hours
+                      data[truck_id]["intervalStart"] = hours_until_service
+                      data[truck_id]["overdue"] = hours_until_service <= 0
+                      data[truck_id]["lastUpdated"] = recorded_at
+                      data[truck_id]["postedBy"] = posted_by
+                      updated = True
+                      print(f"Updated {truck_id}: {generator_hours}h, next service in {hours_until_service}h")
 
-              if updates:
-                  os.makedirs("data", exist_ok=True)
-                  for truck_id, entries in updates.items():
-                      path = f"data/{truck_id}.json"
-                      existing = []
-                      if os.path.exists(path):
-                          with open(path) as f:
-                              existing = json.load(f)
-                      existing.extend(entries)
-                      with open(path, "w") as f:
-                          json.dump(existing, f, indent=2)
-                      print(f"Updated {path} with {len(entries)} new reading(s).")
+              if updated:
+                  with open(data_path, "w") as f:
+                      json.dump(data, f, indent=2)
               else:
                   print("No generator-hour messages found.")
 
@@ -113,7 +121,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/ pending_completions.json 2>/dev/null || git add data/
+          git add data.json pending_completions.json 2>/dev/null || git add data.json
           if git diff --cached --quiet; then
             echo "Nothing to commit."
           else
