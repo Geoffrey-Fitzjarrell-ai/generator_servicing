@@ -2,7 +2,7 @@
   "HD6": {
     "hours": 1510.7,
     "intervalStart": 0,
-    "overdue": true,
+    "overdue": false,
     "technician": "Kouta Inoue",
     "lastUpdated": "2026-06-30T11:36:32Z",
     "postedBy": {
@@ -21,7 +21,7 @@
   "HD8": {
     "hours": 1377,
     "intervalStart": 0,
-    "overdue": true,
+    "overdue": false,
     "technician": "Ryo Suzuki",
     "lastUpdated": "2026-06-30T11:33:57Z",
     "postedBy": {
@@ -32,7 +32,7 @@
   "HD9": {
     "hours": 1416,
     "intervalStart": 0,
-    "overdue": true,
+    "overdue": false,
     "technician": "Kaede Fujiwara",
     "lastUpdated": "2026-06-30T11:13:56Z",
     "postedBy": {
@@ -43,7 +43,7 @@
   "HD10": {
     "hours": 1479,
     "intervalStart": 0,
-    "overdue": true,
+    "overdue": false,
     "technician": "Takumi Arimura",
     "lastUpdated": "2026-07-01T00:18:12Z",
     "postedBy": {
