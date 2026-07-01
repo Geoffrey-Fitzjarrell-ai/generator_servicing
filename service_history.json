@@ -35,8 +35,20 @@
       "notes": []
     },
     {
+      "date": "2026-05-25",
+      "hours": 1228,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    },
+    {
       "date": "2026-06-22",
-      "hours": 1205,
+      "hours": 1478,
       "technician": "Geoff Fitzjarrell",
       "tasks": [
         {
@@ -50,18 +62,6 @@
         {
           "key": "airfilter_clean",
           "label": "Air filter cleaning"
-        }
-      ],
-      "notes": []
-    },
-    {
-      "date": null,
-      "hours": 1465,
-      "technician": "Geoff Fitzjarrell",
-      "tasks": [
-        {
-          "key": "oil_filter",
-          "label": "Oil / filter change"
         }
       ],
       "notes": []
