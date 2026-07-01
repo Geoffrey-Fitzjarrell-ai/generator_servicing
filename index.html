@@ -358,6 +358,104 @@ html, body { height: 100%; background: var(--bg); background-image: var(--bg-dot
 
   /* Truck ID smooth color */
   .truck-id { transition: color 0.35s ease; }
+
+  /* ── EXTENDED ANIMATIONS ── */
+
+  /* Scanline sweep */
+  .scanline {
+    position:fixed; left:0; right:0; height:2px; z-index:999; pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(74,124,245,0.4),rgba(240,165,0,0.3),transparent);
+    animation: scanSweep 9s linear infinite;
+  }
+  @keyframes scanSweep {
+    0%   { top:-2px; opacity:0; }
+    3%   { opacity:1; }
+    97%  { opacity:0.3; }
+    100% { top:100vh; opacity:0; }
+  }
+
+  /* Left panel overdue glow pulse */
+  .left-panel.is-overdue {
+    animation: panelOverdueGlow 2.8s ease-in-out infinite;
+  }
+  @keyframes panelOverdueGlow {
+    0%,100% { box-shadow: inset -1px 0 0 var(--border); }
+    50%     { box-shadow: inset -1px 0 30px rgba(224,69,69,0.18), inset 0 0 40px rgba(224,69,69,0.07); }
+  }
+
+  /* Attention banner shake on mount */
+  @keyframes shake {
+    0%  { transform:translateX(0); }
+    15% { transform:translateX(-7px); }
+    30% { transform:translateX(6px); }
+    45% { transform:translateX(-4px); }
+    60% { transform:translateX(3px); }
+    75% { transform:translateX(-2px); }
+    100%{ transform:translateX(0); }
+  }
+  .attention { animation: shake 0.55s cubic-bezier(0.36,0.07,0.19,0.97) 0.2s both; }
+
+  /* Grounded flicker */
+  @keyframes flicker {
+    0%,89%,100% { opacity:1; }
+    90%  { opacity:0.35; }
+    91%  { opacity:1; }
+    93%  { opacity:0.5; }
+    94%  { opacity:1; }
+    96%  { opacity:0.7; }
+    97%  { opacity:1; }
+  }
+  .grounded-banner { animation: flicker 5s ease-in-out infinite, groundedBreath 3s ease-in-out infinite; }
+
+  /* 3D tab ripple */
+  .tab-ripple {
+    position:absolute; border-radius:50%; pointer-events:none;
+    background:radial-gradient(circle, rgba(240,165,0,0.35) 0%, transparent 70%);
+    transform:scale(0) translateZ(0);
+    animation: tabRipple3D 0.6s cubic-bezier(0.22,1,0.36,1) forwards;
+  }
+  @keyframes tabRipple3D {
+    0%   { transform: scale(0) rotateX(40deg); opacity:1; }
+    60%  { opacity:0.6; }
+    100% { transform: scale(3.5) rotateX(0deg); opacity:0; }
+  }
+  .truck-tab { perspective: 400px; overflow:hidden; }
+
+  /* Task flash on status change */
+  @keyframes taskFlash {
+    0%   { background: rgba(240,165,0,0.22); }
+    100% { background: transparent; }
+  }
+  .task-flash { animation: taskFlash 0.7s ease forwards !important; }
+
+  /* Success flash overlay */
+  .success-flash {
+    position:absolute; inset:0; border-radius:var(--radius);
+    background:linear-gradient(135deg, rgba(61,168,112,0.18), rgba(61,168,112,0.04));
+    border:1px solid rgba(61,168,112,0.5);
+    pointer-events:none; z-index:10;
+    animation: successFade 1.4s cubic-bezier(0.22,1,0.36,1) forwards;
+  }
+  @keyframes successFade {
+    0%   { opacity:0; transform:scale(0.98); }
+    15%  { opacity:1; transform:scale(1); }
+    100% { opacity:0; transform:scale(1.01); }
+  }
+  .right-panel { position:relative; }
+
+  /* Gauge rise from 0 */
+  @keyframes gaugeRise {
+    from { clip-path: inset(100% 0 0 0); }
+    to   { clip-path: inset(0% 0 0 0); }
+  }
+  .gauge-fill-bar { animation: gaugeRise 0.9s cubic-bezier(0.22,1,0.36,1) both 0.1s; }
+
+  /* Background grid drift */
+  @keyframes bgDrift {
+    0%   { background-position: 0px 0px; }
+    100% { background-position: 20px 20px; }
+  }
+  body.drifting { animation: bgDrift 0.5s ease forwards; }
 </style>
 </head>
 <body>
@@ -442,6 +540,41 @@ function Gauge({ pct, overdue }) {
   );
 }
 
+
+function ParticleCanvas() {
+  const canvasRef = React.useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if(!canvas) return;
+    const resize = () => { canvas.width=window.innerWidth; canvas.height=window.innerHeight; };
+    resize();
+    window.addEventListener('resize', resize);
+    const ctx = canvas.getContext('2d');
+    const N = 55;
+    const pts = Array.from({length:N}, () => ({
+      x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+      vx:(Math.random()-0.5)*0.18, vy:(Math.random()-0.5)*0.18,
+      r: Math.random()*1.2+0.4,
+      o: Math.random()*0.12+0.04,
+      c: Math.random() > 0.6 ? '74,124,245' : '240,165,0',
+    }));
+    let id;
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pts.forEach(p => {
+        p.x=(p.x+p.vx+canvas.width)%canvas.width;
+        p.y=(p.y+p.vy+canvas.height)%canvas.height;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(${p.c},${p.o})`; ctx.fill();
+      });
+      id = requestAnimationFrame(draw);
+    }
+    draw();
+    return () => { cancelAnimationFrame(id); window.removeEventListener('resize',resize); };
+  }, []);
+  return React.createElement('canvas',{ref:canvasRef,style:{position:'fixed',top:0,left:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:0}});
+}
+
 /* ── APP ── */
 function App() {
   const [fleet,      setFleet]      = useState(null);
@@ -453,10 +586,15 @@ function App() {
   const [syncedAt,   setSyncedAt]   = useState(null);
   const [logMode,    setLogMode]    = useState(false);
   const [checked,    setChecked]    = useState({});
-  const [transitioning, setTransitioning] = useState(false);
-  const [displayKey,    setDisplayKey]    = useState(0);
-  const [countedHours,  setCountedHours]  = useState(null);
-  const prevHoursRef = React.useRef(null);
+  const [transitioning,  setTransitioning]  = useState(false);
+  const [displayKey,     setDisplayKey]     = useState(0);
+  const [countedHours,   setCountedHours]   = useState(null);
+  const [showSuccess,    setShowSuccess]    = useState(false);
+  const [ripples,        setRipples]        = useState([]);
+  const [syncAgo,        setSyncAgo]        = useState('');
+  const [flashedTasks,   setFlashedTasks]   = useState({});
+  const prevHoursRef   = React.useRef(null);
+  const prevStatusRef  = React.useRef({});
 
   async function loadAll() {
     setError(null);
@@ -483,6 +621,18 @@ function App() {
   }
 
   useEffect(()=>{ loadAll(); },[]);
+
+  // Live sync clock
+  useEffect(()=>{
+    function updateAgo(){
+      if(!syncedAt){ setSyncAgo(''); return; }
+      const mins = Math.floor((Date.now()-syncedAt.getTime())/60000);
+      setSyncAgo(mins===0?'just now':mins===1?'1 min ago':mins+' min ago');
+    }
+    updateAgo();
+    const t = setInterval(updateAgo, 30000);
+    return ()=>clearInterval(t);
+  },[syncedAt]);
 
   if(!loaded) return React.createElement("div",{className:"full-center"},
     React.createElement("div",{style:{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"#38465a",letterSpacing:"0.12em"}},"LOADING FLEET DATA...")
@@ -515,6 +665,17 @@ function App() {
   const anyWarn    = !isGrounded && taskStatus.some(t=>t.status==="warn");
   const gaugePct   = isGrounded ? 0 : taskStatus.reduce((m,t)=>Math.max(m,t.pct),0);
   const isOverdue  = anyOverdue;
+
+  // Track task status changes for flash effect
+  useEffect(()=>{
+    const prev = prevStatusRef.current;
+    const flashed = {};
+    taskStatus.forEach(t=>{
+      if(prev[t.key] && prev[t.key]!==t.status) flashed[t.key]=Date.now();
+    });
+    if(Object.keys(flashed).length) setFlashedTasks(f=>({...f,...flashed}));
+    prevStatusRef.current = Object.fromEntries(taskStatus.map(t=>[t.key,t.status]));
+  });
 
   // Animate hours counter
   useEffect(()=>{
@@ -551,6 +712,8 @@ function App() {
     try{ localStorage.setItem("svc:"+selected,JSON.stringify(newLog)); } catch(e){}
     if(done.length) writePending({truck:selected,tasks:done,postedBy:truck.postedBy,loggedAt:new Date().toISOString()});
     setChecked({}); setLogMode(false);
+    setShowSuccess(true);
+    setTimeout(()=>setShowSuccess(false),1400);
   }
 
   const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"GUIDELINE"};
@@ -573,7 +736,28 @@ function App() {
 
   const histEntries=(svcHistory[selected]||[]).filter(e=>e.date||e.hours).slice().reverse();
 
+  function handleTabClick(t, e){
+    if(t===selected) return;
+    // 3D ripple
+    const rect=e.currentTarget.getBoundingClientRect();
+    const x=e.clientX-rect.left; const y=e.clientY-rect.top;
+    const id=Date.now();
+    setRipples(r=>[...r,{id,x,y,truck:t}]);
+    setTimeout(()=>setRipples(r=>r.filter(rp=>rp.id!==id)),700);
+    // Background drift
+    document.body.classList.add('drifting');
+    setTimeout(()=>document.body.classList.remove('drifting'),500);
+    // Transition
+    setTransitioning(true);
+    setTimeout(()=>{
+      setSelected(t);setLogMode(false);setChecked({});
+      setTransitioning(false);setDisplayKey(k=>k+1);
+    },180);
+  }
+
   return React.createElement("div",null,
+    React.createElement(ParticleCanvas,null),
+    React.createElement("div",{className:"scanline"}),
     // HEADER
     React.createElement("header",{className:"header"},
       React.createElement("div",{className:"header-brand"},
@@ -583,7 +767,7 @@ function App() {
       React.createElement("div",{className:"header-right"},
         React.createElement("div",{className:"sync-indicator"},
           React.createElement("div",{className:"sync-dot"}),
-          React.createElement("span",{className:"sync-time"}, syncedAt?"SYNCED "+syncedAt.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"—")
+          React.createElement("span",{className:"sync-time"}, syncedAt?(syncAgo||"just now"):"—")
         ),
         React.createElement("button",{className:"btn-ghost",onClick:loadAll},"↻ REFRESH")
       )
@@ -593,15 +777,10 @@ function App() {
       TRUCKS.map(t=>{
         const st=truckStatus(t); const td=fleet[t];
         const cls=["truck-tab", t===selected?"active":"", st!=="none"?"st-"+st:""].filter(Boolean).join(" ");
-        return React.createElement("div",{key:t,className:cls,onClick:()=>{
-            if(t===selected) return;
-            setTransitioning(true);
-            setTimeout(()=>{
-              setSelected(t);setLogMode(false);setChecked({});
-              setTransitioning(false);
-              setDisplayKey(k=>k+1);
-            }, 180);
-          }},
+        return React.createElement("div",{key:t,className:cls,onClick:(e)=>handleTabClick(t,e)},
+          ...ripples.filter(r=>r.truck===t).map(r=>
+            React.createElement("div",{key:r.id,className:"tab-ripple",style:{left:r.x-40,top:r.y-40,width:80,height:80}})
+          ),
           React.createElement("div",{className:"truck-name"},t),
           React.createElement("div",{className:"truck-hours-badge"}, td.hours!=null?td.hours+"h":"—")
         );
@@ -610,7 +789,7 @@ function App() {
     // MAIN
     React.createElement("div",{className:"main"},
       // LEFT
-      React.createElement("div",{className:"left-panel "+(transitioning?"panel-exit":"panel-enter"), key:"left-"+displayKey},
+      React.createElement("div",{className:"left-panel "+(isOverdue?"is-overdue ":"")+(isGrounded?"is-grounded ":"")+(transitioning?"panel-exit":"panel-enter"), key:"left-"+displayKey},
         React.createElement("div",{className:"truck-header"},
           React.createElement("div",{className:"truck-id",style:{color:isGrounded?"#9880cc":isOverdue?"var(--red)":anyWarn?"var(--amber)":"var(--text)"}},selected),
           React.createElement("div",{className:"truck-sub"},"HD GEN2 · Japan Fleet")
@@ -649,12 +828,12 @@ function App() {
         ):null
       ),
       // RIGHT
-      React.createElement("div",{className:"right-panel "+(transitioning?"panel-exit":"panel-enter"), key:"right-"+displayKey},
+      React.createElement("div",{className:"right-panel "+(transitioning?"panel-exit":"panel-enter"), key:"right-"+displayKey, style:{position:"relative"}},
         isGrounded?React.createElement("div",{style:{padding:"20px",color:"#4a3a66",fontSize:12,fontFamily:"var(--mono)",letterSpacing:"0.06em"}},"Maintenance paused — truck is grounded"):React.createElement("div",null,
           React.createElement("div",{className:"section-title"},"Maintenance Schedule"),
           React.createElement("div",{className:"task-list"},
             taskStatus.map(task=>
-              React.createElement("div",{key:task.key,className:"task-row r-"+task.status},
+              React.createElement("div",{key:task.key,className:"task-row r-"+task.status+(flashedTasks[task.key]?" task-flash":"")},
                 React.createElement("div",{className:"task-name"},task.name),
                 React.createElement("div",{className:"task-interval"},task.interval+"h"),
                 React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
