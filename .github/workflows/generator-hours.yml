@@ -8,123 +8,152 @@ on:
 jobs:
   parse-and-commit:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Fetch and parse Slack messages + process pending completions
+      - name: Run parser
         env:
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           python3 - <<'EOF'
-          import os, json, re, urllib.request, urllib.parse
+          import os, json, re, base64, urllib.request, urllib.parse
           from datetime import datetime, timezone, timedelta
 
-          token = os.environ["SLACK_TOKEN"]
-          channel = "C08L1TWLU14"
-          oldest = str((datetime.now(timezone.utc) - timedelta(hours=6)).timestamp())
+          SLACK_TOKEN = os.environ["SLACK_TOKEN"]
+          GH_TOKEN    = os.environ["GH_TOKEN"]
+          CHANNEL     = "C08L1TWLU14"
+          REPO        = "Geoffrey-Fitzjarrell-ai/generator_servicing"
+          NOW         = datetime.now(timezone.utc)
 
           def slack_get(method, params):
               url = f"https://slack.com/api/{method}?" + urllib.parse.urlencode(params)
-              req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+              req = urllib.request.Request(url, headers={"Authorization": f"Bearer {SLACK_TOKEN}"})
               with urllib.request.urlopen(req) as r:
                   return json.loads(r.read())
 
-          def slack_post(method, payload):
+          def slack_post(payload):
               data = json.dumps(payload).encode()
               req = urllib.request.Request(
-                  f"https://slack.com/api/{method}",
-                  data=data,
-                  headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+                  "https://slack.com/api/chat.postMessage", data=data,
+                  headers={"Authorization": f"Bearer {SLACK_TOKEN}", "Content-Type": "application/json"},
               )
               with urllib.request.urlopen(req) as r:
                   return json.loads(r.read())
 
-          # ── 1. Parse generator hours from Slack ──────────────────────────────
-          resp = slack_get("conversations.history", {"channel": channel, "oldest": oldest, "limit": 200})
-          if not resp.get("ok"):
-              print(f"Slack error: {resp.get('error')}")
+          def gh_get(path):
+              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
+              req = urllib.request.Request(url, headers={
+                  "Authorization": f"Bearer {GH_TOKEN}",
+                  "Accept": "application/vnd.github+json",
+              })
+              with urllib.request.urlopen(req) as r:
+                  resp = json.loads(r.read())
+              return json.loads(base64.b64decode(resp["content"]).decode()), resp["sha"]
+
+          def gh_put(path, content, sha, message):
+              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
+              payload = {
+                  "message": message,
+                  "content": base64.b64encode(json.dumps(content, indent=2).encode()).decode(),
+                  "sha": sha,
+              }
+              req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={
+                  "Authorization": f"Bearer {GH_TOKEN}",
+                  "Accept": "application/vnd.github+json",
+                  "Content-Type": "application/json",
+              }, method="PUT")
+              with urllib.request.urlopen(req) as r:
+                  return json.loads(r.read())
+
+          def get_user_info(user_id):
+              resp = slack_get("users.info", {"user": user_id})
+              if resp.get("ok"):
+                  p = resp["user"].get("profile", {})
+                  name = p.get("display_name") or p.get("real_name") or user_id
+                  return {"id": user_id, "name": name}
+              return {"id": user_id, "name": user_id}
+
+          # ── 1. Parse generator hours from thread replies ──────────────────────
+          pattern = re.compile(r'(HD\d+)\s+Generator hours:\s*(\d+)h', re.IGNORECASE)
+
+          # Look back 24h for threads (shift reports may start earlier in the day),
+          # but only process replies posted in the last 6h.
+          oldest_threads = str((NOW - timedelta(hours=24)).timestamp())
+          oldest_replies = str((NOW - timedelta(hours=6)).timestamp())
+
+          hist = slack_get("conversations.history", {
+              "channel": CHANNEL, "oldest": oldest_threads, "limit": 100,
+          })
+
+          candidates = {}  # truck_id -> {hours, user_id}
+          if hist.get("ok"):
+              for msg in hist.get("messages", []):
+                  if not msg.get("reply_count"):
+                      continue
+                  replies = slack_get("conversations.replies", {
+                      "channel": CHANNEL, "ts": msg["ts"],
+                      "oldest": oldest_replies, "limit": 200,
+                  })
+                  if not replies.get("ok"):
+                      continue
+                  for reply in replies.get("messages", []):
+                      if reply["ts"] == msg["ts"]:
+                          continue  # skip parent message
+                      for m in pattern.finditer(reply.get("text", "")):
+                          truck_id = m.group(1).upper()
+                          hours    = int(m.group(2))
+                          # keep highest value seen across all replies this run
+                          if truck_id not in candidates or hours > candidates[truck_id]["hours"]:
+                              candidates[truck_id] = {"hours": hours, "user_id": reply.get("user")}
           else:
-              pattern = re.compile(
-                  r'(HD\d+)\s+Generator hours:\s*(\d+)h\s*/\s*Hours scheduled for next change:\s*(\d+)h',
-                  re.IGNORECASE
-              )
+              print(f"Slack error: {hist.get('error')}")
 
-              data_path = "data.json"
-              with open(data_path) as f:
-                  data = json.load(f)
-
-              updated = False
-              for msg in resp.get("messages", []):
-                  ts = float(msg.get("ts", 0))
-                  recorded_at = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
-                  posted_by = msg.get("user") or msg.get("bot_id") or None
-                  for match in pattern.finditer(msg.get("text", "")):
-                      truck_id = match.group(1).upper()
-                      generator_hours = int(match.group(2))
-                      hours_until_service = int(match.group(3))
-                      if truck_id not in data:
-                          data[truck_id] = {
-                              "hours": None,
-                              "intervalStart": 0,
-                              "overdue": False,
-                              "technician": "",
-                              "lastUpdated": None,
-                              "postedBy": None,
-                          }
-                      data[truck_id]["hours"] = generator_hours
-                      data[truck_id]["intervalStart"] = hours_until_service
-                      data[truck_id]["overdue"] = hours_until_service <= 0
-                      data[truck_id]["lastUpdated"] = recorded_at
-                      data[truck_id]["postedBy"] = posted_by
-                      updated = True
-                      print(f"Updated {truck_id}: {generator_hours}h, next service in {hours_until_service}h")
-
-              if updated:
-                  with open(data_path, "w") as f:
-                      json.dump(data, f, indent=2)
-              else:
-                  print("No generator-hour messages found.")
+          if candidates:
+              data, sha = gh_get("data.json")
+              changed = False
+              for truck_id, info in candidates.items():
+                  stored = (data.get(truck_id) or {}).get("hours") or 0
+                  if info["hours"] <= stored:
+                      print(f"Skip {truck_id}: {info['hours']}h not higher than stored {stored}h")
+                      continue
+                  user_info = get_user_info(info["user_id"]) if info.get("user_id") else {"id": None, "name": None}
+                  if truck_id not in data:
+                      data[truck_id] = {"hours": None, "intervalStart": 0, "overdue": False,
+                                        "technician": "", "lastUpdated": None, "postedBy": None}
+                  data[truck_id]["hours"]       = info["hours"]
+                  data[truck_id]["lastUpdated"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
+                  data[truck_id]["postedBy"]    = user_info
+                  changed = True
+                  print(f"Updated {truck_id}: {info['hours']}h by {user_info['name']}")
+              if changed:
+                  gh_put("data.json", data, sha,
+                         f"chore: update generator hours {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
+          else:
+              print("No generator-hour replies found.")
 
           # ── 2. Process pending completions ────────────────────────────────────
-          completions_path = "pending_completions.json"
-          if os.path.exists(completions_path):
-              with open(completions_path) as f:
-                  pending = json.load(f)
+          try:
+              pending, p_sha = gh_get("pending_completions.json")
+          except Exception:
+              pending, p_sha = [], None
 
-              remaining = []
+          if pending:
               for entry in pending:
-                  user_id = entry.get("user_id", "")
-                  tasks = entry.get("tasks", [])
-                  if not user_id or not tasks:
-                      continue
+                  truck   = entry.get("truck", "")
+                  tasks   = entry.get("tasks", [])
+                  user_id = (entry.get("postedBy") or {}).get("id", "")
                   task_list = "\n".join(f"• {t}" for t in tasks)
-                  message = f"<@{user_id}> the following tasks have been completed:\n{task_list}"
-                  result = slack_post("chat.postMessage", {"channel": channel, "text": message})
+                  text = f"<@{user_id}> the following tasks have been completed on *{truck}*:\n{task_list}"
+                  result = slack_post({"channel": CHANNEL, "text": text})
                   if result.get("ok"):
-                      print(f"Notified {user_id} of {len(tasks)} completed task(s).")
+                      print(f"Notified {user_id} re: {truck} ({len(tasks)} task(s))")
                   else:
-                      print(f"Failed to notify {user_id}: {result.get('error')} — keeping entry.")
-                      remaining.append(entry)
-
-              with open(completions_path, "w") as f:
-                  json.dump(remaining, f, indent=2)
-              print(f"{len(pending) - len(remaining)} completion(s) processed, {len(remaining)} kept.")
+                      print(f"Failed to notify {user_id}: {result.get('error')}")
+              if p_sha:
+                  gh_put("pending_completions.json", [], p_sha,
+                         f"chore: clear pending completions {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
+              print(f"Processed {len(pending)} completion entry(s).")
           else:
-              print("No pending_completions.json found, skipping.")
+              print("No pending completions.")
 
           EOF
-
-      - name: Commit and push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.json pending_completions.json 2>/dev/null || git add data.json
-          if git diff --cached --quiet; then
-            echo "Nothing to commit."
-          else
-            git commit -m "chore: update generator hours + completions $(date -u +'%Y-%m-%d %H:%M UTC')"
-            git push
-          fi
