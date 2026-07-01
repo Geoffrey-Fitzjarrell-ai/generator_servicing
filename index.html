@@ -89,6 +89,9 @@ html, body { height: 100%; background: var(--bg); background-image: var(--bg-dot
 .truck-tab.st-overdue::before { background:var(--red); box-shadow:0 0 8px var(--red); }
 .truck-tab.st-warn::before { background:var(--amber); }
 .truck-tab.st-ok::before { background:var(--green); }
+  .truck-tab.st-grounded::before { background:#7060a0; box-shadow:0 0 8px #7060a0; }
+  .truck-tab.st-grounded .truck-name { color:#9880cc; }
+  .truck-tab.st-grounded .truck-hours-badge { color:#4a3a66; }
 .truck-tab:last-child { border-right:none; }
 .truck-tab:hover:not(.active) { background:var(--surface2); }
 .truck-name {
@@ -157,6 +160,13 @@ html, body { height: 100%; background: var(--bg); background-image: var(--bg-dot
   background: var(--red-dim); border:1px solid rgba(224,69,69,0.3);
   display:flex; gap:10px; align-items:flex-start;
 }
+  .grounded-banner {
+  padding:16px; border-radius:var(--radius); margin-bottom:14px;
+  background:#1a1228; border:1px solid #7060a0;
+  display:flex; flex-direction:column; gap:6px;
+}
+  .grounded-title { font-family:var(--mono); font-size:12px; font-weight:700; color:#9880cc; letter-spacing:0.1em; }
+  .grounded-note { font-size:11px; color:#6a5a88; line-height:1.5; }
 .attention-icon { color:var(--red); font-size:13px; margin-top:1px; }
 .attention-msg { font-size:11px; color:#ffc8c8; line-height:1.5; }
 
@@ -407,13 +417,15 @@ function App() {
     return {...task,last,hasRec,since,rem,pct,status};
   });
 
-  const anyOverdue = taskStatus.some(t=>t.status==="overdue");
-  const anyWarn    = taskStatus.some(t=>t.status==="warn");
-  const gaugePct   = taskStatus.reduce((m,t)=>Math.max(m,t.pct),0);
+  const isGrounded = !!truck.grounded;
+  const anyOverdue = !isGrounded && taskStatus.some(t=>t.status==="overdue");
+  const anyWarn    = !isGrounded && taskStatus.some(t=>t.status==="warn");
+  const gaugePct   = isGrounded ? 0 : taskStatus.reduce((m,t)=>Math.max(m,t.pct),0);
   const isOverdue  = anyOverdue;
 
   function truckStatus(t){
     const td=fleet[t]; const tl=svcLogs[t]||{};
+    if(td.grounded) return "grounded";
     if(!td.hours) return "none";
     if(TASKS.some(task=>{ const l=tl[task.key]; return l!=null&&(td.hours-l)>=task.interval; })) return "overdue";
     if(TASKS.some(task=>{ const l=tl[task.key]; return l!=null&&(td.hours-l)>=task.interval*0.9; })) return "warn";
@@ -481,7 +493,7 @@ function App() {
       // LEFT
       React.createElement("div",{className:"left-panel"},
         React.createElement("div",{className:"truck-header"},
-          React.createElement("div",{className:"truck-id",style:{color:isOverdue?"var(--red)":anyWarn?"var(--amber)":"var(--text)"}},selected),
+          React.createElement("div",{className:"truck-id",style:{color:isGrounded?"#9880cc":isOverdue?"var(--red)":anyWarn?"var(--amber)":"var(--text)"}},selected),
           React.createElement("div",{className:"truck-sub"},"HD GEN2 · Japan Fleet")
         ),
         React.createElement("div",{className:"gauge-stats-row"},
@@ -504,7 +516,10 @@ function App() {
             )
           )
         ),
-        isOverdue?React.createElement("div",{className:"attention"},
+        isGrounded?React.createElement("div",{className:"grounded-banner"},
+          React.createElement("div",{className:"grounded-title"},"⬡  GROUNDED"),
+          React.createElement("div",{className:"grounded-note"},truck.groundedNote||"Out of service")
+        ):isOverdue?React.createElement("div",{className:"attention"},
           React.createElement("span",{className:"attention-icon"},"⚠"),
           React.createElement("div",{className:"attention-msg"},"Service required — get to this truck when available")
         ):null,
@@ -516,8 +531,7 @@ function App() {
       ),
       // RIGHT
       React.createElement("div",{className:"right-panel"},
-        // TASKS
-        React.createElement("div",null,
+        isGrounded?React.createElement("div",{style:{padding:"20px",color:"#4a3a66",fontSize:12,fontFamily:"var(--mono)",letterSpacing:"0.06em"}},"Maintenance paused — truck is grounded"):React.createElement("div",null,
           React.createElement("div",{className:"section-title"},"Maintenance Schedule"),
           React.createElement("div",{className:"task-list"},
             taskStatus.map(task=>
