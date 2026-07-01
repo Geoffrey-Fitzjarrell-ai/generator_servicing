@@ -1,0 +1,464 @@
+{
+  "HD6": [
+    {
+      "date": "2026-05-08",
+      "hours": 1196.0,
+      "technician": "Junichi Tamagawa",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-22",
+      "hours": 1205.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_clean",
+          "label": "Air filter cleaning"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "HD7": [],
+  "HD8": [
+    {
+      "date": "2026-04-20",
+      "hours": 822.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-05-19",
+      "hours": 998.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-15",
+      "hours": 1206.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_clean",
+          "label": "Air filter cleaning"
+        }
+      ],
+      "notes": [
+        "Bottom cover replaced"
+      ]
+    }
+  ],
+  "HD9": [
+    {
+      "date": "2026-05-16",
+      "hours": 1071.0,
+      "technician": "Junichi Tamagawa",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-11",
+      "hours": 1204.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_clean",
+          "label": "Air filter cleaning"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "HD10": [
+    {
+      "date": "2026-05-16",
+      "hours": 1120.0,
+      "technician": "Junichi Tamagawa",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-01",
+      "hours": 1281.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-15",
+      "hours": 1381.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_clean",
+          "label": "Air filter cleaning"
+        },
+        {
+          "key": "fuel_filter",
+          "label": "Fuel filter change"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "HD11": [
+    {
+      "date": "2026-05-06",
+      "hours": 792.0,
+      "technician": "Junichi Tamagawa",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-01",
+      "hours": 1070.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_clean",
+          "label": "Air filter cleaning"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-17",
+      "hours": null,
+      "technician": null,
+      "tasks": [],
+      "notes": [
+        "Bottom cover replaced"
+      ]
+    },
+    {
+      "date": "2026-06-26",
+      "hours": 1253.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "HD12": [
+    {
+      "date": "2026-05-16",
+      "hours": 283.0,
+      "technician": "Junichi Tamagawa",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-09",
+      "hours": null,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [],
+      "notes": [
+        "Generator bottom cover replaced"
+      ]
+    },
+    {
+      "date": "2026-06-11",
+      "hours": 456.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_clean",
+          "label": "Air filter cleaning"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "HD13": [
+    {
+      "date": "2026-05-16",
+      "hours": 174.0,
+      "technician": "Junichi Tamagawa",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-11",
+      "hours": 456.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_clean",
+          "label": "Air filter cleaning"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "HD14": [
+    {
+      "date": "2026-05-19",
+      "hours": 241.0,
+      "technician": "Junichi Tamagawa",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-11",
+      "hours": 415.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_clean",
+          "label": "Air filter cleaning"
+        }
+      ],
+      "notes": [
+        "Bottom cover replaced"
+      ]
+    }
+  ],
+  "HD15": [
+    {
+      "date": "2026-06-01",
+      "hours": 201.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_clean",
+          "label": "Air filter cleaning"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-11",
+      "hours": 415.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-17",
+      "hours": 441.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "HD16": [
+    {
+      "date": "2026-06-17",
+      "hours": 178.0,
+      "technician": "Jake Albano",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_clean",
+          "label": "Air filter cleaning"
+        },
+        {
+          "key": "fuel_filter",
+          "label": "Fuel filter change"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "HD17": [
+    {
+      "date": "2026-06-02",
+      "hours": 154.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_clean",
+          "label": "Air filter cleaning"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "date": "2026-06-12",
+      "hours": null,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [],
+      "notes": [
+        "Bottom cover replaced"
+      ]
+    }
+  ],
+  "HD18": [
+    {
+      "date": "2026-06-17",
+      "hours": 139.0,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": [
+        "Bottom cover replaced"
+      ]
+    }
+  ]
+}
