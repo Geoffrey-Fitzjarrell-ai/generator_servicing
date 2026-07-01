@@ -47,13 +47,11 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .fleet-row-fill.fs-warn     { background:linear-gradient(90deg,#7a5010,var(--amber)); }
 .fleet-row-fill.fs-ok       { background:linear-gradient(90deg,#0f4028,var(--green)); }
 .fleet-row-fill.fs-grounded { background:linear-gradient(90deg,#2a1845,#7060a0); }
-.fleet-row-fill.fs-nodata   { background:linear-gradient(90deg,var(--surface3),var(--border2)); }
 .fleet-row-pct { font-family:var(--mono); font-size:11px; font-weight:700; width:36px; flex-shrink:0; text-align:right; }
 .fs-overdue  .fleet-row-pct { color:var(--red); }
 .fs-warn     .fleet-row-pct { color:var(--amber); }
 .fs-ok       .fleet-row-pct { color:var(--green); }
 .fs-grounded .fleet-row-pct { color:#9880cc; }
-.fs-nodata   .fleet-row-pct { color:var(--text-faint); }
 
 /* TRUCK STRIP */
 .truck-strip { display:flex; background:var(--surface); border-bottom:1px solid var(--border); overflow-x:auto; scrollbar-width:none; }
@@ -408,9 +406,8 @@ function App() {
     else if(st==="warn") acc.warn++;
     else if(st==="ok") acc.ok++;
     else if(st==="grounded") acc.grounded++;
-    else acc.nodata++;
     return acc;
-  },{overdue:0,warn:0,ok:0,grounded:0,nodata:0});
+  },{overdue:0,warn:0,ok:0,grounded:0});
 
   const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"GUIDELINE"};
   const overdueTasks=taskStatus.filter(t=>t.status==="overdue");
@@ -451,7 +448,6 @@ function App() {
           {key:"warn",     label:"Due Soon", count:fleetCounts.warn},
           {key:"ok",       label:"OK",       count:fleetCounts.ok},
           {key:"grounded", label:"Grounded", count:fleetCounts.grounded},
-          {key:"nodata",   label:"No Data",  count:fleetCounts.nodata},
         ].map(s=>{
           const pct=Math.round(s.count/TRUCKS.length*100);
           return React.createElement("div",{key:s.key,className:"fleet-row fs-"+s.key},
