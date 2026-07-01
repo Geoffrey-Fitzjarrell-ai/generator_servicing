@@ -213,6 +213,24 @@ async function writePending(entry) {
   await fetch(url,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});
 }
 
+async function writeGrounded(truck, grounded, note) {
+  if(GITHUB_TOKEN==="PASTE_YOUR_GITHUB_PAT_HERE") return false;
+  const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data.json`;
+  const h={"Authorization":"Bearer "+GITHUB_TOKEN,"Accept":"application/vnd.github+json"};
+  try {
+    const r=await fetch(url,{headers:h});
+    if(!r.ok) return false;
+    const f=await r.json();
+    const data=JSON.parse(b64d(f.content.replace(/\n/g,"")));
+    data[truck].grounded=grounded;
+    data[truck].groundedNote=note||"Under repair";
+    if(!grounded){ delete data[truck].grounded; delete data[truck].groundedNote; }
+    const body={message:(grounded?"Ground ":"Unground ")+truck,content:b64e(JSON.stringify(data,null,2)),sha:f.sha};
+    const res=await fetch(url,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});
+    return res.ok;
+  } catch(e){ return false; }
+}
+
 function Gauge({ pct, overdue }) {
   const W=52,H=170,bx=18,bw=20,by=8,bh=148;
   const fillH=Math.max(0,Math.min(bh,bh*pct));
@@ -251,7 +269,9 @@ function App() {
   const [syncAgo,    setSyncAgo]    = useState('');
   const [logMode,    setLogMode]    = useState(false);
   const [checked,    setChecked]    = useState({});
-  const [showSuccess,setShowSuccess]= useState(false);
+  const [showSuccess,   setShowSuccess]   = useState(false);
+  const [groundingNote, setGroundingNote] = useState('');
+  const [groundingBusy, setGroundingBusy] = useState(false);
   const [transitioning,setTransitioning]=useState(false);
   const [displayKey, setDisplayKey] = useState(0);
   const [countedHours,setCountedHours]=useState(null);
@@ -337,6 +357,17 @@ function App() {
     return "ok";
   }
 
+  async function handleToggleGrounded(){
+    setGroundingBusy(true);
+    const nowGrounded = !truck.grounded;
+    const ok = await writeGrounded(selected, nowGrounded, groundingNote||"Under repair");
+    if(ok){
+      setFleet(f=>({...f,[selected]:{...f[selected],grounded:nowGrounded,groundedNote:groundingNote||"Under repair"}}));
+      setGroundingNote('');
+    }
+    setGroundingBusy(false);
+  }
+
   function handleSave(){
     if(!hours)return;
     const newLog={...log};const done=[];
@@ -347,6 +378,16 @@ function App() {
     setChecked({});setLogMode(false);
     setShowSuccess(true);setTimeout(()=>setShowSuccess(false),1400);
   }
+
+  const fleetCounts = TRUCKS.reduce((acc,t)=>{
+    const st=truckStatus(t);
+    if(st==="overdue") acc.overdue++;
+    else if(st==="warn") acc.warn++;
+    else if(st==="ok") acc.ok++;
+    else if(st==="grounded") acc.grounded++;
+    else acc.nodata++;
+    return acc;
+  },{overdue:0,warn:0,ok:0,grounded:0,nodata:0});
 
   const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"GUIDELINE"};
   const overdueTasks=taskStatus.filter(t=>t.status==="overdue");
@@ -379,8 +420,19 @@ function App() {
         React.createElement("button",{className:"btn-ghost",onClick:loadAll},"↻ REFRESH")
       )
     ),
+    React.createElement("div",{className:"fleet-bar"},
+      React.createElement("span",{className:"fleet-bar-label"},"Fleet"),
+      fleetCounts.overdue>0?React.createElement("div",{className:"fleet-stat fs-overdue"},React.createElement("div",{className:"fleet-stat-dot"}),fleetCounts.overdue+" OVERDUE"):null,
+      fleetCounts.warn>0?React.createElement("div",{className:"fleet-stat fs-warn"},React.createElement("div",{className:"fleet-stat-dot"}),fleetCounts.warn+" DUE SOON"):null,
+      fleetCounts.ok>0?React.createElement("div",{className:"fleet-stat fs-ok"},React.createElement("div",{className:"fleet-stat-dot"}),fleetCounts.ok+" OK"):null,
+      fleetCounts.grounded>0?React.createElement("div",{className:"fleet-stat fs-grounded"},React.createElement("div",{className:"fleet-stat-dot"}),fleetCounts.grounded+" GROUNDED"):null,
+      fleetCounts.nodata>0?React.createElement("div",{className:"fleet-stat fs-nodata"},React.createElement("div",{className:"fleet-stat-dot"}),fleetCounts.nodata+" NO DATA"):null
+    ),
     React.createElement("nav",{className:"truck-strip"},
-      TRUCKS.map(t=>{
+      [...TRUCKS].sort((a,b)=>{
+        const order={overdue:0,warn:1,ok:2,none:3,grounded:4};
+        return (order[truckStatus(a)]??3)-(order[truckStatus(b)]??3);
+      }).map(t=>{
         const st=truckStatus(t);const td=fleet[t];
         const cls=["truck-tab",t===selected?"active":"",st!=="none"?"st-"+st:""].filter(Boolean).join(" ");
         return React.createElement("div",{key:t,className:cls,onClick:()=>handleTabClick(t)},
@@ -419,6 +471,12 @@ function App() {
           React.createElement("span",{className:"attention-icon"},"⚠"),
           React.createElement("div",{className:"attention-msg"},"Service required — get to this truck when available")
         ):null,
+        React.createElement("div",{style:{marginTop:"auto",paddingTop:16}},
+          !isGrounded?React.createElement(React.Fragment,null,
+            React.createElement("input",{type:"text",className:"ground-note-input",placeholder:"Reason (e.g. Under repair)",value:groundingNote,onChange:e=>setGroundingNote(e.target.value)}),
+            React.createElement("button",{className:"ground-btn do-ground",disabled:groundingBusy,onClick:handleToggleGrounded},groundingBusy?"UPDATING...":"⬡  MARK AS GROUNDED")
+          ):React.createElement("button",{className:"ground-btn do-unground",disabled:groundingBusy,onClick:handleToggleGrounded},groundingBusy?"UPDATING...":"↑  RETURN TO SERVICE")
+        ),
         truck.postedBy?React.createElement("div",{className:"reporter"},
           React.createElement("div",{className:"reporter-lbl"},"Last reported by"),
           React.createElement("div",{className:"reporter-name"},truck.postedBy.name||truck.technician),
