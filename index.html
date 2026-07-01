@@ -144,6 +144,7 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .task-row.r-overdue { border-left-color:var(--red); background:#160d0d; }
 .task-row.r-warn    { border-left-color:var(--amber); }
 .task-row.r-ok      { border-left-color:var(--green); }
+.task-row.r-no_record { border-left-color:#1e3050; }
 .task-name { font-size:14px; color:var(--text); }
 .task-interval { font-family:var(--mono); font-size:12px; color:var(--text-faint); }
 .badge { font-family:var(--mono); font-size:11px; font-weight:700; padding:3px 7px; border-radius:3px; text-align:center; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; transition:background 0.3s, color 0.3s; }
@@ -151,7 +152,7 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .badge.warn      { background:var(--amber-dim); color:var(--amber); }
 .badge.overdue   { background:var(--red-dim);   color:var(--red); animation:overdueFlash 2.2s ease-in-out infinite; }
 @keyframes overdueFlash { 0%,100%{opacity:1} 50%{opacity:0.45} }
-.badge.no_record { background:var(--blue-dim); color:var(--blue); border:1px solid rgba(74,124,245,0.3); }
+.badge.no_record { background:#141c2a; color:#5a7a9a; border:1px solid #1e3050; letter-spacing:0.06em; }
 .badge.unknown   { background:var(--surface); color:var(--text-faint); }
 
 .task-check { width:18px; height:18px; border-radius:3px; border:1px solid var(--border2); background:var(--surface); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.12s; flex-shrink:0; }
@@ -419,7 +420,7 @@ function App() {
     return acc;
   },{overdue:0,warn:0,ok:0,grounded:0});
 
-  const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"GUIDELINE"};
+  const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"UPCOMING"};
   const overdueTasks=taskStatus.filter(t=>t.status==="overdue");
   const warnTasks=taskStatus.filter(t=>t.status==="warn");
   const histEntries=(svcHistory[selected]||[]).filter(e=>e.date||e.hours).slice().reverse();
