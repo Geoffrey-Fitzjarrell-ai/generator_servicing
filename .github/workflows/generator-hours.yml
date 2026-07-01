@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch and parse Slack messages
+      - name: Fetch and parse Slack messages + process pending completions
         env:
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         run: |
@@ -32,45 +32,80 @@ jobs:
               with urllib.request.urlopen(req) as r:
                   return json.loads(r.read())
 
+          def slack_post(method, payload):
+              data = json.dumps(payload).encode()
+              req = urllib.request.Request(
+                  f"https://slack.com/api/{method}",
+                  data=data,
+                  headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+              )
+              with urllib.request.urlopen(req) as r:
+                  return json.loads(r.read())
+
+          # ── 1. Parse generator hours from Slack ──────────────────────────────
           resp = slack_get("conversations.history", {"channel": channel, "oldest": oldest, "limit": 200})
           if not resp.get("ok"):
               print(f"Slack error: {resp.get('error')}")
-              exit(0)
+          else:
+              pattern = re.compile(
+                  r'(HD\d+)\s+Generator hours:\s*(\d+)h\s*/\s*Hours scheduled for next change:\s*(\d+)h',
+                  re.IGNORECASE
+              )
+              updates = {}
+              for msg in resp.get("messages", []):
+                  ts = float(msg.get("ts", 0))
+                  recorded_at = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
+                  for match in pattern.finditer(msg.get("text", "")):
+                      truck_id = match.group(1).upper()
+                      entry = {
+                          "truck_id": truck_id,
+                          "generator_hours": int(match.group(2)),
+                          "hours_until_service": int(match.group(3)),
+                          "recorded_at": recorded_at,
+                      }
+                      updates.setdefault(truck_id, []).append(entry)
 
-          pattern = re.compile(
-              r'(HD\d+)\s+Generator hours:\s*(\d+)h\s*/\s*Hours scheduled for next change:\s*(\d+)h',
-              re.IGNORECASE
-          )
+              if updates:
+                  os.makedirs("data", exist_ok=True)
+                  for truck_id, entries in updates.items():
+                      path = f"data/{truck_id}.json"
+                      existing = []
+                      if os.path.exists(path):
+                          with open(path) as f:
+                              existing = json.load(f)
+                      existing.extend(entries)
+                      with open(path, "w") as f:
+                          json.dump(existing, f, indent=2)
+                      print(f"Updated {path} with {len(entries)} new reading(s).")
+              else:
+                  print("No generator-hour messages found.")
 
-          updates = {}
-          for msg in resp.get("messages", []):
-              ts = float(msg.get("ts", 0))
-              recorded_at = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
-              for match in pattern.finditer(msg.get("text", "")):
-                  truck_id = match.group(1).upper()
-                  entry = {
-                      "truck_id": truck_id,
-                      "generator_hours": int(match.group(2)),
-                      "hours_until_service": int(match.group(3)),
-                      "recorded_at": recorded_at,
-                  }
-                  updates.setdefault(truck_id, []).append(entry)
+          # ── 2. Process pending completions ────────────────────────────────────
+          completions_path = "pending_completions.json"
+          if os.path.exists(completions_path):
+              with open(completions_path) as f:
+                  pending = json.load(f)
 
-          if not updates:
-              print("No matching messages found.")
-              exit(0)
+              remaining = []
+              for entry in pending:
+                  user_id = entry.get("user_id", "")
+                  tasks = entry.get("tasks", [])
+                  if not user_id or not tasks:
+                      continue
+                  task_list = "\n".join(f"• {t}" for t in tasks)
+                  message = f"<@{user_id}> the following tasks have been completed:\n{task_list}"
+                  result = slack_post("chat.postMessage", {"channel": channel, "text": message})
+                  if result.get("ok"):
+                      print(f"Notified {user_id} of {len(tasks)} completed task(s).")
+                  else:
+                      print(f"Failed to notify {user_id}: {result.get('error')} — keeping entry.")
+                      remaining.append(entry)
 
-          os.makedirs("data", exist_ok=True)
-          for truck_id, entries in updates.items():
-              path = f"data/{truck_id}.json"
-              existing = []
-              if os.path.exists(path):
-                  with open(path) as f:
-                      existing = json.load(f)
-              existing.extend(entries)
-              with open(path, "w") as f:
-                  json.dump(existing, f, indent=2)
-              print(f"Updated {path} with {len(entries)} new reading(s).")
+              with open(completions_path, "w") as f:
+                  json.dump(remaining, f, indent=2)
+              print(f"{len(pending) - len(remaining)} completion(s) processed, {len(remaining)} kept.")
+          else:
+              print("No pending_completions.json found, skipping.")
 
           EOF
 
@@ -78,10 +113,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/
+          git add data/ pending_completions.json 2>/dev/null || git add data/
           if git diff --cached --quiet; then
             echo "Nothing to commit."
           else
-            git commit -m "chore: update generator hours $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git commit -m "chore: update generator hours + completions $(date -u +'%Y-%m-%d %H:%M UTC')"
             git push
           fi
