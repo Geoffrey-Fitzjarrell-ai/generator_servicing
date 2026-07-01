@@ -204,7 +204,7 @@ html, body { height: 100%; background: var(--bg); background-image: var(--bg-dot
 .badge.ok        { background:var(--green-dim); color:var(--green); }
 .badge.warn      { background:var(--amber-dim); color:var(--amber); }
 .badge.overdue   { background:var(--red-dim);   color:var(--red);   }
-.badge.no_record { background:var(--surface);   color:var(--text-faint); border:1px solid var(--border2); }
+.badge.no_record { background:var(--blue-dim); color:var(--blue); border:1px solid rgba(74,124,245,0.3); }
 .badge.unknown   { background:var(--surface);   color:var(--text-faint); }
 
 .task-check {
@@ -398,8 +398,12 @@ function App() {
     const hasRec = last != null;
     const since = hasRec && hours!=null ? hours-last : null;
     const rem   = since!=null ? task.interval-since : null;
-    const pct   = since!=null ? Math.min(since/task.interval,1) : 0;
-    const status= hours==null?"unknown": !hasRec?"no_record": since>=task.interval?"overdue": since>=task.interval*0.9?"warn":"ok";
+    const pct   = since!=null ? Math.min(since/task.interval,1) : (hours!=null && !hasRec && task.key!=="airfilter_clean" ? 1 : 0);
+    const status= hours==null?"unknown"
+                : !hasRec && task.key==="airfilter_clean" ? "no_record"
+                : !hasRec ? "overdue"
+                : since>=task.interval?"overdue"
+                : since>=task.interval*0.9?"warn":"ok";
     return {...task,last,hasRec,since,rem,pct,status};
   });
 
@@ -426,7 +430,7 @@ function App() {
     setChecked({}); setLogMode(false);
   }
 
-  const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"NO RECORD"};
+  const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"GUIDELINE"};
   const overdueTasks = taskStatus.filter(t=>t.status==="overdue");
   const warnTasks    = taskStatus.filter(t=>t.status==="warn");
 
