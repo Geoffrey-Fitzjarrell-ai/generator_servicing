@@ -675,7 +675,7 @@ function App() {
     });
     if(Object.keys(flashed).length) setFlashedTasks(f=>({...f,...flashed}));
     prevStatusRef.current = Object.fromEntries(taskStatus.map(t=>[t.key,t.status]));
-  });
+  },[selected, displayKey]);
 
   // Animate hours counter
   useEffect(()=>{
