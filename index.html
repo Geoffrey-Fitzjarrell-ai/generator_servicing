@@ -342,7 +342,11 @@ function App() {
 
   const anyOverdue=!isGrounded&&taskStatus.some(t=>t.status==="overdue");
   const anyWarn=!isGrounded&&taskStatus.some(t=>t.status==="warn");
-  const gaugePct=isGrounded?0:taskStatus.reduce((m,t)=>Math.max(m,t.pct),0);
+  const recordedTasks = taskStatus.filter(t => t.since != null);
+  const gaugePct = isGrounded ? 0
+    : recordedTasks.length > 0
+      ? recordedTasks.reduce((m,t) => Math.max(m, t.pct), 0)
+      : (hours != null ? Math.min(hours / 1000, 1) : 0);
   const isOverdue=anyOverdue;
 
   function truckStatus(t){
