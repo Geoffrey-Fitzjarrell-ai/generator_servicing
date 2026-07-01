@@ -107,8 +107,7 @@
   .truck-sublabel { font-size: 11px; color: var(--text-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 28px; }
 
   /* ── ARC GAUGE ── */
-  .gauge-wrap { position: relative; width: 260px; height: 155px; margin-bottom: 24px; overflow: hidden; }
-  .gauge-wrap svg { display: block; overflow: hidden; }
+  .gauge-wrap { position: relative; width: 80px; height: 200px; flex-shrink: 0; }
 
   /* ── STATS ROW ── */
   .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-bottom: 20px; }
@@ -271,59 +270,46 @@ async function writePendingCompletion(entry) {
 
 /* ── ARC GAUGE SVG ── */
 function ArcGauge({ pct, overdue, hours }) {
-  // Semicircle: left → top → right. Center at bottom-center of SVG.
-  // All arc points stay within SVG bounds.
-  const W = 260, H = 155;
-  const cx = 130, cy = 130, r = 108;
-
-  // polar: standard math angle → SVG coords
-  function polar(deg, radius) {
-    const rad = deg * Math.PI / 180;
-    return [cx + radius * Math.cos(rad), cy - radius * Math.sin(rad)];
-  }
-
-  // Arc from 180° clockwise to 0° (through 90° = top)
-  // pct 0 = left (180°), pct 1 = right (0°)
-  const startDeg = 180;
-  const currentDeg = 180 - pct * 180;
-
-  function arcPath(fromDeg, toDeg, radius) {
-    const [sx, sy] = polar(fromDeg, radius);
-    const [ex, ey] = polar(toDeg, radius);
-    const span = fromDeg - toDeg; // clockwise span
-    const large = span > 180 ? 1 : 0;
-    return `M ${sx} ${sy} A ${radius} ${radius} 0 ${large} 0 ${ex} ${ey}`;
-  }
-
+  const W = 80, H = 200;
+  const barX = 28, barW = 24, barH = 160, barY = 16;
+  const fillH = Math.max(0, Math.min(barH, barH * pct));
+  const fillY = barY + barH - fillH;
   const fillColor = overdue ? "#e05252" : pct > 0.8 ? "#f5a623" : "#4caf7d";
-  const glowColor = overdue ? "#e0525244" : pct > 0.8 ? "#f5a62344" : "#4caf7d44";
-  const [nx, ny] = polar(currentDeg, 92);
-  const perpDeg = currentDeg + 90;
-  const [nb1x, nb1y] = polar(perpDeg, 5);
-  const [nb2x, nb2y] = polar(perpDeg + 180, 5);
-  const ticks = [0, 0.25, 0.5, 0.75, 1.0];
+  const glowColor = overdue ? "#e0525233" : pct > 0.8 ? "#f5a62333" : "#4caf7d33";
 
-  return React.createElement("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, style:{overflow:"hidden"} },
-    React.createElement("path", { d: arcPath(180, 0, 100), fill:"none", stroke:"#1a1e28", strokeWidth:16, strokeLinecap:"round" }),
-    React.createElement("path", { d: arcPath(180, currentDeg, 100), fill:"none", stroke:glowColor, strokeWidth:24, strokeLinecap:"round" }),
-    React.createElement("path", { d: arcPath(180, currentDeg, 100), fill:"none", stroke:fillColor, strokeWidth:9, strokeLinecap:"round" }),
-    ...ticks.map(t => {
-      const deg = 180 - t * 180;
-      const [ox, oy] = polar(deg, 113);
-      const [ix, iy] = polar(deg, 122);
-      return React.createElement("line", { key:t, x1:ox, y1:oy, x2:ix, y2:iy, stroke:"#2e3440", strokeWidth: t===0||t===1 ? 2 : 1 });
-    }),
-    React.createElement("polygon", { points:`${nx},${ny} ${nb1x},${nb1y} ${cx},${cy} ${nb2x},${nb2y}`, fill:fillColor, opacity:0.9 }),
-    React.createElement("circle", { cx, cy, r:8, fill:"#13161e", stroke:"#2e3440", strokeWidth:2 }),
-    React.createElement("circle", { cx, cy, r:3, fill:fillColor }),
-    React.createElement("text", { x:cx, y:cy-28, textAnchor:"middle", fontFamily:"'Space Mono',monospace", fontSize:26, fontWeight:700, fill:fillColor },
-      hours != null ? hours + "h" : "—"
+  // tick marks at 25%, 50%, 75%
+  const ticks = [0.25, 0.5, 0.75];
+
+  return React.createElement("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, style:{overflow:"visible"} },
+    // glow behind fill
+    React.createElement("rect", { x: barX-3, y: fillY-3, width: barW+6, height: fillH+6, rx:6, fill: glowColor }),
+    // track background
+    React.createElement("rect", { x: barX, y: barY, width: barW, height: barH, rx:4, fill:"#1a1e28" }),
+    // fill
+    React.createElement("rect", { x: barX, y: fillY, width: barW, height: fillH, rx:4, fill: fillColor }),
+    // track border
+    React.createElement("rect", { x: barX, y: barY, width: barW, height: barH, rx:4, fill:"none", stroke:"#2e3440", strokeWidth:1 }),
+    // tick marks
+    ...ticks.map(t =>
+      React.createElement("line", { key:t,
+        x1: barX + barW, y1: barY + barH * (1 - t),
+        x2: barX + barW + 6, y2: barY + barH * (1 - t),
+        stroke:"#454c5e", strokeWidth:1
+      })
     ),
-    React.createElement("text", { x:cx, y:cy-13, textAnchor:"middle", fontFamily:"'Inter',sans-serif", fontSize:9, fill:"#454c5e", letterSpacing:"0.1em" }, "GENERATOR HOURS"),
-    ...["0","1000"].map((label, i) => {
-      const [lx, ly] = polar(i === 0 ? 180 : 0, 127);
-      return React.createElement("text", { key:label, x:lx, y:ly+4, textAnchor:"middle", fontFamily:"'Space Mono',monospace", fontSize:9, fill:"#454c5e" }, label);
-    })
+    // 0 label
+    React.createElement("text", { x: barX + barW + 10, y: barY + barH + 4,
+      fontFamily:"'Space Mono',monospace", fontSize:8, fill:"#454c5e" }, "0"),
+    // max label
+    React.createElement("text", { x: barX + barW + 10, y: barY + 4,
+      fontFamily:"'Space Mono',monospace", fontSize:8, fill:"#454c5e" }, "1k"),
+    // hour value — rotated, runs alongside bar
+    React.createElement("text", {
+      x: barX - 8, y: barY + barH / 2,
+      textAnchor:"middle",
+      fontFamily:"'Space Mono',monospace", fontSize:11, fontWeight:700, fill: fillColor,
+      transform: `rotate(-90, ${barX - 8}, ${barY + barH / 2})`
+    }, hours != null ? hours + "h" : "—")
   );
 }
 
@@ -487,26 +473,28 @@ function App() {
       React.createElement("div", { className:"left-panel" },
         React.createElement("div", { className:"truck-label" }, selected),
         React.createElement("div", { className:"truck-sublabel" }, "HD GEN2 · Japan Fleet"),
-        React.createElement(ArcGauge, { pct: gaugePct, overdue: isOverdue, hours }),
-        React.createElement("div", { className:"stats-row" },
-          React.createElement("div", { className:"stat-card" },
-            React.createElement("div", { className:"stat-label" }, "Total Hours"),
-            React.createElement("div", { className: "stat-value " + (isOverdue ? "overdue" : "") },
-              hours != null ? hours : "—", React.createElement("span", { className:"stat-unit" }, hours != null ? "h" : "")
-            )
-          ),
-          React.createElement("div", { className:"stat-card" },
-            React.createElement("div", { className:"stat-label" }, "Next Service"),
-            React.createElement("div", { className: "stat-value " + (isOverdue ? "overdue" : anyWarn ? "warn" : "") },
-              hours == null ? "—" : isOverdue ? "Now" : (() => { const known = taskStatus.filter(t=>t.remaining != null); return known.length ? Math.round(Math.min(...known.map(t=>t.remaining))) : "—"; })(),
-              React.createElement("span", { className:"stat-unit" }, hours != null && !isOverdue ? "h" : "")
-            )
+        React.createElement("div", { style:{ display:"flex", gap:20, alignItems:"flex-start", width:"100%", marginBottom:20 } },
+          React.createElement(ArcGauge, { pct: gaugePct, overdue: isOverdue, hours }),
+          React.createElement("div", { style:{ flex:1, display:"flex", flexDirection:"column", gap:10 } },
+            React.createElement("div", { className:"stat-card" },
+              React.createElement("div", { className:"stat-label" }, "Total Hours"),
+              React.createElement("div", { className: "stat-value " + (isOverdue ? "overdue" : "") },
+                hours != null ? hours : "—", React.createElement("span", { className:"stat-unit" }, hours != null ? "h" : "")
+              )
+            ),
+            React.createElement("div", { className:"stat-card" },
+              React.createElement("div", { className:"stat-label" }, "Next Service"),
+              React.createElement("div", { className: "stat-value " + (isOverdue ? "overdue" : anyWarn ? "warn" : "") },
+                hours == null ? "—" : isOverdue ? "Now" : (() => { const known = taskStatus.filter(t=>t.remaining != null); return known.length ? Math.round(Math.min(...known.map(t=>t.remaining))) : "—"; })(),
+                React.createElement("span", { className:"stat-unit" }, hours != null && !isOverdue ? "h" : "")
+              )
+            ),
+            isOverdue ? React.createElement("div", { className:"attention-banner" },
+              React.createElement("span", { className:"icon" }, "⚠"),
+              React.createElement("div", { className:"msg" }, "Service required — visit this truck when available")
+            ) : null
           )
         ),
-        isOverdue ? React.createElement("div", { className:"attention-banner" },
-          React.createElement("span", { className:"icon" }, "⚠"),
-          React.createElement("div", { className:"msg" }, "Service required — visit this truck when available")
-        ) : null,
         truck.postedBy ? React.createElement("div", { className:"reporter-row" },
           React.createElement("div", { className:"reporter-label" }, "Last reported by"),
           React.createElement("div", { className:"reporter-name" }, truck.postedBy.name || truck.technician),
