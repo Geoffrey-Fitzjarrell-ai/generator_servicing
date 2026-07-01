@@ -418,25 +418,32 @@ function App() {
       )
     ),
     React.createElement("div",{className:"fleet-bar"},
-      React.createElement("div",{className:"fleet-stat fs-overdue"},
-        React.createElement("div",{className:"fleet-stat-num"},fleetCounts.overdue),
-        React.createElement("div",{className:"fleet-stat-lbl"},"Overdue")
+      React.createElement("div",{className:"fleet-bar-track"},
+        ...[
+          {key:"overdue",  pct:fleetCounts.overdue},
+          {key:"warn",     pct:fleetCounts.warn},
+          {key:"ok",       pct:fleetCounts.ok},
+          {key:"grounded", pct:fleetCounts.grounded},
+          {key:"nodata",   pct:fleetCounts.nodata},
+        ].filter(s=>s.pct>0).map(s=>
+          React.createElement("div",{key:s.key,className:"fleet-seg fs-"+s.key,
+            style:{width:(s.pct/TRUCKS.length*100)+"%"}})
+        )
       ),
-      React.createElement("div",{className:"fleet-stat fs-warn"},
-        React.createElement("div",{className:"fleet-stat-num"},fleetCounts.warn),
-        React.createElement("div",{className:"fleet-stat-lbl"},"Due Soon")
-      ),
-      React.createElement("div",{className:"fleet-stat fs-ok"},
-        React.createElement("div",{className:"fleet-stat-num"},fleetCounts.ok),
-        React.createElement("div",{className:"fleet-stat-lbl"},"OK")
-      ),
-      React.createElement("div",{className:"fleet-stat fs-grounded"},
-        React.createElement("div",{className:"fleet-stat-num"},fleetCounts.grounded),
-        React.createElement("div",{className:"fleet-stat-lbl"},"Grounded")
-      ),
-      React.createElement("div",{className:"fleet-stat fs-nodata"},
-        React.createElement("div",{className:"fleet-stat-num"},fleetCounts.nodata),
-        React.createElement("div",{className:"fleet-stat-lbl"},"No Data")
+      React.createElement("div",{className:"fleet-counts"},
+        ...[
+          {key:"overdue",  label:"Overdue",  count:fleetCounts.overdue},
+          {key:"warn",     label:"Due Soon", count:fleetCounts.warn},
+          {key:"ok",       label:"OK",       count:fleetCounts.ok},
+          {key:"grounded", label:"Grounded", count:fleetCounts.grounded},
+          {key:"nodata",   label:"No Data",  count:fleetCounts.nodata},
+        ].filter(s=>s.count>0).map(s=>
+          React.createElement("div",{key:s.key,className:"fleet-count-item fs-"+s.key},
+            React.createElement("div",{className:"fleet-count-dot"}),
+            React.createElement("span",{className:"fleet-count-num"},s.count),
+            React.createElement("span",{className:"fleet-count-lbl"},s.label)
+          )
+        )
       )
     ),
     React.createElement("nav",{className:"truck-strip"},
