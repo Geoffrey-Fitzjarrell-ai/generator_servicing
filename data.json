@@ -116,7 +116,9 @@
     "overdue": false,
     "technician": "",
     "lastUpdated": null,
-    "postedBy": null
+    "postedBy": null,
+    "grounded": true,
+    "groundedNote": "Under repair"
   },
   "HD18": {
     "hours": null,
