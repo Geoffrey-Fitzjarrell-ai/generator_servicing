@@ -123,5 +123,13 @@
     "technician": "",
     "lastUpdated": null,
     "postedBy": null
+  },
+  "HD5": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
   }
 }
