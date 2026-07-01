@@ -32,11 +32,11 @@
     }
   },
   "HD9": {
-    "hours": 1416,
+    "hours": 1426,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Kaede Fujiwara",
-    "lastUpdated": "2026-06-30T11:13:56Z",
+    "lastUpdated": "2026-07-01T01:20:00Z",
     "postedBy": {
       "id": "U09NG2B5316",
       "name": "Kaede Fujiwara"
@@ -54,11 +54,11 @@
     }
   },
   "HD11": {
-    "hours": null,
+    "hours": 1278,
     "intervalStart": 0,
     "overdue": false,
     "technician": "",
-    "lastUpdated": null,
+    "lastUpdated": "2026-07-01T01:20:00Z",
     "postedBy": null
   },
   "HD12": {
@@ -73,11 +73,11 @@
     }
   },
   "HD13": {
-    "hours": null,
+    "hours": 411,
     "intervalStart": 0,
     "overdue": false,
     "technician": "",
-    "lastUpdated": null,
+    "lastUpdated": "2026-07-01T01:20:00Z",
     "postedBy": null
   },
   "HD14": {
@@ -92,11 +92,11 @@
     }
   },
   "HD15": {
-    "hours": null,
+    "hours": 420,
     "intervalStart": 0,
     "overdue": false,
     "technician": "",
-    "lastUpdated": null,
+    "lastUpdated": "2026-07-01T01:20:00Z",
     "postedBy": null
   },
   "HD16": {
