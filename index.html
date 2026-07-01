@@ -177,7 +177,7 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 <script>
 const { useState, useEffect, useRef } = React;
 
-const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14","HD15","HD16","HD17","HD18"];
+const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14","HD15","HD16","HD17"];
 const TASKS = [
   { key:"airfilter_battery", name:"Air filter & battery check",        interval:50  },
   { key:"oil_filter",        name:"Oil / filter change",               interval:150 },
@@ -418,12 +418,26 @@ function App() {
       )
     ),
     React.createElement("div",{className:"fleet-bar"},
-      React.createElement("span",{className:"fleet-bar-label"},"Fleet"),
-      fleetCounts.overdue>0?React.createElement("div",{className:"fleet-stat fs-overdue"},React.createElement("div",{className:"fleet-stat-dot"}),fleetCounts.overdue+" OVERDUE"):null,
-      fleetCounts.warn>0?React.createElement("div",{className:"fleet-stat fs-warn"},React.createElement("div",{className:"fleet-stat-dot"}),fleetCounts.warn+" DUE SOON"):null,
-      fleetCounts.ok>0?React.createElement("div",{className:"fleet-stat fs-ok"},React.createElement("div",{className:"fleet-stat-dot"}),fleetCounts.ok+" OK"):null,
-      fleetCounts.grounded>0?React.createElement("div",{className:"fleet-stat fs-grounded"},React.createElement("div",{className:"fleet-stat-dot"}),fleetCounts.grounded+" GROUNDED"):null,
-      fleetCounts.nodata>0?React.createElement("div",{className:"fleet-stat fs-nodata"},React.createElement("div",{className:"fleet-stat-dot"}),fleetCounts.nodata+" NO DATA"):null
+      React.createElement("div",{className:"fleet-stat fs-overdue"},
+        React.createElement("div",{className:"fleet-stat-num"},fleetCounts.overdue),
+        React.createElement("div",{className:"fleet-stat-lbl"},"Overdue")
+      ),
+      React.createElement("div",{className:"fleet-stat fs-warn"},
+        React.createElement("div",{className:"fleet-stat-num"},fleetCounts.warn),
+        React.createElement("div",{className:"fleet-stat-lbl"},"Due Soon")
+      ),
+      React.createElement("div",{className:"fleet-stat fs-ok"},
+        React.createElement("div",{className:"fleet-stat-num"},fleetCounts.ok),
+        React.createElement("div",{className:"fleet-stat-lbl"},"OK")
+      ),
+      React.createElement("div",{className:"fleet-stat fs-grounded"},
+        React.createElement("div",{className:"fleet-stat-num"},fleetCounts.grounded),
+        React.createElement("div",{className:"fleet-stat-lbl"},"Grounded")
+      ),
+      React.createElement("div",{className:"fleet-stat fs-nodata"},
+        React.createElement("div",{className:"fleet-stat-num"},fleetCounts.nodata),
+        React.createElement("div",{className:"fleet-stat-lbl"},"No Data")
+      )
     ),
     React.createElement("nav",{className:"truck-strip"},
       [...TRUCKS].sort((a,b)=>{
@@ -466,11 +480,12 @@ function App() {
           React.createElement("span",{className:"attention-icon"},"⚠"),
           React.createElement("div",{className:"attention-msg"},"Service required — get to this truck when available")
         ):null,
-        React.createElement("div",{style:{marginTop:"auto",paddingTop:16}},
+        React.createElement("div",{className:"ground-section"},
+          React.createElement("div",{className:"ground-section-lbl"},isGrounded?"Status":"Ground Truck"),
           !isGrounded?React.createElement(React.Fragment,null,
-            React.createElement("input",{type:"text",className:"ground-note-input",placeholder:"Reason (e.g. Under repair)",value:groundingNote,onChange:e=>setGroundingNote(e.target.value)}),
-            React.createElement("button",{className:"ground-btn do-ground",disabled:groundingBusy,onClick:handleToggleGrounded},groundingBusy?"UPDATING...":"⬡  MARK AS GROUNDED")
-          ):React.createElement("button",{className:"ground-btn do-unground",disabled:groundingBusy,onClick:handleToggleGrounded},groundingBusy?"UPDATING...":"↑  RETURN TO SERVICE")
+            React.createElement("input",{type:"text",className:"ground-note-input",placeholder:"Reason for grounding…",value:groundingNote,onChange:e=>setGroundingNote(e.target.value)}),
+            React.createElement("button",{className:"ground-btn do-ground",disabled:groundingBusy,onClick:handleToggleGrounded},groundingBusy?"UPDATING…":"⬡  Mark as Grounded")
+          ):React.createElement("button",{className:"ground-btn do-unground",disabled:groundingBusy,onClick:handleToggleGrounded},groundingBusy?"UPDATING…":"↑  Return to Service")
         ),
         truck.postedBy?React.createElement("div",{className:"reporter"},
           React.createElement("div",{className:"reporter-lbl"},"Last reported by"),
