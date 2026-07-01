@@ -1,13 +1,13 @@
 {
   "HD6": {
-    "hours": 1510.7,
+    "hours": 1519,
     "intervalStart": 0,
     "overdue": false,
-    "technician": "Kouta Inoue",
-    "lastUpdated": "2026-06-30T11:36:32Z",
+    "technician": "Thapa Biliv",
+    "lastUpdated": "2026-07-01T01:04:44Z",
     "postedBy": {
-      "id": "U09UPB6CG56",
-      "name": "Kouta Inoue"
+      "id": "U0AFM5Z1GUA",
+      "name": "Thapa Biliv"
     }
   },
   "HD7": {
@@ -79,12 +79,15 @@
     "postedBy": null
   },
   "HD14": {
-    "hours": null,
+    "hours": 516,
     "intervalStart": 0,
     "overdue": false,
-    "technician": "",
-    "lastUpdated": null,
-    "postedBy": null
+    "technician": "Kazuya Oiwa",
+    "lastUpdated": "2026-07-01T00:46:46Z",
+    "postedBy": {
+      "id": "U0B3CTWCKSS",
+      "name": "Kazuya Oiwa"
+    }
   },
   "HD15": {
     "hours": null,
