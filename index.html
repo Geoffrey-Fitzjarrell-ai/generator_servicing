@@ -65,11 +65,9 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .truck-id { font-family:var(--mono); font-size:32px; font-weight:700; letter-spacing:0.1em; line-height:1; transition:color 0.3s; }
 .truck-sub { font-size:10px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-top:4px; }
 
-.gauge-stats-row { display:flex; gap:14px; align-items:stretch; margin-bottom:16px; }
-.gauge-col { display:flex; flex-direction:column; align-items:center; gap:6px; padding-top:2px; }
-.gauge-wrap { width:52px; flex:1; min-height:170px; position:relative; }
-.gauge-label { font-family:var(--mono); font-size:8px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; }
-.stats-col { flex:1; display:flex; flex-direction:column; gap:10px; }
+.gauge-wrap { width:100%; margin-bottom:10px; }
+.gauge-label { font-family:var(--mono); font-size:9px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
+.stats-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
 
 .stat-card { background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:10px 12px; position:relative; overflow:hidden; transition:border-color 0.3s; animation:statPop 0.35s cubic-bezier(0.22,1,0.36,1) both; }
 .stat-card:nth-child(2) { animation-delay:0.08s; }
@@ -232,29 +230,28 @@ async function writeGrounded(truck, grounded, note) {
 }
 
 function Gauge({ pct, overdue }) {
-  const W=52,H=170,bx=18,bw=20,by=8,bh=148;
-  const fillH=Math.max(0,Math.min(bh,bh*pct));
-  const fillY=by+bh-fillH;
+  const W=220,H=28,by=4,bh=20,bx=28,bw=162;
+  const fillW=Math.max(0,Math.min(bw,bw*pct));
   const uid="g"+Math.round(pct*1000)+overdue;
-  return React.createElement("svg",{width:W,height:H,viewBox:`0 0 ${W} ${H}`,style:{display:"block"}},
+  return React.createElement("svg",{width:W,height:H,viewBox:`0 0 ${W} ${H}`,style:{display:"block",width:"100%"}},
     React.createElement("defs",null,
-      React.createElement("linearGradient",{id:"zg"+uid,x1:"0",y1:"1",x2:"0",y2:"0"},
+      React.createElement("linearGradient",{id:"zg"+uid,x1:"0",y1:"0",x2:"1",y2:"0"},
         React.createElement("stop",{offset:"0%",stopColor:"#3da870"}),
-        React.createElement("stop",{offset:"50%",stopColor:"#f0a500"}),
+        React.createElement("stop",{offset:"60%",stopColor:"#f0a500"}),
         React.createElement("stop",{offset:"100%",stopColor:"#e04545"})
       ),
       React.createElement("clipPath",{id:"cp"+uid},
-        React.createElement("rect",{x:bx,y:fillY,width:bw,height:fillH})
+        React.createElement("rect",{x:bx,y:by,width:fillW,height:bh})
       )
     ),
+    React.createElement("text",{x:0,y:by+bh-3,fontFamily:"'JetBrains Mono',monospace",fontSize:9,fill:"#38465a"},"0h"),
+    React.createElement("text",{x:W-24,y:by+bh-3,fontFamily:"'JetBrains Mono',monospace",fontSize:9,fill:"#38465a"},"1kh"),
     React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:"#1a2235"}),
     React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:`url(#zg${uid})`,opacity:0.1}),
     React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:`url(#zg${uid})`,clipPath:`url(#cp${uid})`,opacity:0.9,className:"gauge-fill"}),
-    fillH>4?React.createElement("rect",{x:bx,y:fillY,width:bw,height:3,rx:2,fill:"#fff",opacity:0.15}):null,
+    fillW>4?React.createElement("rect",{x:bx+fillW-3,y:by,width:3,height:bh,rx:2,fill:"#fff",opacity:0.2}):null,
     React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:"none",stroke:"#28364f",strokeWidth:1}),
-    ...[0.25,0.5,0.75].map(t=>React.createElement("line",{key:t,x1:bx+bw,y1:by+bh*(1-t),x2:bx+bw+5,y2:by+bh*(1-t),stroke:"#38465a",strokeWidth:1})),
-    React.createElement("text",{x:bx+bw+8,y:by+bh+3,fontFamily:"'JetBrains Mono',monospace",fontSize:8,fill:"#38465a"},"0"),
-    React.createElement("text",{x:bx+bw+8,y:by+5,fontFamily:"'JetBrains Mono',monospace",fontSize:8,fill:"#38465a"},"1k")
+    ...[0.25,0.5,0.75].map(t=>React.createElement("line",{key:t,x1:bx+bw*t,y1:by,x2:bx+bw*t,y2:by+bh,stroke:"#28364f",strokeWidth:1}))
   );
 }
 
@@ -447,21 +444,19 @@ function App() {
           React.createElement("div",{className:"truck-id",style:{color:isGrounded?"#9880cc":isOverdue?"var(--red)":anyWarn?"var(--amber)":"var(--text)"}},selected),
           React.createElement("div",{className:"truck-sub"},"HD GEN2 · Japan Fleet")
         ),
-        React.createElement("div",{className:"gauge-stats-row"},
-          React.createElement("div",{className:"gauge-col"},
-            React.createElement("div",{className:"gauge-wrap"},React.createElement(Gauge,{pct:gaugePct,overdue:isOverdue,key:displayKey})),
-            React.createElement("div",{className:"gauge-label"},"INTERVAL")
+        React.createElement("div",{className:"gauge-wrap"},
+          React.createElement("div",{className:"gauge-label"},"SERVICE INTERVAL"),
+          React.createElement(Gauge,{pct:gaugePct,overdue:isOverdue,key:displayKey})
+        ),
+        React.createElement("div",{className:"stats-row"},
+          React.createElement("div",{className:"stat-card s-neutral"},
+            React.createElement("div",{className:"stat-lbl"},"Total Hours"),
+            React.createElement("div",{className:"stat-val "+(isOverdue?"c-overdue":anyWarn?"c-warn":"")},
+              countedHours!=null?countedHours:"—",countedHours!=null?React.createElement("span",{className:"unit"},"h"):null)
           ),
-          React.createElement("div",{className:"stats-col"},
-            React.createElement("div",{className:"stat-card s-neutral"},
-              React.createElement("div",{className:"stat-lbl"},"Total Hours"),
-              React.createElement("div",{className:"stat-val "+(isOverdue?"c-overdue":anyWarn?"c-warn":"")},
-                countedHours!=null?countedHours:"—",countedHours!=null?React.createElement("span",{className:"unit"},"h"):null)
-            ),
-            React.createElement("div",{className:"stat-card "+(isOverdue?"s-overdue":anyWarn?"s-warn":"s-ok")},
-              React.createElement("div",{className:"stat-lbl"},"Next Service"),
-              nextServiceCard()
-            )
+          React.createElement("div",{className:"stat-card "+(isOverdue?"s-overdue":anyWarn?"s-warn":"s-ok")},
+            React.createElement("div",{className:"stat-lbl"},"Next Service"),
+            nextServiceCard()
           )
         ),
         isGrounded?React.createElement("div",{className:"grounded-banner"},
