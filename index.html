@@ -121,8 +121,8 @@ function App() {
     const logs = {};
     for (const t of TRUCKS) {
       try {
-        const r = await window.storage.get("servicelog:" + t, true);
-        logs[t] = r ? JSON.parse(r.value) : {};
+        const raw = localStorage.getItem("servicelog:" + t);
+        logs[t] = raw ? JSON.parse(raw) : {};
       } catch (e) {
         logs[t] = {};
       }
@@ -133,7 +133,7 @@ function App() {
   async function saveServiceLog(truckId, log) {
     setServiceLogs(prev => ({ ...prev, [truckId]: log }));
     try {
-      await window.storage.set("servicelog:" + truckId, JSON.stringify(log), true);
+      localStorage.setItem("servicelog:" + truckId, JSON.stringify(log));
     } catch (e) {
       console.error("save failed", e);
     }
