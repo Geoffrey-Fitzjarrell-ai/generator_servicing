@@ -19,14 +19,14 @@
     "postedBy": null
   },
   "HD8": {
-    "hours": 1377,
+    "hours": 1387,
     "intervalStart": 0,
     "overdue": false,
-    "technician": "Ryo Suzuki",
-    "lastUpdated": "2026-06-30T11:33:57Z",
+    "technician": "Daichi Hayakawa",
+    "lastUpdated": "2026-07-01T01:49:36Z",
     "postedBy": {
-      "id": "U09P6572BK4",
-      "name": "Ryo Suzuki"
+      "id": "U09TT0S0UF8",
+      "name": "Daichi Hayakawa"
     }
   },
   "HD9": {
@@ -98,14 +98,14 @@
     "postedBy": null
   },
   "HD16": {
-    "hours": 251,
+    "hours": 261,
     "intervalStart": 0,
     "overdue": false,
-    "technician": "Jiahao Lin",
-    "lastUpdated": "2026-06-30T11:49:46Z",
+    "technician": "Takumi Watanabe",
+    "lastUpdated": "2026-07-01T01:27:11Z",
     "postedBy": {
-      "id": "U0AU900KF5M",
-      "name": "Jiahao Lin"
+      "id": "U0B3F0K76PL",
+      "name": "Takumi Watanabe"
     }
   },
   "HD17": {
