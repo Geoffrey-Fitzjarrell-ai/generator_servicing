@@ -5,224 +5,260 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HD GEN2 · Generator Service Monitor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:         #080b12;
+  --bg-dot:     url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23ffffff08'/%3E%3C/svg%3E");
+  --surface:    #0d1117;
+  --surface2:   #131925;
+  --surface3:   #1a2235;
+  --border:     #1e2840;
+  --border2:    #28364f;
+  --amber:      #f0a500;
+  --amber-dim:  #3d2900;
+  --amber-glow: rgba(240,165,0,0.12);
+  --red:        #e04545;
+  --red-dim:    #3a1010;
+  --red-glow:   rgba(224,69,69,0.12);
+  --green:      #3da870;
+  --green-dim:  #0f2e1e;
+  --blue:       #4a7cf5;
+  --blue-dim:   #101e40;
+  --text:       #dde4f0;
+  --text-dim:   #6e7f99;
+  --text-faint: #38465a;
+  --mono:       'JetBrains Mono', monospace;
+  --sans:       'Inter', sans-serif;
+  --radius:     6px;
+}
+html, body { height: 100%; background: var(--bg); background-image: var(--bg-dot); color: var(--text); font-family: var(--sans); }
 
-  :root {
-    --bg:        #0b0d12;
-    --surface:   #13161e;
-    --surface2:  #1a1e28;
-    --border:    #252932;
-    --border2:   #2e3440;
-    --amber:     #f5a623;
-    --amber-dim: #7a5010;
-    --amber-glow:#f5a62322;
-    --red:       #e05252;
-    --red-dim:   #5a1f1f;
-    --red-glow:  #e0525222;
-    --green:     #4caf7d;
-    --green-dim: #1a3d2b;
-    --blue:      #5b8def;
-    --text:      #e8eaf0;
-    --text-dim:  #8b90a0;
-    --text-faint:#454c5e;
-    --mono:      'Space Mono', monospace;
-    --sans:      'Inter', sans-serif;
-  }
+/* ── HEADER ── */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 52px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.header::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent, var(--blue) 40%, var(--amber) 60%, transparent);
+  opacity: 0.3;
+}
+.header-brand { display:flex; align-items:center; gap:12px; }
+.header-badge {
+  font-family: var(--mono); font-size:10px; font-weight:700;
+  letter-spacing:0.18em; color: var(--bg); background: var(--amber);
+  padding: 3px 8px; border-radius: 3px;
+}
+.header-title { font-size:12px; color: var(--text-dim); letter-spacing:0.04em; }
+.header-right { display:flex; align-items:center; gap:12px; }
+.sync-indicator { display:flex; align-items:center; gap:6px; }
+.sync-dot { width:5px; height:5px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.sync-time { font-family:var(--mono); font-size:10px; color:var(--text-faint); letter-spacing:0.06em; }
+.btn-ghost {
+  font-family:var(--mono); font-size:10px; letter-spacing:0.08em;
+  padding:5px 12px; background:transparent; color:var(--text-dim);
+  border:1px solid var(--border2); border-radius:var(--radius);
+  cursor:pointer; transition:all 0.15s; text-transform:uppercase;
+}
+.btn-ghost:hover { border-color:var(--blue); color:var(--blue); }
 
-  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); }
+/* ── TRUCK STRIP ── */
+.truck-strip {
+  display:flex; background:var(--surface); border-bottom:1px solid var(--border);
+  overflow-x:auto; scrollbar-width:none;
+}
+.truck-strip::-webkit-scrollbar { display:none; }
+.truck-tab {
+  flex:1; min-width:68px; padding:8px 6px 10px;
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  cursor:pointer; border-right:1px solid var(--border);
+  position:relative; transition:background 0.15s;
+}
+.truck-tab::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--text-faint); transition:background 0.15s;
+}
+.truck-tab.active { background:var(--surface2); }
+.truck-tab.active::before { background:var(--amber); box-shadow:0 0 8px var(--amber); }
+.truck-tab.st-overdue::before { background:var(--red); box-shadow:0 0 8px var(--red); }
+.truck-tab.st-warn::before { background:var(--amber); }
+.truck-tab.st-ok::before { background:var(--green); }
+.truck-tab:last-child { border-right:none; }
+.truck-tab:hover:not(.active) { background:var(--surface2); }
+.truck-name {
+  font-family:var(--mono); font-size:11px; font-weight:700;
+  letter-spacing:0.06em; color:var(--text-dim);
+}
+.truck-tab.active .truck-name { color:var(--amber); }
+.truck-tab.st-overdue .truck-name { color:var(--red); }
+.truck-hours-badge { font-family:var(--mono); font-size:9px; color:var(--text-faint); }
 
-  /* ── HEADER ── */
-  .header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 28px; height: 56px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-  }
-  .header-left { display: flex; align-items: center; gap: 14px; }
-  .header-logo {
-    font-family: var(--mono); font-size: 11px; font-weight: 700;
-    letter-spacing: 0.15em; color: var(--amber); text-transform: uppercase;
-  }
-  .header-divider { width: 1px; height: 20px; background: var(--border2); }
-  .header-title { font-size: 13px; color: var(--text-dim); font-weight: 400; letter-spacing: 0.02em; }
-  .header-right { display: flex; align-items: center; gap: 10px; }
-  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
-  .sync-label { font-family: var(--mono); font-size: 10px; color: var(--text-faint); letter-spacing: 0.08em; }
-  .refresh-btn {
-    padding: 5px 12px; font-size: 11px; font-family: var(--mono); letter-spacing: 0.06em;
-    background: transparent; color: var(--text-dim); border: 1px solid var(--border2);
-    border-radius: 4px; cursor: pointer; transition: all 0.15s;
-  }
-  .refresh-btn:hover { border-color: var(--amber); color: var(--amber); }
+/* ── MAIN ── */
+.main { display:grid; grid-template-columns:340px 1fr; height:calc(100vh - 108px); }
 
-  /* ── TRUCK SELECTOR ── */
-  .truck-strip {
-    display: flex; gap: 0; border-bottom: 1px solid var(--border);
-    background: var(--surface); overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .truck-strip::-webkit-scrollbar { display: none; }
-  .truck-tab {
-    flex: 1; min-width: 72px; padding: 10px 8px 9px;
-    display: flex; flex-direction: column; align-items: center; gap: 5px;
-    cursor: pointer; border-right: 1px solid var(--border);
-    border-bottom: 3px solid transparent;
-    transition: all 0.15s; position: relative;
-  }
-  .truck-tab:last-child { border-right: none; }
-  .truck-tab:hover { background: var(--surface2); }
-  .truck-tab.active { border-bottom-color: var(--amber); background: var(--surface2); }
-  .truck-tab.overdue { border-bottom-color: var(--red); }
-  .truck-tab.active.overdue { border-bottom-color: var(--red); }
-  .truck-name { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.05em; }
-  .truck-tab.active .truck-name { color: var(--amber); }
-  .truck-tab.overdue .truck-name { color: var(--red); }
-  .truck-hours { font-family: var(--mono); font-size: 9px; color: var(--text-faint); letter-spacing: 0.04em; }
-  .truck-tab.overdue .truck-hours { color: var(--red); opacity: 0.8; }
-  .status-pip {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: var(--text-faint); position: absolute; top: 7px; right: 7px;
-  }
-  .status-pip.ok { background: var(--green); box-shadow: 0 0 4px var(--green); }
-  .status-pip.warn { background: var(--amber); box-shadow: 0 0 4px var(--amber); }
-  .status-pip.overdue { background: var(--red); box-shadow: 0 0 4px var(--red); }
+/* ── LEFT PANEL ── */
+.left-panel {
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column;
+  overflow-y:auto; padding:24px 20px;
+}
+.truck-header { margin-bottom:20px; }
+.truck-id {
+  font-family:var(--mono); font-size:28px; font-weight:700;
+  letter-spacing:0.1em; line-height:1;
+}
+.truck-sub { font-size:10px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-top:4px; }
 
-  /* ── MAIN LAYOUT ── */
-  .main { display: grid; grid-template-columns: 380px 1fr; height: calc(100vh - 112px); overflow: hidden; }
+/* ── GAUGE + STATS ── */
+.gauge-stats-row { display:flex; gap:14px; align-items:stretch; margin-bottom:16px; }
+.gauge-col { display:flex; flex-direction:column; align-items:center; gap:6px; padding-top:2px; }
+.gauge-wrap { width:52px; flex:1; min-height:170px; position:relative; }
+.gauge-label { font-family:var(--mono); font-size:8px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; }
+.stats-col { flex:1; display:flex; flex-direction:column; gap:10px; }
 
-  /* ── LEFT PANEL ── */
-  .left-panel {
-    border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; align-items: center;
-    padding: 28px 28px 28px;
-    background: var(--surface);
-    overflow-y: auto;
-  }
-  .truck-label {
-    font-family: var(--mono); font-size: 22px; font-weight: 700;
-    letter-spacing: 0.12em; margin-bottom: 4px;
-  }
-  .truck-sublabel { font-size: 11px; color: var(--text-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 28px; }
+.stat-card {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--radius); padding:10px 12px;
+  position:relative; overflow:hidden;
+}
+.stat-card::before {
+  content:''; position:absolute; top:0; left:0; bottom:0; width:2px;
+}
+.stat-card.s-ok::before { background:var(--green); }
+.stat-card.s-warn::before { background:var(--amber); }
+.stat-card.s-overdue::before { background:var(--red); }
+.stat-card.s-neutral::before { background:var(--border2); }
+.stat-lbl { font-size:9px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
+.stat-val { font-family:var(--mono); font-size:18px; font-weight:700; line-height:1; }
+.stat-val .unit { font-size:11px; font-weight:400; color:var(--text-dim); margin-left:2px; }
+.stat-val.c-overdue { color:var(--red); }
+.stat-val.c-warn { color:var(--amber); }
+.stat-val.c-ok { color:var(--green); }
 
-  /* ── ARC GAUGE ── */
-  .gauge-wrap { position: relative; width: 80px; height: 200px; flex-shrink: 0; }
+/* ── DUE LIST ── */
+.due-list { margin-top:4px; }
+.due-tag {
+  font-size:10px; padding:2px 0;
+  border-bottom:1px solid var(--border);
+  color: var(--text-dim); line-height:1.6;
+}
+.due-tag:last-child { border-bottom:none; }
 
-  /* ── STATS ROW ── */
-  .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-bottom: 20px; }
-  .stat-card {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 6px; padding: 12px 14px;
-  }
-  .stat-label { font-size: 10px; color: var(--text-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
-  .stat-value { font-family: var(--mono); font-size: 20px; font-weight: 700; }
-  .stat-value.overdue { color: var(--red); }
-  .stat-value.warn { color: var(--amber); }
-  .stat-unit { font-size: 11px; color: var(--text-faint); margin-left: 2px; }
+/* ── ATTENTION ── */
+.attention {
+  padding:10px 12px; border-radius:var(--radius); margin-bottom:14px;
+  background: var(--red-dim); border:1px solid rgba(224,69,69,0.3);
+  display:flex; gap:10px; align-items:flex-start;
+}
+.attention-icon { color:var(--red); font-size:13px; margin-top:1px; }
+.attention-msg { font-size:11px; color:#ffc8c8; line-height:1.5; }
 
-  /* ── ATTENTION BANNER ── */
-  .attention-banner {
-    width: 100%; padding: 10px 14px; border-radius: 6px; margin-bottom: 16px;
-    background: var(--red-dim); border: 1px solid var(--red);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .attention-banner .icon { font-size: 14px; }
-  .attention-banner .msg { font-size: 12px; color: #ffd5d5; line-height: 1.4; }
+/* ── REPORTER ── */
+.reporter {
+  padding:10px 12px; border-radius:var(--radius);
+  background:var(--surface2); border:1px solid var(--border);
+}
+.reporter-lbl { font-size:9px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
+.reporter-name { font-size:12px; color:var(--text-dim); font-weight:500; }
+.reporter-time { font-family:var(--mono); font-size:9px; color:var(--text-faint); margin-top:2px; }
 
-  /* ── REPORTER ── */
-  .reporter-row { width: 100%; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; }
-  .reporter-label { font-size: 10px; color: var(--text-faint); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 3px; }
-  .reporter-name { font-size: 13px; color: var(--text-dim); }
-  .reporter-time { font-family: var(--mono); font-size: 10px; color: var(--text-faint); margin-top: 2px; }
+/* ── RIGHT PANEL ── */
+.right-panel {
+  display:flex; flex-direction:column;
+  overflow-y:auto; padding:20px 24px; gap:20px;
+}
+.section-title {
+  font-size:9px; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--text-faint); padding-bottom:8px;
+  border-bottom:1px solid var(--border); margin-bottom:2px;
+}
 
-  /* ── RIGHT PANEL ── */
-  .right-panel { padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; overflow-y: auto; }
+/* ── TASK ROWS ── */
+.task-list { display:flex; flex-direction:column; gap:4px; }
+.task-row {
+  display:grid; grid-template-columns:1fr 56px 88px 28px;
+  align-items:center; gap:10px;
+  padding:9px 12px; border-radius:var(--radius);
+  background:var(--surface2); border:1px solid var(--border);
+  border-left-width:3px; border-left-color:var(--border2);
+  transition:background 0.12s;
+}
+.task-row:hover { background:var(--surface3); }
+.task-row.r-overdue { border-left-color:var(--red); background:#160d0d; }
+.task-row.r-warn    { border-left-color:var(--amber); }
+.task-row.r-ok      { border-left-color:var(--green); }
+.task-name { font-size:12px; color:var(--text); }
+.task-interval { font-family:var(--mono); font-size:10px; color:var(--text-faint); }
+.badge {
+  font-family:var(--mono); font-size:9px; font-weight:700;
+  padding:3px 7px; border-radius:3px; text-align:center;
+  letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap;
+}
+.badge.ok        { background:var(--green-dim); color:var(--green); }
+.badge.warn      { background:var(--amber-dim); color:var(--amber); }
+.badge.overdue   { background:var(--red-dim);   color:var(--red);   }
+.badge.no_record { background:var(--surface);   color:var(--text-faint); border:1px solid var(--border2); }
+.badge.unknown   { background:var(--surface);   color:var(--text-faint); }
 
-  .panel-section-title {
-    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--text-faint); margin-bottom: 14px; padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
-  }
+.task-check {
+  width:18px; height:18px; border-radius:3px;
+  border:1px solid var(--border2); background:var(--surface);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all 0.12s; flex-shrink:0;
+}
+.task-check.checked { background:var(--amber-dim); border-color:var(--amber); }
+.task-check.hidden { opacity:0; pointer-events:none; }
+.task-check-inner { width:8px; height:8px; background:var(--amber); border-radius:2px; display:none; }
+.task-check.checked .task-check-inner { display:block; }
 
-  /* ── TASK GRID ── */
-  .task-grid { display: flex; flex-direction: column; gap: 6px; }
-  .task-row {
-    display: grid; grid-template-columns: 1fr 80px 90px 36px;
-    align-items: center; gap: 12px;
-    padding: 10px 14px; border-radius: 6px;
-    background: var(--surface2); border: 1px solid var(--border);
-    transition: border-color 0.15s;
-  }
-  .task-row.overdue { border-color: var(--red-dim); background: #1a1015; }
-  .task-row.warn { border-color: var(--amber-dim); }
-  .task-name { font-size: 13px; color: var(--text); }
-  .task-interval { font-family: var(--mono); font-size: 11px; color: var(--text-faint); }
-  .task-badge {
-    font-family: var(--mono); font-size: 10px; font-weight: 700;
-    padding: 3px 8px; border-radius: 3px; text-align: center;
-    letter-spacing: 0.06em; text-transform: uppercase;
-  }
-  .task-badge.ok { background: var(--green-dim); color: var(--green); }
-  .task-badge.warn { background: var(--amber-glow); color: var(--amber); }
-  .task-badge.overdue { background: var(--red-dim); color: var(--red); }
-  .task-badge.no_record { background: var(--surface); color: var(--text-faint); border: 1px solid var(--border); }
+/* ── BUTTONS ── */
+.btn-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.btn-primary {
+  font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+  padding:9px 18px; background:var(--amber-dim); color:var(--amber);
+  border:1px solid var(--amber); border-radius:var(--radius);
+  cursor:pointer; transition:all 0.15s;
+}
+.btn-primary:hover { background:var(--amber); color:#000; }
+.btn-primary:disabled { opacity:0.35; cursor:not-allowed; }
+.btn-cancel {
+  font-family:var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+  padding:9px 14px; background:transparent; color:var(--text-dim);
+  border:1px solid var(--border2); border-radius:var(--radius);
+  cursor:pointer; transition:all 0.15s;
+}
+.btn-cancel:hover { background:var(--surface3); }
+.save-hint { font-size:11px; color:var(--text-faint); }
 
-  .task-check {
-    width: 20px; height: 20px; border-radius: 4px; cursor: pointer;
-    border: 1px solid var(--border2); background: var(--surface);
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s; flex-shrink: 0;
-  }
-  .task-check.checked { background: var(--amber-dim); border-color: var(--amber); }
-  .task-check.hidden { opacity: 0; pointer-events: none; }
-  .task-check-inner { width: 10px; height: 10px; background: var(--amber); border-radius: 2px; display: none; }
-  .task-check.checked .task-check-inner { display: block; }
+/* ── HISTORY TABLE ── */
+.history-table { width:100%; border-collapse:collapse; font-size:12px; }
+.history-table th {
+  text-align:left; padding:5px 10px;
+  font-size:9px; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--text-faint); border-bottom:1px solid var(--border);
+  font-weight:500; font-family:var(--sans);
+}
+.history-table td { padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+.history-table tr:last-child td { border-bottom:none; }
+.history-table tr:hover td { background:var(--surface2); }
+.h-date { font-family:var(--mono); font-size:10px; color:var(--text-dim); white-space:nowrap; }
+.h-hours { font-family:var(--mono); font-size:12px; font-weight:700; color:var(--amber); }
+.h-tech { font-size:12px; color:var(--text-dim); }
+.h-tasks { display:flex; flex-wrap:wrap; gap:4px; }
+.h-task-tag { padding:2px 6px; background:var(--green-dim); color:var(--green); border-radius:3px; font-size:10px; }
+.h-note-tag { padding:2px 6px; background:var(--surface3); color:var(--text-faint); border-radius:3px; font-size:10px; border:1px solid var(--border); }
+.empty-msg { padding:16px; color:var(--text-faint); font-size:12px; text-align:center; }
 
-  /* ── LOG BUTTON ── */
-  .log-btn {
-    align-self: flex-start; padding: 10px 20px;
-    font-family: var(--mono); font-size: 12px; font-weight: 700;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    background: var(--amber-dim); color: var(--amber);
-    border: 1px solid var(--amber); border-radius: 5px;
-    cursor: pointer; transition: all 0.15s;
-  }
-  .log-btn:hover { background: var(--amber); color: #000; }
-  .log-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .log-btn.cancel { background: transparent; color: var(--text-dim); border-color: var(--border2); }
-  .log-btn.cancel:hover { background: var(--surface2); color: var(--text); }
-
-  .btn-row { display: flex; gap: 10px; align-items: center; }
-  .save-note { font-size: 11px; color: var(--text-faint); }
-
-  /* ── HISTORY LOG ── */
-  .history-section { border-top: 1px solid var(--border); padding: 24px 32px; }
-  .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .history-table th { text-align: left; padding: 6px 12px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); border-bottom: 1px solid var(--border); font-weight: 500; }
-  .history-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  .history-table tr:last-child td { border-bottom: none; }
-  .history-table tr:hover td { background: var(--surface2); }
-  .history-date { font-family: var(--mono); font-size: 11px; color: var(--text-dim); white-space: nowrap; }
-  .history-hours { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--amber); white-space: nowrap; }
-  .history-tech { color: var(--text-dim); }
-  .history-tasks { display: flex; flex-wrap: wrap; gap: 4px; }
-  .history-task-tag { padding: 2px 7px; background: var(--green-dim); color: var(--green); border-radius: 3px; font-size: 10px; letter-spacing: 0.04em; }
-  .history-note-tag { padding: 2px 7px; background: var(--surface2); color: var(--text-faint); border-radius: 3px; font-size: 10px; border: 1px solid var(--border); }
-  .empty-history { padding: 20px; color: var(--text-faint); font-size: 12px; text-align: center; }
-  .empty-state {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    flex: 1; gap: 10px; padding: 60px;
-  }
-  .empty-icon { font-size: 32px; opacity: 0.3; }
-  .empty-msg { font-size: 13px; color: var(--text-faint); text-align: center; }
-
-  /* ── ERROR / LOADING ── */
-  .full-center {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-height: 100vh; gap: 16px;
-  }
-  .error-msg { font-size: 13px; color: var(--red); max-width: 360px; text-align: center; line-height: 1.6; }
+/* ── FULL CENTER ── */
+.full-center { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; gap:14px; }
+.err-msg { font-size:13px; color:var(--red); max-width:340px; text-align:center; line-height:1.6; }
 </style>
 </head>
 <body>
@@ -230,365 +266,309 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script>
-const { useState, useEffect, useCallback } = React;
+const { useState, useEffect, useRef } = React;
 
 const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14","HD15","HD16","HD17","HD18"];
 const TASKS = [
-  { key: "airfilter_battery", name: "Air filter & battery check",       interval: 50   },
-  { key: "oil_filter",        name: "Oil / filter change",              interval: 150  },
-  { key: "airfilter_clean",   name: "Air filter cleaning",              interval: 250  },
-  
-  { key: "coolant_lines",     name: "Check coolant lines",               interval: 250  },
-  { key: "fuel_filter",       name: "Fuel filter change",                interval: 250  },
-  { key: "drive_belt",        name: "Check drive belt & tension",        interval: 500  },
-  { key: "radiator_airfilter",name: "Clean radiator & change air filter",interval: 500  },
+  { key:"airfilter_battery", name:"Air filter & battery check",        interval:50  },
+  { key:"oil_filter",        name:"Oil / filter change",               interval:150 },
+  { key:"airfilter_clean",   name:"Air filter cleaning",               interval:250 },
+  { key:"coolant_lines",     name:"Check coolant lines",               interval:250 },
+  { key:"fuel_filter",       name:"Fuel filter change",                interval:250 },
+  { key:"drive_belt",        name:"Check drive belt & tension",        interval:500 },
+  { key:"radiator_airfilter",name:"Clean radiator & change air filter",interval:500 },
 ];
 
-const DATA_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/data.json";
+const DATA_URL    = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/data.json";
+const LOGS_URL    = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_logs.json";
+const HISTORY_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_history.json";
 const GITHUB_OWNER = "Geoffrey-Fitzjarrell-ai";
 const GITHUB_REPO  = "generator_servicing";
 const GITHUB_TOKEN = "PASTE_YOUR_GITHUB_PAT_HERE";
 const PENDING_PATH = "pending_completions.json";
 
-function b64e(str) { return btoa(unescape(encodeURIComponent(str))); }
-function b64d(str) { return decodeURIComponent(escape(atob(str))); }
+function b64e(s){ return btoa(unescape(encodeURIComponent(s))); }
+function b64d(s){ return decodeURIComponent(escape(atob(s))); }
 
-async function writePendingCompletion(entry) {
+async function writePending(entry) {
   if (GITHUB_TOKEN === "PASTE_YOUR_GITHUB_PAT_HERE") return;
   const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${PENDING_PATH}`;
-  const headers = { "Authorization": "Bearer " + GITHUB_TOKEN, "Accept": "application/vnd.github+json" };
-  let existing = [], sha = null;
-  try {
-    const r = await fetch(url, { headers });
-    if (r.ok) { const f = await r.json(); sha = f.sha; existing = JSON.parse(b64d(f.content.replace(/\n/g,""))); }
-  } catch(e) {}
+  const h = {"Authorization":"Bearer "+GITHUB_TOKEN,"Accept":"application/vnd.github+json"};
+  let existing=[], sha=null;
+  try { const r=await fetch(url,{headers:h}); if(r.ok){const f=await r.json(); sha=f.sha; existing=JSON.parse(b64d(f.content.replace(/\n/g,"")));} } catch(e){}
   existing.push(entry);
-  const body = { message: "Log completion: " + entry.truck, content: b64e(JSON.stringify(existing, null, 2)) };
-  if (sha) body.sha = sha;
-  await fetch(url, { method: "PUT", headers: { ...headers, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const body={message:"Log: "+entry.truck, content:b64e(JSON.stringify(existing,null,2))};
+  if(sha) body.sha=sha;
+  await fetch(url,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});
 }
 
-/* ── ARC GAUGE SVG ── */
-function ArcGauge({ pct, overdue, hours }) {
-  const W = 80, H = 200;
-  const barX = 28, barW = 24, barH = 160, barY = 16;
-  const fillH = Math.max(0, Math.min(barH, barH * pct));
-  const fillY = barY + barH - fillH;
-  const fillColor = overdue ? "#e05252" : pct > 0.8 ? "#f5a623" : "#4caf7d";
-  const glowColor = overdue ? "#e0525233" : pct > 0.8 ? "#f5a62333" : "#4caf7d33";
+/* ── VERTICAL GAUGE ── */
+function Gauge({ pct, overdue }) {
+  const W=52, H=170, bx=18, bw=20, by=8, bh=148;
+  const fillH = Math.max(0, Math.min(bh, bh * pct));
+  const fillY = by + bh - fillH;
+  const id = "gz" + Math.round(pct*100);
+  const zoneColor = overdue ? "#e04545" : pct > 0.75 ? "#f0a500" : "#3da870";
 
-  // tick marks at 25%, 50%, 75%
-  const ticks = [0.25, 0.5, 0.75];
-
-  return React.createElement("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, style:{overflow:"visible"} },
-    // glow behind fill
-    React.createElement("rect", { x: barX-3, y: fillY-3, width: barW+6, height: fillH+6, rx:6, fill: glowColor }),
-    // track background
-    React.createElement("rect", { x: barX, y: barY, width: barW, height: barH, rx:4, fill:"#1a1e28" }),
-    // fill
-    React.createElement("rect", { x: barX, y: fillY, width: barW, height: fillH, rx:4, fill: fillColor }),
-    // track border
-    React.createElement("rect", { x: barX, y: barY, width: barW, height: barH, rx:4, fill:"none", stroke:"#2e3440", strokeWidth:1 }),
-    // tick marks
-    ...ticks.map(t =>
-      React.createElement("line", { key:t,
-        x1: barX + barW, y1: barY + barH * (1 - t),
-        x2: barX + barW + 6, y2: barY + barH * (1 - t),
-        stroke:"#454c5e", strokeWidth:1
-      })
+  return React.createElement("svg", { width:W, height:H, viewBox:`0 0 ${W} ${H}`, style:{display:"block"} },
+    // zone gradient track
+    React.createElement("defs", null,
+      React.createElement("linearGradient", { id:"zoneGrad", x1:"0", y1:"1", x2:"0", y2:"0" },
+        React.createElement("stop", { offset:"0%",   stopColor:"#3da870" }),
+        React.createElement("stop", { offset:"50%",  stopColor:"#f0a500" }),
+        React.createElement("stop", { offset:"100%", stopColor:"#e04545" })
+      ),
+      React.createElement("clipPath", { id:"fillClip"+Math.round(pct*1000) },
+        React.createElement("rect", { x:bx, y:fillY, width:bw, height:fillH })
+      )
     ),
-    // 0 label
-    React.createElement("text", { x: barX + barW + 10, y: barY + barH + 4,
-      fontFamily:"'Space Mono',monospace", fontSize:8, fill:"#454c5e" }, "0"),
-    // max label
-    React.createElement("text", { x: barX + barW + 10, y: barY + 4,
-      fontFamily:"'Space Mono',monospace", fontSize:8, fill:"#454c5e" }, "1k"),
-    // hour value — rotated, runs alongside bar
-    React.createElement("text", {
-      x: barX - 8, y: barY + barH / 2,
-      textAnchor:"middle",
-      fontFamily:"'Space Mono',monospace", fontSize:11, fontWeight:700, fill: fillColor,
-      transform: `rotate(-90, ${barX - 8}, ${barY + barH / 2})`
-    }, hours != null ? hours + "h" : "—")
+    // track bg
+    React.createElement("rect", { x:bx, y:by, width:bw, height:bh, rx:4, fill:"#1a2235" }),
+    // zone gradient (always visible faintly)
+    React.createElement("rect", { x:bx, y:by, width:bw, height:bh, rx:4, fill:"url(#zoneGrad)", opacity:0.12 }),
+    // actual fill clipped to current level
+    React.createElement("rect", { x:bx, y:by, width:bw, height:bh, rx:4, fill:"url(#zoneGrad)",
+      clipPath:`url(#fillClip${Math.round(pct*1000)})`, opacity:0.9 }),
+    // glow on fill top edge
+    fillH > 4 ? React.createElement("rect", { x:bx, y:fillY, width:bw, height:3, rx:2, fill:"#fff", opacity:0.15 }) : null,
+    // track border
+    React.createElement("rect", { x:bx, y:by, width:bw, height:bh, rx:4, fill:"none", stroke:"#28364f", strokeWidth:1 }),
+    // tick marks
+    ...[0.25,0.5,0.75].map(t =>
+      React.createElement("line", { key:t, x1:bx+bw, y1:by+bh*(1-t), x2:bx+bw+5, y2:by+bh*(1-t), stroke:"#38465a", strokeWidth:1 })
+    ),
+    // 0 / max labels
+    React.createElement("text", { x:bx+bw+8, y:by+bh+3, fontFamily:"'JetBrains Mono',monospace", fontSize:8, fill:"#38465a" }, "0"),
+    React.createElement("text", { x:bx+bw+8, y:by+5,    fontFamily:"'JetBrains Mono',monospace", fontSize:8, fill:"#38465a" }, "1k")
   );
 }
 
-/* ── MAIN APP ── */
+/* ── APP ── */
 function App() {
-  const [fleetData,    setFleetData]    = useState(null);
-  const [serviceLogs,  setServiceLogs]  = useState({});
-  const [selected,     setSelected]     = useState("HD6");
-  const [loaded,       setLoaded]       = useState(false);
-  const [error,        setError]        = useState(null);
-  const [fetchedAt,    setFetchedAt]    = useState(null);
-  const [logMode,        setLogMode]        = useState(false);
-  const [checkedTasks,   setCheckedTasks]   = useState({});
-  const [serviceHistory, setServiceHistory] = useState({});
+  const [fleet,      setFleet]      = useState(null);
+  const [svcLogs,    setSvcLogs]    = useState({});
+  const [svcHistory, setSvcHistory] = useState({});
+  const [selected,   setSelected]   = useState("HD6");
+  const [loaded,     setLoaded]     = useState(false);
+  const [error,      setError]      = useState(null);
+  const [syncedAt,   setSyncedAt]   = useState(null);
+  const [logMode,    setLogMode]    = useState(false);
+  const [checked,    setChecked]    = useState({});
 
-  async function loadServiceLogs() {
-    let seed = {}, hist = {};
-    try {
-      const [r1, r2] = await Promise.all([
-        fetch("https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_logs.json?_=" + Date.now()),
-        fetch("https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_history.json?_=" + Date.now()),
-      ]);
-      if (r1.ok) seed = await r1.json();
-      if (r2.ok) hist = await r2.json();
-    } catch(e) {}
-    setServiceHistory(hist);
-    const logs = {};
-    for (const t of TRUCKS) {
-      const base = seed[t] || {};
-      try {
-        const local = localStorage.getItem("svclog:" + t);
-        const localObj = local ? JSON.parse(local) : {};
-        const merged = { ...base };
-        for (const [k,v] of Object.entries(localObj)) { if (!merged[k] || v > merged[k]) merged[k] = v; }
-        logs[t] = merged;
-      } catch(e) { logs[t] = base; }
-    }
-    setServiceLogs(logs);
-  }
-
-  function saveServiceLog(truckId, log) {
-    setServiceLogs(prev => ({ ...prev, [truckId]: log }));
-    try { localStorage.setItem("svclog:" + truckId, JSON.stringify(log)); } catch(e) {}
-  }
-
-  async function loadData() {
+  async function loadAll() {
     setError(null);
     try {
-      const res = await fetch(DATA_URL + "?_=" + Date.now());
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const json = await res.json();
-      const result = {};
-      for (const t of TRUCKS) result[t] = json[t] ? { hours: null, intervalStart: 0, overdue: false, technician: "", lastUpdated: null, postedBy: null, ...json[t] } : { hours: null, intervalStart: 0, overdue: false, technician: "", lastUpdated: null, postedBy: null };
-      setFleetData(result);
-      setFetchedAt(new Date());
-    } catch(e) {
-      setError("Fleet data unavailable. Check repo or wait for next sync.");
-    }
+      const bust = "?_="+Date.now();
+      const [r1,r2,r3] = await Promise.all([fetch(DATA_URL+bust),fetch(LOGS_URL+bust),fetch(HISTORY_URL+bust)]);
+      if(!r1.ok) throw new Error();
+      const [data,seedLogs,hist] = await Promise.all([r1.json(), r2.ok?r2.json():{}, r3.ok?r3.json():{}]);
+      const fleet={};
+      for(const t of TRUCKS) fleet[t]={hours:null,intervalStart:0,overdue:false,technician:"",lastUpdated:null,postedBy:null,...(data[t]||{})};
+      setFleet(fleet);
+      setSvcHistory(hist);
+      // merge seed + localStorage
+      const logs={};
+      for(const t of TRUCKS){
+        const base=seedLogs[t]||{};
+        try{ const local=localStorage.getItem("svc:"+t); const lo=local?JSON.parse(local):{}; const merged={...base}; for(const[k,v] of Object.entries(lo)) if(!merged[k]||v>merged[k]) merged[k]=v; logs[t]=merged; }
+        catch(e){ logs[t]=base; }
+      }
+      setSvcLogs(logs);
+      setSyncedAt(new Date());
+    } catch(e) { setError("Fleet data unavailable."); }
     setLoaded(true);
   }
 
-  useEffect(() => { loadData(); loadServiceLogs(); }, []);
+  useEffect(()=>{ loadAll(); },[]);
 
-  if (!loaded) return React.createElement("div", { className:"full-center" },
-    React.createElement("div", { style:{ fontFamily:"'Space Mono',monospace", fontSize:11, color:"#454c5e", letterSpacing:"0.1em" } }, "LOADING FLEET DATA...")
+  if(!loaded) return React.createElement("div",{className:"full-center"},
+    React.createElement("div",{style:{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"#38465a",letterSpacing:"0.12em"}},"LOADING FLEET DATA...")
   );
-  if (error) return React.createElement("div", { className:"full-center" },
-    React.createElement("div", { className:"error-msg" }, error),
-    React.createElement("button", { className:"refresh-btn", onClick: loadData }, "RETRY")
+  if(error) return React.createElement("div",{className:"full-center"},
+    React.createElement("div",{className:"err-msg"},error),
+    React.createElement("button",{className:"btn-ghost",onClick:loadAll},"RETRY")
   );
 
-  const truck   = fleetData[selected];
-  const log     = serviceLogs[selected] || {};
-  const hours   = truck.hours;
+  const truck = fleet[selected];
+  const log   = svcLogs[selected]||{};
+  const hours = truck.hours;
 
-  const taskStatus = TASKS.map(task => {
-    const lastDone   = log[task.key];  // undefined if never recorded
-    const hasRecord  = lastDone != null;
-    const sinceLast  = hasRecord && hours != null ? hours - lastDone : null;
-    const remaining  = sinceLast != null ? task.interval - sinceLast : null;
-    const pctUsed    = sinceLast != null ? Math.min(sinceLast / task.interval, 1) : 0;
-    const status     = hours == null ? "unknown"
-                     : !hasRecord    ? "no_record"
-                     : sinceLast >= task.interval ? "overdue"
-                     : sinceLast >= task.interval * 0.9 ? "warn"
-                     : "ok";
-    return { ...task, lastDone, hasRecord, sinceLast, remaining, pctUsed, status };
+  const taskStatus = TASKS.map(task=>{
+    const last = log[task.key];
+    const hasRec = last != null;
+    const since = hasRec && hours!=null ? hours-last : null;
+    const rem   = since!=null ? task.interval-since : null;
+    const pct   = since!=null ? Math.min(since/task.interval,1) : 0;
+    const status= hours==null?"unknown": !hasRec?"no_record": since>=task.interval?"overdue": since>=task.interval*0.9?"warn":"ok";
+    return {...task,last,hasRec,since,rem,pct,status};
   });
 
-  const anyOverdue  = taskStatus.some(t => t.status === "overdue");
-  const anyWarn     = taskStatus.some(t => t.status === "warn");
-  const worstTaskPct = taskStatus.reduce((max, t) => Math.max(max, t.pctUsed), 0);
-  const gaugePct    = worstTaskPct;
-  const isOverdue   = anyOverdue;
+  const anyOverdue = taskStatus.some(t=>t.status==="overdue");
+  const anyWarn    = taskStatus.some(t=>t.status==="warn");
+  const gaugePct   = taskStatus.reduce((m,t)=>Math.max(m,t.pct),0);
+  const isOverdue  = anyOverdue;
 
-  function truckPip(t) {
-    const td  = fleetData[t];
-    const tlog = serviceLogs[t] || {};
-    if (td.hours == null) return "none";
-    const over = TASKS.some(task => {
-      const last = tlog[task.key];
-      return last != null && (td.hours - last) >= task.interval;
-    });
-    if (over) return "overdue";
-    const warn = TASKS.some(task => {
-      const last = tlog[task.key];
-      return last != null && (td.hours - last) >= task.interval * 0.9;
-    });
-    return warn ? "warn" : "ok";
+  function truckStatus(t){
+    const td=fleet[t]; const tl=svcLogs[t]||{};
+    if(!td.hours) return "none";
+    if(TASKS.some(task=>{ const l=tl[task.key]; return l!=null&&(td.hours-l)>=task.interval; })) return "overdue";
+    if(TASKS.some(task=>{ const l=tl[task.key]; return l!=null&&(td.hours-l)>=task.interval*0.9; })) return "warn";
+    return "ok";
   }
 
-  function handleSave() {
-    if (!hours) return;
-    const newLog = { ...log };
-    const done = [];
-    for (const key of Object.keys(checkedTasks)) {
-      if (checkedTasks[key]) { newLog[key] = hours; const t = TASKS.find(x => x.key === key); if (t) done.push(t.name); }
-    }
-    saveServiceLog(selected, newLog);
-    if (done.length > 0) writePendingCompletion({ truck: selected, tasks: done, postedBy: truck.postedBy, loggedAt: new Date().toISOString() });
-    setCheckedTasks({});
-    setLogMode(false);
+  function handleSave(){
+    if(!hours) return;
+    const newLog={...log}; const done=[];
+    for(const[k,v] of Object.entries(checked)){ if(v){ newLog[k]=hours; const t=TASKS.find(x=>x.key===k); if(t) done.push(t.name); } }
+    setSvcLogs(p=>({...p,[selected]:newLog}));
+    try{ localStorage.setItem("svc:"+selected,JSON.stringify(newLog)); } catch(e){}
+    if(done.length) writePending({truck:selected,tasks:done,postedBy:truck.postedBy,loggedAt:new Date().toISOString()});
+    setChecked({}); setLogMode(false);
   }
 
-  const statusLabel = { ok:"OK", warn:"DUE SOON", overdue:"OVERDUE", unknown:"—", no_record:"NO RECORD" };
+  const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"NO RECORD"};
+  const overdueTasks = taskStatus.filter(t=>t.status==="overdue");
+  const warnTasks    = taskStatus.filter(t=>t.status==="warn");
 
-  return React.createElement("div", null,
+  const nextServiceCard = ()=>{
+    if(!hours) return React.createElement("div",{className:"stat-val"},"—");
+    if(overdueTasks.length) return React.createElement("div",null,
+      React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:10,fontWeight:700,color:"var(--red)",letterSpacing:"0.08em",marginBottom:5}},"DUE NOW"),
+      React.createElement("div",{className:"due-list"}, overdueTasks.map(t=>React.createElement("div",{key:t.key,className:"due-tag"},t.name)))
+    );
+    if(warnTasks.length) return React.createElement("div",null,
+      React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:10,fontWeight:700,color:"var(--amber)",letterSpacing:"0.08em",marginBottom:5}},"DUE SOON"),
+      React.createElement("div",{className:"due-list"}, warnTasks.map(t=>React.createElement("div",{key:t.key,className:"due-tag"},t.name)))
+    );
+    const known=taskStatus.filter(t=>t.rem!=null); const next=known.length?Math.round(Math.min(...known.map(t=>t.rem))):null;
+    return React.createElement("div",{className:"stat-val"},next??'—', next!=null?React.createElement("span",{className:"unit"},"h"):null);
+  };
+
+  const histEntries=(svcHistory[selected]||[]).filter(e=>e.date||e.hours).slice().reverse();
+
+  return React.createElement("div",null,
     // HEADER
-    React.createElement("header", { className:"header" },
-      React.createElement("div", { className:"header-left" },
-        React.createElement("span", { className:"header-logo" }, "HD GEN2"),
-        React.createElement("div", { className:"header-divider" }),
-        React.createElement("span", { className:"header-title" }, "Generator Service Monitor")
+    React.createElement("header",{className:"header"},
+      React.createElement("div",{className:"header-brand"},
+        React.createElement("span",{className:"header-badge"},"HD GEN2"),
+        React.createElement("span",{className:"header-title"},"Generator Service Monitor")
       ),
-      React.createElement("div", { className:"header-right" },
-        React.createElement("div", { className:"sync-dot" }),
-        React.createElement("span", { className:"sync-label" },
-          fetchedAt ? "SYNCED " + fetchedAt.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"}) : "—"
+      React.createElement("div",{className:"header-right"},
+        React.createElement("div",{className:"sync-indicator"},
+          React.createElement("div",{className:"sync-dot"}),
+          React.createElement("span",{className:"sync-time"}, syncedAt?"SYNCED "+syncedAt.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"—")
         ),
-        React.createElement("button", { className:"refresh-btn", onClick: loadData }, "↻ REFRESH")
+        React.createElement("button",{className:"btn-ghost",onClick:loadAll},"↻ REFRESH")
       )
     ),
     // TRUCK STRIP
-    React.createElement("nav", { className:"truck-strip" },
-      TRUCKS.map(t => {
-        const td   = fleetData[t];
-        const pip  = truckPip(t);
-        const cls  = ["truck-tab", t === selected ? "active" : "", pip === "overdue" ? "overdue" : ""].filter(Boolean).join(" ");
-        return React.createElement("div", { key:t, className: cls, onClick: () => { setSelected(t); setLogMode(false); setCheckedTasks({}); } },
-          React.createElement("div", { className: "status-pip " + (pip === "none" ? "" : pip) }),
-          React.createElement("div", { className:"truck-name" }, t),
-          React.createElement("div", { className:"truck-hours" },
-            td.hours != null ? td.hours + "h" : "no data"
-          )
+    React.createElement("nav",{className:"truck-strip"},
+      TRUCKS.map(t=>{
+        const st=truckStatus(t); const td=fleet[t];
+        const cls=["truck-tab", t===selected?"active":"", st!=="none"?"st-"+st:""].filter(Boolean).join(" ");
+        return React.createElement("div",{key:t,className:cls,onClick:()=>{setSelected(t);setLogMode(false);setChecked({});}},
+          React.createElement("div",{className:"truck-name"},t),
+          React.createElement("div",{className:"truck-hours-badge"}, td.hours!=null?td.hours+"h":"—")
         );
       })
     ),
     // MAIN
-    React.createElement("div", { className:"main" },
+    React.createElement("div",{className:"main"},
       // LEFT
-      React.createElement("div", { className:"left-panel" },
-        React.createElement("div", { className:"truck-label" }, selected),
-        React.createElement("div", { className:"truck-sublabel" }, "HD GEN2 · Japan Fleet"),
-        React.createElement("div", { style:{ display:"flex", gap:20, alignItems:"flex-start", width:"100%", marginBottom:20 } },
-          React.createElement(ArcGauge, { pct: gaugePct, overdue: isOverdue, hours }),
-          React.createElement("div", { style:{ flex:1, display:"flex", flexDirection:"column", gap:10 } },
-            React.createElement("div", { className:"stat-card" },
-              React.createElement("div", { className:"stat-label" }, "Total Hours"),
-              React.createElement("div", { className: "stat-value " + (isOverdue ? "overdue" : "") },
-                hours != null ? hours : "—", React.createElement("span", { className:"stat-unit" }, hours != null ? "h" : "")
+      React.createElement("div",{className:"left-panel"},
+        React.createElement("div",{className:"truck-header"},
+          React.createElement("div",{className:"truck-id",style:{color:isOverdue?"var(--red)":anyWarn?"var(--amber)":"var(--text)"}},selected),
+          React.createElement("div",{className:"truck-sub"},"HD GEN2 · Japan Fleet")
+        ),
+        React.createElement("div",{className:"gauge-stats-row"},
+          React.createElement("div",{className:"gauge-col"},
+            React.createElement("div",{className:"gauge-wrap"},
+              React.createElement(Gauge,{pct:gaugePct,overdue:isOverdue})
+            ),
+            React.createElement("div",{className:"gauge-label"},"INTERVAL")
+          ),
+          React.createElement("div",{className:"stats-col"},
+            React.createElement("div",{className:"stat-card s-neutral"},
+              React.createElement("div",{className:"stat-lbl"},"Total Hours"),
+              React.createElement("div",{className:"stat-val "+(isOverdue?"c-overdue":anyWarn?"c-warn":"")},
+                hours!=null?hours:"—", hours!=null?React.createElement("span",{className:"unit"},"h"):null
               )
             ),
-            React.createElement("div", { className:"stat-card" },
-              React.createElement("div", { className:"stat-label" }, "Next Service"),
-              (() => {
-                if (hours == null) return React.createElement("div", { className:"stat-value" }, "—");
-                const overdueTasks = taskStatus.filter(t => t.status === "overdue");
-                if (overdueTasks.length) {
-                  return React.createElement("div", { style:{marginTop:4} },
-                    React.createElement("div", { style:{fontFamily:"'Space Mono',monospace", fontSize:11, fontWeight:700, color:"var(--red)", marginBottom:6, letterSpacing:"0.06em"} }, "DUE NOW"),
-                    ...overdueTasks.map(t =>
-                      React.createElement("div", { key:t.key, style:{fontSize:11, color:"#ffd5d5", padding:"3px 0", borderBottom:"1px solid var(--red-dim)", lineHeight:1.4} }, t.name)
-                    )
-                  );
-                }
-                const warnTasks = taskStatus.filter(t => t.status === "warn");
-                if (warnTasks.length) {
-                  return React.createElement("div", { style:{marginTop:4} },
-                    React.createElement("div", { style:{fontFamily:"'Space Mono',monospace", fontSize:11, fontWeight:700, color:"var(--amber)", marginBottom:6} }, "DUE SOON"),
-                    ...warnTasks.map(t =>
-                      React.createElement("div", { key:t.key, style:{fontSize:11, color:"#ffe4b5", padding:"3px 0", borderBottom:"1px solid var(--amber-dim)", lineHeight:1.4} }, t.name)
-                    )
-                  );
-                }
-                const known = taskStatus.filter(t => t.remaining != null);
-                const next = known.length ? Math.round(Math.min(...known.map(t => t.remaining))) : null;
-                return React.createElement("div", { className:"stat-value" },
-                  next != null ? next : "—",
-                  React.createElement("span", { className:"stat-unit" }, next != null ? "h" : "")
-                );
-              })()
-            ),
-            isOverdue ? React.createElement("div", { className:"attention-banner" },
-              React.createElement("span", { className:"icon" }, "⚠"),
-              React.createElement("div", { className:"msg" }, "Service required — visit this truck when available")
-            ) : null
+            React.createElement("div",{className:"stat-card "+(isOverdue?"s-overdue":anyWarn?"s-warn":"s-ok")},
+              React.createElement("div",{className:"stat-lbl"},"Next Service"),
+              nextServiceCard()
+            )
           )
         ),
-        truck.postedBy ? React.createElement("div", { className:"reporter-row" },
-          React.createElement("div", { className:"reporter-label" }, "Last reported by"),
-          React.createElement("div", { className:"reporter-name" }, truck.postedBy.name || truck.technician),
-          truck.lastUpdated ? React.createElement("div", { className:"reporter-time" }, new Date(truck.lastUpdated).toLocaleString()) : null
-        ) : null
+        isOverdue?React.createElement("div",{className:"attention"},
+          React.createElement("span",{className:"attention-icon"},"⚠"),
+          React.createElement("div",{className:"attention-msg"},"Service required — get to this truck when available")
+        ):null,
+        truck.postedBy?React.createElement("div",{className:"reporter"},
+          React.createElement("div",{className:"reporter-lbl"},"Last reported by"),
+          React.createElement("div",{className:"reporter-name"},truck.postedBy.name||truck.technician),
+          truck.lastUpdated?React.createElement("div",{className:"reporter-time"},new Date(truck.lastUpdated).toLocaleString()):null
+        ):null
       ),
       // RIGHT
-      React.createElement("div", { className:"right-panel" },
-        React.createElement("div", null,
-          React.createElement("div", { className:"panel-section-title" }, "Maintenance Schedule"),
-          React.createElement("div", { className:"task-grid" },
-            taskStatus.map(task =>
-              React.createElement("div", { key: task.key, className: "task-row " + (task.status === "overdue" ? "overdue" : task.status === "warn" ? "warn" : "") },
-                React.createElement("div", { className:"task-name" }, task.name),
-                React.createElement("div", { className:"task-interval" }, task.interval + "h"),
-                React.createElement("div", { className: "task-badge " + task.status }, statusLabel[task.status]),
-                React.createElement("div", {
-                  className: "task-check " + (logMode ? "" : "hidden") + " " + (checkedTasks[task.key] ? "checked" : ""),
-                  onClick: () => logMode && setCheckedTasks(prev => ({ ...prev, [task.key]: !prev[task.key] }))
-                },
-                  React.createElement("div", { className:"task-check-inner" })
-                )
+      React.createElement("div",{className:"right-panel"},
+        // TASKS
+        React.createElement("div",null,
+          React.createElement("div",{className:"section-title"},"Maintenance Schedule"),
+          React.createElement("div",{className:"task-list"},
+            taskStatus.map(task=>
+              React.createElement("div",{key:task.key,className:"task-row r-"+task.status},
+                React.createElement("div",{className:"task-name"},task.name),
+                React.createElement("div",{className:"task-interval"},task.interval+"h"),
+                React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
+                React.createElement("div",{
+                  className:"task-check"+(logMode?"":" hidden")+(checked[task.key]?" checked":""),
+                  onClick:()=>logMode&&setChecked(p=>({...p,[task.key]:!p[task.key]}))
+                }, React.createElement("div",{className:"task-check-inner"}))
               )
             )
           )
         ),
-        React.createElement("div", { className:"btn-row" },
+        // LOG BUTTON
+        React.createElement("div",{className:"btn-row"},
           !logMode
-            ? React.createElement("button", { className:"log-btn", onClick: () => setLogMode(true), disabled: !hours },
-                "Log Service Performed"
-              )
-            : React.createElement(React.Fragment, null,
-                React.createElement("button", { className:"log-btn", onClick: handleSave, disabled: Object.values(checkedTasks).every(v => !v) },
-                  "Save Completed Tasks"
-                ),
-                React.createElement("button", { className:"log-btn cancel", onClick: () => { setLogMode(false); setCheckedTasks({}); } }, "Cancel"),
-                React.createElement("span", { className:"save-note" }, "Check tasks performed above, then save")
-              )
+            ?React.createElement("button",{className:"btn-primary",onClick:()=>setLogMode(true),disabled:!hours},"Log Service Performed")
+            :React.createElement(React.Fragment,null,
+              React.createElement("button",{className:"btn-primary",onClick:handleSave,disabled:Object.values(checked).every(v=>!v)},"Save Completed Tasks"),
+              React.createElement("button",{className:"btn-cancel",onClick:()=>{setLogMode(false);setChecked({})}},"Cancel"),
+              React.createElement("span",{className:"save-hint"},"Check tasks above, then save")
+            )
         ),
-        // HISTORY LOG — inside right panel, no blank space
-        React.createElement("div", null,
-          React.createElement("div", { className:"panel-section-title" }, selected + " — Service Log"),
-          (() => {
-            const entries = (serviceHistory[selected] || []).filter(e => e.date || e.hours).slice().reverse();
-            if (!entries.length) return React.createElement("div", { className:"empty-history" }, "No service records found for this truck.");
-            return React.createElement("table", { className:"history-table" },
-              React.createElement("thead", null,
-                React.createElement("tr", null,
-                  React.createElement("th", null, "Date"),
-                  React.createElement("th", null, "Hours"),
-                  React.createElement("th", null, "Technician"),
-                  React.createElement("th", null, "Work Performed")
+        // HISTORY
+        React.createElement("div",null,
+          React.createElement("div",{className:"section-title"},selected+" — Service Log"),
+          !histEntries.length
+            ?React.createElement("div",{className:"empty-msg"},"No service records found for this truck.")
+            :React.createElement("table",{className:"history-table"},
+              React.createElement("thead",null,
+                React.createElement("tr",null,
+                  React.createElement("th",null,"Date"),
+                  React.createElement("th",null,"Hours"),
+                  React.createElement("th",null,"Technician"),
+                  React.createElement("th",null,"Work Performed")
                 )
               ),
-              React.createElement("tbody", null,
-                entries.map((e, i) =>
-                  React.createElement("tr", { key: i },
-                    React.createElement("td", { className:"history-date" }, e.date || "—"),
-                    React.createElement("td", { className:"history-hours" }, e.hours != null ? e.hours + "h" : "—"),
-                    React.createElement("td", { className:"history-tech" }, e.technician || "—"),
-                    React.createElement("td", null,
-                      React.createElement("div", { className:"history-tasks" },
-                        ...(e.tasks || []).map(t => React.createElement("span", { key:t.key, className:"history-task-tag" }, t.label)),
-                        ...(e.notes || []).map((n,ni) => React.createElement("span", { key:"n"+ni, className:"history-note-tag" }, n))
+              React.createElement("tbody",null,
+                histEntries.map((e,i)=>
+                  React.createElement("tr",{key:i},
+                    React.createElement("td",{className:"h-date"},e.date||"—"),
+                    React.createElement("td",{className:"h-hours"},e.hours!=null?e.hours+"h":"—"),
+                    React.createElement("td",{className:"h-tech"},e.technician||"—"),
+                    React.createElement("td",null,
+                      React.createElement("div",{className:"h-tasks"},
+                        ...(e.tasks||[]).map(t=>React.createElement("span",{key:t.key,className:"h-task-tag"},t.label)),
+                        ...(e.notes||[]).map((n,ni)=>React.createElement("span",{key:"n"+ni,className:"h-note-tag"},n))
                       )
                     )
                   )
                 )
               )
-            );
-          })()
+            )
         )
       )
     )
