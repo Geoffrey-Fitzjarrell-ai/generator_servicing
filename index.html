@@ -541,40 +541,6 @@ function Gauge({ pct, overdue }) {
 }
 
 
-function ParticleCanvas() {
-  const canvasRef = React.useRef(null);
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if(!canvas) return;
-    const resize = () => { canvas.width=window.innerWidth; canvas.height=window.innerHeight; };
-    resize();
-    window.addEventListener('resize', resize);
-    const ctx = canvas.getContext('2d');
-    const N = 55;
-    const pts = Array.from({length:N}, () => ({
-      x: Math.random()*canvas.width, y: Math.random()*canvas.height,
-      vx:(Math.random()-0.5)*0.18, vy:(Math.random()-0.5)*0.18,
-      r: Math.random()*1.2+0.4,
-      o: Math.random()*0.12+0.04,
-      c: Math.random() > 0.6 ? '74,124,245' : '240,165,0',
-    }));
-    let id;
-    function draw() {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      pts.forEach(p => {
-        p.x=(p.x+p.vx+canvas.width)%canvas.width;
-        p.y=(p.y+p.vy+canvas.height)%canvas.height;
-        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-        ctx.fillStyle=`rgba(${p.c},${p.o})`; ctx.fill();
-      });
-      id = requestAnimationFrame(draw);
-    }
-    draw();
-    return () => { cancelAnimationFrame(id); window.removeEventListener('resize',resize); };
-  }, []);
-  return React.createElement('canvas',{ref:canvasRef,style:{position:'fixed',top:0,left:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:0}});
-}
-
 /* ── APP ── */
 function App() {
   const [fleet,      setFleet]      = useState(null);
@@ -590,7 +556,6 @@ function App() {
   const [displayKey,     setDisplayKey]     = useState(0);
   const [countedHours,   setCountedHours]   = useState(null);
   const [showSuccess,    setShowSuccess]    = useState(false);
-  const [ripples,        setRipples]        = useState([]);
   const [syncAgo,        setSyncAgo]        = useState('');
   const [flashedTasks,   setFlashedTasks]   = useState({});
   const prevHoursRef   = React.useRef(null);
@@ -738,16 +703,6 @@ function App() {
 
   function handleTabClick(t, e){
     if(t===selected) return;
-    // 3D ripple
-    const rect=e.currentTarget.getBoundingClientRect();
-    const x=e.clientX-rect.left; const y=e.clientY-rect.top;
-    const id=Date.now();
-    setRipples(r=>[...r,{id,x,y,truck:t}]);
-    setTimeout(()=>setRipples(r=>r.filter(rp=>rp.id!==id)),700);
-    // Background drift
-    document.body.classList.add('drifting');
-    setTimeout(()=>document.body.classList.remove('drifting'),500);
-    // Transition
     setTransitioning(true);
     setTimeout(()=>{
       setSelected(t);setLogMode(false);setChecked({});
@@ -756,8 +711,6 @@ function App() {
   }
 
   return React.createElement("div",null,
-    React.createElement(ParticleCanvas,null),
-    React.createElement("div",{className:"scanline"}),
     // HEADER
     React.createElement("header",{className:"header"},
       React.createElement("div",{className:"header-brand"},
@@ -777,11 +730,7 @@ function App() {
       TRUCKS.map(t=>{
         const st=truckStatus(t); const td=fleet[t];
         const cls=["truck-tab", t===selected?"active":"", st!=="none"?"st-"+st:""].filter(Boolean).join(" ");
-        const tabRipples = ripples.filter(r=>r.truck===t).map(r=>
-            React.createElement("div",{key:r.id,className:"tab-ripple",style:{left:r.x-40,top:r.y-40,width:80,height:80}})
-          );
         return React.createElement("div",{key:t,className:cls,onClick:(e)=>handleTabClick(t,e)},
-          ...tabRipples,
           React.createElement("div",{className:"truck-name"},t),
           React.createElement("div",{className:"truck-hours-badge"}, td.hours!=null?td.hours+"h":"—")
         );
