@@ -166,7 +166,7 @@
   .task-badge.ok { background: var(--green-dim); color: var(--green); }
   .task-badge.warn { background: var(--amber-glow); color: var(--amber); }
   .task-badge.overdue { background: var(--red-dim); color: var(--red); }
-  .task-badge.unknown { background: var(--surface); color: var(--text-faint); }
+  .task-badge.no_record { background: var(--surface); color: var(--text-faint); border: 1px solid var(--border); }
 
   .task-check {
     width: 20px; height: 20px; border-radius: 4px; cursor: pointer;
@@ -196,7 +196,20 @@
   .btn-row { display: flex; gap: 10px; align-items: center; }
   .save-note { font-size: 11px; color: var(--text-faint); }
 
-  /* ── EMPTY STATE ── */
+  /* ── HISTORY LOG ── */
+  .history-section { border-top: 1px solid var(--border); padding: 24px 32px; }
+  .history-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .history-table th { text-align: left; padding: 6px 12px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); border-bottom: 1px solid var(--border); font-weight: 500; }
+  .history-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .history-table tr:last-child td { border-bottom: none; }
+  .history-table tr:hover td { background: var(--surface2); }
+  .history-date { font-family: var(--mono); font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+  .history-hours { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--amber); white-space: nowrap; }
+  .history-tech { color: var(--text-dim); }
+  .history-tasks { display: flex; flex-wrap: wrap; gap: 4px; }
+  .history-task-tag { padding: 2px 7px; background: var(--green-dim); color: var(--green); border-radius: 3px; font-size: 10px; letter-spacing: 0.04em; }
+  .history-note-tag { padding: 2px 7px; background: var(--surface2); color: var(--text-faint); border-radius: 3px; font-size: 10px; border: 1px solid var(--border); }
+  .empty-history { padding: 20px; color: var(--text-faint); font-size: 12px; text-align: center; }
   .empty-state {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     flex: 1; gap: 10px; padding: 60px;
@@ -332,15 +345,21 @@ function App() {
   const [loaded,       setLoaded]       = useState(false);
   const [error,        setError]        = useState(null);
   const [fetchedAt,    setFetchedAt]    = useState(null);
-  const [logMode,      setLogMode]      = useState(false);
-  const [checkedTasks, setCheckedTasks] = useState({});
+  const [logMode,        setLogMode]        = useState(false);
+  const [checkedTasks,   setCheckedTasks]   = useState({});
+  const [serviceHistory, setServiceHistory] = useState({});
 
   async function loadServiceLogs() {
-    let seed = {};
+    let seed = {}, hist = {};
     try {
-      const r = await fetch("https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_logs.json?_=" + Date.now());
-      if (r.ok) seed = await r.json();
+      const [r1, r2] = await Promise.all([
+        fetch("https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_logs.json?_=" + Date.now()),
+        fetch("https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_history.json?_=" + Date.now()),
+      ]);
+      if (r1.ok) seed = await r1.json();
+      if (r2.ok) hist = await r2.json();
     } catch(e) {}
+    setServiceHistory(hist);
     const logs = {};
     for (const t of TRUCKS) {
       const base = seed[t] || {};
@@ -391,12 +410,17 @@ function App() {
   const hours   = truck.hours;
 
   const taskStatus = TASKS.map(task => {
-    const lastDone   = log[task.key] || 0;
-    const sinceLast  = hours != null ? hours - lastDone : 0;
-    const remaining  = task.interval - sinceLast;
-    const pctUsed    = hours != null ? Math.min(sinceLast / task.interval, 1) : 0;
-    const status     = hours == null ? "unknown" : remaining <= 0 ? "overdue" : remaining <= task.interval * 0.1 ? "warn" : "ok";
-    return { ...task, lastDone, sinceLast, remaining, pctUsed, status };
+    const lastDone   = log[task.key];  // undefined if never recorded
+    const hasRecord  = lastDone != null;
+    const sinceLast  = hasRecord && hours != null ? hours - lastDone : null;
+    const remaining  = sinceLast != null ? task.interval - sinceLast : null;
+    const pctUsed    = sinceLast != null ? Math.min(sinceLast / task.interval, 1) : 0;
+    const status     = hours == null ? "unknown"
+                     : !hasRecord    ? "no_record"
+                     : sinceLast >= task.interval ? "overdue"
+                     : sinceLast >= task.interval * 0.9 ? "warn"
+                     : "ok";
+    return { ...task, lastDone, hasRecord, sinceLast, remaining, pctUsed, status };
   });
 
   const anyOverdue  = taskStatus.some(t => t.status === "overdue");
@@ -409,9 +433,15 @@ function App() {
     const td  = fleetData[t];
     const tlog = serviceLogs[t] || {};
     if (td.hours == null) return "none";
-    const over = TASKS.some(task => td.hours - (tlog[task.key] || 0) >= task.interval);
+    const over = TASKS.some(task => {
+      const last = tlog[task.key];
+      return last != null && (td.hours - last) >= task.interval;
+    });
     if (over) return "overdue";
-    const warn = TASKS.some(task => { const s = td.hours - (tlog[task.key] || 0); return s / task.interval >= 0.9; });
+    const warn = TASKS.some(task => {
+      const last = tlog[task.key];
+      return last != null && (td.hours - last) >= task.interval * 0.9;
+    });
     return warn ? "warn" : "ok";
   }
 
@@ -428,7 +458,7 @@ function App() {
     setLogMode(false);
   }
 
-  const statusLabel = { ok:"OK", warn:"DUE SOON", overdue:"OVERDUE", unknown:"—" };
+  const statusLabel = { ok:"OK", warn:"DUE SOON", overdue:"OVERDUE", unknown:"—", no_record:"NO RECORD" };
 
   return React.createElement("div", null,
     // HEADER
@@ -478,7 +508,7 @@ function App() {
           React.createElement("div", { className:"stat-card" },
             React.createElement("div", { className:"stat-label" }, "Next Service"),
             React.createElement("div", { className: "stat-value " + (isOverdue ? "overdue" : anyWarn ? "warn" : "") },
-              hours == null ? "—" : isOverdue ? "Now" : Math.round(Math.min(...taskStatus.filter(t=>t.status!=="unknown").map(t=>t.remaining))),
+              hours == null ? "—" : isOverdue ? "Now" : (() => { const known = taskStatus.filter(t=>t.remaining != null); return known.length ? Math.round(Math.min(...known.map(t=>t.remaining))) : "—"; })(),
               React.createElement("span", { className:"stat-unit" }, hours != null && !isOverdue ? "h" : "")
             )
           )
@@ -527,6 +557,39 @@ function App() {
               )
         )
       )
+    ),
+    // HISTORY LOG
+    React.createElement("div", { className:"history-section" },
+      React.createElement("div", { className:"panel-section-title" }, selected + " — Service Log"),
+      (() => {
+        const entries = (serviceHistory[selected] || []).filter(e => e.date || e.hours).slice().reverse();
+        if (!entries.length) return React.createElement("div", { className:"empty-history" }, "No service records found for this truck.");
+        return React.createElement("table", { className:"history-table" },
+          React.createElement("thead", null,
+            React.createElement("tr", null,
+              React.createElement("th", null, "Date"),
+              React.createElement("th", null, "Hours"),
+              React.createElement("th", null, "Technician"),
+              React.createElement("th", null, "Work Performed")
+            )
+          ),
+          React.createElement("tbody", null,
+            entries.map((e, i) =>
+              React.createElement("tr", { key: i },
+                React.createElement("td", { className:"history-date" }, e.date || "—"),
+                React.createElement("td", { className:"history-hours" }, e.hours != null ? e.hours + "h" : "—"),
+                React.createElement("td", { className:"history-tech" }, e.technician || "—"),
+                React.createElement("td", null,
+                  React.createElement("div", { className:"history-tasks" },
+                    ...(e.tasks || []).map(t => React.createElement("span", { key:t.key, className:"history-task-tag" }, t.label)),
+                    ...(e.notes || []).map((n,ni) => React.createElement("span", { key:"n"+ni, className:"history-note-tag" }, n))
+                  )
+                )
+              )
+            )
+          )
+        );
+      })()
     )
   );
 }
