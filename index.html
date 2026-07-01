@@ -106,8 +106,8 @@
   .truck-sublabel { font-size: 11px; color: var(--text-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 28px; }
 
   /* ── ARC GAUGE ── */
-  .gauge-wrap { position: relative; width: 260px; height: 160px; margin-bottom: 24px; }
-  .gauge-wrap svg { overflow: visible; }
+  .gauge-wrap { position: relative; width: 260px; height: 200px; margin-bottom: 24px; }
+  .gauge-wrap svg { overflow: hidden; }
 
   /* ── STATS ROW ── */
   .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-bottom: 20px; }
@@ -237,13 +237,9 @@ const TASKS = [
   { key: "airfilter_battery", name: "Air filter & battery check",       interval: 50   },
   { key: "oil_filter",        name: "Oil / filter change",              interval: 150  },
   { key: "airfilter_clean",   name: "Air filter cleaning",              interval: 250  },
-  { key: "fuel_filter",       name: "Fuel filter change",               interval: 250  },
+  
   { key: "coolant_lines",     name: "Check coolant lines",              interval: 250  },
-  { key: "drive_belt",        name: "Check drive belt & tension",       interval: 500  },
   { key: "radiator_airfilter",name: "Clean radiator & change air filter",interval: 500  },
-  { key: "coolant_flush",     name: "Coolant flush",                    interval: 1000 },
-  { key: "valve_lash",        name: "Valve lash",                       interval: 1000 },
-  { key: "engine_mounts",     name: "Check engine & generator mounts",  interval: 1000 },
 ];
 
 const DATA_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/data.json";
@@ -272,8 +268,8 @@ async function writePendingCompletion(entry) {
 
 /* ── ARC GAUGE SVG ── */
 function ArcGauge({ pct, overdue, hours }) {
-  const W = 260, H = 170;
-  const cx = 130, cy = 150, r = 110;
+  const W = 260, H = 200;
+  const cx = 130, cy = 162, r = 108;
   const startAngle = Math.PI * 1.1;
   const endAngle   = Math.PI * 1.9;
   const totalAngle = endAngle - startAngle;
