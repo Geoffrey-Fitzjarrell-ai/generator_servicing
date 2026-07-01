@@ -426,16 +426,16 @@ function App() {
           {key:"ok",       label:"OK",       count:fleetCounts.ok},
           {key:"grounded", label:"Grounded", count:fleetCounts.grounded},
           {key:"nodata",   label:"No Data",  count:fleetCounts.nodata},
-        ].map(s=>
-          React.createElement("div",{key:s.key,className:"fleet-row fs-"+s.key},
+        ].map(s=>{
+          const pct=Math.round(s.count/TRUCKS.length*100);
+          return React.createElement("div",{key:s.key,className:"fleet-row fs-"+s.key},
             React.createElement("div",{className:"fleet-row-lbl"},s.label),
             React.createElement("div",{className:"fleet-row-track"},
-              React.createElement("div",{className:"fleet-row-fill fs-"+s.key,
-                style:{width:(s.count/TRUCKS.length*100)+"%"}})
+              React.createElement("div",{className:"fleet-row-fill fs-"+s.key,style:{width:pct+"%"}})
             ),
-            React.createElement("div",{className:"fleet-row-count"},s.count)
-          )
-        )
+            React.createElement("div",{className:"fleet-row-pct"},pct+"%")
+          );
+        })
       )
     ),
     React.createElement("nav",{className:"truck-strip"},
