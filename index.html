@@ -484,10 +484,33 @@ function App() {
             ),
             React.createElement("div", { className:"stat-card" },
               React.createElement("div", { className:"stat-label" }, "Next Service"),
-              React.createElement("div", { className: "stat-value " + (isOverdue ? "overdue" : anyWarn ? "warn" : "") },
-                hours == null ? "—" : isOverdue ? "Now" : (() => { const known = taskStatus.filter(t=>t.remaining != null); return known.length ? Math.round(Math.min(...known.map(t=>t.remaining))) : "—"; })(),
-                React.createElement("span", { className:"stat-unit" }, hours != null && !isOverdue ? "h" : "")
-              )
+              (() => {
+                if (hours == null) return React.createElement("div", { className:"stat-value" }, "—");
+                const overdueTasks = taskStatus.filter(t => t.status === "overdue");
+                if (overdueTasks.length) {
+                  return React.createElement("div", { style:{marginTop:4} },
+                    React.createElement("div", { style:{fontFamily:"'Space Mono',monospace", fontSize:11, fontWeight:700, color:"var(--red)", marginBottom:6, letterSpacing:"0.06em"} }, "DUE NOW"),
+                    ...overdueTasks.map(t =>
+                      React.createElement("div", { key:t.key, style:{fontSize:11, color:"#ffd5d5", padding:"3px 0", borderBottom:"1px solid var(--red-dim)", lineHeight:1.4} }, t.name)
+                    )
+                  );
+                }
+                const warnTasks = taskStatus.filter(t => t.status === "warn");
+                if (warnTasks.length) {
+                  return React.createElement("div", { style:{marginTop:4} },
+                    React.createElement("div", { style:{fontFamily:"'Space Mono',monospace", fontSize:11, fontWeight:700, color:"var(--amber)", marginBottom:6} }, "DUE SOON"),
+                    ...warnTasks.map(t =>
+                      React.createElement("div", { key:t.key, style:{fontSize:11, color:"#ffe4b5", padding:"3px 0", borderBottom:"1px solid var(--amber-dim)", lineHeight:1.4} }, t.name)
+                    )
+                  );
+                }
+                const known = taskStatus.filter(t => t.remaining != null);
+                const next = known.length ? Math.round(Math.min(...known.map(t => t.remaining))) : null;
+                return React.createElement("div", { className:"stat-value" },
+                  next != null ? next : "—",
+                  React.createElement("span", { className:"stat-unit" }, next != null ? "h" : "")
+                );
+              })()
             ),
             isOverdue ? React.createElement("div", { className:"attention-banner" },
               React.createElement("span", { className:"icon" }, "⚠"),
