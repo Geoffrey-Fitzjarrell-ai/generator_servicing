@@ -1,1 +1,106 @@
-
+{
+  "HD6": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  },
+  "HD7": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  },
+  "HD8": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  },
+  "HD9": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  },
+  "HD10": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  },
+  "HD11": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  },
+  "HD12": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  },
+  "HD13": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  },
+  "HD14": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  },
+  "HD15": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  },
+  "HD16": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  },
+  "HD17": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  },
+  "HD18": {
+    "hours": null,
+    "intervalStart": 0,
+    "overdue": false,
+    "technician": "",
+    "lastUpdated": null,
+    "postedBy": null
+  }
+}
