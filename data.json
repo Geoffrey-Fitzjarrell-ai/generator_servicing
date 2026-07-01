@@ -1,11 +1,14 @@
 {
   "HD6": {
-    "hours": null,
+    "hours": 1510.7,
     "intervalStart": 0,
-    "overdue": false,
-    "technician": "",
-    "lastUpdated": null,
-    "postedBy": null
+    "overdue": true,
+    "technician": "Kouta Inoue",
+    "lastUpdated": "2026-06-30T11:36:32Z",
+    "postedBy": {
+      "id": "U09UPB6CG56",
+      "name": "Kouta Inoue"
+    }
   },
   "HD7": {
     "hours": null,
@@ -16,28 +19,37 @@
     "postedBy": null
   },
   "HD8": {
-    "hours": null,
+    "hours": 1377,
     "intervalStart": 0,
-    "overdue": false,
-    "technician": "",
-    "lastUpdated": null,
-    "postedBy": null
+    "overdue": true,
+    "technician": "Ryo Suzuki",
+    "lastUpdated": "2026-06-30T11:33:57Z",
+    "postedBy": {
+      "id": "U09P6572BK4",
+      "name": "Ryo Suzuki"
+    }
   },
   "HD9": {
-    "hours": null,
+    "hours": 1416,
     "intervalStart": 0,
-    "overdue": false,
-    "technician": "",
-    "lastUpdated": null,
-    "postedBy": null
+    "overdue": true,
+    "technician": "Kaede Fujiwara",
+    "lastUpdated": "2026-06-30T11:13:56Z",
+    "postedBy": {
+      "id": "U09NG2B5316",
+      "name": "Kaede Fujiwara"
+    }
   },
   "HD10": {
-    "hours": null,
+    "hours": 1479,
     "intervalStart": 0,
-    "overdue": false,
-    "technician": "",
-    "lastUpdated": null,
-    "postedBy": null
+    "overdue": true,
+    "technician": "Takumi Arimura",
+    "lastUpdated": "2026-07-01T00:18:12Z",
+    "postedBy": {
+      "id": "U09V64E0352",
+      "name": "Takumi Arimura"
+    }
   },
   "HD11": {
     "hours": null,
@@ -48,12 +60,15 @@
     "postedBy": null
   },
   "HD12": {
-    "hours": null,
+    "hours": 596,
     "intervalStart": 0,
     "overdue": false,
-    "technician": "",
-    "lastUpdated": null,
-    "postedBy": null
+    "technician": "Kaiho Haruto",
+    "lastUpdated": "2026-06-30T23:23:13Z",
+    "postedBy": {
+      "id": "U0AT2E00R5G",
+      "name": "Kaiho Haruto"
+    }
   },
   "HD13": {
     "hours": null,
@@ -80,12 +95,15 @@
     "postedBy": null
   },
   "HD16": {
-    "hours": null,
+    "hours": 251,
     "intervalStart": 0,
     "overdue": false,
-    "technician": "",
-    "lastUpdated": null,
-    "postedBy": null
+    "technician": "Jiahao Lin",
+    "lastUpdated": "2026-06-30T11:49:46Z",
+    "postedBy": {
+      "id": "U0AU900KF5M",
+      "name": "Jiahao Lin"
+    }
   },
   "HD17": {
     "hours": null,
