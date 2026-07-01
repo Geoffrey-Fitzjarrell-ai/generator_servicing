@@ -232,13 +232,15 @@
 <script>
 const { useState, useEffect, useCallback } = React;
 
-const TRUCKS = ["HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14","HD15","HD16","HD17","HD18"];
+const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14","HD15","HD16","HD17","HD18"];
 const TASKS = [
   { key: "airfilter_battery", name: "Air filter & battery check",       interval: 50   },
   { key: "oil_filter",        name: "Oil / filter change",              interval: 150  },
   { key: "airfilter_clean",   name: "Air filter cleaning",              interval: 250  },
   
-  { key: "coolant_lines",     name: "Check coolant lines",              interval: 250  },
+  { key: "coolant_lines",     name: "Check coolant lines",               interval: 250  },
+  { key: "fuel_filter",       name: "Fuel filter change",                interval: 250  },
+  { key: "drive_belt",        name: "Check drive belt & tension",        interval: 500  },
   { key: "radiator_airfilter",name: "Clean radiator & change air filter",interval: 500  },
 ];
 
