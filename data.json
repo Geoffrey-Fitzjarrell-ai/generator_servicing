@@ -116,7 +116,9 @@
     "overdue": false,
     "technician": "",
     "lastUpdated": "2026-07-02T08:30:23Z",
-    "postedBy": null
+    "postedBy": null,
+    "grounded": true,
+    "groundedNote": "Generator needs repair"
   },
   "HD18": {
     "hours": null,
