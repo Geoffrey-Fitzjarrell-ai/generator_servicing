@@ -22,12 +22,12 @@
   },
   "HD10": {
     "oil_filter": 1381,
-    "airfilter_battery": 1479,
+    "airfilter_battery": 1489,
     "airfilter_clean": 1381,
     "fuel_filter": 1381,
-    "clean_radiator": 1479,
-    "coolant_lines": 1479,
-    "drive_belt": 1479
+    "clean_radiator": 1489,
+    "coolant_lines": 1489,
+    "drive_belt": 1489
   },
   "HD11": {
     "oil_filter": 1253,
