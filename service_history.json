@@ -474,6 +474,26 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-02",
+      "hours": 334,
+      "technician": "Masakiyo",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        },
+        {
+          "key": "fuel_filter",
+          "label": "Fuel filter change"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD18": []
