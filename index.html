@@ -254,40 +254,34 @@ const LOGS_URL    = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/g
 const HISTORY_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_history.json";
 const GITHUB_OWNER = "Geoffrey-Fitzjarrell-ai";
 const GITHUB_REPO  = "generator_servicing";
-const GITHUB_TOKEN = "PASTE_YOUR_GITHUB_PAT_HERE";
 const PENDING_PATH = "pending_completions.json";
+// Writes (grounding, logging) go through a Cloudflare Worker proxy instead of an
+// embedded GitHub token — the PAT lives server-side in the Worker's secrets, never
+// in this public page, so there's no secret-scanning revocation and no paste-in dance.
+const WORKER_URL = "PASTE_YOUR_WORKER_URL_HERE";
+const WORKER_KEY = "PASTE_YOUR_SHARED_SECRET_HERE";
 
 function b64e(s){ return btoa(unescape(encodeURIComponent(s))); }
 function b64d(s){ return decodeURIComponent(escape(atob(s))); }
 
+async function callWorker(action, extra) {
+  if (WORKER_URL === "PASTE_YOUR_WORKER_URL_HERE") return false;
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Auth-Key": WORKER_KEY },
+      body: JSON.stringify({ action, ...extra }),
+    });
+    return res.ok;
+  } catch (e) { return false; }
+}
+
 async function writePending(entry) {
-  if(GITHUB_TOKEN==="PASTE_YOUR_GITHUB_PAT_HERE") return;
-  const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${PENDING_PATH}`;
-  const h={"Authorization":"Bearer "+GITHUB_TOKEN,"Accept":"application/vnd.github+json"};
-  let existing=[],sha=null;
-  try{const r=await fetch(url,{headers:h});if(r.ok){const f=await r.json();sha=f.sha;existing=JSON.parse(b64d(f.content.replace(/\n/g,"")));}}catch(e){}
-  existing.push(entry);
-  const body={message:"Log: "+entry.truck,content:b64e(JSON.stringify(existing,null,2))};
-  if(sha)body.sha=sha;
-  await fetch(url,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});
+  return callWorker("logPending", { entry });
 }
 
 async function writeGrounded(truck, grounded, note) {
-  if(GITHUB_TOKEN==="PASTE_YOUR_GITHUB_PAT_HERE") return false;
-  const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data.json`;
-  const h={"Authorization":"Bearer "+GITHUB_TOKEN,"Accept":"application/vnd.github+json"};
-  try {
-    const r=await fetch(url,{headers:h});
-    if(!r.ok) return false;
-    const f=await r.json();
-    const data=JSON.parse(b64d(f.content.replace(/\n/g,"")));
-    data[truck].grounded=grounded;
-    data[truck].groundedNote=note||"Under repair";
-    if(!grounded){ delete data[truck].grounded; delete data[truck].groundedNote; }
-    const body={message:(grounded?"Ground ":"Unground ")+truck,content:b64e(JSON.stringify(data,null,2)),sha:f.sha};
-    const res=await fetch(url,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});
-    return res.ok;
-  } catch(e){ return false; }
+  return callWorker("setGrounded", { truck, grounded, note });
 }
 
 function Gauge({ pct, overdue }) {
