@@ -227,6 +227,7 @@ const GITHUB_OWNER = "Geoffrey-Fitzjarrell-ai";
 const GITHUB_REPO  = "generator_servicing";
 const GITHUB_TOKEN = "PASTE_YOUR_GITHUB_PAT_HERE";
 const PENDING_PATH = "pending_completions.json";
+const TICKETS_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/tickets.json";
 const PROXY_URL    = "https://ai.generator-fleet-proxy.workers.dev/";
 const PROXY_SECRET = "poopooface69";
 
@@ -339,6 +340,7 @@ function App() {
   const [checked,    setChecked]    = useState({});
   const [showSuccess,   setShowSuccess]   = useState(false);
   const [techName,      setTechName]      = useState("Geoff Fitzjarrell");
+  const [tickets,       setTickets]       = useState({});
   const [groundingNote, setGroundingNote] = useState('');
   const [groundingBusy, setGroundingBusy] = useState(false);
   const [transitioning,setTransitioning]=useState(false);
@@ -350,9 +352,10 @@ function App() {
     setError(null);
     try {
       const bust="?_="+Date.now();
-      const [r1,r2,r3]=await Promise.all([fetch(DATA_URL+bust),fetch(LOGS_URL+bust),fetch(HISTORY_URL+bust)]);
+      const [r1,r2,r3,r4]=await Promise.all([fetch(DATA_URL+bust),fetch(LOGS_URL+bust),fetch(HISTORY_URL+bust),fetch(TICKETS_URL+bust)]);
       if(!r1.ok) throw new Error();
-      const [data,seedLogs,hist]=await Promise.all([r1.json(),r2.ok?r2.json():{},r3.ok?r3.json():{}]);
+      const [data,seedLogs,hist,tix]=await Promise.all([r1.json(),r2.ok?r2.json():{},r3.ok?r3.json():{},r4.ok?r4.json():{}]);
+      setTickets(tix||{});
       const fl={};
       for(const t of TRUCKS) fl[t]={hours:null,intervalStart:0,overdue:false,technician:"",lastUpdated:null,postedBy:null,...(data[t]||{})};
       setFleet(fl);
@@ -369,7 +372,14 @@ function App() {
     setLoaded(true);
   }
 
-  useEffect(()=>{loadAll();},[]);
+  useEffect(()=>{
+    loadAll();
+    const ar=setInterval(()=>{
+      const jst=new Date(Date.now()+9*3600*1000).getUTCHours();
+      if(jst>=6&&jst<22) loadAll();
+    },5*60*1000);
+    return()=>clearInterval(ar);
+  },[]);
 
   useEffect(()=>{
     function upd(){if(!syncedAt){setSyncAgo('');return;}const m=Math.floor((Date.now()-syncedAt.getTime())/60000);setSyncAgo(m===0?'just now':m===1?'1 min ago':m+' min ago');}
@@ -520,7 +530,13 @@ function App() {
         const st=truckStatus(t);const td=fleet[t];
         const cls=["truck-tab",t===selected?"active":"",st!=="none"?"st-"+st:""].filter(Boolean).join(" ");
         return React.createElement("div",{key:t,className:cls,onClick:()=>handleTabClick(t)},
-          React.createElement("div",{className:"truck-name"},t),
+          React.createElement("div",{style:{display:"flex",alignItems:"center",gap:5}},
+            React.createElement("div",{className:"truck-name"},t),
+            (tickets[t]&&tickets[t].length>0)?React.createElement("div",{style:{
+              background:"#2a1228",color:"#b060d0",border:"1px solid #7060a0",
+              borderRadius:3,fontSize:8,fontFamily:"var(--mono)",padding:"1px 4px",lineHeight:"14px"
+            }},tickets[t].length):null
+          ),
           React.createElement("div",{className:"truck-hours-badge"},td.hours!=null?td.hours+"h":"—")
         );
       })
@@ -605,6 +621,18 @@ function App() {
             React.createElement("button",{className:"btn-cancel",onClick:()=>{setLogMode(false);setChecked({});setTechName("Geoff Fitzjarrell");}},"Cancel"),
             React.createElement("span",{className:"save-hint"},"Check tasks above, then save")
           )
+        ),
+        React.createElement("div",null,
+          React.createElement("div",{className:"section-title"},selected+" — Open Jira Tickets"),
+          tickets[selected]&&tickets[selected].length>0
+            ?React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:4}},
+              tickets[selected].map(tk=>React.createElement("a",{key:tk.key,href:tk.url,target:"_blank",rel:"noopener noreferrer",style:{display:"flex",alignItems:"center",gap:10,padding:"8px 12px",background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:"var(--radius)",textDecoration:"none"}},
+                React.createElement("span",{style:{fontFamily:"var(--mono)",fontSize:11,color:"var(--blue)",flexShrink:0,minWidth:90}},tk.key),
+                React.createElement("span",{style:{fontSize:12,color:"var(--text)",flex:1,lineHeight:1.4}},tk.summary),
+                React.createElement("span",{style:{fontFamily:"var(--mono)",fontSize:9,padding:"2px 6px",borderRadius:3,flexShrink:0,background:tk.status==="Blocked"?"var(--red-dim)":tk.status==="Backlog"?"var(--surface3)":"var(--blue-dim)",color:tk.status==="Blocked"?"var(--red)":tk.status==="Backlog"?"var(--text-faint)":"var(--blue)"}},tk.status)
+              ))
+            )
+            :React.createElement("div",{className:"empty-msg"},"No open tickets for this truck")
         ),
         React.createElement("div",null,
           React.createElement("div",{className:"section-title"},selected+" — Service Log"),
