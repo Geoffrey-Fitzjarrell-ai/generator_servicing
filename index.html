@@ -227,6 +227,8 @@ const GITHUB_OWNER = "Geoffrey-Fitzjarrell-ai";
 const GITHUB_REPO  = "generator_servicing";
 const GITHUB_TOKEN = "PASTE_YOUR_GITHUB_PAT_HERE";
 const PENDING_PATH = "pending_completions.json";
+const PROXY_URL    = "https://ai.generator-fleet-proxy.workers.dev/";
+const PROXY_SECRET = "poopooface69";
 
 function b64e(s){ return btoa(unescape(encodeURIComponent(s))); }
 function b64d(s){ return decodeURIComponent(escape(atob(s))); }
@@ -259,6 +261,22 @@ async function writeGrounded(truck, grounded, note) {
     const res=await fetch(url,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});
     return res.ok;
   } catch(e){ return false; }
+}
+
+async function writeServiceLogToRepo(truck, log, entry) {
+  try {
+    await fetch(PROXY_URL, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        secret: PROXY_SECRET,
+        action: "updateServiceLog",
+        truck,
+        log,
+        historyEntry: entry
+      })
+    });
+  } catch(e) { console.error("proxy write failed", e); }
 }
 
 function Gauge({ pct, overdue }) {
@@ -299,6 +317,7 @@ function App() {
   const [logMode,    setLogMode]    = useState(false);
   const [checked,    setChecked]    = useState({});
   const [showSuccess,   setShowSuccess]   = useState(false);
+  const [techName,      setTechName]      = useState("Geoff Fitzjarrell");
   const [groundingNote, setGroundingNote] = useState('');
   const [groundingBusy, setGroundingBusy] = useState(false);
   const [transitioning,setTransitioning]=useState(false);
