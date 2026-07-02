@@ -111,11 +111,11 @@
     }
   },
   "HD17": {
-    "hours": null,
+    "hours": 334,
     "intervalStart": 0,
     "overdue": false,
     "technician": "",
-    "lastUpdated": null,
+    "lastUpdated": "2026-07-02T08:30:23Z",
     "postedBy": null
   },
   "HD18": {
