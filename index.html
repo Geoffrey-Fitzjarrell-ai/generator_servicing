@@ -145,6 +145,8 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .task-row.r-warn    { border-left-color:var(--amber); }
 .task-row.r-ok      { border-left-color:var(--green); }
 .task-row.r-no_record { border-left-color:#1e3050; }
+.task-row.r-done      { border-left-color:var(--green); }
+.task-row.r-not_done  { border-left-color:#1e3050; }
 .task-name { font-size:14px; color:var(--text); }
 .task-interval { font-family:var(--mono); font-size:12px; color:var(--text-faint); }
 .badge { font-family:var(--mono); font-size:11px; font-weight:700; padding:3px 7px; border-radius:3px; text-align:center; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; transition:background 0.3s, color 0.3s; }
@@ -154,6 +156,8 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 @keyframes overdueFlash { 0%,100%{opacity:1} 50%{opacity:0.45} }
 .badge.no_record { background:#141c2a; color:#5a7a9a; border:1px solid #1e3050; letter-spacing:0.06em; }
 .badge.unknown   { background:var(--surface); color:var(--text-faint); }
+.badge.done      { background:var(--green-dim); color:var(--green); }
+.badge.not_done  { background:#141c2a; color:#5a7a9a; border:1px solid #1e3050; letter-spacing:0.06em; }
 
 .task-check { width:18px; height:18px; border-radius:3px; border:1px solid var(--border2); background:var(--surface); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.12s; flex-shrink:0; }
 .task-check.checked { background:var(--amber-dim); border-color:var(--amber); }
@@ -215,7 +219,8 @@ const TASKS = [
   { key:"airfilter_clean",   name:"Air filter cleaning",               interval:250 },
   { key:"coolant_lines",     name:"Check coolant lines",               interval:250 },
   { key:"fuel_filter",       name:"Fuel filter change",                interval:250 },
-  { key:"drive_belt",        name:"Check drive belt & tension",        interval:500 },
+  { key:"drive_belt",        name:"Check drive belt & tension",        binary:true  },
+  { key:"valve_lash",        name:"Valve lash inspection",             binary:true  },
   { key:"radiator_airfilter",name:"Clean radiator & change air filter",interval:500 },
 ];
 // Air filter cleaning only applies to HD5; every other truck skips it.
@@ -368,6 +373,9 @@ function App() {
   const taskStatus=tasksForTruck(selected).map(task=>{
     const last=log[task.key];
     const hasRec=last!=null;
+    if(task.binary){
+      return {...task,last,hasRec,since:null,rem:null,pct:hasRec?1:0,status:hasRec?"done":"not_done"};
+    }
     const since=hasRec&&hours!=null?hours-last:null;
     const rem=since!=null?task.interval-since:null;
     const pct=since!=null?Math.min(since/task.interval,1):(hours!=null&&!hasRec&&task.key!=="airfilter_clean"&&hours>=task.interval?1:0);
@@ -388,8 +396,9 @@ function App() {
     const td=fleet[t];const tl=svcLogs[t]||{};
     if(td.grounded)return "grounded";
     if(!td.hours)return "none";
-    if(tasksForTruck(t).some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval;}))return "overdue";
-    if(tasksForTruck(t).some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval*0.9;}))return "warn";
+    const intervalTasks=tasksForTruck(t).filter(task=>!task.binary);
+    if(intervalTasks.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval;}))return "overdue";
+    if(intervalTasks.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval*0.9;}))return "warn";
     return "ok";
   }
 
@@ -424,7 +433,7 @@ function App() {
     return acc;
   },{overdue:0,warn:0,ok:0,grounded:0});
 
-  const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"UPCOMING"};
+  const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"UPCOMING",done:"DONE",not_done:"NOT DONE"};
   const overdueTasks=taskStatus.filter(t=>t.status==="overdue");
   const warnTasks=taskStatus.filter(t=>t.status==="warn");
   const histEntries=(svcHistory[selected]||[]).filter(e=>e.date||e.hours).slice().reverse();
@@ -545,7 +554,7 @@ function App() {
           React.createElement("div",{className:"task-list"},
             taskStatus.map(task=>React.createElement("div",{key:task.key,className:"task-row r-"+task.status},
               React.createElement("div",{className:"task-name"},task.name),
-              React.createElement("div",{className:"task-interval"},task.interval+"h"),
+              React.createElement("div",{className:"task-interval"},task.binary?"—":task.interval+"h"),
               React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
               React.createElement("div",{className:"task-check "+(logMode?"":"hidden")+(checked[task.key]?" checked":""),onClick:()=>logMode&&setChecked(p=>({...p,[task.key]:!p[task.key]}))},
                 React.createElement("div",{className:"task-check-inner"}))
