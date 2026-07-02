@@ -26,7 +26,8 @@
     "airfilter_clean": 1381,
     "fuel_filter": 1381,
     "clean_radiator": 1479,
-    "coolant_lines": 1479
+    "coolant_lines": 1479,
+    "drive_belt": 1479
   },
   "HD11": {
     "oil_filter": 1253,
