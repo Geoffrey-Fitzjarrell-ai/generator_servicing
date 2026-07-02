@@ -58,9 +58,11 @@
     "fuel_filter": 178
   },
   "HD17": {
-    "airfilter_battery": 154,
+    "airfilter_battery": 334,
     "oil_filter": 230,
-    "airfilter_clean": 154
+    "airfilter_clean": 154,
+    "coolant_lines": 334,
+    "fuel_filter": 334
   },
   "HD18": {}
 }
