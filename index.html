@@ -577,8 +577,14 @@ function App() {
         React.createElement("div",{className:"btn-row"},
           !logMode?React.createElement("button",{className:"btn-primary",onClick:()=>setLogMode(true),disabled:!hours},"Log Service Performed"):
           React.createElement(React.Fragment,null,
+            React.createElement("input",{
+              type:"text", value:techName,
+              onChange:e=>setTechName(e.target.value),
+              placeholder:"Technician name",
+              style:{padding:"8px 10px",background:"var(--surface2)",border:"1px solid var(--border2)",borderRadius:"var(--radius)",color:"var(--text)",fontFamily:"var(--sans)",fontSize:12,width:180}
+            }),
             React.createElement("button",{className:"btn-primary",onClick:handleSave,disabled:Object.values(checked).every(v=>!v)},"Save Completed Tasks"),
-            React.createElement("button",{className:"btn-cancel",onClick:()=>{setLogMode(false);setChecked({});}},"Cancel"),
+            React.createElement("button",{className:"btn-cancel",onClick:()=>{setLogMode(false);setChecked({});setTechName("Geoff Fitzjarrell");}},"Cancel"),
             React.createElement("span",{className:"save-hint"},"Check tasks above, then save")
           )
         ),
