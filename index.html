@@ -137,16 +137,17 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 
 /* TASKS */
 .task-list { display:flex; flex-direction:column; gap:4px; }
-.task-row { display:grid; grid-template-columns:1fr 56px 90px 28px; align-items:center; gap:10px; padding:9px 12px; border-radius:var(--radius); background:var(--surface2); border:1px solid var(--border); border-left-width:3px; border-left-color:var(--border2); transition:background 0.12s; animation:slideInRight 0.28s cubic-bezier(0.22,1,0.36,1) both; }
+.task-card { border-radius:var(--radius); background:var(--surface2); border:1px solid var(--border); border-left-width:3px; border-left-color:var(--border2); transition:background 0.12s; animation:slideInRight 0.28s cubic-bezier(0.22,1,0.36,1) both; overflow:hidden; }
 @keyframes slideInRight { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
-.task-row:nth-child(1){animation-delay:0.04s} .task-row:nth-child(2){animation-delay:0.08s} .task-row:nth-child(3){animation-delay:0.12s} .task-row:nth-child(4){animation-delay:0.16s} .task-row:nth-child(5){animation-delay:0.20s} .task-row:nth-child(6){animation-delay:0.24s} .task-row:nth-child(7){animation-delay:0.28s}
-.task-row:hover { background:var(--surface3); }
-.task-row.r-overdue { border-left-color:var(--red); background:#160d0d; }
-.task-row.r-warn    { border-left-color:var(--amber); }
-.task-row.r-ok      { border-left-color:var(--green); }
-.task-row.r-no_record { border-left-color:#1e3050; }
-.task-row.r-done      { border-left-color:var(--green); }
-.task-row.r-not_done  { border-left-color:#1e3050; }
+.task-card:nth-child(1){animation-delay:0.04s} .task-card:nth-child(2){animation-delay:0.08s} .task-card:nth-child(3){animation-delay:0.12s} .task-card:nth-child(4){animation-delay:0.16s} .task-card:nth-child(5){animation-delay:0.20s} .task-card:nth-child(6){animation-delay:0.24s} .task-card:nth-child(7){animation-delay:0.28s}
+.task-card:hover { background:var(--surface3); }
+.task-card.r-overdue { border-left-color:var(--red); background:#160d0d; }
+.task-card.r-warn    { border-left-color:var(--amber); }
+.task-card.r-ok      { border-left-color:var(--green); }
+.task-card.r-no_record { border-left-color:#1e3050; }
+.task-card.r-done      { border-left-color:var(--green); }
+.task-card.r-not_done  { border-left-color:#1e3050; }
+.task-row { display:grid; grid-template-columns:1fr 56px 90px 28px; align-items:center; gap:10px; padding:9px 12px; cursor:pointer; }
 .task-name { font-size:14px; color:var(--text); }
 .task-name-wrap { display:flex; flex-direction:column; gap:2px; min-width:0; }
 .task-meta { font-family:var(--mono); font-size:10px; color:var(--text-faint); letter-spacing:0.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -161,11 +162,21 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .badge.done      { background:var(--green-dim); color:var(--green); }
 .badge.not_done  { background:#141c2a; color:#5a7a9a; border:1px solid #1e3050; letter-spacing:0.06em; }
 
+.task-action-slot { width:28px; height:18px; position:relative; flex-shrink:0; }
+.task-action-slot > .task-check, .task-action-slot > .task-toggle { position:absolute; top:0; left:5px; }
 .task-check { width:18px; height:18px; border-radius:3px; border:1px solid var(--border2); background:var(--surface); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.12s; flex-shrink:0; }
 .task-check.checked { background:var(--amber-dim); border-color:var(--amber); }
 .task-check.hidden { opacity:0; pointer-events:none; }
 .task-check-inner { width:8px; height:8px; background:var(--amber); border-radius:2px; display:none; }
 .task-check.checked .task-check-inner { display:block; }
+
+.task-toggle { width:18px; height:18px; display:flex; align-items:center; justify-content:center; color:var(--text-faint); font-size:11px; transition:transform 0.25s cubic-bezier(0.22,1,0.36,1), color 0.2s; flex-shrink:0; }
+.task-toggle.open { transform:rotate(90deg); color:var(--amber); }
+.task-toggle.hidden { display:none; }
+
+.task-desc { max-height:0; overflow:hidden; transition:max-height 0.3s cubic-bezier(0.22,1,0.36,1); }
+.task-desc.open { max-height:140px; }
+.task-desc-inner { padding:0 12px 12px 12px; font-size:12px; color:var(--text-dim); line-height:1.55; border-top:1px solid var(--border); margin-top:1px; padding-top:9px; }
 
 /* BUTTONS */
 .btn-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
@@ -216,14 +227,22 @@ const { useState, useEffect, useRef } = React;
 
 const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14","HD15","HD16","HD17"];
 const TASKS = [
-  { key:"airfilter_battery", name:"Air filter & battery check",        interval:50  },
-  { key:"oil_filter",        name:"Oil / filter change",               interval:150 },
-  { key:"airfilter_clean",   name:"Air filter cleaning",               interval:250 },
-  { key:"coolant_lines",     name:"Check coolant lines",               interval:250 },
-  { key:"fuel_filter",       name:"Fuel filter change",                interval:250 },
-  { key:"drive_belt",        name:"Check drive belt & tension",        binary:true  },
-  { key:"valve_lash",        name:"Valve lash inspection",             binary:true  },
-  { key:"radiator_airfilter",name:"Clean radiator & change air filter",interval:500 },
+  { key:"airfilter_battery", name:"Air filter & battery check",        interval:50,
+    desc:"Visual checks only — inspect the air filter element for visible dirt or damage, and check the battery for looseness (secure hold-down, tight terminals) and clean any corrosion off the terminals and case." },
+  { key:"oil_filter",        name:"Oil / filter change",               interval:150,
+    desc:"Drain and replace the engine oil, and install a new oil filter." },
+  { key:"airfilter_clean",   name:"Air filter cleaning",               interval:250,
+    desc:"Remove and inspect the air filter element; clean out loose dust/debris. HD5 only — other trucks skip this and go straight to full element replacement at the standard interval." },
+  { key:"coolant_lines",     name:"Check coolant lines",               interval:250,
+    desc:"Check that there are no leaks anywhere along the coolant lines, and confirm the coolant level is good (not empty/low)." },
+  { key:"fuel_filter",       name:"Fuel filter change",                interval:250,
+    desc:"Replace the fuel filter." },
+  { key:"drive_belt",        name:"Check drive belt & tension",        binary:true,
+    desc:"This engine's belt has no tensioner or adjustment — tension increases slightly on its own as the engine runs. This check is by feel: confirm the belt feels snug and inspect it for cracking, glazing, or fraying. There is nothing to tighten." },
+  { key:"valve_lash",        name:"Valve lash inspection",             binary:true,
+    desc:"Must be performed by a trained technician with the proper tools. Cold valve lash spec is 0.165 mm (0.0065 in) for both intake and exhaust." },
+  { key:"radiator_airfilter",name:"Clean radiator & change air filter",interval:500,
+    desc:"Clean the generator's radiator fins (compressed air or a gentle water rinse — never a pressure washer), and perform another visual inspection of the air filter element." },
 ];
 // Air filter cleaning only applies to HD5; every other truck skips it.
 function tasksForTruck(id){
@@ -314,6 +333,7 @@ function App() {
   const [transitioning,setTransitioning]=useState(false);
   const [displayKey, setDisplayKey] = useState(0);
   const [countedHours,setCountedHours]=useState(null);
+  const [expandedTask, setExpandedTask] = useState(null);
   const prevHoursRef = useRef(null);
 
   async function loadAll() {
@@ -361,7 +381,7 @@ function App() {
   function handleTabClick(t){
     if(t===selected)return;
     setTransitioning(true);
-    setTimeout(()=>{setSelected(t);setLogMode(false);setChecked({});setTransitioning(false);setDisplayKey(k=>k+1);},180);
+    setTimeout(()=>{setSelected(t);setLogMode(false);setChecked({});setExpandedTask(null);setTransitioning(false);setDisplayKey(k=>k+1);},180);
   }
 
   if(!loaded)return React.createElement("div",{className:"full-center"},React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:"#38465a",letterSpacing:"0.12em"}},"LOADING FLEET DATA..."));
@@ -554,20 +574,31 @@ function App() {
         React.createElement("div",null,
           React.createElement("div",{className:"section-title"},"Maintenance Schedule"),
           React.createElement("div",{className:"task-list"},
-            taskStatus.map(task=>React.createElement("div",{key:task.key,className:"task-row r-"+task.status},
-              React.createElement("div",{className:"task-name-wrap"},
-                React.createElement("div",{className:"task-name"},task.name),
-                React.createElement("div",{className:"task-meta"},
-                  task.binary
-                    ? (task.hasRec?("Done at "+task.last+"h"):"Not logged yet")
-                    : (task.hasRec?("Done at "+task.last+"h · Due at "+(task.last+task.interval)+"h"):("Due at "+task.interval+"h"))
+            taskStatus.map(task=>{
+              const isOpen=expandedTask===task.key;
+              return React.createElement("div",{key:task.key,className:"task-card r-"+task.status},
+                React.createElement("div",{className:"task-row",onClick:()=>setExpandedTask(isOpen?null:task.key)},
+                  React.createElement("div",{className:"task-name-wrap"},
+                    React.createElement("div",{className:"task-name"},task.name),
+                    React.createElement("div",{className:"task-meta"},
+                      task.binary
+                        ? (task.hasRec?("Done at "+task.last+"h"):"Not logged yet")
+                        : (task.hasRec?("Done at "+task.last+"h · Due at "+(task.last+task.interval)+"h"):("Due at "+task.interval+"h"))
+                    )
+                  ),
+                  React.createElement("div",{className:"task-interval"},task.binary?"—":task.interval+"h"),
+                  React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
+                  React.createElement("div",{className:"task-action-slot"},
+                    React.createElement("div",{className:"task-check "+(logMode?"":"hidden")+(checked[task.key]?" checked":""),onClick:(e)=>{e.stopPropagation();logMode&&setChecked(p=>({...p,[task.key]:!p[task.key]}));}},
+                      React.createElement("div",{className:"task-check-inner"})),
+                    React.createElement("div",{className:"task-toggle "+(logMode?"hidden":"")+(isOpen?" open":"")},"▸")
+                  )
+                ),
+                React.createElement("div",{className:"task-desc "+(isOpen?"open":"")},
+                  React.createElement("div",{className:"task-desc-inner"},task.desc)
                 )
-              ),
-              React.createElement("div",{className:"task-interval"},task.binary?"—":task.interval+"h"),
-              React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
-              React.createElement("div",{className:"task-check "+(logMode?"":"hidden")+(checked[task.key]?" checked":""),onClick:()=>logMode&&setChecked(p=>({...p,[task.key]:!p[task.key]}))},
-                React.createElement("div",{className:"task-check-inner"}))
-            ))
+              );
+            })
           )
         ),
         React.createElement("div",{className:"btn-row"},
