@@ -197,6 +197,13 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .h-task-tag { padding:3px 8px; background:var(--green-dim); color:var(--green); border-radius:3px; font-size:12px; }
 .h-note-tag { padding:3px 8px; background:var(--surface3); color:var(--text-faint); border-radius:3px; font-size:12px; border:1px solid var(--border); }
 .empty-msg { padding:16px; color:var(--text-faint); font-size:12px; text-align:center; }
+.daily-hours { padding:10px 12px; border-radius:var(--radius); background:var(--surface2); border:1px solid var(--border); margin-top:10px; }
+.daily-hours-lbl { font-size:9px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px; }
+.daily-bars { display:flex; align-items:flex-end; gap:3px; height:32px; }
+.daily-bar-wrap { display:flex; flex-direction:column; align-items:center; gap:3px; flex:1; }
+.daily-bar { width:100%; border-radius:2px 2px 0 0; background:var(--blue); min-height:2px; transition:height 0.3s ease; }
+.daily-bar-date { font-family:var(--mono); font-size:7px; color:var(--text-faint); }
+.daily-no-data { font-size:10px; color:var(--text-faint); font-style:italic; padding:4px 0; }
 .full-center { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; gap:14px; }
 .err-msg { font-size:13px; color:var(--red); max-width:340px; text-align:center; line-height:1.6; }
 </style>
@@ -227,6 +234,7 @@ const GITHUB_OWNER = "Geoffrey-Fitzjarrell-ai";
 const GITHUB_REPO  = "generator_servicing";
 const GITHUB_TOKEN = "PASTE_YOUR_GITHUB_PAT_HERE";
 const PENDING_PATH = "pending_completions.json";
+const DAILY_HOURS_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/daily_hours.json";
 const TICKETS_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/tickets.json";
 const PROXY_URL    = "https://ai.generator-fleet-proxy.workers.dev/";
 const PROXY_SECRET = "poopooface69";
@@ -341,6 +349,7 @@ function App() {
   const [showSuccess,   setShowSuccess]   = useState(false);
   const [techName,      setTechName]      = useState("Geoff Fitzjarrell");
   const [tickets,       setTickets]       = useState({});
+  const [dailyHours,    setDailyHours]    = useState({});
   const [groundingNote, setGroundingNote] = useState('');
   const [groundingBusy, setGroundingBusy] = useState(false);
   const [transitioning,setTransitioning]=useState(false);
@@ -352,10 +361,11 @@ function App() {
     setError(null);
     try {
       const bust="?_="+Date.now();
-      const [r1,r2,r3,r4]=await Promise.all([fetch(DATA_URL+bust),fetch(LOGS_URL+bust),fetch(HISTORY_URL+bust),fetch(TICKETS_URL+bust)]);
+      const [r1,r2,r3,r4,r5]=await Promise.all([fetch(DATA_URL+bust),fetch(LOGS_URL+bust),fetch(HISTORY_URL+bust),fetch(TICKETS_URL+bust),fetch(DAILY_HOURS_URL+bust)]);
       if(!r1.ok) throw new Error();
-      const [data,seedLogs,hist,tix]=await Promise.all([r1.json(),r2.ok?r2.json():{},r3.ok?r3.json():{},r4.ok?r4.json():{}]);
+      const [data,seedLogs,hist,tix,dh]=await Promise.all([r1.json(),r2.ok?r2.json():{},r3.ok?r3.json():{},r4.ok?r4.json():{},r5.ok?r5.json():{}]);
       setTickets(tix||{});
+      setDailyHours(dh||{});
       const fl={};
       for(const t of TRUCKS) fl[t]={hours:null,intervalStart:0,overdue:false,technician:"",lastUpdated:null,postedBy:null,...(data[t]||{})};
       setFleet(fl);
@@ -588,7 +598,21 @@ function App() {
           React.createElement("div",{className:"reporter-lbl"},"Last reported by"),
           React.createElement("div",{className:"reporter-name"},truck.postedBy.name||truck.technician),
           truck.lastUpdated?React.createElement("div",{className:"reporter-time"},new Date(truck.lastUpdated).toLocaleString()):null
-        ):null
+        ):null,
+        React.createElement("div",{className:"daily-hours"},
+          React.createElement("div",{className:"daily-hours-lbl"},"Daily Hours"),
+          (() => {
+            const entries = (dailyHours[selected]||[]).slice(-7);
+            if(!entries.length) return React.createElement("div",{className:"daily-no-data"},"Awaiting CCR trigger — will backfill automatically");
+            const max = Math.max(...entries.map(e=>e.hours), 1);
+            return React.createElement("div",{className:"daily-bars"},
+              entries.map(e=>React.createElement("div",{key:e.date,className:"daily-bar-wrap"},
+                React.createElement("div",{className:"daily-bar",title:e.hours+"h",style:{height:Math.max(Math.round((e.hours/max)*32),2)+"px"}}),
+                React.createElement("div",{className:"daily-bar-date"},e.date.slice(5))
+              ))
+            );
+          })()
+        )
       ),
       React.createElement("div",{className:"right-panel "+(transitioning?"panel-exit":"panel-enter"),key:"R"+displayKey},
         showSuccess?React.createElement("div",{className:"success-flash"}):null,
