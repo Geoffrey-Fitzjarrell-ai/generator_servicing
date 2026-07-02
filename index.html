@@ -218,6 +218,10 @@ const TASKS = [
   { key:"drive_belt",        name:"Check drive belt & tension",        interval:500 },
   { key:"radiator_airfilter",name:"Clean radiator & change air filter",interval:500 },
 ];
+// Air filter cleaning only applies to HD5; every other truck skips it.
+function tasksForTruck(id){
+  return TASKS.filter(t => t.key!=="airfilter_clean" || id==="HD5");
+}
 
 const DATA_URL    = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/data.json";
 const LOGS_URL    = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_logs.json";
@@ -361,7 +365,7 @@ function App() {
   const hours=truck.hours;
   const isGrounded=!!truck.grounded;
 
-  const taskStatus=TASKS.map(task=>{
+  const taskStatus=tasksForTruck(selected).map(task=>{
     const last=log[task.key];
     const hasRec=last!=null;
     const since=hasRec&&hours!=null?hours-last:null;
@@ -384,8 +388,8 @@ function App() {
     const td=fleet[t];const tl=svcLogs[t]||{};
     if(td.grounded)return "grounded";
     if(!td.hours)return "none";
-    if(TASKS.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval;}))return "overdue";
-    if(TASKS.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval*0.9;}))return "warn";
+    if(tasksForTruck(t).some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval;}))return "overdue";
+    if(tasksForTruck(t).some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval*0.9;}))return "warn";
     return "ok";
   }
 
