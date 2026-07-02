@@ -1,0 +1,93 @@
+{
+  "HD6": [
+    {
+      "key": "VCO-2131",
+      "summary": "Applanix <> Novatel Replacement \u2014 HD6",
+      "status": "To Do",
+      "priority": "P4",
+      "url": "https://appliedintuition.atlassian.net/browse/VCO-2131"
+    },
+    {
+      "key": "VSTAB-5080",
+      "summary": "[HD Truck] Gen2 truck HD6 FC BMPR FWD QT lidar visualization gap",
+      "status": "Containment",
+      "priority": "P4",
+      "url": "https://appliedintuition.atlassian.net/browse/VSTAB-5080"
+    }
+  ],
+  "HD7": [
+    {
+      "key": "VSTAB-5657",
+      "summary": "[HD7] - Dash Camera Power is accessible to Driver",
+      "status": "Needs triage",
+      "priority": "P3",
+      "url": "https://appliedintuition.atlassian.net/browse/VSTAB-5657"
+    },
+    {
+      "key": "VCO-2132",
+      "summary": "Applanix <> Novatel Replacement \u2014 HD7",
+      "status": "To Do",
+      "priority": "P4",
+      "url": "https://appliedintuition.atlassian.net/browse/VCO-2132"
+    }
+  ],
+  "HD8": [
+    {
+      "key": "VCO-2133",
+      "summary": "Applanix <> Novatel Replacement \u2014 HD8",
+      "status": "To Do",
+      "priority": "P4",
+      "url": "https://appliedintuition.atlassian.net/browse/VCO-2133"
+    }
+  ],
+  "HD9": [
+    {
+      "key": "VCO-2134",
+      "summary": "Applanix <> Novatel Replacement \u2014 HD9",
+      "status": "Blocked",
+      "priority": "P4",
+      "url": "https://appliedintuition.atlassian.net/browse/VCO-2134"
+    }
+  ],
+  "HD10": [
+    {
+      "key": "AVP-76439",
+      "summary": " HD10 - Run VSR road test",
+      "status": "Backlog",
+      "priority": "P4",
+      "url": "https://appliedintuition.atlassian.net/browse/AVP-76439"
+    },
+    {
+      "key": "VCO-2135",
+      "summary": "Applanix <> Novatel Replacement \u2014 HD10",
+      "status": "To Do",
+      "priority": "P4",
+      "url": "https://appliedintuition.atlassian.net/browse/VCO-2135"
+    }
+  ],
+  "HD11": [
+    {
+      "key": "VCO-2136",
+      "summary": "Applanix <> Novatel Replacement \u2014 HD11",
+      "status": "Blocked",
+      "priority": "P4",
+      "url": "https://appliedintuition.atlassian.net/browse/VCO-2136"
+    },
+    {
+      "key": "VCO-2130",
+      "summary": "Applanix <> Novatel Replacement \u2014 Onroad Trucks HD6 to HD11",
+      "status": "Backlog",
+      "priority": "P4",
+      "url": "https://appliedintuition.atlassian.net/browse/VCO-2130"
+    }
+  ],
+  "HD14": [
+    {
+      "key": "AVP-74553",
+      "summary": "HD14 - Blinker integration troubleshoot",
+      "status": "Backlog",
+      "priority": "P4",
+      "url": "https://appliedintuition.atlassian.net/browse/AVP-74553"
+    }
+  ]
+}
