@@ -237,6 +237,10 @@
         {
           "key": "coolant_lines",
           "label": "Check coolant lines"
+        },
+        {
+          "key": "drive_belt",
+          "label": "Check drive belt & tension"
         }
       ],
       "notes": []
