@@ -180,6 +180,9 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 
 /* BUTTONS */
 .btn-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.technician-input { width:100%; box-sizing:border-box; font-family:var(--mono); font-size:13px; color:var(--text); background:var(--surface2); border:1px solid var(--border2); border-radius:var(--radius); padding:9px 12px; margin-bottom:8px; outline:none; transition:border-color 0.15s; }
+.technician-input:focus { border-color:var(--amber); }
+.technician-input::placeholder { color:var(--text-faint); }
 .btn-primary { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:9px 18px; background:var(--amber-dim); color:var(--amber); border:1px solid var(--amber); border-radius:var(--radius); cursor:pointer; transition:all 0.15s; }
 .btn-primary:hover { background:var(--amber); color:#000; }
 .btn-primary:disabled { opacity:0.35; cursor:not-allowed; }
@@ -320,6 +323,7 @@ function App() {
   const [syncedAt,   setSyncedAt]   = useState(null);
   const [syncAgo,    setSyncAgo]    = useState('');
   const [logMode,    setLogMode]    = useState(false);
+  const [technicianInput, setTechnicianInput] = useState('');
   const [checked,    setChecked]    = useState({});
   const [showSuccess,   setShowSuccess]   = useState(false);
   const [groundingNote, setGroundingNote] = useState('');
@@ -375,7 +379,7 @@ function App() {
   function handleTabClick(t){
     if(t===selected)return;
     setTransitioning(true);
-    setTimeout(()=>{setSelected(t);setLogMode(false);setChecked({});setExpandedTask(null);setTransitioning(false);setDisplayKey(k=>k+1);},180);
+    setTimeout(()=>{setSelected(t);setLogMode(false);setChecked({});setExpandedTask(null);setTechnicianInput('');setTransitioning(false);setDisplayKey(k=>k+1);},180);
   }
 
   if(!loaded)return React.createElement("div",{className:"full-center"},React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:"#38465a",letterSpacing:"0.12em"}},"LOADING FLEET DATA..."));
@@ -432,11 +436,23 @@ function App() {
   function handleSave(){
     if(!hours)return;
     const newLog={...log};const done=[];
-    for(const[k,v]of Object.entries(checked)){if(v){newLog[k]=hours;const t=TASKS.find(x=>x.key===k);if(t)done.push(t.name);}}
+    for(const[k,v]of Object.entries(checked)){if(v){newLog[k]=hours;const t=TASKS.find(x=>x.key===k);if(t)done.push(t);}}
     setSvcLogs(p=>({...p,[selected]:newLog}));
     try{localStorage.setItem("svc:"+selected,JSON.stringify(newLog));}catch(e){}
-    if(done.length)writePending({truck:selected,tasks:done,postedBy:truck.postedBy,loggedAt:new Date().toISOString()});
-    setChecked({});setLogMode(false);
+    const tech=technicianInput.trim();
+    if(done.length){
+      writePending({truck:selected,tasks:done.map(t=>t.name),postedBy:truck.postedBy,loggedAt:new Date().toISOString()});
+      callWorker("logCompletion",{truck:selected,technician:tech,hours,tasks:done.map(t=>({key:t.key,label:t.name}))}).then(ok=>{
+        if(ok){
+          setSvcHistory(p=>{
+            const arr=p[selected]?[...p[selected]]:[];
+            arr.push({date:new Date().toISOString().slice(0,10),hours,technician:tech,tasks:done.map(t=>({key:t.key,label:t.name})),notes:[]});
+            return {...p,[selected]:arr};
+          });
+        }
+      });
+    }
+    setChecked({});setLogMode(false);setTechnicianInput('');
     setShowSuccess(true);setTimeout(()=>setShowSuccess(false),1400);
   }
 
@@ -595,11 +611,12 @@ function App() {
             })
           )
         ),
+        !logMode?null:React.createElement("input",{type:"text",className:"technician-input",placeholder:"Technician name…",value:technicianInput,onChange:e=>setTechnicianInput(e.target.value)}),
         React.createElement("div",{className:"btn-row"},
           !logMode?React.createElement("button",{className:"btn-primary",onClick:()=>setLogMode(true),disabled:!hours},"Log Service Performed"):
           React.createElement(React.Fragment,null,
             React.createElement("button",{className:"btn-primary",onClick:handleSave,disabled:Object.values(checked).every(v=>!v)},"Save Completed Tasks"),
-            React.createElement("button",{className:"btn-cancel",onClick:()=>{setLogMode(false);setChecked({});}},"Cancel"),
+            React.createElement("button",{className:"btn-cancel",onClick:()=>{setLogMode(false);setChecked({});setTechnicianInput('');}},"Cancel"),
             React.createElement("span",{className:"save-hint"},"Check tasks above, then save")
           )
         ),
