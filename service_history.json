@@ -466,7 +466,7 @@
     {
       "date": "2026-06-11",
       "hours": 230,
-      "technician": "",
+      "technician": "Geoff Fitzjarrell",
       "tasks": [
         {
           "key": "oil_filter",
