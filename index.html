@@ -258,8 +258,8 @@ const PENDING_PATH = "pending_completions.json";
 // Writes (grounding, logging) go through a Cloudflare Worker proxy instead of an
 // embedded GitHub token — the PAT lives server-side in the Worker's secrets, never
 // in this public page, so there's no secret-scanning revocation and no paste-in dance.
-const WORKER_URL = "PASTE_YOUR_WORKER_URL_HERE";
-const WORKER_KEY = "PASTE_YOUR_SHARED_SECRET_HERE";
+const WORKER_URL = "https://ai.generator-fleet-proxy.workers.dev/";
+const WORKER_KEY = "poopooface69";
 
 function b64e(s){ return btoa(unescape(encodeURIComponent(s))); }
 function b64d(s){ return decodeURIComponent(escape(atob(s))); }
