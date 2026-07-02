@@ -137,20 +137,15 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 
 /* TASKS */
 .task-list { display:flex; flex-direction:column; gap:4px; }
-.task-card { border-radius:var(--radius); background:var(--surface2); border:1px solid var(--border); border-left-width:3px; border-left-color:var(--border2); transition:background 0.12s; animation:slideInRight 0.28s cubic-bezier(0.22,1,0.36,1) both; overflow:hidden; }
+.task-row { display:grid; grid-template-columns:1fr 56px 90px 28px; align-items:center; gap:10px; padding:9px 12px; border-radius:var(--radius); background:var(--surface2); border:1px solid var(--border); border-left-width:3px; border-left-color:var(--border2); transition:background 0.12s; animation:slideInRight 0.28s cubic-bezier(0.22,1,0.36,1) both; }
 @keyframes slideInRight { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
-.task-card:nth-child(1){animation-delay:0.04s} .task-card:nth-child(2){animation-delay:0.08s} .task-card:nth-child(3){animation-delay:0.12s} .task-card:nth-child(4){animation-delay:0.16s} .task-card:nth-child(5){animation-delay:0.20s} .task-card:nth-child(6){animation-delay:0.24s} .task-card:nth-child(7){animation-delay:0.28s}
-.task-card:hover { background:var(--surface3); }
-.task-card.r-overdue { border-left-color:var(--red); background:#160d0d; }
-.task-card.r-warn    { border-left-color:var(--amber); }
-.task-card.r-ok      { border-left-color:var(--green); }
-.task-card.r-no_record { border-left-color:#1e3050; }
-.task-card.r-done      { border-left-color:var(--green); }
-.task-card.r-not_done  { border-left-color:#1e3050; }
-.task-row { display:grid; grid-template-columns:1fr 56px 90px 28px; align-items:center; gap:10px; padding:9px 12px; cursor:pointer; }
+.task-row:nth-child(1){animation-delay:0.04s} .task-row:nth-child(2){animation-delay:0.08s} .task-row:nth-child(3){animation-delay:0.12s} .task-row:nth-child(4){animation-delay:0.16s} .task-row:nth-child(5){animation-delay:0.20s} .task-row:nth-child(6){animation-delay:0.24s} .task-row:nth-child(7){animation-delay:0.28s}
+.task-row:hover { background:var(--surface3); }
+.task-row.r-overdue { border-left-color:var(--red); background:#160d0d; }
+.task-row.r-warn    { border-left-color:var(--amber); }
+.task-row.r-ok      { border-left-color:var(--green); }
+.task-row.r-no_record { border-left-color:#1e3050; }
 .task-name { font-size:14px; color:var(--text); }
-.task-name-wrap { display:flex; flex-direction:column; gap:2px; min-width:0; }
-.task-meta { font-family:var(--mono); font-size:10px; color:var(--text-faint); letter-spacing:0.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .task-interval { font-family:var(--mono); font-size:12px; color:var(--text-faint); }
 .badge { font-family:var(--mono); font-size:11px; font-weight:700; padding:3px 7px; border-radius:3px; text-align:center; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; transition:background 0.3s, color 0.3s; }
 .badge.ok        { background:var(--green-dim); color:var(--green); }
@@ -159,30 +154,15 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 @keyframes overdueFlash { 0%,100%{opacity:1} 50%{opacity:0.45} }
 .badge.no_record { background:#141c2a; color:#5a7a9a; border:1px solid #1e3050; letter-spacing:0.06em; }
 .badge.unknown   { background:var(--surface); color:var(--text-faint); }
-.badge.done      { background:var(--green-dim); color:var(--green); }
-.badge.not_done  { background:#141c2a; color:#5a7a9a; border:1px solid #1e3050; letter-spacing:0.06em; }
 
-.task-action-slot { width:28px; height:18px; position:relative; flex-shrink:0; }
-.task-action-slot > .task-check, .task-action-slot > .task-toggle { position:absolute; top:0; left:5px; }
 .task-check { width:18px; height:18px; border-radius:3px; border:1px solid var(--border2); background:var(--surface); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.12s; flex-shrink:0; }
 .task-check.checked { background:var(--amber-dim); border-color:var(--amber); }
 .task-check.hidden { opacity:0; pointer-events:none; }
 .task-check-inner { width:8px; height:8px; background:var(--amber); border-radius:2px; display:none; }
 .task-check.checked .task-check-inner { display:block; }
 
-.task-toggle { width:18px; height:18px; display:flex; align-items:center; justify-content:center; color:var(--text-faint); font-size:11px; transition:transform 0.25s cubic-bezier(0.22,1,0.36,1), color 0.2s; flex-shrink:0; }
-.task-toggle.open { transform:rotate(90deg); color:var(--amber); }
-.task-toggle.hidden { display:none; }
-
-.task-desc { max-height:0; overflow:hidden; transition:max-height 0.3s cubic-bezier(0.22,1,0.36,1); }
-.task-desc.open { max-height:140px; }
-.task-desc-inner { padding:0 12px 12px 12px; font-size:12px; color:var(--text-dim); line-height:1.55; border-top:1px solid var(--border); margin-top:1px; padding-top:9px; }
-
 /* BUTTONS */
 .btn-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-.technician-input { width:100%; box-sizing:border-box; font-family:var(--mono); font-size:13px; color:var(--text); background:var(--surface2); border:1px solid var(--border2); border-radius:var(--radius); padding:9px 12px; margin-bottom:8px; outline:none; transition:border-color 0.15s; }
-.technician-input:focus { border-color:var(--amber); }
-.technician-input::placeholder { color:var(--text-faint); }
 .btn-primary { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:9px 18px; background:var(--amber-dim); color:var(--amber); border:1px solid var(--amber); border-radius:var(--radius); cursor:pointer; transition:all 0.15s; }
 .btn-primary:hover { background:var(--amber); color:#000; }
 .btn-primary:disabled { opacity:0.35; cursor:not-allowed; }
@@ -230,61 +210,55 @@ const { useState, useEffect, useRef } = React;
 
 const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14","HD15","HD16","HD17"];
 const TASKS = [
-  { key:"airfilter_battery", name:"Air filter & battery check",        interval:50,
-    desc:"Visual checks only — inspect the air filter element for visible dirt or damage, and check the battery for looseness (secure hold-down, tight terminals) and clean any corrosion off the terminals and case." },
-  { key:"oil_filter",        name:"Oil / filter change",               interval:150,
-    desc:"Drain and replace the engine oil, and install a new oil filter." },
-  { key:"airfilter_clean",   name:"Air filter cleaning",               interval:250,
-    desc:"Remove and inspect the air filter element; clean out loose dust/debris. HD5 only — other trucks skip this and go straight to full element replacement at the standard interval." },
-  { key:"coolant_lines",     name:"Check coolant lines",               interval:250,
-    desc:"Check that there are no leaks anywhere along the coolant lines, and confirm the coolant level is good (not empty/low)." },
-  { key:"fuel_filter",       name:"Fuel filter change",                interval:250,
-    desc:"Replace the fuel filter." },
-  { key:"drive_belt",        name:"Check drive belt & tension",        binary:true,
-    desc:"This engine's belt has no tensioner or adjustment — tension increases slightly on its own as the engine runs. This check is by feel: confirm the belt feels snug and inspect it for cracking, glazing, or fraying. There is nothing to tighten." },
-  { key:"valve_lash",        name:"Valve lash inspection",             binary:true,
-    desc:"Must be performed by a trained technician with the proper tools. Cold valve lash spec is 0.165 mm (0.0065 in) for both intake and exhaust." },
-  { key:"radiator_airfilter",name:"Clean radiator & change air filter",interval:500,
-    desc:"Clean the generator's radiator fins (compressed air or a gentle water rinse — never a pressure washer), and perform another visual inspection of the air filter element." },
+  { key:"airfilter_battery", name:"Air filter & battery check",        interval:50  },
+  { key:"oil_filter",        name:"Oil / filter change",               interval:150 },
+  { key:"airfilter_clean",   name:"Air filter cleaning",               interval:250 },
+  { key:"coolant_lines",     name:"Check coolant lines",               interval:250 },
+  { key:"fuel_filter",       name:"Fuel filter change",                interval:250 },
+  { key:"drive_belt",        name:"Check drive belt & tension",        interval:500 },
+  { key:"clean_radiator",    name:"Clean radiator",                    interval:500 },
+  { key:"airfilter_500",    name:"Change air filter",                 interval:500 },
 ];
-// Air filter cleaning only applies to HD5; every other truck skips it.
-function tasksForTruck(id){
-  return TASKS.filter(t => t.key!=="airfilter_clean" || id==="HD5");
-}
 
 const DATA_URL    = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/data.json";
 const LOGS_URL    = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_logs.json";
 const HISTORY_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_history.json";
 const GITHUB_OWNER = "Geoffrey-Fitzjarrell-ai";
 const GITHUB_REPO  = "generator_servicing";
+const GITHUB_TOKEN = "PASTE_YOUR_GITHUB_PAT_HERE";
 const PENDING_PATH = "pending_completions.json";
-// Writes (grounding, logging) go through a Cloudflare Worker proxy instead of an
-// embedded GitHub token — the PAT lives server-side in the Worker's secrets, never
-// in this public page, so there's no secret-scanning revocation and no paste-in dance.
-const WORKER_URL = "https://ai.generator-fleet-proxy.workers.dev/";
-const WORKER_KEY = "poopooface69";
 
 function b64e(s){ return btoa(unescape(encodeURIComponent(s))); }
 function b64d(s){ return decodeURIComponent(escape(atob(s))); }
 
-async function callWorker(action, extra) {
-  if (WORKER_URL === "PASTE_YOUR_WORKER_URL_HERE") return false;
-  try {
-    const res = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Auth-Key": WORKER_KEY },
-      body: JSON.stringify({ action, ...extra }),
-    });
-    return res.ok;
-  } catch (e) { return false; }
-}
-
 async function writePending(entry) {
-  return callWorker("logPending", { entry });
+  if(GITHUB_TOKEN==="PASTE_YOUR_GITHUB_PAT_HERE") return;
+  const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${PENDING_PATH}`;
+  const h={"Authorization":"Bearer "+GITHUB_TOKEN,"Accept":"application/vnd.github+json"};
+  let existing=[],sha=null;
+  try{const r=await fetch(url,{headers:h});if(r.ok){const f=await r.json();sha=f.sha;existing=JSON.parse(b64d(f.content.replace(/\n/g,"")));}}catch(e){}
+  existing.push(entry);
+  const body={message:"Log: "+entry.truck,content:b64e(JSON.stringify(existing,null,2))};
+  if(sha)body.sha=sha;
+  await fetch(url,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});
 }
 
 async function writeGrounded(truck, grounded, note) {
-  return callWorker("setGrounded", { truck, grounded, note });
+  if(GITHUB_TOKEN==="PASTE_YOUR_GITHUB_PAT_HERE") return false;
+  const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data.json`;
+  const h={"Authorization":"Bearer "+GITHUB_TOKEN,"Accept":"application/vnd.github+json"};
+  try {
+    const r=await fetch(url,{headers:h});
+    if(!r.ok) return false;
+    const f=await r.json();
+    const data=JSON.parse(b64d(f.content.replace(/\n/g,"")));
+    data[truck].grounded=grounded;
+    data[truck].groundedNote=note||"Under repair";
+    if(!grounded){ delete data[truck].grounded; delete data[truck].groundedNote; }
+    const body={message:(grounded?"Ground ":"Unground ")+truck,content:b64e(JSON.stringify(data,null,2)),sha:f.sha};
+    const res=await fetch(url,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});
+    return res.ok;
+  } catch(e){ return false; }
 }
 
 function Gauge({ pct, overdue }) {
@@ -323,7 +297,6 @@ function App() {
   const [syncedAt,   setSyncedAt]   = useState(null);
   const [syncAgo,    setSyncAgo]    = useState('');
   const [logMode,    setLogMode]    = useState(false);
-  const [technicianInput, setTechnicianInput] = useState('');
   const [checked,    setChecked]    = useState({});
   const [showSuccess,   setShowSuccess]   = useState(false);
   const [groundingNote, setGroundingNote] = useState('');
@@ -331,7 +304,6 @@ function App() {
   const [transitioning,setTransitioning]=useState(false);
   const [displayKey, setDisplayKey] = useState(0);
   const [countedHours,setCountedHours]=useState(null);
-  const [expandedTask, setExpandedTask] = useState(null);
   const prevHoursRef = useRef(null);
 
   async function loadAll() {
@@ -379,7 +351,7 @@ function App() {
   function handleTabClick(t){
     if(t===selected)return;
     setTransitioning(true);
-    setTimeout(()=>{setSelected(t);setLogMode(false);setChecked({});setExpandedTask(null);setTechnicianInput('');setTransitioning(false);setDisplayKey(k=>k+1);},180);
+    setTimeout(()=>{setSelected(t);setLogMode(false);setChecked({});setTransitioning(false);setDisplayKey(k=>k+1);},180);
   }
 
   if(!loaded)return React.createElement("div",{className:"full-center"},React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:"#38465a",letterSpacing:"0.12em"}},"LOADING FLEET DATA..."));
@@ -390,12 +362,9 @@ function App() {
   const hours=truck.hours;
   const isGrounded=!!truck.grounded;
 
-  const taskStatus=tasksForTruck(selected).map(task=>{
+  const taskStatus=TASKS.map(task=>{
     const last=log[task.key];
     const hasRec=last!=null;
-    if(task.binary){
-      return {...task,last,hasRec,since:null,rem:null,pct:hasRec?1:0,status:hasRec?"done":"not_done"};
-    }
     const since=hasRec&&hours!=null?hours-last:null;
     const rem=since!=null?task.interval-since:null;
     const pct=since!=null?Math.min(since/task.interval,1):(hours!=null&&!hasRec&&task.key!=="airfilter_clean"&&hours>=task.interval?1:0);
@@ -416,9 +385,8 @@ function App() {
     const td=fleet[t];const tl=svcLogs[t]||{};
     if(td.grounded)return "grounded";
     if(!td.hours)return "none";
-    const intervalTasks=tasksForTruck(t).filter(task=>!task.binary);
-    if(intervalTasks.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval;}))return "overdue";
-    if(intervalTasks.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval*0.9;}))return "warn";
+    if(TASKS.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval;}))return "overdue";
+    if(TASKS.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval*0.9;}))return "warn";
     return "ok";
   }
 
@@ -436,23 +404,11 @@ function App() {
   function handleSave(){
     if(!hours)return;
     const newLog={...log};const done=[];
-    for(const[k,v]of Object.entries(checked)){if(v){newLog[k]=hours;const t=TASKS.find(x=>x.key===k);if(t)done.push(t);}}
+    for(const[k,v]of Object.entries(checked)){if(v){newLog[k]=hours;const t=TASKS.find(x=>x.key===k);if(t)done.push(t.name);}}
     setSvcLogs(p=>({...p,[selected]:newLog}));
     try{localStorage.setItem("svc:"+selected,JSON.stringify(newLog));}catch(e){}
-    const tech=technicianInput.trim();
-    if(done.length){
-      writePending({truck:selected,tasks:done.map(t=>t.name),postedBy:truck.postedBy,loggedAt:new Date().toISOString()});
-      callWorker("logCompletion",{truck:selected,technician:tech,hours,tasks:done.map(t=>({key:t.key,label:t.name}))}).then(ok=>{
-        if(ok){
-          setSvcHistory(p=>{
-            const arr=p[selected]?[...p[selected]]:[];
-            arr.push({date:new Date().toISOString().slice(0,10),hours,technician:tech,tasks:done.map(t=>({key:t.key,label:t.name})),notes:[]});
-            return {...p,[selected]:arr};
-          });
-        }
-      });
-    }
-    setChecked({});setLogMode(false);setTechnicianInput('');
+    if(done.length)writePending({truck:selected,tasks:done,postedBy:truck.postedBy,loggedAt:new Date().toISOString()});
+    setChecked({});setLogMode(false);
     setShowSuccess(true);setTimeout(()=>setShowSuccess(false),1400);
   }
 
@@ -465,7 +421,7 @@ function App() {
     return acc;
   },{overdue:0,warn:0,ok:0,grounded:0});
 
-  const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"UPCOMING",done:"DONE",not_done:"NOT DONE"};
+  const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"UPCOMING"};
   const overdueTasks=taskStatus.filter(t=>t.status==="overdue");
   const warnTasks=taskStatus.filter(t=>t.status==="warn");
   const histEntries=(svcHistory[selected]||[]).filter(e=>e.date||e.hours).slice().reverse();
@@ -584,39 +540,20 @@ function App() {
         React.createElement("div",null,
           React.createElement("div",{className:"section-title"},"Maintenance Schedule"),
           React.createElement("div",{className:"task-list"},
-            taskStatus.map(task=>{
-              const isOpen=expandedTask===task.key;
-              return React.createElement("div",{key:task.key,className:"task-card r-"+task.status},
-                React.createElement("div",{className:"task-row",onClick:()=>setExpandedTask(isOpen?null:task.key)},
-                  React.createElement("div",{className:"task-name-wrap"},
-                    React.createElement("div",{className:"task-name"},task.name),
-                    React.createElement("div",{className:"task-meta"},
-                      task.binary
-                        ? (task.hasRec?("Done at "+task.last+"h"):"Not logged yet")
-                        : (task.hasRec?("Done at "+task.last+"h · Due at "+(task.last+task.interval)+"h"):("Due at "+task.interval+"h"))
-                    )
-                  ),
-                  React.createElement("div",{className:"task-interval"},task.binary?"—":task.interval+"h"),
-                  React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
-                  React.createElement("div",{className:"task-action-slot"},
-                    React.createElement("div",{className:"task-check "+(logMode?"":"hidden")+(checked[task.key]?" checked":""),onClick:(e)=>{e.stopPropagation();logMode&&setChecked(p=>({...p,[task.key]:!p[task.key]}));}},
-                      React.createElement("div",{className:"task-check-inner"})),
-                    React.createElement("div",{className:"task-toggle "+(logMode?"hidden":"")+(isOpen?" open":"")},"▸")
-                  )
-                ),
-                React.createElement("div",{className:"task-desc "+(isOpen?"open":"")},
-                  React.createElement("div",{className:"task-desc-inner"},task.desc)
-                )
-              );
-            })
+            taskStatus.map(task=>React.createElement("div",{key:task.key,className:"task-row r-"+task.status},
+              React.createElement("div",{className:"task-name"},task.name),
+              React.createElement("div",{className:"task-interval"},task.interval+"h"),
+              React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
+              React.createElement("div",{className:"task-check "+(logMode?"":"hidden")+(checked[task.key]?" checked":""),onClick:()=>logMode&&setChecked(p=>({...p,[task.key]:!p[task.key]}))},
+                React.createElement("div",{className:"task-check-inner"}))
+            ))
           )
         ),
-        !logMode?null:React.createElement("input",{type:"text",className:"technician-input",placeholder:"Technician name…",value:technicianInput,onChange:e=>setTechnicianInput(e.target.value)}),
         React.createElement("div",{className:"btn-row"},
           !logMode?React.createElement("button",{className:"btn-primary",onClick:()=>setLogMode(true),disabled:!hours},"Log Service Performed"):
           React.createElement(React.Fragment,null,
             React.createElement("button",{className:"btn-primary",onClick:handleSave,disabled:Object.values(checked).every(v=>!v)},"Save Completed Tasks"),
-            React.createElement("button",{className:"btn-cancel",onClick:()=>{setLogMode(false);setChecked({});setTechnicianInput('');}},"Cancel"),
+            React.createElement("button",{className:"btn-cancel",onClick:()=>{setLogMode(false);setChecked({});}},"Cancel"),
             React.createElement("span",{className:"save-hint"},"Check tasks above, then save")
           )
         ),
