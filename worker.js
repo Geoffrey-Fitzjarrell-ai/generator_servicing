@@ -89,6 +89,41 @@ export default {
         return json({ ok: true });
       }
 
+      if (action === "logCompletion") {
+        const { truck, technician, hours, tasks } = payload;
+        if (!truck || !Array.isArray(tasks) || tasks.length === 0) {
+          return json({ error: "Missing truck or tasks" }, 400);
+        }
+
+        // Update service_logs.json — bumps each task's "last done at" hour count.
+        const logsFile = await ghGet("service_logs.json", env.GITHUB_PAT);
+        const logs = JSON.parse(decodeURIComponent(escape(atob(logsFile.content))));
+        if (!logs[truck]) logs[truck] = {};
+        for (const t of tasks) logs[truck][t.key] = hours;
+        await ghPut(
+          "service_logs.json", env.GITHUB_PAT, logs, logsFile.sha,
+          truck + ": log " + tasks.map(t => t.key).join(", ") + " at " + hours + "h"
+        );
+
+        // Append a dated record to service_history.json.
+        const histFile = await ghGet("service_history.json", env.GITHUB_PAT);
+        const hist = JSON.parse(decodeURIComponent(escape(atob(histFile.content))));
+        if (!hist[truck]) hist[truck] = [];
+        hist[truck].push({
+          date: new Date().toISOString().slice(0, 10),
+          hours,
+          technician: technician || "",
+          tasks: tasks.map(t => ({ key: t.key, label: t.label })),
+          notes: [],
+        });
+        await ghPut(
+          "service_history.json", env.GITHUB_PAT, hist, histFile.sha,
+          truck + ": service history entry (" + (technician || "unattributed") + ")"
+        );
+
+        return json({ ok: true });
+      }
+
       if (action === "logPending") {
         const { entry } = payload;
         if (!entry || !entry.truck) return json({ error: "Missing entry" }, 400);
