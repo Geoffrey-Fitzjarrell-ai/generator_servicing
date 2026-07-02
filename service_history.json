@@ -462,6 +462,18 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-06-11",
+      "hours": 230,
+      "technician": "",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD18": []
