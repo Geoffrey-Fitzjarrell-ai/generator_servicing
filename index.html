@@ -234,9 +234,15 @@ function b64e(s){ return btoa(unescape(encodeURIComponent(s))); }
 function b64d(s){ return decodeURIComponent(escape(atob(s))); }
 
 async function writePending(entry) {
-  if(GITHUB_TOKEN==="PASTE_YOUR_GITHUB_PAT_HERE") return;
-  const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${PENDING_PATH}`;
-  const h={"Authorization":"Bearer "+GITHUB_TOKEN,"Accept":"application/vnd.github+json"};
+  try {
+    await fetch(PROXY_URL, {
+      method: "POST",
+      headers: {"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},
+      body: JSON.stringify({action:"logPending", entry})
+    });
+  } catch(e) { console.error("writePending failed", e); }
+  return;
+  const url=``;const h={};
   let existing=[],sha=null;
   try{const r=await fetch(url,{headers:h});if(r.ok){const f=await r.json();sha=f.sha;existing=JSON.parse(b64d(f.content.replace(/\n/g,"")));}}catch(e){}
   existing.push(entry);
@@ -267,13 +273,13 @@ async function writeServiceLogToRepo(truck, log, entry) {
   try {
     await fetch(PROXY_URL, {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
+      headers: {"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},
       body: JSON.stringify({
-        secret: PROXY_SECRET,
-        action: "updateServiceLog",
+        action: "logCompletion",
         truck,
-        log,
-        historyEntry: entry
+        technician: entry.technician,
+        hours: entry.hours,
+        tasks: entry.tasks,
       })
     });
   } catch(e) { console.error("proxy write failed", e); }
