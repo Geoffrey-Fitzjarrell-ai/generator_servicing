@@ -137,7 +137,7 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 
 /* TASKS */
 .task-list { display:flex; flex-direction:column; gap:4px; }
-.task-row { display:grid; grid-template-columns:1fr 56px 90px 28px; align-items:center; gap:10px; padding:9px 12px; border-radius:var(--radius); background:var(--surface2); border:1px solid var(--border); border-left-width:3px; border-left-color:var(--border2); transition:background 0.12s; animation:slideInRight 0.28s cubic-bezier(0.22,1,0.36,1) both; }
+.task-row { display:grid; grid-template-columns:1fr 56px 90px 72px 28px; align-items:center; gap:10px; padding:9px 12px; border-radius:var(--radius); background:var(--surface2); border:1px solid var(--border); border-left-width:3px; border-left-color:var(--border2); transition:background 0.12s; animation:slideInRight 0.28s cubic-bezier(0.22,1,0.36,1) both; }
 @keyframes slideInRight { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
 .task-row:nth-child(1){animation-delay:0.04s} .task-row:nth-child(2){animation-delay:0.08s} .task-row:nth-child(3){animation-delay:0.12s} .task-row:nth-child(4){animation-delay:0.16s} .task-row:nth-child(5){animation-delay:0.20s} .task-row:nth-child(6){animation-delay:0.24s} .task-row:nth-child(7){animation-delay:0.28s}
 .task-row:hover { background:var(--surface3); }
@@ -285,29 +285,44 @@ async function writeServiceLogToRepo(truck, log, entry) {
   } catch(e) { console.error("proxy write failed", e); }
 }
 
-function Gauge({ pct, overdue }) {
-  const W=220,H=28,by=4,bh=20,bx=28,bw=162;
-  const fillW=Math.max(0,Math.min(bw,bw*pct));
-  const uid="g"+Math.round(pct*1000)+overdue;
-  return React.createElement("svg",{width:W,height:H,viewBox:`0 0 ${W} ${H}`,style:{display:"block",width:"100%"}},
+function Gauge({ criticalTask, hours }) {
+  if (!criticalTask || hours == null) {
+    return React.createElement("div", {style:{padding:"8px 0",color:"var(--text-faint)",fontSize:11,fontFamily:"var(--mono)"}}, "No interval data");
+  }
+  const lastDone = criticalTask.last || 0;
+  const dueAt    = lastDone + criticalTask.interval;
+  const pct      = Math.min(Math.max((hours - lastDone) / criticalTask.interval, 0), 1);
+  const overdue  = hours >= dueAt;
+  const W=220, H=48, bx=0, by=20, bw=220, bh=14;
+  const fillW = Math.round(bw * pct);
+  const uid = "g" + Math.round(pct*1000);
+  const fillColor = overdue ? "#e04545" : pct > 0.85 ? "#f0a500" : "#3da870";
+  const needleX = Math.min(Math.max(fillW, 2), bw-2);
+
+  return React.createElement("svg",{width:"100%",height:H,viewBox:`0 0 ${W} ${H}`,style:{display:"block"}},
     React.createElement("defs",null,
       React.createElement("linearGradient",{id:"zg"+uid,x1:"0",y1:"0",x2:"1",y2:"0"},
         React.createElement("stop",{offset:"0%",stopColor:"#3da870"}),
-        React.createElement("stop",{offset:"60%",stopColor:"#f0a500"}),
+        React.createElement("stop",{offset:"70%",stopColor:"#f0a500"}),
         React.createElement("stop",{offset:"100%",stopColor:"#e04545"})
       ),
       React.createElement("clipPath",{id:"cp"+uid},
         React.createElement("rect",{x:bx,y:by,width:fillW,height:bh})
       )
     ),
-    React.createElement("text",{x:0,y:by+bh-3,fontFamily:"'JetBrains Mono',monospace",fontSize:9,fill:"#38465a"},"0h"),
-    React.createElement("text",{x:W-24,y:by+bh-3,fontFamily:"'JetBrains Mono',monospace",fontSize:9,fill:"#38465a"},"1kh"),
-    React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:"#1a2235"}),
-    React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:`url(#zg${uid})`,opacity:0.1}),
-    React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:`url(#zg${uid})`,clipPath:`url(#cp${uid})`,opacity:0.9,className:"gauge-fill"}),
-    fillW>4?React.createElement("rect",{x:bx+fillW-3,y:by,width:3,height:bh,rx:2,fill:"#fff",opacity:0.2}):null,
-    React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:"none",stroke:"#28364f",strokeWidth:1}),
-    ...[0.25,0.5,0.75].map(t=>React.createElement("line",{key:t,x1:bx+bw*t,y1:by,x2:bx+bw*t,y2:by+bh,stroke:"#28364f",strokeWidth:1}))
+    // Track
+    React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:3,fill:"#1a2235"}),
+    React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:3,fill:`url(#zg${uid})`,opacity:0.12}),
+    // Fill
+    React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:3,fill:`url(#zg${uid})`,clipPath:`url(#cp${uid})`,opacity:0.9,className:"gauge-fill"}),
+    // Border
+    React.createElement("rect",{x:bx,y:by,width:bw,height:bh,rx:3,fill:"none",stroke:"#28364f",strokeWidth:1}),
+    // Needle (current hours)
+    React.createElement("rect",{x:needleX-1,y:by-4,width:2,height:bh+8,rx:1,fill:fillColor}),
+    // Labels
+    React.createElement("text",{x:0,y:15,fontFamily:"'JetBrains Mono',monospace",fontSize:9,fill:"#5a6a8a"},lastDone+"h"),
+    React.createElement("text",{x:W,y:15,fontFamily:"'JetBrains Mono',monospace",fontSize:9,fill:fillColor,textAnchor:"end"},dueAt+"h"),
+    React.createElement("text",{x:Math.min(Math.max(needleX,18),W-18),y:H,fontFamily:"'JetBrains Mono',monospace",fontSize:9,fill:fillColor,textAnchor:"middle"},hours+"h")
   );
 }
 
@@ -400,10 +415,10 @@ function App() {
   const anyOverdue=!isGrounded&&taskStatus.some(t=>t.status==="overdue");
   const anyWarn=!isGrounded&&taskStatus.some(t=>t.status==="warn");
   const recordedTasks = taskStatus.filter(t => t.since != null);
-  const gaugePct = isGrounded ? 0
+  const criticalTask = isGrounded ? null
     : recordedTasks.length > 0
-      ? recordedTasks.reduce((m,t) => Math.max(m, t.pct), 0)
-      : (hours != null ? Math.min(hours / 1000, 1) : 0);
+      ? recordedTasks.reduce((a,b) => a.pct >= b.pct ? a : b)
+      : null;
   const isOverdue=anyOverdue;
 
   function truckStatus(t){
@@ -518,7 +533,7 @@ function App() {
         ),
         React.createElement("div",{className:"gauge-wrap"},
           React.createElement("div",{className:"gauge-label"},"SERVICE INTERVAL"),
-          React.createElement(Gauge,{pct:gaugePct,overdue:isOverdue,key:displayKey})
+          React.createElement(Gauge,{criticalTask,hours,key:displayKey})
         ),
         React.createElement("div",{className:"stats-row"},
           React.createElement("div",{className:"stat-card s-neutral"},
@@ -569,6 +584,9 @@ function App() {
               React.createElement("div",{className:"task-name"},task.name),
               React.createElement("div",{className:"task-interval"},task.interval+"h"),
               React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
+              React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:task.status==="overdue"?"var(--red)":task.status==="warn"?"var(--amber)":"var(--text-faint)",whiteSpace:"nowrap"}},
+                task.rem!=null?(task.rem<=0?"@"+hours+"h":"@"+(hours!=null?(hours + Math.round(task.rem))+"h":"—")):"—"
+              ),
               React.createElement("div",{className:"task-check "+(logMode?"":"hidden")+(checked[task.key]?" checked":""),onClick:()=>logMode&&setChecked(p=>({...p,[task.key]:!p[task.key]}))},
                 React.createElement("div",{className:"task-check-inner"}))
             ))
