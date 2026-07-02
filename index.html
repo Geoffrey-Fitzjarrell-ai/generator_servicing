@@ -148,6 +148,8 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .task-row.r-done      { border-left-color:var(--green); }
 .task-row.r-not_done  { border-left-color:#1e3050; }
 .task-name { font-size:14px; color:var(--text); }
+.task-name-wrap { display:flex; flex-direction:column; gap:2px; min-width:0; }
+.task-meta { font-family:var(--mono); font-size:10px; color:var(--text-faint); letter-spacing:0.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .task-interval { font-family:var(--mono); font-size:12px; color:var(--text-faint); }
 .badge { font-family:var(--mono); font-size:11px; font-weight:700; padding:3px 7px; border-radius:3px; text-align:center; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; transition:background 0.3s, color 0.3s; }
 .badge.ok        { background:var(--green-dim); color:var(--green); }
@@ -553,7 +555,14 @@ function App() {
           React.createElement("div",{className:"section-title"},"Maintenance Schedule"),
           React.createElement("div",{className:"task-list"},
             taskStatus.map(task=>React.createElement("div",{key:task.key,className:"task-row r-"+task.status},
-              React.createElement("div",{className:"task-name"},task.name),
+              React.createElement("div",{className:"task-name-wrap"},
+                React.createElement("div",{className:"task-name"},task.name),
+                React.createElement("div",{className:"task-meta"},
+                  task.binary
+                    ? (task.hasRec?("Done at "+task.last+"h"):"Not logged yet")
+                    : (task.hasRec?("Done at "+task.last+"h · Due at "+(task.last+task.interval)+"h"):("Due at "+task.interval+"h"))
+                )
+              ),
               React.createElement("div",{className:"task-interval"},task.binary?"—":task.interval+"h"),
               React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
               React.createElement("div",{className:"task-check "+(logMode?"":"hidden")+(checked[task.key]?" checked":""),onClick:()=>logMode&&setChecked(p=>({...p,[task.key]:!p[task.key]}))},
