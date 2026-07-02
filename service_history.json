@@ -220,6 +220,26 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-02",
+      "hours": 1479,
+      "technician": "Masakiyo",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "clean_radiator",
+          "label": "Clean radiator"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD11": [
