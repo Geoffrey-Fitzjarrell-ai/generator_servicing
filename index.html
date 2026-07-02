@@ -601,7 +601,11 @@ function App() {
               React.createElement("div",{className:"task-interval"},task.interval+"h"),
               React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
               React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:task.status==="overdue"?"var(--red)":task.status==="warn"?"var(--amber)":"var(--text-faint)",whiteSpace:"nowrap"}},
-                task.rem!=null?(task.rem<=0?"@"+hours+"h":"@"+(hours!=null?(hours + Math.round(task.rem))+"h":"—")):"—"
+                task.rem!=null
+                  ? task.rem<=0
+                    ? "+" + Math.abs(Math.round(task.rem)) + "h over"
+                    : "@" + (hours + Math.round(task.rem)) + "h"
+                  : "—"
               ),
               React.createElement("div",{className:"task-check "+(logMode?"":"hidden")+(checked[task.key]?" checked":""),onClick:()=>logMode&&setChecked(p=>({...p,[task.key]:!p[task.key]}))},
                 React.createElement("div",{className:"task-check-inner"}))
