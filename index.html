@@ -204,6 +204,21 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .daily-bar { width:100%; border-radius:2px 2px 0 0; background:var(--blue); min-height:2px; transition:height 0.3s ease; }
 .daily-bar-date { font-family:var(--mono); font-size:7px; color:var(--text-faint); }
 .daily-no-data { font-size:10px; color:var(--text-faint); font-style:italic; padding:4px 0; }
+.task-detail {
+  padding:10px 12px 12px; margin-top:4px;
+  background:var(--surface3); border-radius:0 0 var(--radius) var(--radius);
+  border:1px solid var(--border); border-top:none;
+  animation:fadeSlideIn 0.2s ease both;
+}
+.task-detail-section { margin-bottom:8px; }
+.task-detail-lbl { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-faint); margin-bottom:4px; }
+.task-detail-item { font-size:12px; color:var(--text-dim); padding:2px 0 2px 10px; position:relative; }
+.task-detail-item::before { content:"—"; position:absolute; left:0; color:var(--text-faint); }
+.task-detail-note { font-size:11px; color:var(--text-faint); font-style:italic; line-height:1.5; }
+.task-row { cursor:pointer; }
+.task-row:hover { background:var(--surface3); }
+.task-expand-icon { font-size:10px; color:var(--text-faint); flex-shrink:0; transition:transform 0.2s; }
+.task-expand-icon.open { transform:rotate(180deg); }
 .full-center { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; gap:14px; }
 .err-msg { font-size:13px; color:var(--red); max-width:340px; text-align:center; line-height:1.6; }
 </style>
@@ -236,6 +251,48 @@ const GITHUB_TOKEN = "PASTE_YOUR_GITHUB_PAT_HERE";
 const PENDING_PATH = "pending_completions.json";
 const DAILY_HOURS_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/daily_hours.json";
 const TICKETS_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/tickets.json";
+const TASK_INFO = {
+  airfilter_battery: {
+    replace: ["Air filter element", "Check battery terminals for corrosion"],
+    check:   ["Battery voltage (should be 12.4–12.8V)", "Air filter housing seal", "Battery hold-down secure"],
+    notes:   "Clean housing before installing new filter. Torque battery terminals snugly — do not overtighten."
+  },
+  oil_filter: {
+    replace: ["Engine oil (see manual for grade/quantity)", "Oil filter"],
+    check:   ["Oil drain plug washer", "Filter gasket seating", "Oil level after fill"],
+    notes:   "Warm engine before draining for better flow. Do not overtighten filter — hand tight plus 3/4 turn. Check for leaks after first startup."
+  },
+  airfilter_clean: {
+    replace: ["Air filter element if damaged or heavily soiled"],
+    check:   ["Precleaner cup (dump if >1/2 full)", "Air intake hose for cracks", "Clamps tight"],
+    notes:   "Tap filter gently to dislodge loose dust. Never blow compressed air outward from inside. Replace if pleats are torn or oily."
+  },
+  coolant_lines: {
+    replace: ["Any hose showing cracks, soft spots, or swelling"],
+    check:   ["All hose clamps for tightness", "Coolant level in overflow tank", "Radiator cap seal", "Any signs of leaks at connections"],
+    notes:   "Check when engine is cold. Coolant should be green/orange and clear — replace if rusty or murky."
+  },
+  fuel_filter: {
+    replace: ["Fuel filter element"],
+    check:   ["Fuel lines for cracks or chafing", "Filter bowl for water/sediment", "Bleed air from system after replacement"],
+    notes:   "Have absorbent rags ready — residual fuel will spill. Prime system by cranking without starting 2–3 times before full start."
+  },
+  drive_belt: {
+    replace: ["Belt if cracked, frayed, glazed, or stretch exceeds 1/4 inch deflection"],
+    check:   ["Belt tension (1/4–1/2 inch deflection at midpoint)", "Pulley alignment", "Pulley grooves for wear"],
+    notes:   "Run engine briefly after adjustment and re-check tension — belts seat slightly on first run."
+  },
+  clean_radiator: {
+    replace: ["Air filter element (500h change)"],
+    check:   ["Radiator fins for debris/blockage", "Fan blades for cracks or damage", "Fan shroud clearance"],
+    notes:   "Blow compressed air through radiator fins from engine side outward. Bent fins can be carefully straightened with a fin comb."
+  },
+  airfilter_500: {
+    replace: ["Air filter element"],
+    check:   ["Air intake duct condition", "Housing seal and gasket", "Pre-filter if equipped"],
+    notes:   "At 500h this is a full replacement regardless of visual condition. Log hours after install."
+  },
+};
 const PROXY_URL    = "https://ai.generator-fleet-proxy.workers.dev/";
 const PROXY_SECRET = "poopooface69";
 
@@ -350,6 +407,7 @@ function App() {
   const [techName,      setTechName]      = useState("Geoff Fitzjarrell");
   const [tickets,       setTickets]       = useState({});
   const [dailyHours,    setDailyHours]    = useState({});
+  const [expandedTask,  setExpandedTask]  = useState(null);
   const [groundingNote, setGroundingNote] = useState('');
   const [groundingBusy, setGroundingBusy] = useState(false);
   const [transitioning,setTransitioning]=useState(false);
@@ -628,20 +686,45 @@ function App() {
         React.createElement("div",null,
           React.createElement("div",{className:"section-title"},"Maintenance Schedule"),
           React.createElement("div",{className:"task-list"},
-            taskStatus.map(task=>React.createElement("div",{key:task.key,className:"task-row r-"+task.status},
-              React.createElement("div",{className:"task-name"},task.name),
-              React.createElement("div",{className:"task-interval"},task.interval+"h"),
-              React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
-              React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:task.status==="overdue"?"var(--red)":task.status==="warn"?"var(--amber)":"var(--text-faint)",whiteSpace:"nowrap"}},
-                task.rem!=null
-                  ? task.rem<=0
-                    ? "+" + Math.abs(Math.round(task.rem)) + "h over"
-                    : "@" + (hours + Math.round(task.rem)) + "h"
-                  : "—"
-              ),
-              React.createElement("div",{className:"task-check "+(logMode?"":"hidden")+(checked[task.key]?" checked":""),onClick:()=>logMode&&setChecked(p=>({...p,[task.key]:!p[task.key]}))},
-                React.createElement("div",{className:"task-check-inner"}))
-            ))
+            taskStatus.map(task=>{
+              const info = TASK_INFO[task.key];
+              const isExpanded = expandedTask === task.key;
+              return React.createElement("div",{key:task.key},
+                React.createElement("div",{
+                  className:"task-row r-"+task.status,
+                  onClick:()=>!logMode&&setExpandedTask(isExpanded?null:task.key)
+                },
+                  React.createElement("div",{className:"task-name"},task.name),
+                  React.createElement("div",{className:"task-interval"},task.interval+"h"),
+                  React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
+                  React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:task.status==="overdue"?"var(--red)":task.status==="warn"?"var(--amber)":"var(--text-faint)",whiteSpace:"nowrap"}},
+                    task.rem!=null
+                      ? task.rem<=0
+                        ? "+" + Math.abs(Math.round(task.rem)) + "h over"
+                        : "@" + (hours + Math.round(task.rem)) + "h"
+                      : "—"
+                  ),
+                  logMode
+                    ? React.createElement("div",{className:"task-check"+(checked[task.key]?" checked":""),onClick:e=>{e.stopPropagation();setChecked(p=>({...p,[task.key]:!p[task.key]}));}},
+                        React.createElement("div",{className:"task-check-inner"}))
+                    : React.createElement("div",{className:"task-expand-icon"+(isExpanded?" open":"")},isExpanded?"▲":"▼")
+                ),
+                isExpanded&&info?React.createElement("div",{className:"task-detail"},
+                  React.createElement("div",{className:"task-detail-section"},
+                    React.createElement("div",{className:"task-detail-lbl"},"Replace"),
+                    ...info.replace.map((r,i)=>React.createElement("div",{key:i,className:"task-detail-item"},r))
+                  ),
+                  React.createElement("div",{className:"task-detail-section"},
+                    React.createElement("div",{className:"task-detail-lbl"},"Check"),
+                    ...info.check.map((c,i)=>React.createElement("div",{key:i,className:"task-detail-item"},c))
+                  ),
+                  React.createElement("div",{className:"task-detail-section"},
+                    React.createElement("div",{className:"task-detail-lbl"},"Notes"),
+                    React.createElement("div",{className:"task-detail-note"},info.notes)
+                  )
+                ):null
+              );
+            })
           )
         ),
         React.createElement("div",{className:"btn-row"},
