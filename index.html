@@ -509,7 +509,15 @@ function App() {
       React.createElement("div",{className:"header-right"},
         React.createElement("span",{className:"sync-dot"}),
         React.createElement("span",{className:"sync-time"},syncedAt?syncAgo:"—"),
-        React.createElement("button",{className:"btn-ghost",onClick:loadAll},"↻ REFRESH")
+        React.createElement("a",{
+        href:"https://onan.xmsi.net/981-0522%20Onan%20HDKA%20(spec%20A-M)%20Diesel%20RV%20Genset%20Service%20manual%20(06-2010).pdf",
+        target:"_blank",rel:"noopener noreferrer",
+        style:{fontFamily:"var(--mono)",fontSize:10,letterSpacing:"0.08em",padding:"5px 12px",
+          background:"transparent",color:"var(--text-dim)",border:"1px solid var(--border2)",
+          borderRadius:"var(--radius)",cursor:"pointer",textDecoration:"none",textTransform:"uppercase",
+          transition:"all 0.15s",display:"inline-block"}
+      },"📄 ONAN MANUAL"),
+      React.createElement("button",{className:"btn-ghost",onClick:loadAll},"↻ REFRESH")
       )
     ),
     React.createElement("div",{className:"fleet-bar"},
