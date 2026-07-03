@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "truck": "HD14",
+    "tasks": [
+      "Air filter & battery check",
+      "Check coolant lines",
+      "Fuel filter change",
+      "Check drive belt & tension",
+      "Clean radiator"
+    ],
+    "postedBy": {
+      "id": "U0B3CTWCKSS",
+      "name": "Kazuya Oiwa"
+    },
+    "loggedAt": "2026-07-03T07:12:27.772Z"
+  }
+]
