@@ -18,7 +18,8 @@
   "HD9": {
     "oil_filter": 1387,
     "airfilter_battery": 1204,
-    "airfilter_clean": 1204
+    "airfilter_clean": 1204,
+    "radiator_airfilter": 1205
   },
   "HD10": {
     "oil_filter": 1381,
@@ -28,7 +29,8 @@
     "clean_radiator": 1489,
     "coolant_lines": 1489,
     "drive_belt": 1489,
-    "airfilter_500": 1381
+    "airfilter_500": 1381,
+    "radiator_airfilter": 1381
   },
   "HD11": {
     "oil_filter": 1253,
@@ -48,7 +50,8 @@
   "HD14": {
     "oil_filter": 450,
     "airfilter_battery": 415,
-    "airfilter_clean": 415
+    "airfilter_clean": 415,
+    "radiator_airfilter": 415
   },
   "HD15": {
     "airfilter_battery": 201,
