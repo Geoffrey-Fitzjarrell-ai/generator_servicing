@@ -57,17 +57,84 @@ async function ghPut(path, token, contentObj, sha, message) {
   return r.json();
 }
 
+async function verifySlackSignature(request, rawBody, signingSecret) {
+  const timestamp = request.headers.get("X-Slack-Request-Timestamp");
+  const signature = request.headers.get("X-Slack-Signature");
+  if (!timestamp || !signature) return false;
+  const now = Math.floor(Date.now() / 1000);
+  if (Math.abs(now - parseInt(timestamp, 10)) > 60 * 5) return false; // reject replays older than 5 min
+  const baseString = `v0:${timestamp}:${rawBody}`;
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw", encoder.encode(signingSecret),
+    { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+  );
+  const sigBuffer = await crypto.subtle.sign("HMAC", key, encoder.encode(baseString));
+  const computed = "v0=" + Array.from(new Uint8Array(sigBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+  return computed === signature;
+}
+
+const HOURS_PATTERN = /(HD\d+)\s+Generator hours:\s*(\d+(?:\.\d+)?)\s*h?/i;
+
+async function handleSlackMessageEvent(event, env) {
+  if (!event || event.type !== "message" || event.subtype || event.bot_id) return;
+  const m = HOURS_PATTERN.exec(event.text || "");
+  if (!m) return;
+  const truck = m[1].toUpperCase();
+  const hours = Math.round(parseFloat(m[2]));
+
+  const file = await ghGet("data.json", env.GITHUB_PAT);
+  const data = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+  const stored = (data[truck] && data[truck].hours) || 0;
+  if (hours <= stored) return; // only ever move forward, same rule as the polling job
+
+  if (!data[truck]) {
+    data[truck] = { hours: null, intervalStart: 0, overdue: false, technician: "", lastUpdated: null, postedBy: null };
+  }
+  data[truck].hours = hours;
+  data[truck].lastUpdated = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+  data[truck].postedBy = { id: event.user || null, name: null };
+
+  await ghPut("data.json", env.GITHUB_PAT, data, file.sha, `Real-time sync: ${truck} ${hours}h`);
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
     if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+
+    const rawBody = await request.text();
+
+    // Slack Events API — identified by Slack's signature header, verified via HMAC
+    // instead of the dashboard's shared-secret scheme.
+    if (request.headers.has("X-Slack-Signature")) {
+      const valid = await verifySlackSignature(request, rawBody, env.SLACK_SIGNING_SECRET);
+      if (!valid) return new Response("invalid signature", { status: 401 });
+
+      let slackPayload;
+      try { slackPayload = JSON.parse(rawBody); } catch (e) { return new Response("bad json", { status: 400 }); }
+
+      if (slackPayload.type === "url_verification") {
+        return new Response(slackPayload.challenge, { headers: { "Content-Type": "text/plain" } });
+      }
+
+      if (slackPayload.type === "event_callback") {
+        try {
+          await handleSlackMessageEvent(slackPayload.event, env);
+        } catch (e) {
+          console.error("Slack event processing failed", e);
+        }
+      }
+
+      return new Response("ok", { status: 200 }); // Slack just wants a fast 200
+    }
 
     if (request.headers.get("X-Auth-Key") !== env.SHARED_SECRET) {
       return json({ error: "Unauthorized" }, 401);
     }
 
     let payload;
-    try { payload = await request.json(); } catch (e) { return json({ error: "Bad JSON" }, 400); }
+    try { payload = JSON.parse(rawBody); } catch (e) { return json({ error: "Bad JSON" }, 400); }
 
     const { action } = payload;
 
