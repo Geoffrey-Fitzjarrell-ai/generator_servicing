@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "truck": "HD8",
+    "tasks": [
+      "Air filter & battery check",
+      "Check coolant lines",
+      "Fuel filter change",
+      "Check drive belt & tension",
+      "Clean radiator"
+    ],
+    "postedBy": {
+      "id": "U09TT0S0UF8",
+      "name": "Daichi Hayakawa"
+    },
+    "loggedAt": "2026-07-04T02:21:01.180Z"
+  }
+]
