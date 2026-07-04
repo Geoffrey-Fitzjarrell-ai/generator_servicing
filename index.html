@@ -280,14 +280,14 @@ const TASK_INFO = {
     notes:   "Have absorbent rags ready — residual fuel will spill. Prime system by cranking without starting 2–3 times before full start."
   },
   drive_belt: {
-    replace: ["Belt if cracked, frayed, glazed, or stretch exceeds 1/4 inch deflection"],
-    check:   ["Belt tension (1/4–1/2 inch deflection at midpoint)", "Pulley alignment", "Pulley grooves for wear"],
-    notes:   "Run engine briefly after adjustment and re-check tension — belts seat slightly on first run."
+    replace: ["Belt if cracked, frayed, glazed, or showing stretch — use the correct OEM replacement belt"],
+    check:   ["Belt feel/snugness by hand — this engine has no tensioner or adjustment mechanism", "Pulley alignment", "Pulley grooves for wear or glazing"],
+    notes:   "There is nothing to adjust on this belt — tension increases slightly on its own as the engine runs in. Do not attempt to tighten it. If it feels loose or shows wear, replace with the correct part rather than trying to adjust it."
   },
   clean_radiator: {
-    replace: ["Air filter element (500h change)"],
+    replace: ["Nothing — this is a cleaning task, not a replacement"],
     check:   ["Radiator fins for debris/blockage", "Fan blades for cracks or damage", "Fan shroud clearance"],
-    notes:   "Blow compressed air through radiator fins from engine side outward. Bent fins can be carefully straightened with a fin comb."
+    notes:   "Use compressed air or a gentle water rinse from the engine side outward — never a pressure washer, it can bend or tear the thin aluminum fins. Bent fins can be carefully straightened with a fin comb."
   },
   airfilter_500: {
     replace: ["Air filter element"],
@@ -309,32 +309,17 @@ async function writePending(entry) {
       body: JSON.stringify({action:"logPending", entry})
     });
   } catch(e) { console.error("writePending failed", e); }
-  return;
-  const url=``;const h={};
-  let existing=[],sha=null;
-  try{const r=await fetch(url,{headers:h});if(r.ok){const f=await r.json();sha=f.sha;existing=JSON.parse(b64d(f.content.replace(/\n/g,"")));}}catch(e){}
-  existing.push(entry);
-  const body={message:"Log: "+entry.truck,content:b64e(JSON.stringify(existing,null,2))};
-  if(sha)body.sha=sha;
-  await fetch(url,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});
 }
 
 async function writeGrounded(truck, grounded, note) {
-  if(GITHUB_TOKEN==="PASTE_YOUR_GITHUB_PAT_HERE") return false;
-  const url=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data.json`;
-  const h={"Authorization":"Bearer "+GITHUB_TOKEN,"Accept":"application/vnd.github+json"};
   try {
-    const r=await fetch(url,{headers:h});
-    if(!r.ok) return false;
-    const f=await r.json();
-    const data=JSON.parse(b64d(f.content.replace(/\n/g,"")));
-    data[truck].grounded=grounded;
-    data[truck].groundedNote=note||"Under repair";
-    if(!grounded){ delete data[truck].grounded; delete data[truck].groundedNote; }
-    const body={message:(grounded?"Ground ":"Unground ")+truck,content:b64e(JSON.stringify(data,null,2)),sha:f.sha};
-    const res=await fetch(url,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const res = await fetch(PROXY_URL, {
+      method: "POST",
+      headers: {"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},
+      body: JSON.stringify({action:"setGrounded", truck, grounded, note: note||"Under repair"})
+    });
     return res.ok;
-  } catch(e){ return false; }
+  } catch(e){ console.error("writeGrounded failed", e); return false; }
 }
 
 async function writeServiceLogToRepo(truck, log, entry) {
