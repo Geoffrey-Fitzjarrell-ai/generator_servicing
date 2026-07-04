@@ -146,6 +146,8 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .task-row.r-ok      { border-left-color:var(--green); }
 .task-row.r-no_record { border-left-color:#1e3050; }
 .task-name { font-size:14px; color:var(--text); }
+.task-name-wrap { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.task-mini-bar { width:100%; height:4px; display:block; }
 .task-interval { font-family:var(--mono); font-size:12px; color:var(--text-faint); }
 .badge { font-family:var(--mono); font-size:11px; font-weight:700; padding:3px 7px; border-radius:3px; text-align:center; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; transition:background 0.3s, color 0.3s; }
 .badge.ok        { background:var(--green-dim); color:var(--green); }
@@ -554,6 +556,25 @@ function App() {
       React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:10,fontWeight:700,color:"var(--amber)",letterSpacing:"0.08em",marginBottom:5}},"DUE SOON"),
       React.createElement("div",{className:"due-list"},warnTasks.map(t=>React.createElement("div",{key:t.key,className:"due-tag"},t.name)))
     );
+    if(criticalTask){
+      const dueAt=(criticalTask.last||0)+criticalTask.interval;
+      const remHours=Math.round(dueAt-hours);
+      const ringPct=Math.max(0,Math.min(1,criticalTask.pct||0));
+      const ringColor=criticalTask.status==="overdue"?"var(--red)":criticalTask.status==="warn"?"var(--amber)":"var(--green)";
+      const r=15,c=2*Math.PI*r;
+      return React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8}},
+        React.createElement("svg",{viewBox:"0 0 36 36",style:{width:34,height:34,flexShrink:0}},
+          React.createElement("circle",{cx:18,cy:18,r,fill:"none",stroke:"#1a2235",strokeWidth:4}),
+          React.createElement("circle",{cx:18,cy:18,r,fill:"none",stroke:ringColor,strokeWidth:4,
+            strokeDasharray:`${c*ringPct} ${c}`,strokeLinecap:"round",transform:"rotate(-90 18 18)"})
+        ),
+        React.createElement("div",null,
+          React.createElement("div",{className:"stat-val",style:{fontSize:16}},
+            remHours<=0?("+"+Math.abs(remHours)):remHours,React.createElement("span",{className:"unit"},"h")),
+          React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:9,color:"var(--text-faint)"}},criticalTask.name)
+        )
+      );
+    }
     const known=taskStatus.filter(t=>t.rem!=null);const next=known.length?Math.round(Math.min(...known.map(t=>t.rem))):null;
     return React.createElement("div",{className:"stat-val"},next??'—',next!=null?React.createElement("span",{className:"unit"},"h"):null);
   };
@@ -694,7 +715,14 @@ function App() {
                   className:"task-row r-"+task.status,
                   onClick:()=>!logMode&&setExpandedTask(isExpanded?null:task.key)
                 },
-                  React.createElement("div",{className:"task-name"},task.name),
+                  React.createElement("div",{className:"task-name-wrap"},
+                    React.createElement("div",{className:"task-name"},task.name),
+                    React.createElement("svg",{viewBox:"0 0 200 4",className:"task-mini-bar",preserveAspectRatio:"none"},
+                      React.createElement("rect",{x:0,y:0,width:200,height:4,rx:2,fill:"#1a2235"}),
+                      React.createElement("rect",{x:0,y:0,width:Math.max(0,Math.min(200,200*(task.pct||0))),height:4,rx:2,
+                        fill:task.status==="overdue"?"var(--red)":task.status==="warn"?"var(--amber)":"var(--green)"})
+                    )
+                  ),
                   React.createElement("div",{className:"task-interval"},task.interval+"h"),
                   React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
                   React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:task.status==="overdue"?"var(--red)":task.status==="warn"?"var(--amber)":"var(--text-faint)",whiteSpace:"nowrap"}},
