@@ -509,10 +509,22 @@ function App() {
   function handleSave(){
     if(!hours)return;
     const newLog={...log};const done=[];
-    for(const[k,v]of Object.entries(checked)){if(v){newLog[k]=hours;const t=TASKS.find(x=>x.key===k);if(t)done.push(t.name);}}
+    for(const[k,v]of Object.entries(checked)){if(v){newLog[k]=hours;const t=TASKS.find(x=>x.key===k);if(t)done.push(t);}}
     setSvcLogs(p=>({...p,[selected]:newLog}));
     try{localStorage.setItem("svc:"+selected,JSON.stringify(newLog));}catch(e){}
-    if(done.length)writePending({truck:selected,tasks:done,postedBy:truck.postedBy,loggedAt:new Date().toISOString()});
+    if(done.length){
+      writePending({truck:selected,tasks:done.map(t=>t.name),postedBy:truck.postedBy,loggedAt:new Date().toISOString()});
+      writeServiceLogToRepo(selected,newLog,{
+        technician:techName,
+        hours,
+        tasks:done.map(t=>({key:t.key,label:t.name}))
+      });
+      setSvcHistory(p=>{
+        const arr=p[selected]?[...p[selected]]:[];
+        arr.push({date:new Date().toISOString().slice(0,10),hours,technician:techName,tasks:done.map(t=>({key:t.key,label:t.name})),notes:[]});
+        return {...p,[selected]:arr};
+      });
+    }
     setChecked({});setLogMode(false);
     setShowSuccess(true);setTimeout(()=>setShowSuccess(false),1400);
   }
