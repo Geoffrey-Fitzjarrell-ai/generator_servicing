@@ -44,10 +44,14 @@
     "airfilter_500": 1070
   },
   "HD12": {
-    "oil_filter": 456,
-    "airfilter_battery": 456,
+    "oil_filter": 616,
+    "airfilter_battery": 616,
     "airfilter_clean": 456,
-    "airfilter_500": 456
+    "airfilter_500": 456,
+    "coolant_lines": 616,
+    "fuel_filter": 616,
+    "drive_belt": 616,
+    "clean_radiator": 616
   },
   "HD13": {
     "oil_filter": 320,
