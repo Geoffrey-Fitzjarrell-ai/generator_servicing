@@ -2,7 +2,7 @@ name: Parse Generator Hours from Slack
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '15 */3 * * *'
   workflow_dispatch:
 
 jobs:
@@ -79,7 +79,7 @@ jobs:
           # Look back 24h for threads (shift reports may start earlier in the day),
           # but only process replies posted in the last 6h.
           oldest_threads = str((NOW - timedelta(hours=24)).timestamp())
-          oldest_replies = str((NOW - timedelta(hours=6)).timestamp())
+          oldest_replies = str((NOW - timedelta(hours=4)).timestamp())
 
           hist = slack_get("conversations.history", {
               "channel": CHANNEL, "oldest": oldest_threads, "limit": 100,
