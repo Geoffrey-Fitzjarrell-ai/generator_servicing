@@ -124,6 +124,34 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-04",
+      "hours": 1429,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        },
+        {
+          "key": "fuel_filter",
+          "label": "Fuel filter change"
+        },
+        {
+          "key": "drive_belt",
+          "label": "Check drive belt & tension"
+        },
+        {
+          "key": "clean_radiator",
+          "label": "Clean radiator"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD9": [
