@@ -13,9 +13,13 @@
   "HD7": {},
   "HD8": {
     "oil_filter": 1359,
-    "airfilter_battery": 1206,
+    "airfilter_battery": 1429,
     "airfilter_clean": 1206,
-    "airfilter_500": 1206
+    "airfilter_500": 1206,
+    "coolant_lines": 1429,
+    "fuel_filter": 1429,
+    "drive_belt": 1429,
+    "clean_radiator": 1429
   },
   "HD9": {
     "oil_filter": 1387,
