@@ -1,17 +1,1 @@
-[
-  {
-    "truck": "HD9",
-    "tasks": [
-      "Clean radiator",
-      "Check drive belt & tension",
-      "Fuel filter change",
-      "Check coolant lines",
-      "Air filter & battery check"
-    ],
-    "postedBy": {
-      "id": "U09NG2B5316",
-      "name": "Kaede Fujiwara"
-    },
-    "loggedAt": "2026-07-04T04:28:38.398Z"
-  }
-]
+[]
