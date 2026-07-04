@@ -74,7 +74,7 @@ jobs:
               return {"id": user_id, "name": user_id}
 
           # ── 1. Parse generator hours from thread replies ──────────────────────
-          pattern = re.compile(r'(HD\d+)\s+Generator hours:\s*(\d+)h', re.IGNORECASE)
+          pattern = re.compile(r'(HD\d+)\s+Generator hours:\s*(\d+(?:\.\d+)?)\s*h?', re.IGNORECASE)
 
           # Look back 24h for threads (shift reports may start earlier in the day),
           # but only process replies posted in the last 6h.
@@ -101,7 +101,7 @@ jobs:
                           continue  # skip parent message
                       for m in pattern.finditer(reply.get("text", "")):
                           truck_id = m.group(1).upper()
-                          hours    = int(m.group(2))
+                          hours    = round(float(m.group(2)))
                           # keep highest value seen across all replies this run
                           if truck_id not in candidates or hours > candidates[truck_id]["hours"]:
                               candidates[truck_id] = {"hours": hours, "user_id": reply.get("user")}
