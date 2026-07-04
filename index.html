@@ -244,6 +244,12 @@ const TASKS = [
   { key:"airfilter_500",    name:"Change air filter",                 interval:500 },
 ];
 
+// Air filter cleaning (250h) is only performed on HD5; every other truck
+// skips it and goes straight to full replacement at the 500h interval.
+function tasksForTruck(id){
+  return TASKS.filter(t => t.key!=="airfilter_clean" || id==="HD5");
+}
+
 const DATA_URL    = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/data.json";
 const LOGS_URL    = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_logs.json";
 const HISTORY_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_history.json";
@@ -467,7 +473,7 @@ function App() {
   const hours=truck.hours;
   const isGrounded=!!truck.grounded;
 
-  const taskStatus=TASKS.map(task=>{
+  const taskStatus=tasksForTruck(selected).map(task=>{
     const last=log[task.key];
     const hasRec=last!=null;
     const since=hasRec&&hours!=null?hours-last:null;
@@ -490,8 +496,9 @@ function App() {
     const td=fleet[t];const tl=svcLogs[t]||{};
     if(td.grounded)return "grounded";
     if(!td.hours)return "none";
-    if(TASKS.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval;}))return "overdue";
-    if(TASKS.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval*0.9;}))return "warn";
+    const tasksHere=tasksForTruck(t);
+    if(tasksHere.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval;}))return "overdue";
+    if(tasksHere.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval*0.9;}))return "warn";
     return "ok";
   }
 
