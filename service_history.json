@@ -188,7 +188,7 @@
       "notes": []
     },
     {
-      "date": null,
+      "date": "2026-07-02",
       "hours": 1387,
       "technician": "Geoff Fitzjarrell",
       "tasks": [
@@ -198,6 +198,36 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-04",
+      "hours": 1454,
+      "technician": "Kaede Fujiwara",
+      "tasks": [
+        {
+          "key": "clean_radiator",
+          "label": "Clean radiator"
+        },
+        {
+          "key": "drive_belt",
+          "label": "Check drive belt & tension"
+        },
+        {
+          "key": "fuel_filter",
+          "label": "Fuel filter change"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        },
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        }
+      ],
+      "notes": [
+        "Recovered: originally logged 2026-07-04 04:28 UTC but wiped by the pending-completions cron before being promoted to history. Reconstructed from GitHub commit c243fef."
+      ]
     }
   ],
   "HD10": [

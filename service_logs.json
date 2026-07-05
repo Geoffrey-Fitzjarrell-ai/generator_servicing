@@ -7,14 +7,12 @@
   "HD6": {
     "oil_filter": 1478,
     "airfilter_battery": 1478,
-    "airfilter_clean": 1478,
     "airfilter_500": 1465
   },
   "HD7": {},
   "HD8": {
     "oil_filter": 1359,
     "airfilter_battery": 1429,
-    "airfilter_clean": 1206,
     "airfilter_500": 1206,
     "coolant_lines": 1429,
     "fuel_filter": 1429,
@@ -23,14 +21,16 @@
   },
   "HD9": {
     "oil_filter": 1387,
-    "airfilter_battery": 1204,
-    "airfilter_clean": 1204,
-    "airfilter_500": 1204
+    "airfilter_battery": 1454,
+    "airfilter_500": 1204,
+    "clean_radiator": 1454,
+    "drive_belt": 1454,
+    "fuel_filter": 1454,
+    "coolant_lines": 1454
   },
   "HD10": {
     "oil_filter": 1381,
     "airfilter_battery": 1489,
-    "airfilter_clean": 1381,
     "fuel_filter": 1381,
     "clean_radiator": 1489,
     "coolant_lines": 1489,
@@ -40,13 +40,11 @@
   "HD11": {
     "oil_filter": 1253,
     "airfilter_battery": 1070,
-    "airfilter_clean": 1070,
     "airfilter_500": 1070
   },
   "HD12": {
     "oil_filter": 616,
     "airfilter_battery": 616,
-    "airfilter_clean": 456,
     "airfilter_500": 456,
     "coolant_lines": 616,
     "fuel_filter": 616,
@@ -56,32 +54,27 @@
   "HD13": {
     "oil_filter": 320,
     "airfilter_battery": 456,
-    "airfilter_clean": 456,
     "airfilter_500": 456
   },
   "HD14": {
     "oil_filter": 450,
     "airfilter_battery": 415,
-    "airfilter_clean": 415,
     "airfilter_500": 415
   },
   "HD15": {
     "airfilter_battery": 201,
     "oil_filter": 339,
-    "airfilter_clean": 201,
     "airfilter_500": 201
   },
   "HD16": {
     "airfilter_battery": 178,
     "oil_filter": 178,
-    "airfilter_clean": 178,
     "fuel_filter": 178,
     "airfilter_500": 178
   },
   "HD17": {
     "airfilter_battery": 334,
     "oil_filter": 230,
-    "airfilter_clean": 154,
     "coolant_lines": 334,
     "fuel_filter": 334,
     "airfilter_500": 154
