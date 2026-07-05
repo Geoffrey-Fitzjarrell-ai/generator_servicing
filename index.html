@@ -174,6 +174,7 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 
 /* SUCCESS FLASH */
 .success-flash { position:absolute; inset:0; border-radius:var(--radius); background:linear-gradient(135deg,rgba(61,168,112,0.15),rgba(61,168,112,0.03)); border:1px solid rgba(61,168,112,0.4); pointer-events:none; z-index:10; animation:successFade 1.4s cubic-bezier(0.22,1,0.36,1) forwards; }
+.save-error-banner { margin-top:10px; padding:8px 12px; background:rgba(224,69,69,0.1); border:1px solid rgba(224,69,69,0.4); border-radius:var(--radius); color:#f0a0a0; font-family:var(--sans); font-size:12px; line-height:1.4; }
 @keyframes successFade { 0%{opacity:0;transform:scale(0.98)} 15%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:scale(1.01)} }
 
 /* PANEL TRANSITIONS */
@@ -309,12 +310,13 @@ function b64d(s){ return decodeURIComponent(escape(atob(s))); }
 
 async function writePending(entry) {
   try {
-    await fetch(PROXY_URL, {
+    const res = await fetch(PROXY_URL, {
       method: "POST",
       headers: {"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},
       body: JSON.stringify({action:"logPending", entry})
     });
-  } catch(e) { console.error("writePending failed", e); }
+    return res.ok;
+  } catch(e) { console.error("writePending failed", e); return false; }
 }
 
 async function writeGrounded(truck, grounded, note) {
@@ -330,7 +332,7 @@ async function writeGrounded(truck, grounded, note) {
 
 async function writeServiceLogToRepo(truck, log, entry) {
   try {
-    await fetch(PROXY_URL, {
+    const res = await fetch(PROXY_URL, {
       method: "POST",
       headers: {"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},
       body: JSON.stringify({
@@ -341,7 +343,8 @@ async function writeServiceLogToRepo(truck, log, entry) {
         tasks: entry.tasks,
       })
     });
-  } catch(e) { console.error("proxy write failed", e); }
+    return res.ok;
+  } catch(e) { console.error("proxy write failed", e); return false; }
 }
 
 function Gauge({ criticalTask, hours }) {
@@ -403,6 +406,8 @@ function App() {
   const [expandedTask,  setExpandedTask]  = useState(null);
   const [groundingNote, setGroundingNote] = useState('');
   const [groundingBusy, setGroundingBusy] = useState(false);
+  const [saving,        setSaving]        = useState(false);
+  const [saveError,     setSaveError]     = useState(null);
   const [transitioning,setTransitioning]=useState(false);
   const [displayKey, setDisplayKey] = useState(0);
   const [countedHours,setCountedHours]=useState(null);
@@ -497,8 +502,24 @@ function App() {
     if(td.grounded)return "grounded";
     if(!td.hours)return "none";
     const tasksHere=tasksForTruck(t);
-    if(tasksHere.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval;}))return "overdue";
-    if(tasksHere.some(task=>{const l=tl[task.key];return l!=null&&(td.hours-l)>=task.interval*0.9;}))return "warn";
+    // Mirrors taskStatus's per-task logic above: a task with no record is
+    // "overdue" once the truck's hours pass its interval (unless it's the
+    // HD5-only airfilter_clean task or hours haven't reached the interval yet).
+    // Previously this only looked at tasks with a log entry, so a truck with an
+    // un-logged overdue task could show "OK" on the fleet view while its own
+    // detail page showed OVERDUE — this keeps the two in sync.
+    const statuses = tasksHere.map(task=>{
+      const last=tl[task.key];
+      if(last==null){
+        return (task.key==="airfilter_clean"||td.hours<task.interval) ? "ok" : "overdue";
+      }
+      const since=td.hours-last;
+      if(since>=task.interval)return "overdue";
+      if(since>=task.interval*0.9)return "warn";
+      return "ok";
+    });
+    if(statuses.includes("overdue"))return "overdue";
+    if(statuses.includes("warn"))return "warn";
     return "ok";
   }
 
@@ -513,27 +534,56 @@ function App() {
     setGroundingBusy(false);
   }
 
-  function handleSave(){
+  async function handleSave(){
     if(!hours)return;
     const newLog={...log};const done=[];
     for(const[k,v]of Object.entries(checked)){if(v){newLog[k]=hours;const t=TASKS.find(x=>x.key===k);if(t)done.push(t);}}
-    setSvcLogs(p=>({...p,[selected]:newLog}));
-    try{localStorage.setItem("svc:"+selected,JSON.stringify(newLog));}catch(e){}
-    if(done.length){
-      writePending({truck:selected,tasks:done.map(t=>t.name),postedBy:truck.postedBy,loggedAt:new Date().toISOString()});
-      writeServiceLogToRepo(selected,newLog,{
-        technician:techName,
-        hours,
-        tasks:done.map(t=>({key:t.key,label:t.name}))
-      });
+    if(!done.length){setChecked({});setLogMode(false);return;}
+
+    setSaving(true);setSaveError(null);
+
+    // Write the authoritative record FIRST and wait for it — this is the write
+    // that actually clears "overdue" on the dashboard. Only once we know it has
+    // landed do we touch local state / show success, so a failure here can never
+    // look like a successful save (this is what silently ate an HD9 completion
+    // before: the notification fired regardless of whether this write worked).
+    const ok = await writeServiceLogToRepo(selected,newLog,{
+      technician:techName,
+      hours,
+      tasks:done.map(t=>({key:t.key,label:t.name}))
+    });
+
+    // The pending entry drives the Slack "tasks completed" notification. It also
+    // doubles as a safety net: if the write above failed, alreadyLogged=false
+    // tells the cron job to promote this entry into service_logs/service_history
+    // itself on its next run, so the completion still isn't lost — Geoff just
+    // needs to know it didn't land instantly.
+    await writePending({
+      truck:selected,
+      tasks:done.map(t=>t.name),
+      postedBy:truck.postedBy,
+      loggedAt:new Date().toISOString(),
+      hours,
+      alreadyLogged: ok,
+    });
+
+    if(ok){
+      setSvcLogs(p=>({...p,[selected]:newLog}));
+      try{localStorage.setItem("svc:"+selected,JSON.stringify(newLog));}catch(e){}
       setSvcHistory(p=>{
         const arr=p[selected]?[...p[selected]]:[];
         arr.push({date:new Date().toISOString().slice(0,10),hours,technician:techName,tasks:done.map(t=>({key:t.key,label:t.name})),notes:[]});
         return {...p,[selected]:arr};
       });
+      setChecked({});setLogMode(false);
+      setShowSuccess(true);setTimeout(()=>setShowSuccess(false),1400);
+    } else {
+      // Leave checked/logMode as-is so Geoff can see exactly what didn't save
+      // and hit Save again — it'll sync automatically via the cron safety net
+      // even if this retry also fails.
+      setSaveError("Couldn't reach the repo — this will auto-sync within a few hours via the scheduled job, but you can also try Save again now.");
     }
-    setChecked({});setLogMode(false);
-    setShowSuccess(true);setTimeout(()=>setShowSuccess(false),1400);
+    setSaving(false);
   }
 
   const fleetCounts = TRUCKS.reduce((acc,t)=>{
@@ -768,11 +818,12 @@ function App() {
               placeholder:"Technician name",
               style:{padding:"8px 10px",background:"var(--surface2)",border:"1px solid var(--border2)",borderRadius:"var(--radius)",color:"var(--text)",fontFamily:"var(--sans)",fontSize:12,width:180}
             }),
-            React.createElement("button",{className:"btn-primary",onClick:handleSave,disabled:Object.values(checked).every(v=>!v)},"Save Completed Tasks"),
-            React.createElement("button",{className:"btn-cancel",onClick:()=>{setLogMode(false);setChecked({});setTechName("Geoff Fitzjarrell");}},"Cancel"),
+            React.createElement("button",{className:"btn-primary",onClick:handleSave,disabled:saving||Object.values(checked).every(v=>!v)},saving?"Saving…":"Save Completed Tasks"),
+            React.createElement("button",{className:"btn-cancel",disabled:saving,onClick:()=>{setLogMode(false);setChecked({});setTechName("Geoff Fitzjarrell");setSaveError(null);}},"Cancel"),
             React.createElement("span",{className:"save-hint"},"Check tasks above, then save")
           )
         ),
+        saveError?React.createElement("div",{className:"save-error-banner"},"⚠ "+saveError):null,
         React.createElement("div",null,
           React.createElement("div",{className:"section-title"},selected+" — Open Jira Tickets"),
           tickets[selected]&&tickets[selected].length>0

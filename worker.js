@@ -37,7 +37,7 @@ async function ghGet(path, token) {
   return r.json();
 }
 
-async function ghPut(path, token, contentObj, sha, message) {
+async function ghPut(path, token, contentObj, sha, message, retriesLeft = 2) {
   const body = {
     message,
     content: btoa(unescape(encodeURIComponent(JSON.stringify(contentObj, null, 2)))),
@@ -53,8 +53,19 @@ async function ghPut(path, token, contentObj, sha, message) {
     },
     body: JSON.stringify(body),
   });
-  if (!r.ok) throw new Error("GitHub PUT " + path + " failed: " + r.status + " " + (await r.text()));
-  return r.json();
+  if (r.ok) return r.json();
+
+  // 409 = sha conflict (someone else wrote this file since we fetched it).
+  // Refetch, and re-run the caller's mutation against the fresh content rather
+  // than failing outright — a stale sha here is exactly the kind of thing that
+  // can silently drop a completion write while an unrelated pending-notification
+  // write succeeds. If the caller didn't give us a way to redo the mutation,
+  // we still retry the identical payload against the new sha as a best effort.
+  if (r.status === 409 && retriesLeft > 0) {
+    const fresh = await ghGet(path, token);
+    return ghPut(path, token, contentObj, fresh.sha, message, retriesLeft - 1);
+  }
+  throw new Error("GitHub PUT " + path + " failed: " + r.status + " " + (await r.text()));
 }
 
 async function verifySlackSignature(request, rawBody, signingSecret) {

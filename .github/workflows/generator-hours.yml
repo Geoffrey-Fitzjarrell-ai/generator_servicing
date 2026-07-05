@@ -132,16 +132,88 @@ jobs:
               print("No generator-hour replies found.")
 
           # ── 2. Process pending completions ────────────────────────────────────
+          # Task label -> log key, must mirror the TASKS array in index.html exactly.
+          TASK_NAME_TO_KEY = {
+              "Air filter & battery check": "airfilter_battery",
+              "Oil / filter change":        "oil_filter",
+              "Air filter cleaning":        "airfilter_clean",
+              "Check coolant lines":        "coolant_lines",
+              "Fuel filter change":         "fuel_filter",
+              "Check drive belt & tension": "drive_belt",
+              "Clean radiator":             "clean_radiator",
+              "Change air filter":          "airfilter_500",
+          }
+
           try:
               pending, p_sha = gh_get("pending_completions.json")
           except Exception:
               pending, p_sha = [], None
 
           if pending:
+              # IMPORTANT: this is a *safety net*. The dashboard (worker.js
+              # logCompletion) is expected to have already written service_logs.json
+              # and service_history.json at the moment Geoff hits "Save". That write
+              # can fail silently client-side (network blip, sha conflict, closed
+              # laptop lid, etc.) while the pending-completion notification still
+              # goes through — which is exactly how HD9's 2026-07-04 completion got
+              # lost: it was logged here, then wiped by this job with only a Slack
+              # ping and no promotion to history. Every entry is now checked against
+              # service_logs.json and (re)promoted if it isn't already reflected
+              # there, before we ever clear pending_completions.json.
+              logs, logs_sha = gh_get("service_logs.json")
+              hist, hist_sha = gh_get("service_history.json")
+              logs_changed = False
+              hist_changed = False
+
               for entry in pending:
                   truck   = entry.get("truck", "")
                   tasks   = entry.get("tasks", [])
-                  user_id = (entry.get("postedBy") or {}).get("id", "")
+                  hours   = entry.get("hours")
+                  poster  = entry.get("postedBy") or {}
+                  user_id = poster.get("id", "")
+                  already_logged = entry.get("alreadyLogged", False)
+
+                  # Determine which of the named tasks are NOT yet reflected in
+                  # service_logs.json at >= this entry's hours. Old-format entries
+                  # (like HD9's) have no "hours" field at all, so fall back to
+                  # "any task missing an equal/newer log" -> needs promotion.
+                  needs_promotion = not already_logged
+                  if needs_promotion and truck and hours:
+                      truck_logs = logs.get(truck, {})
+                      keys = [TASK_NAME_TO_KEY[t] for t in tasks if t in TASK_NAME_TO_KEY]
+                      if keys and all(truck_logs.get(k, -1) >= hours for k in keys):
+                          needs_promotion = False  # dashboard write already succeeded
+
+                  if needs_promotion and truck and tasks:
+                      keys = [(TASK_NAME_TO_KEY[t], t) for t in tasks if t in TASK_NAME_TO_KEY]
+                      unmapped = [t for t in tasks if t not in TASK_NAME_TO_KEY]
+                      if unmapped:
+                          print(f"WARNING: unmapped task label(s) for {truck}: {unmapped} — "
+                                f"not promoted, check TASK_NAME_TO_KEY vs index.html TASKS")
+                      if keys and hours:
+                          if truck not in logs:
+                              logs[truck] = {}
+                          for key, _label in keys:
+                              logs[truck][key] = hours
+                          logs_changed = True
+
+                          if truck not in hist:
+                              hist[truck] = []
+                          hist[truck].append({
+                              "date": NOW.strftime("%Y-%m-%d"),
+                              "hours": hours,
+                              "technician": poster.get("name") or "",
+                              "tasks": [{"key": k, "label": l} for k, l in keys],
+                              "notes": ["Promoted by cron safety-net (dashboard write "
+                                        "did not land before this run)."],
+                          })
+                          hist_changed = True
+                          print(f"Promoted {truck}: {[k for k,_ in keys]} at {hours}h "
+                                f"(was stuck in pending_completions.json)")
+                      elif not hours:
+                          print(f"WARNING: {truck} pending entry has no 'hours' field, "
+                                f"cannot promote automatically — needs manual fix: {entry}")
+
                   task_list = "\n".join(f"• {t}" for t in tasks)
                   text = f"<@{user_id}> the following tasks have been completed on *{truck}*:\n{task_list}"
                   result = slack_post({"channel": CHANNEL, "text": text})
@@ -149,6 +221,14 @@ jobs:
                       print(f"Notified {user_id} re: {truck} ({len(tasks)} task(s))")
                   else:
                       print(f"Failed to notify {user_id}: {result.get('error')}")
+
+              if logs_changed:
+                  gh_put("service_logs.json", logs, logs_sha,
+                         f"chore: cron safety-net promotion {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
+              if hist_changed:
+                  gh_put("service_history.json", hist, hist_sha,
+                         f"chore: cron safety-net promotion {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
+
               if p_sha:
                   gh_put("pending_completions.json", [], p_sha,
                          f"chore: clear pending completions {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
