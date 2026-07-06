@@ -81,9 +81,21 @@ jobs:
           oldest_threads = str((NOW - timedelta(hours=24)).timestamp())
           oldest_replies = str((NOW - timedelta(hours=24)).timestamp())
 
-          hist = slack_get("conversations.history", {
-              "channel": CHANNEL, "oldest": oldest_threads, "limit": 100,
-          })
+          all_messages = []
+          cursor = None
+          for _ in range(5):  # up to 5000 messages — generous ceiling for a 24h window
+              params = {"channel": CHANNEL, "oldest": oldest_threads, "limit": 1000}
+              if cursor:
+                  params["cursor"] = cursor
+              hist = slack_get("conversations.history", params)
+              if not hist.get("ok"):
+                  print(f"Slack error: {hist.get('error')}")
+                  break
+              all_messages.extend(hist.get("messages", []))
+              cursor = hist.get("response_metadata", {}).get("next_cursor")
+              if not cursor:
+                  break
+          hist = {"ok": True, "messages": all_messages}
 
           thread_truck_pattern = re.compile(r'HD\d+', re.IGNORECASE)
 
