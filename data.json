@@ -65,14 +65,14 @@
     }
   },
   "HD12": {
-    "hours": 616,
+    "hours": 624,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Kaiho Haruto",
-    "lastUpdated": "2026-07-03T00:22:43Z",
+    "lastUpdated": "2026-07-06T05:30:19Z",
     "postedBy": {
-      "id": "U0AT2E00R5G",
-      "name": "Kaiho Haruto"
+      "id": "U0B3NMN2DS4",
+      "name": "U0B3NMN2DS4"
     }
   },
   "HD13": {
@@ -87,14 +87,14 @@
     }
   },
   "HD14": {
-    "hours": 525,
+    "hours": 535,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Kazuya Oiwa",
-    "lastUpdated": "2026-07-02T00:54:01Z",
+    "lastUpdated": "2026-07-06T05:30:19Z",
     "postedBy": {
-      "id": "U0B3CTWCKSS",
-      "name": "Kazuya Oiwa"
+      "id": "U0AT1RYRS1Z",
+      "name": "U0AT1RYRS1Z"
     }
   },
   "HD15": {
