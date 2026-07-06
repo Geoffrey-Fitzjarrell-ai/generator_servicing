@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "truck": "HD11",
+    "tasks": [
+      "Air filter & battery check",
+      "Check coolant lines",
+      "Fuel filter change",
+      "Check drive belt & tension",
+      "Clean radiator"
+    ],
+    "postedBy": {
+      "id": "U09BGMLJCMR",
+      "name": "Toshikazu Mitou"
+    },
+    "loggedAt": "2026-07-06T02:16:35.733Z",
+    "hours": 1337,
+    "alreadyLogged": true
+  }
+]
