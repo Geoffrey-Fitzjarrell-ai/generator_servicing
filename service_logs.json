@@ -39,8 +39,12 @@
   },
   "HD11": {
     "oil_filter": 1253,
-    "airfilter_battery": 1070,
-    "airfilter_500": 1070
+    "airfilter_battery": 1337,
+    "airfilter_500": 1070,
+    "coolant_lines": 1337,
+    "fuel_filter": 1337,
+    "drive_belt": 1337,
+    "clean_radiator": 1337
   },
   "HD12": {
     "oil_filter": 616,
