@@ -6,8 +6,12 @@
   },
   "HD6": {
     "oil_filter": 1478,
-    "airfilter_battery": 1478,
-    "airfilter_500": 1465
+    "airfilter_battery": 1578,
+    "airfilter_500": 1465,
+    "fuel_filter": 1578,
+    "coolant_lines": 1578,
+    "drive_belt": 1578,
+    "clean_radiator": 1578
   },
   "HD7": {},
   "HD8": {
