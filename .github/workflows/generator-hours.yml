@@ -235,7 +235,9 @@ jobs:
                                 f"cannot promote automatically — needs manual fix: {entry}")
 
                   task_list = "\n".join(f"• {t}" for t in tasks)
-                  text = f"<@{user_id}> the following tasks have been completed on *{truck}*:\n{task_list}"
+                  text = (f"げんきくんです！<@{user_id}> さん、*{truck}* の作業記録を確認しました🔧\n"
+                          f"{task_list}\n"
+                          f"いつもありがとうございます、お疲れ様でした！")
                   result = slack_post({"channel": CHANNEL, "text": text})
                   if result.get("ok"):
                       print(f"Notified {user_id} re: {truck} ({len(tasks)} task(s))")
