@@ -71,7 +71,8 @@
     "oil_filter": 178,
     "fuel_filter": 178,
     "airfilter_500": 178,
-    "coolant_lines": 294
+    "coolant_lines": 294,
+    "drive_belt": 294
   },
   "HD17": {
     "airfilter_battery": 334,
