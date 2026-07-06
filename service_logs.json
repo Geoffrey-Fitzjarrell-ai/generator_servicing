@@ -66,9 +66,11 @@
     "airfilter_500": 415
   },
   "HD15": {
-    "airfilter_battery": 201,
+    "airfilter_battery": 447,
     "oil_filter": 339,
-    "airfilter_500": 201
+    "airfilter_500": 201,
+    "coolant_lines": 447,
+    "fuel_filter": 447
   },
   "HD16": {
     "airfilter_battery": 294,
