@@ -79,17 +79,21 @@ jobs:
           # Look back 24h for threads (shift reports may start earlier in the day),
           # but only process replies posted in the last 6h.
           oldest_threads = str((NOW - timedelta(hours=24)).timestamp())
-          oldest_replies = str((NOW - timedelta(hours=4)).timestamp())
+          oldest_replies = str((NOW - timedelta(hours=24)).timestamp())
 
           hist = slack_get("conversations.history", {
               "channel": CHANNEL, "oldest": oldest_threads, "limit": 100,
           })
+
+          thread_truck_pattern = re.compile(r'HD\d+', re.IGNORECASE)
 
           candidates = {}  # truck_id -> {hours, user_id}
           if hist.get("ok"):
               for msg in hist.get("messages", []):
                   if not msg.get("reply_count"):
                       continue
+                  thread_match = thread_truck_pattern.search(msg.get("text", ""))
+                  expected_truck = thread_match.group(0).upper() if thread_match else None
                   replies = slack_get("conversations.replies", {
                       "channel": CHANNEL, "ts": msg["ts"],
                       "oldest": oldest_replies, "limit": 200,
@@ -102,6 +106,10 @@ jobs:
                       for m in pattern.finditer(reply.get("text", "")):
                           truck_id = m.group(1).upper()
                           hours    = round(float(m.group(2)))
+                          if expected_truck and truck_id != expected_truck:
+                              print(f"SKIP likely copy-paste error: reply says {truck_id} but "
+                                    f"posted in {expected_truck}'s thread (ts={reply['ts']})")
+                              continue
                           # keep highest value seen across all replies this run
                           if truck_id not in candidates or hours > candidates[truck_id]["hours"]:
                               candidates[truck_id] = {"hours": hours, "user_id": reply.get("user")}
