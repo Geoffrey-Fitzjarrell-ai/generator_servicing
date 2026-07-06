@@ -54,14 +54,14 @@
     }
   },
   "HD11": {
-    "hours": 1337,
+    "hours": 1494,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Toshikazu Mitou",
-    "lastUpdated": "2026-07-06T01:24:42Z",
+    "lastUpdated": "2026-07-06T15:02:38Z",
     "postedBy": {
-      "id": "U09BGMLJCMR",
-      "name": "Toshikazu Mitou"
+      "id": "U0AEE78SP2R",
+      "name": null
     }
   },
   "HD12": {
