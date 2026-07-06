@@ -8,6 +8,10 @@
 // 4. Go to Settings -> Variables and Secrets -> Add:
 //      GITHUB_PAT     = your github_pat_... token   (encrypt it / mark as Secret)
 //      SHARED_SECRET  = any random string you make up (e.g. a long password)
+//      SLACK_TOKEN    = the bot's xoxb-... token (same one used by the GitHub
+//                       Actions SLACK_TOKEN repo secret) — enables sending the
+//                       "task(s) completed" Slack message immediately when
+//                       logged, instead of waiting for the 3-hourly cron sweep
 // 5. Copy the worker's URL (looks like https://generator-fleet-proxy.<you>.workers.dev)
 // 6. Give that URL + the SHARED_SECRET you chose back to Claude to wire into index.html
 
@@ -83,6 +87,38 @@ async function verifySlackSignature(request, rawBody, signingSecret) {
   const sigBuffer = await crypto.subtle.sign("HMAC", key, encoder.encode(baseString));
   const computed = "v0=" + Array.from(new Uint8Array(sigBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
   return computed === signature;
+}
+
+const SLACK_CHANNEL = "C08L1TWLU14";
+
+// Fires the "task(s) completed" confirmation the moment a completion is
+// logged from the dashboard, instead of waiting for the 3-hourly cron sweep
+// to pick it up out of pending_completions.json. Requires a SLACK_TOKEN
+// secret on this Worker (Settings -> Variables and Secrets) — the same
+// bot token used by the GitHub Actions workflow's SLACK_TOKEN repo secret.
+function buildCompletionText(userId, truck, tasks) {
+  const taskList = (tasks || []).map(t => "• " + t).join("\n");
+  const mention = userId ? `<@${userId}> さん、` : "";
+  return `げんきくんです！${mention}*${truck}* で以下の作業が完了したことを確認しました🔧✨\n`
+       + `${taskList}\n`
+       + `担当してくれた技術者さん、いつも素晴らしい仕事をありがとうございます、お疲れ様でした！`;
+}
+
+async function slackPostMessage(env, text) {
+  if (!env.SLACK_TOKEN) return { ok: false, error: "no_slack_token_secret" };
+  try {
+    const r = await fetch("https://slack.com/api/chat.postMessage", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + env.SLACK_TOKEN,
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({ channel: SLACK_CHANNEL, text }),
+    });
+    return r.json();
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  }
 }
 
 const HOURS_PATTERN = /(HD\d+)\s+Generator hours:\s*(\d+(?:\.\d+)?)\s*h?/i;
@@ -205,6 +241,20 @@ export default {
       if (action === "logPending") {
         const { entry } = payload;
         if (!entry || !entry.truck) return json({ error: "Missing entry" }, 400);
+
+        // Notify right now instead of waiting for the 3-hourly cron sweep.
+        // If this fails (Slack hiccup, missing SLACK_TOKEN secret, etc.),
+        // entry.notified stays false and the cron job's fallback path will
+        // still send it within a few hours — same safety-net principle as
+        // the log write itself.
+        const userId = entry.postedBy && entry.postedBy.id;
+        const text = buildCompletionText(userId, entry.truck, entry.tasks);
+        const slackResult = await slackPostMessage(env, text);
+        entry.notified = !!slackResult.ok;
+        if (!slackResult.ok) {
+          console.error("Immediate Slack notify failed for " + entry.truck, slackResult);
+        }
+
         let existing = [], sha = null;
         try {
           const file = await ghGet("pending_completions.json", env.GITHUB_PAT);
@@ -213,7 +263,7 @@ export default {
         } catch (e) { /* file may not exist yet */ }
         existing.push(entry);
         await ghPut("pending_completions.json", env.GITHUB_PAT, existing, sha, "Log: " + entry.truck);
-        return json({ ok: true });
+        return json({ ok: true, notified: entry.notified });
       }
 
       return json({ error: "Unknown action" }, 400);
