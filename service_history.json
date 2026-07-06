@@ -588,6 +588,18 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-06",
+      "hours": 480,
+      "technician": "Masakiyo Kato",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD16": [
