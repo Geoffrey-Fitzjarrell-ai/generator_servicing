@@ -566,6 +566,22 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-06",
+      "hours": 294,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD17": [
