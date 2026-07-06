@@ -12,5 +12,18 @@
     "loggedAt": "2026-07-06T00:56:59.070Z",
     "hours": 294,
     "alreadyLogged": true
+  },
+  {
+    "truck": "HD16",
+    "tasks": [
+      "Check drive belt & tension"
+    ],
+    "postedBy": {
+      "id": "U0B3GPC0N0Z",
+      "name": "Yutaro Ranko"
+    },
+    "loggedAt": "2026-07-06T00:57:18.500Z",
+    "hours": 294,
+    "alreadyLogged": true
   }
 ]
