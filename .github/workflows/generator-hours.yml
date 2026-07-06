@@ -131,6 +131,7 @@ jobs:
           if candidates:
               data, sha = gh_get("data.json")
               changed = False
+              daily_deltas = {}  # truck_id -> hours run today (this sync)
               for truck_id, info in candidates.items():
                   stored = (data.get(truck_id) or {}).get("hours") or 0
                   if info["hours"] <= stored:
@@ -140,6 +141,7 @@ jobs:
                   if truck_id not in data:
                       data[truck_id] = {"hours": None, "intervalStart": 0, "overdue": False,
                                         "technician": "", "lastUpdated": None, "postedBy": None}
+                  daily_deltas[truck_id] = info["hours"] - stored
                   data[truck_id]["hours"]       = info["hours"]
                   data[truck_id]["lastUpdated"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
                   data[truck_id]["postedBy"]    = user_info
@@ -148,6 +150,25 @@ jobs:
               if changed:
                   gh_put("data.json", data, sha,
                          f"chore: update generator hours {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
+
+                  # Track daily runtime for the dashboard's "Daily Hours" bar chart.
+                  # Accumulates multiple same-day syncs into one bar; keeps a rolling window.
+                  try:
+                      daily, daily_sha = gh_get("daily_hours.json")
+                  except Exception:
+                      daily, daily_sha = {}, None
+                  today_str = NOW.strftime("%Y-%m-%d")
+                  for truck_id, delta in daily_deltas.items():
+                      if truck_id not in daily:
+                          daily[truck_id] = []
+                      entries = daily[truck_id]
+                      if entries and entries[-1]["date"] == today_str:
+                          entries[-1]["hours"] = round(entries[-1]["hours"] + delta, 1)
+                      else:
+                          entries.append({"date": today_str, "hours": round(delta, 1)})
+                      daily[truck_id] = entries[-14:]  # keep a small rolling buffer past the 7 shown
+                  gh_put("daily_hours.json", daily, daily_sha,
+                         f"chore: track daily hours {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
           else:
               print("No generator-hour replies found.")
 
