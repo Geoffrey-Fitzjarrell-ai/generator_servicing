@@ -130,12 +130,15 @@
     "groundedNote": "generator requires repair"
   },
   "HD18": {
-    "hours": null,
+    "hours": 213,
     "intervalStart": 0,
     "overdue": false,
     "technician": "",
-    "lastUpdated": null,
-    "postedBy": null
+    "lastUpdated": "2026-07-06T12:08:43Z",
+    "postedBy": {
+      "id": "U0971UJ8RKQ",
+      "name": null
+    }
   },
   "HD5": {
     "hours": null,
