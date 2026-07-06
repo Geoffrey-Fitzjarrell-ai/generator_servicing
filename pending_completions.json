@@ -1,15 +1,1 @@
-[
-  {
-    "truck": "HD15",
-    "tasks": [
-      "Oil / filter change"
-    ],
-    "postedBy": {
-      "id": "U0AV3PG35JM",
-      "name": "Reon Zeniya"
-    },
-    "loggedAt": "2026-07-06T09:35:12.442Z",
-    "hours": 480,
-    "alreadyLogged": true
-  }
-]
+[]
