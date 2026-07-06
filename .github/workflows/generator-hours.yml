@@ -255,15 +255,24 @@ jobs:
                           print(f"WARNING: {truck} pending entry has no 'hours' field, "
                                 f"cannot promote automatically — needs manual fix: {entry}")
 
-                  task_list = "\n".join(f"• {t}" for t in tasks)
-                  text = (f"げんきくんです！<@{user_id}> さん、*{truck}* の作業記録を確認しました🔧\n"
-                          f"{task_list}\n"
-                          f"いつもありがとうございます、お疲れ様でした！")
-                  result = slack_post({"channel": CHANNEL, "text": text})
-                  if result.get("ok"):
-                      print(f"Notified {user_id} re: {truck} ({len(tasks)} task(s))")
+                  # The Worker now fires this same notification immediately when the
+                  # entry is first logged (see worker.js logPending). This is only a
+                  # fallback for entries the Worker couldn't notify for at the time
+                  # (e.g. Slack was down, or SLACK_TOKEN wasn't set yet on the Worker).
+                  if entry.get("notified"):
+                      print(f"Skip Slack notify for {truck}: already notified immediately by worker")
                   else:
-                      print(f"Failed to notify {user_id}: {result.get('error')}")
+                      task_list = "\n".join(f"• {t}" for t in tasks)
+                      text = (f"げんきくんです！<@{user_id}> さん、*{truck}* で以下の作業が"
+                              f"完了したことを確認しました🔧✨\n"
+                              f"{task_list}\n"
+                              f"担当してくれた技術者さん、いつも素晴らしい仕事をありがとうございます、"
+                              f"お疲れ様でした！")
+                      result = slack_post({"channel": CHANNEL, "text": text})
+                      if result.get("ok"):
+                          print(f"Notified {user_id} re: {truck} ({len(tasks)} task(s))")
+                      else:
+                          print(f"Failed to notify {user_id}: {result.get('error')}")
 
               if logs_changed:
                   gh_put("service_logs.json", logs, logs_sha,
