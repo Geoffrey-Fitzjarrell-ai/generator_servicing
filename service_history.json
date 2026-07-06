@@ -582,6 +582,18 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-06",
+      "hours": 294,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "drive_belt",
+          "label": "Check drive belt & tension"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD17": [
