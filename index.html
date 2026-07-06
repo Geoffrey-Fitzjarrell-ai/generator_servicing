@@ -53,6 +53,21 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .fs-ok       .fleet-row-pct { color:var(--green); }
 .fs-grounded .fleet-row-pct { color:#9880cc; }
 
+/* SERVICE LOOKUP */
+.service-lookup { background:var(--surface); border-bottom:1px solid var(--border); padding:12px 24px 14px; }
+.service-lookup-row { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.service-lookup-title { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-faint); flex-shrink:0; }
+.service-select { font-family:var(--mono); font-size:11px; letter-spacing:0.03em; padding:6px 10px; background:var(--surface2); color:var(--text); border:1px solid var(--border2); border-radius:var(--radius); cursor:pointer; flex:1; max-width:340px; }
+.service-select:focus { outline:none; border-color:var(--blue); }
+.svc-grid { display:flex; flex-wrap:wrap; gap:8px; animation:statPop 0.25s cubic-bezier(0.22,1,0.36,1) both; }
+.svc-card { width:104px; padding:10px 10px 9px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; position:relative; overflow:hidden; transition:background 0.15s, transform 0.15s; }
+.svc-card:hover { background:var(--surface3); transform:translateY(-1px); }
+.svc-card-bar { position:absolute; top:0; left:0; right:0; height:2px; }
+.svc-card-name { font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:0.05em; color:var(--text); margin-bottom:6px; }
+.svc-gauge { width:100%; height:8px; display:block; margin-bottom:6px; }
+.svc-gauge-fill { transition:width 0.3s ease; }
+.svc-card-sub { font-family:var(--mono); font-size:9.5px; color:var(--text-faint); letter-spacing:0.02em; line-height:1.3; }
+
 /* TRUCK STRIP */
 .truck-strip { display:flex; background:var(--surface); border-bottom:1px solid var(--border); overflow-x:auto; scrollbar-width:none; }
 .truck-strip::-webkit-scrollbar { display:none; }
@@ -411,6 +426,7 @@ function App() {
   const [transitioning,setTransitioning]=useState(false);
   const [displayKey, setDisplayKey] = useState(0);
   const [countedHours,setCountedHours]=useState(null);
+  const [svcLookup, setSvcLookup] = useState("");
   const prevHoursRef = useRef(null);
 
   async function loadAll() {
@@ -521,6 +537,30 @@ function App() {
     if(statuses.includes("overdue"))return "overdue";
     if(statuses.includes("warn"))return "warn";
     return "ok";
+  }
+
+  // Same per-task logic as taskStatus/truckStatus above, but for one named
+  // task across an arbitrary truck — powers the Service Lookup dropdown so
+  // "who needs an oil change" can be answered without opening every tab.
+  function taskStatusForTruck(t, taskKey){
+    const task=TASKS.find(x=>x.key===taskKey);
+    const td=fleet[t];
+    if(!task||!td)return null;
+    if(td.grounded)return{status:"grounded",pct:0,hours:td.hours};
+    const hrs=td.hours;
+    if(hrs==null)return{status:"unknown",pct:0,hours:null};
+    const last=(svcLogs[t]||{})[taskKey];
+    if(last==null){
+      if(taskKey==="airfilter_clean"||hrs<task.interval){
+        return{status:"no_record",pct:Math.min(hrs/task.interval,1),hours:hrs,dueAt:task.interval,remaining:task.interval-hrs};
+      }
+      return{status:"overdue",pct:1,hours:hrs,dueAt:task.interval,over:hrs-task.interval};
+    }
+    const since=hrs-last;
+    const pct=Math.min(since/task.interval,1);
+    const dueAt=last+task.interval;
+    const status=since>=task.interval?"overdue":since>=task.interval*0.9?"warn":"ok";
+    return{status,pct,hours:hrs,since,dueAt,last,remaining:dueAt-hrs,over:hrs-dueAt};
   }
 
   async function handleToggleGrounded(){
@@ -672,6 +712,51 @@ function App() {
           );
         })
       )
+    ),
+    React.createElement("div",{className:"service-lookup"},
+      React.createElement("div",{className:"service-lookup-row"},
+        React.createElement("div",{className:"service-lookup-title"},"Service Lookup"),
+        React.createElement("select",{
+          className:"service-select",
+          value:svcLookup,
+          onChange:e=>setSvcLookup(e.target.value)
+        },
+          React.createElement("option",{value:""},"Select a service..."),
+          ...TASKS.map(task=>React.createElement("option",{key:task.key,value:task.key},task.name+" — "+task.interval+"h"))
+        )
+      ),
+      svcLookup?React.createElement("div",{className:"svc-grid"},
+        TRUCKS
+          .filter(t=>tasksForTruck(t).some(x=>x.key===svcLookup))
+          .map(t=>({t,info:taskStatusForTruck(t,svcLookup)}))
+          .sort((a,b)=>{
+            const order={overdue:0,warn:1,no_record:2,ok:3,unknown:4,grounded:5};
+            const oa=order[a.info.status]??4,ob=order[b.info.status]??4;
+            if(oa!==ob)return oa-ob;
+            return (b.info.pct||0)-(a.info.pct||0);
+          })
+          .map(({t,info})=>{
+            const fillColor=info.status==="overdue"?"#e04545":info.status==="warn"?"#f0a500":info.status==="grounded"?"#7060a0":info.status==="ok"?"#3da870":"#38465a";
+            const pctDisp=Math.round((info.pct||0)*100);
+            const sub=info.status==="grounded"?"Grounded":
+              info.status==="unknown"?"No hours data":
+              info.status==="overdue"?Math.max(Math.round(info.over||0),0)+"h overdue":
+              info.status==="no_record"?Math.max(Math.round(info.remaining||0),0)+"h until due":
+              info.status==="warn"?Math.max(Math.round(info.remaining||0),0)+"h left · due soon":
+              Math.max(Math.round(info.remaining||0),0)+"h left";
+            return React.createElement("div",{key:t,className:"svc-card",onClick:()=>handleTabClick(t)},
+              React.createElement("div",{className:"svc-card-bar",style:{background:fillColor}}),
+              React.createElement("div",{className:"svc-card-name"},t),
+              React.createElement("svg",{viewBox:"0 0 100 8",className:"svc-gauge",preserveAspectRatio:"none"},
+                React.createElement("rect",{x:0,y:0,width:100,height:8,rx:2,fill:"#1a2235"}),
+                info.status!=="grounded"&&info.status!=="unknown"?React.createElement("rect",{
+                  x:0,y:0,width:Math.max(pctDisp,3),height:8,rx:2,fill:fillColor,className:"svc-gauge-fill"
+                }):null
+              ),
+              React.createElement("div",{className:"svc-card-sub"},sub)
+            );
+          })
+      ):null
     ),
     React.createElement("nav",{className:"truck-strip"},
       [...TRUCKS].sort((a,b)=>{
