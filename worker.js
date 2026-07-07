@@ -128,6 +128,7 @@ async function slackPostMessage(env, text, opts = {}) {
   try {
     const body = { channel: opts.channel || SLACK_CHANNEL, text };
     if (opts.thread_ts) body.thread_ts = opts.thread_ts;
+    if (opts.blocks) body.blocks = opts.blocks;
     const r = await fetch("https://slack.com/api/chat.postMessage", {
       method: "POST",
       headers: {
@@ -140,6 +141,12 @@ async function slackPostMessage(env, text, opts = {}) {
   } catch (e) {
     return { ok: false, error: String(e) };
   }
+}
+
+// Unicode progress bar — renders identically in Slack's monospace code spans.
+function bar(ratio, width = 10) {
+  const filled = Math.min(width, Math.max(0, Math.round(Math.min(ratio, 1) * width)));
+  return "▓".repeat(filled) + "░".repeat(width - filled);
 }
 
 const HOURS_PATTERN = /(HD\d+)\s+Generator hours:\s*(\d+(?:\.\d+)?)\s*h?/i;
@@ -235,9 +242,18 @@ async function answerMention(event, env) {
     if (info.grounded) {
       return slackPostMessage(env, `*${truck}* is grounded (${info.groundedNote || "under repair"}) — maintenance schedule is paused.`, { channel, thread_ts });
     }
-    const list = nextDueList(truck, info.hours, logs).slice(0, 3);
-    const lines = list.map(t => `• ${t.name} — ${fmtRem(t.rem)} (last done ${t.last != null ? t.last + "h" : "never"})`);
-    return slackPostMessage(env, `*${truck}* @ ${info.hours}h — next up:\n` + lines.join("\n"), { channel, thread_ts });
+    const list = nextDueList(truck, info.hours, logs).slice(0, 4);
+    const rows = list.map(t => {
+      const ratio = (t.interval - t.rem) / t.interval;
+      const pct = Math.min(Math.round(ratio * 100), 999);
+      const tail = t.rem <= 0 ? `over ${Math.abs(Math.round(t.rem))}h` : `${Math.round(t.rem)}h left`;
+      return `${bar(ratio)} ${String(pct).padStart(3)}%  ${t.name} — ${tail}`;
+    }).join("\n");
+    const fallback = `${truck} @ ${info.hours}h — next: ${list[0].name} (${fmtRem(list[0].rem)})`;
+    return slackPostMessage(env, fallback, { channel, thread_ts, blocks: [
+      { type: "section", text: { type: "mrkdwn", text: `*${truck}* @ *${info.hours}h* — upcoming maintenance:\n\`\`\`${rows}\`\`\`` } },
+      { type: "context", elements: [{ type: "mrkdwn", text: "▓ = interval elapsed ｜ <https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/|📊 dashboard>" }] },
+    ]});
   }
 
   if (truck && /hours|status|update/.test(text)) {
@@ -278,13 +294,24 @@ async function answerMention(event, env) {
   if (/overdue|due soon|fleet|status|summary/.test(text)) {
     const rows = Object.keys(data)
       .filter(t => data[t] && data[t].hours != null && !data[t].grounded)
-      .map(t => ({ truck: t, critical: nextDueList(t, data[t].hours, logs)[0] }));
-    const overdue = rows.filter(r => r.critical.rem <= 0);
-    const warn = rows.filter(r => r.critical.rem > 0 && r.critical.rem <= 25);
-    const lines = [];
-    if (overdue.length) lines.push("*Overdue:*\n" + overdue.map(r => `• ${r.truck} — ${r.critical.name} (${fmtRem(r.critical.rem)})`).join("\n"));
-    if (warn.length) lines.push("*Due soon:*\n" + warn.map(r => `• ${r.truck} — ${r.critical.name} (${fmtRem(r.critical.rem)})`).join("\n"));
-    return slackPostMessage(env, lines.length ? lines.join("\n\n") : "Nothing overdue or due soon across the fleet 🎉", { channel, thread_ts });
+      .map(t => ({ truck: t, hours: data[t].hours, critical: nextDueList(t, data[t].hours, logs)[0] }))
+      .sort((a, b) => a.critical.rem - b.critical.rem);
+    const flagged = rows.filter(r => r.critical.rem <= 25);
+    const rowLine = r => {
+      const ratio = (r.critical.interval - r.critical.rem) / r.critical.interval;
+      const pct = Math.min(Math.round(ratio * 100), 999);
+      const tail = r.critical.rem <= 0 ? `over ${Math.abs(Math.round(r.critical.rem))}h` : `${Math.round(r.critical.rem)}h left`;
+      return `${r.truck.padEnd(5)} ${bar(ratio)} ${String(pct).padStart(3)}%  ${r.critical.name} — ${tail}`;
+    };
+    if (!flagged.length) {
+      return slackPostMessage(env, "Nothing overdue or due soon across the fleet 🎉", { channel, thread_ts });
+    }
+    const body = flagged.map(rowLine).join("\n");
+    const nOver = flagged.filter(r => r.critical.rem <= 0).length;
+    return slackPostMessage(env, `Fleet: ${nOver} overdue, ${flagged.length - nOver} due soon`, { channel, thread_ts, blocks: [
+      { type: "section", text: { type: "mrkdwn", text: `*Fleet — overdue & due soon (≤25h):*\n\`\`\`${body}\`\`\`` } },
+      { type: "context", elements: [{ type: "mrkdwn", text: "▓ = interval elapsed ｜ <https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/|📊 dashboard>" }] },
+    ]});
   }
 
   return slackPostMessage(env, "すみません、わかりませんでした 🙏 Try `@げんきくん help` for things I can answer.", { channel, thread_ts });

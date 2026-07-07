@@ -60,64 +60,89 @@ jobs:
           def tasks_for_truck(truck_id):
               return [t for t in TASKS if t["key"] != "airfilter_clean" or truck_id == "HD5"]
 
-          def truck_report(truck_id, fleet, svc_logs):
-              """Return (status, worst_task_jp) mirroring the dashboard."""
-              td = fleet.get(truck_id) or {}
-              if td.get("grounded"):
-                  return "grounded", None
-              hours = td.get("hours")
-              if not hours:
-                  return "none", None
-              tl = svc_logs.get(truck_id) or {}
-              worst = None; worst_ratio = -1; status = "ok"
-              for task in tasks_for_truck(truck_id):
-                  last = tl.get(task["key"])
-                  if last is None:
-                      if task["key"] != "airfilter_clean" and hours >= task["interval"]:
-                          ratio = hours / task["interval"]
-                          st = "overdue"
-                      else:
-                          continue
-                  else:
-                      since = hours - last
-                      ratio = since / task["interval"]
-                      st = "overdue" if since >= task["interval"] else \
-                           "warn" if since >= task["interval"] * 0.9 else "ok"
-                  if st == "overdue" and ratio > worst_ratio:
-                      worst, worst_ratio = task["jp"], ratio
-                  if st == "overdue":
-                      status = "overdue"
-                  elif st == "warn" and status != "overdue":
-                      status = "warn"
-                      if worst is None:
-                          worst = task["jp"]
-              return status, worst
-
           fleet    = gh_get("data.json")
           svc_logs = gh_get("service_logs.json")
 
-          overdue, warn, grounded = [], [], []
+          # Build a per-truck row: hours, worst task, pct through its interval.
+          def critical_info(truck_id):
+              td = fleet.get(truck_id) or {}
+              hours = td.get("hours")
+              if td.get("grounded"):
+                  return {"status": "grounded", "note": td.get("groundedNote") or "整備・修理中", "hours": hours}
+              if not hours:
+                  return None
+              tl = svc_logs.get(truck_id) or {}
+              worst = None
+              for task in tasks_for_truck(truck_id):
+                  last = tl.get(task["key"])
+                  if last is None:
+                      if hours < task["interval"]:
+                          last = 0
+                      else:
+                          last = 0  # never done and past interval -> fully overdue
+                  since = hours - last
+                  ratio = since / task["interval"]
+                  if worst is None or ratio > worst["ratio"]:
+                      worst = {"task": task, "ratio": ratio, "rem": task["interval"] - since}
+              if worst is None:
+                  return None
+              st = "overdue" if worst["ratio"] >= 1 else "warn" if worst["ratio"] >= 0.9 else "ok"
+              return {"status": st, "hours": hours, "task": worst["task"]["jp"],
+                      "ratio": worst["ratio"], "rem": worst["rem"]}
+
+          def bar(ratio, width=10):
+              filled = min(width, max(0, round(min(ratio, 1.0) * width)))
+              return "▓" * filled + "░" * (width - filled)
+
+          rows = []
           for t in sorted(fleet.keys(), key=lambda x: int(x[2:])):
-              st, worst = truck_report(t, fleet, svc_logs)
-              if st == "overdue":
-                  overdue.append(f"*{t}*（{worst}）" if worst else f"*{t}*")
-              elif st == "warn":
-                  warn.append(f"*{t}*（{worst}）" if worst else f"*{t}*")
-              elif st == "grounded":
-                  grounded.append(f"*{t}*")
+              info = critical_info(t)
+              if info:
+                  rows.append((t, info))
 
-          lines = [f"🌅 おはようございます！げんきくんの朝の整備サマリーです（{NOW_JST.month}/{NOW_JST.day}）", ""]
+          overdue  = sorted([(t, i) for t, i in rows if i["status"] == "overdue"], key=lambda x: x[1]["rem"])
+          warn     = sorted([(t, i) for t, i in rows if i["status"] == "warn"],    key=lambda x: x[1]["rem"])
+          ok       = sorted([(t, i) for t, i in rows if i["status"] == "ok"],      key=lambda x: x[1]["rem"])
+          grounded = [(t, i) for t, i in rows if i["status"] == "grounded"]
+
+          def row_line(t, i):
+              # e.g.  HD9   1494h ▓▓▓▓▓▓▓▓░░  80% エアフィルター・バッテリー点検 (あと10h)
+              rem = i["rem"]
+              tail = f"超過{abs(round(rem))}h" if rem <= 0 else f"あと{round(rem)}h"
+              pct = min(round(i["ratio"] * 100), 999)
+              return f"{t:<5} {str(i['hours'])+'h':>6} {bar(i['ratio'])} {pct:>3}% {i['task']}（{tail}）"
+
+          WEEKDAYS = ["月", "火", "水", "木", "金", "土", "日"]
+          header = f"🌅 げんきくん 朝の整備サマリー — {NOW_JST.month}/{NOW_JST.day}（{WEEKDAYS[NOW_JST.weekday()]}）"
+
+          blocks = [
+              {"type": "header", "text": {"type": "plain_text", "text": header, "emoji": True}},
+          ]
+
+          def section_with_rows(title, items):
+              body = "\n".join(row_line(t, i) for t, i in items)
+              blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": f"{title}\n```{body}```"}})
+
           if overdue:
-              lines.append(f"🔴 整備期限超過: {', '.join(overdue)}")
-              lines.append("　→ 本日中の対応をお願いします🔧")
+              section_with_rows("🔴 *整備期限超過 — 本日中の対応をお願いします🔧*", overdue)
           if warn:
-              lines.append(f"🟡 まもなく整備時期: {', '.join(warn)}")
-          if grounded:
-              lines.append(f"🟣 整備・修理中: {', '.join(grounded)}")
+              section_with_rows("🟡 *まもなく整備時期*", warn)
           if not overdue and not warn:
-              lines.append("🟢 全車両、整備スケジュール内です！")
-          lines += ["", "本日も安全運行をよろしくお願いします🙏"]
+              blocks.append({"type": "section", "text": {"type": "mrkdwn",
+                  "text": "🟢 *全車両、整備スケジュール内です！*"}})
+          if ok:
+              section_with_rows("🟢 *スケジュール内*", ok)
+          if grounded:
+              gtext = "\n".join(f"• *{t}* — {i['note']}" for t, i in grounded)
+              blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": f"🟣 *整備・修理中*\n{gtext}"}})
 
-          result = slack_post({"channel": CHANNEL, "text": "\n".join(lines)})
+          blocks.append({"type": "divider"})
+          blocks.append({"type": "context", "elements": [{"type": "mrkdwn",
+              "text": "▓ = 整備インターバル消化率 ｜ <https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/|📊 ダッシュボード> ｜ 本日も安全運行をよろしくお願いします🙏"}]})
+
+          # Plain-text fallback for notifications / clients that don't render blocks.
+          fallback = f"{header} — 超過{len(overdue)}台 / まもなく{len(warn)}台 / 修理中{len(grounded)}台"
+
+          result = slack_post({"channel": CHANNEL, "text": fallback, "blocks": blocks})
           print("Posted." if result.get("ok") else f"Failed: {result.get('error')}")
           EOF
