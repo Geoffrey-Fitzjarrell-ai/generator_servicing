@@ -43,5 +43,18 @@
     "loggedAt": "2026-07-07T06:28:14.283Z",
     "hours": 552,
     "alreadyLogged": true
+  },
+  {
+    "truck": "HD8",
+    "tasks": [
+      "Air filter & battery check"
+    ],
+    "postedBy": {
+      "id": "U07RU3LH24F",
+      "name": "Geoff Fitzjarrell"
+    },
+    "loggedAt": "2026-07-07T07:30:35.988Z",
+    "hours": 1474,
+    "alreadyLogged": true
   }
 ]
