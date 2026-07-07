@@ -180,6 +180,18 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-07",
+      "hours": 1474,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD9": [
