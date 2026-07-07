@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "truck": "HD13",
+    "tasks": [
+      "Check coolant lines",
+      "Fuel filter change"
+    ],
+    "postedBy": {
+      "id": "U09P6572BK4",
+      "name": null
+    },
+    "loggedAt": "2026-07-07T01:53:57.296Z",
+    "hours": 460,
+    "alreadyLogged": true
+  }
+]
