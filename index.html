@@ -219,12 +219,16 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .h-note-tag { padding:3px 8px; background:var(--surface3); color:var(--text-faint); border-radius:3px; font-size:12px; border:1px solid var(--border); }
 .empty-msg { padding:16px; color:var(--text-faint); font-size:12px; text-align:center; }
 .daily-hours { padding:10px 12px; border-radius:var(--radius); background:var(--surface2); border:1px solid var(--border); margin-top:10px; }
-.daily-hours-lbl { font-size:9px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px; }
-.daily-bars { display:flex; align-items:flex-end; gap:3px; height:32px; }
-.daily-bar-wrap { display:flex; flex-direction:column; align-items:center; gap:3px; flex:1; }
-.daily-bar { width:100%; border-radius:2px 2px 0 0; background:var(--blue); min-height:2px; transition:height 0.3s ease; }
+.daily-hours-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+.daily-hours-lbl { font-size:9px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; }
+.daily-hours-avg { font-family:var(--mono); font-size:10px; color:var(--text-faint); }
+.daily-bars { display:flex; align-items:flex-end; gap:6px; height:110px; padding-top:18px; position:relative; }
+.daily-bar-wrap { display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px; flex:1; height:100%; position:relative; }
+.daily-bar-val { font-family:var(--mono); font-size:10px; color:var(--text); white-space:nowrap; }
+.daily-bar-val.empty { color:var(--text-faint); }
+.daily-bar { width:100%; max-width:34px; border-radius:3px 3px 0 0; background:var(--blue); min-height:3px; transition:height 0.3s ease; }
 .daily-bar.empty { background:var(--border2); opacity:0.5; }
-.daily-bar-date { font-family:var(--mono); font-size:7px; color:var(--text-faint); }
+.daily-bar-date { font-family:var(--mono); font-size:9px; color:var(--text-faint); }
 .daily-no-data { font-size:10px; color:var(--text-faint); font-style:italic; padding:4px 0; }
 .task-detail {
   padding:10px 12px 12px; margin-top:4px;
@@ -886,7 +890,6 @@ function App() {
           truck.lastUpdated?React.createElement("div",{className:"reporter-time"},new Date(truck.lastUpdated).toLocaleString()):null
         ):null,
         React.createElement("div",{className:"daily-hours"},
-          React.createElement("div",{className:"daily-hours-lbl"},"Daily Hours"),
           (() => {
             const raw = dailyHours[selected]||[];
             const byDate = {};
@@ -898,20 +901,28 @@ function App() {
               const key = d.toISOString().slice(0,10);
               days.push({date:key, hours: byDate[key]||0});
             }
+            const runDays = days.filter(e=>e.hours>0);
+            const avg = runDays.length ? (runDays.reduce((s,e)=>s+e.hours,0)/runDays.length) : null;
             const max = Math.max(...days.map(e=>e.hours), 1);
+            const fmt = h => (Math.round(h*10)/10)+"h";
+            const head = React.createElement("div",{className:"daily-hours-head"},
+              React.createElement("div",{className:"daily-hours-lbl"},"Daily Hours (last 7 days)"),
+              avg!=null?React.createElement("div",{className:"daily-hours-avg"},"avg "+fmt(avg)+"/day"):null
+            );
             const frame = React.createElement("div",{className:"daily-bars"},
               days.map(e=>React.createElement("div",{key:e.date,className:"daily-bar-wrap"},
+                React.createElement("div",{className:"daily-bar-val"+(e.hours?"":" empty")}, e.hours ? fmt(e.hours) : "—"),
                 React.createElement("div",{
                   className:"daily-bar"+(e.hours?"":" empty"),
-                  title:e.hours+"h",
-                  style:{height:(e.hours?Math.max(Math.round((e.hours/max)*32),2):2)+"px"}
+                  title:fmt(e.hours),
+                  style:{height:(e.hours?Math.max(Math.round((e.hours/max)*82),4):4)+"px"}
                 }),
                 React.createElement("div",{className:"daily-bar-date"},e.date.slice(5))
               ))
             );
-            if(!raw.length) return React.createElement(React.Fragment,null,frame,
+            if(!raw.length) return React.createElement(React.Fragment,null,head,frame,
               React.createElement("div",{className:"daily-no-data"},"No hours logged yet — fills in automatically from daily Slack posts"));
-            return frame;
+            return React.createElement(React.Fragment,null,head,frame);
           })()
         )
       ),
