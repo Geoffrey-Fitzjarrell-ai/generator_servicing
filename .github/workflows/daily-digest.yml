@@ -1,0 +1,123 @@
+name: Daily Morning Digest (Japanese)
+
+on:
+  schedule:
+    # 07:00 JST == 22:00 UTC previous day
+    - cron: '0 22 * * *'
+  workflow_dispatch:
+
+jobs:
+  morning-digest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Post morning digest to Slack
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          python3 - <<'EOF'
+          import os, json, base64, urllib.request
+          from datetime import datetime, timezone, timedelta
+
+          SLACK_TOKEN = os.environ["SLACK_TOKEN"]
+          GH_TOKEN    = os.environ["GH_TOKEN"]
+          CHANNEL     = "C08L1TWLU14"
+          REPO        = "Geoffrey-Fitzjarrell-ai/generator_servicing"
+          NOW_JST     = datetime.now(timezone.utc) + timedelta(hours=9)
+
+          def slack_post(payload):
+              data = json.dumps(payload).encode()
+              req = urllib.request.Request(
+                  "https://slack.com/api/chat.postMessage", data=data,
+                  headers={"Authorization": f"Bearer {SLACK_TOKEN}", "Content-Type": "application/json"},
+              )
+              with urllib.request.urlopen(req) as r:
+                  return json.loads(r.read())
+
+          def gh_get(path):
+              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
+              req = urllib.request.Request(url, headers={
+                  "Authorization": f"Bearer {GH_TOKEN}",
+                  "Accept": "application/vnd.github+json",
+              })
+              with urllib.request.urlopen(req) as r:
+                  resp = json.loads(r.read())
+              return json.loads(base64.b64decode(resp["content"]).decode())
+
+          # Mirrors index.html TASKS / tasksForTruck / truckStatus exactly.
+          TASKS = [
+              {"key": "airfilter_battery", "interval": 50,  "jp": "エアフィルター・バッテリー点検"},
+              {"key": "oil_filter",        "interval": 150, "jp": "オイル／フィルター交換"},
+              {"key": "airfilter_clean",   "interval": 250, "jp": "エアフィルター清掃"},
+              {"key": "coolant_lines",     "interval": 250, "jp": "クーラントライン点検"},
+              {"key": "fuel_filter",       "interval": 250, "jp": "燃料フィルター交換"},
+              {"key": "drive_belt",        "interval": 500, "jp": "ドライブベルト点検"},
+              {"key": "clean_radiator",    "interval": 500, "jp": "ラジエーター清掃"},
+              {"key": "airfilter_500",     "interval": 500, "jp": "エアフィルター交換"},
+          ]
+
+          def tasks_for_truck(truck_id):
+              return [t for t in TASKS if t["key"] != "airfilter_clean" or truck_id == "HD5"]
+
+          def truck_report(truck_id, fleet, svc_logs):
+              """Return (status, worst_task_jp) mirroring the dashboard."""
+              td = fleet.get(truck_id) or {}
+              if td.get("grounded"):
+                  return "grounded", None
+              hours = td.get("hours")
+              if not hours:
+                  return "none", None
+              tl = svc_logs.get(truck_id) or {}
+              worst = None; worst_ratio = -1; status = "ok"
+              for task in tasks_for_truck(truck_id):
+                  last = tl.get(task["key"])
+                  if last is None:
+                      if task["key"] != "airfilter_clean" and hours >= task["interval"]:
+                          ratio = hours / task["interval"]
+                          st = "overdue"
+                      else:
+                          continue
+                  else:
+                      since = hours - last
+                      ratio = since / task["interval"]
+                      st = "overdue" if since >= task["interval"] else \
+                           "warn" if since >= task["interval"] * 0.9 else "ok"
+                  if st == "overdue" and ratio > worst_ratio:
+                      worst, worst_ratio = task["jp"], ratio
+                  if st == "overdue":
+                      status = "overdue"
+                  elif st == "warn" and status != "overdue":
+                      status = "warn"
+                      if worst is None:
+                          worst = task["jp"]
+              return status, worst
+
+          fleet    = gh_get("data.json")
+          svc_logs = gh_get("service_logs.json")
+
+          overdue, warn, grounded = [], [], []
+          for t in sorted(fleet.keys(), key=lambda x: int(x[2:])):
+              st, worst = truck_report(t, fleet, svc_logs)
+              if st == "overdue":
+                  overdue.append(f"*{t}*（{worst}）" if worst else f"*{t}*")
+              elif st == "warn":
+                  warn.append(f"*{t}*（{worst}）" if worst else f"*{t}*")
+              elif st == "grounded":
+                  grounded.append(f"*{t}*")
+
+          lines = [f"🌅 おはようございます！げんきくんの朝の整備サマリーです（{NOW_JST.month}/{NOW_JST.day}）", ""]
+          if overdue:
+              lines.append(f"🔴 整備期限超過: {', '.join(overdue)}")
+              lines.append("　→ 本日中の対応をお願いします🔧")
+          if warn:
+              lines.append(f"🟡 まもなく整備時期: {', '.join(warn)}")
+          if grounded:
+              lines.append(f"🟣 整備・修理中: {', '.join(grounded)}")
+          if not overdue and not warn:
+              lines.append("🟢 全車両、整備スケジュール内です！")
+          lines += ["", "本日も安全運行をよろしくお願いします🙏"]
+
+          result = slack_post({"channel": CHANNEL, "text": "\n".join(lines)})
+          print("Posted." if result.get("ok") else f"Failed: {result.get('error')}")
+          EOF
