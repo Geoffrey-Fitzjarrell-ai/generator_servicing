@@ -54,14 +54,14 @@
         }
     },
     "HD11": {
-        "hours": 1494,
+        "hours": 1344,
         "intervalStart": 0,
         "overdue": false,
-        "technician": "Toshikazu Mitou",
-        "lastUpdated": "2026-07-06T15:02:38Z",
+        "technician": "Toru Tanaka",
+        "lastUpdated": "2026-07-06T23:56:36Z",
         "postedBy": {
-            "id": "U0AEE78SP2R",
-            "name": null
+            "id": "U0A1A2S0YP6",
+            "name": "Toru Tanaka"
         }
     },
     "HD12": {
