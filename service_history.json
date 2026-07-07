@@ -520,6 +520,22 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-07",
+      "hours": 460,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD14": [
