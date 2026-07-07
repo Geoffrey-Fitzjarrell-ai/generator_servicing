@@ -12,5 +12,19 @@
     "loggedAt": "2026-07-07T01:53:57.296Z",
     "hours": 460,
     "alreadyLogged": true
+  },
+  {
+    "truck": "HD13",
+    "tasks": [
+      "Oil / filter change",
+      "Check coolant lines"
+    ],
+    "postedBy": {
+      "id": "U09P6572BK4",
+      "name": null
+    },
+    "loggedAt": "2026-07-07T03:10:37.381Z",
+    "hours": 460,
+    "alreadyLogged": true
   }
 ]
