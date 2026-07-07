@@ -32,14 +32,14 @@
     }
   },
   "HD9": {
-    "hours": 1484,
+    "hours": 1494,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Kaede Fujiwara",
-    "lastUpdated": "2026-07-06T01:24:42Z",
+    "lastUpdated": "2026-07-07T01:42:36Z",
     "postedBy": {
-      "id": "U09NG2B5316",
-      "name": "Kaede Fujiwara"
+      "id": "U07RU3LH24F",
+      "name": null
     }
   },
   "HD10": {
