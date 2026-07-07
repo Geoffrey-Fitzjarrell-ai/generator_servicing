@@ -1,0 +1,160 @@
+name: Weekly Fleet Summary (Japanese)
+
+on:
+  schedule:
+    # Sunday 20:00 JST == Sunday 11:00 UTC
+    - cron: '0 11 * * SUN'
+  workflow_dispatch:
+
+jobs:
+  weekly-summary:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Post weekly summary to Slack
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          python3 - <<'EOF'
+          import os, json, base64, urllib.request, urllib.parse
+          from datetime import datetime, timezone, timedelta
+
+          SLACK_TOKEN = os.environ["SLACK_TOKEN"]
+          GH_TOKEN    = os.environ["GH_TOKEN"]
+          CHANNEL     = "C08L1TWLU14"
+          REPO        = "Geoffrey-Fitzjarrell-ai/generator_servicing"
+          NOW         = datetime.now(timezone.utc)
+
+          def slack_post(payload):
+              data = json.dumps(payload).encode()
+              req = urllib.request.Request(
+                  "https://slack.com/api/chat.postMessage", data=data,
+                  headers={"Authorization": f"Bearer {SLACK_TOKEN}", "Content-Type": "application/json"},
+              )
+              with urllib.request.urlopen(req) as r:
+                  return json.loads(r.read())
+
+          def gh_get(path):
+              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
+              req = urllib.request.Request(url, headers={
+                  "Authorization": f"Bearer {GH_TOKEN}",
+                  "Accept": "application/vnd.github+json",
+              })
+              with urllib.request.urlopen(req) as r:
+                  resp = json.loads(r.read())
+              return json.loads(base64.b64decode(resp["content"]).decode()), resp["sha"]
+
+          # Mirrors the TASKS array + tasksForTruck + truckStatus logic in
+          # index.html exactly, so this summary's fleet-health counts always
+          # agree with what the dashboard shows.
+          TASKS = [
+              {"key": "airfilter_battery", "interval": 50},
+              {"key": "oil_filter",        "interval": 150},
+              {"key": "airfilter_clean",   "interval": 250},
+              {"key": "coolant_lines",     "interval": 250},
+              {"key": "fuel_filter",       "interval": 250},
+              {"key": "drive_belt",        "interval": 500},
+              {"key": "clean_radiator",    "interval": 500},
+              {"key": "airfilter_500",     "interval": 500},
+          ]
+
+          def tasks_for_truck(truck_id):
+              return [t for t in TASKS if t["key"] != "airfilter_clean" or truck_id == "HD5"]
+
+          def truck_status(truck_id, fleet, svc_logs):
+              td = fleet.get(truck_id) or {}
+              if td.get("grounded"):
+                  return "grounded"
+              hours = td.get("hours")
+              if not hours:
+                  return "none"
+              tl = svc_logs.get(truck_id) or {}
+              statuses = []
+              for task in tasks_for_truck(truck_id):
+                  last = tl.get(task["key"])
+                  if last is None:
+                      statuses.append("ok" if (task["key"] == "airfilter_clean" or hours < task["interval"]) else "overdue")
+                      continue
+                  since = hours - last
+                  if since >= task["interval"]:
+                      statuses.append("overdue")
+                  elif since >= task["interval"] * 0.9:
+                      statuses.append("warn")
+                  else:
+                      statuses.append("ok")
+              if "overdue" in statuses:
+                  return "overdue"
+              if "warn" in statuses:
+                  return "warn"
+              return "ok"
+
+          fleet, _    = gh_get("data.json")
+          svc_logs, _ = gh_get("service_logs.json")
+          try:
+              daily, _ = gh_get("daily_hours.json")
+          except Exception:
+              daily = {}
+
+          TRUCKS = list(fleet.keys())
+
+          counts = {"ok": 0, "warn": 0, "overdue": 0, "grounded": 0, "none": 0}
+          overdue_trucks = []
+          warn_trucks = []
+          for t in TRUCKS:
+              st = truck_status(t, fleet, svc_logs)
+              counts[st] = counts.get(st, 0) + 1
+              if st == "overdue":
+                  overdue_trucks.append(t)
+              elif st == "warn":
+                  warn_trucks.append(t)
+
+          # Sum this week's runtime across the fleet from daily_hours.json,
+          # which the hours-sync job already accumulates per truck per day.
+          cutoff = (NOW - timedelta(days=7)).date()
+          total_hours = 0.0
+          for t, entries in daily.items():
+              for e in entries:
+                  try:
+                      d = datetime.strptime(e["date"], "%Y-%m-%d").date()
+                  except Exception:
+                      continue
+                  if d >= cutoff:
+                      total_hours += e.get("hours", 0)
+          total_hours = round(total_hours, 1)
+
+          date_range = f"{cutoff.strftime('%-m/%-d')} - {NOW.date().strftime('%-m/%-d')}"
+
+          lines = [
+              "みなさん、今週も一週間お疲れ様でした🙏",
+              "",
+              f"*HD GEN2フリート 週間サマリー*（{date_range}）",
+              "",
+              f"今週はフリート全体で *{total_hours}時間* 分の稼働がありました。",
+              "毎日欠かさず稼働時間を報告してくださり、整備やトラックの不具合にも根気強く",
+              "対応してくださって、本当にありがとうございます。皆さんのご協力とご対応の",
+              "おかげで、フリートを安全に運用できています。",
+              "",
+              "*現在のフリート状況*",
+              f"🟢 良好: {counts['ok']}台",
+              f"🟡 まもなく整備: {counts['warn']}台",
+              f"🔴 整備期限超過: {counts['overdue']}台",
+              f"🟣 整備中: {counts['grounded']}台",
+          ]
+
+          if overdue_trucks:
+              lines += ["", f"特に {', '.join('*'+t+'*' for t in overdue_trucks)} は整備期限を"
+                             f"超えていますので、近日中の対応をお願いします🔧"]
+          if warn_trucks:
+              lines += ["", f"また {', '.join('*'+t+'*' for t in warn_trucks)} はまもなく"
+                             f"整備の時期を迎えます。"]
+
+          lines += ["", "来週もどうぞよろしくお願いいたします。良い週末をお過ごしください！"]
+
+          text = "\n".join(lines)
+          result = slack_post({"channel": CHANNEL, "text": text})
+          if result.get("ok"):
+              print("Posted weekly summary.")
+          else:
+              print(f"Failed to post weekly summary: {result.get('error')}")
+          EOF
