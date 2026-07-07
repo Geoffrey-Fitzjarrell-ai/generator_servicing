@@ -18,6 +18,23 @@
 const OWNER = "Geoffrey-Fitzjarrell-ai";
 const REPO  = "generator_servicing";
 
+// Mirrors the TASKS table in index.html — kept in sync manually since this
+// Worker doesn't share a module with the dashboard. If you add/change a task
+// there, update it here too or "next due" answers will drift.
+const TASKS = [
+  { key:"airfilter_battery", name:"Air filter & battery check", interval:50  },
+  { key:"oil_filter",        name:"Oil / filter change",        interval:150 },
+  { key:"airfilter_clean",   name:"Air filter cleaning",         interval:250 },
+  { key:"coolant_lines",     name:"Check coolant lines",         interval:250 },
+  { key:"fuel_filter",       name:"Fuel filter change",          interval:250 },
+  { key:"drive_belt",        name:"Check drive belt & tension",  interval:500 },
+  { key:"clean_radiator",    name:"Clean radiator",              interval:500 },
+  { key:"airfilter_500",     name:"Change air filter",           interval:500 },
+];
+function tasksForTruck(id) {
+  return TASKS.filter(t => t.key !== "airfilter_clean" || id === "HD5");
+}
+
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -106,16 +123,18 @@ function buildCompletionText(userId, truck, tasks, notes) {
        + `担当してくれた技術者さん、いつも素晴らしい仕事をありがとうございます、お疲れ様でした！`;
 }
 
-async function slackPostMessage(env, text) {
+async function slackPostMessage(env, text, opts = {}) {
   if (!env.SLACK_TOKEN) return { ok: false, error: "no_slack_token_secret" };
   try {
+    const body = { channel: opts.channel || SLACK_CHANNEL, text };
+    if (opts.thread_ts) body.thread_ts = opts.thread_ts;
     const r = await fetch("https://slack.com/api/chat.postMessage", {
       method: "POST",
       headers: {
         "Authorization": "Bearer " + env.SLACK_TOKEN,
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ channel: SLACK_CHANNEL, text }),
+      body: JSON.stringify(body),
     });
     return r.json();
   } catch (e) {
@@ -147,6 +166,130 @@ async function handleSlackMessageEvent(event, env) {
   await ghPut("data.json", env.GITHUB_PAT, data, file.sha, `Real-time sync: ${truck} ${hours}h`);
 }
 
+// ---- Q&A: someone @-mentions the bot with a question in the channel ----
+
+async function loadJson(path, token) {
+  const file = await ghGet(path, token);
+  return JSON.parse(decodeURIComponent(escape(atob(file.content))));
+}
+
+function extractTruckId(text) {
+  const m = text.match(/hd\s?-?\s?(\d{1,2})/i);
+  return m ? "HD" + m[1] : null;
+}
+
+function nextDueList(truck, hoursNow, logs) {
+  const truckLogs = (logs && logs[truck]) || {};
+  return tasksForTruck(truck).map(t => {
+    const last = truckLogs[t.key];
+    const dueAt = (last != null ? last : 0) + t.interval;
+    const rem = dueAt - hoursNow;
+    return { ...t, last: last != null ? last : null, dueAt, rem };
+  }).sort((a, b) => a.rem - b.rem);
+}
+
+function fmtRem(rem) {
+  return rem <= 0 ? `overdue by ${Math.abs(Math.round(rem))}h` : `due in ${Math.round(rem)}h`;
+}
+
+const HELP_TEXT =
+  "げんきくんです！こんな質問に答えられます (You can ask me things like):\n" +
+  "• `@げんきくん HD9 hours` — current hours + status\n" +
+  "• `@げんきくん HD9 next` / `what's due on HD9` — upcoming tasks, most urgent first\n" +
+  "• `@げんきくん overdue` / `fleet status` — which trucks are overdue or due soon\n" +
+  "• `@げんきくん grounded` — which trucks are grounded and why\n" +
+  "• `@げんきくん HD9 tickets` — open Jira tickets for a truck\n" +
+  "Dashboard: https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/";
+
+async function answerMention(event, env) {
+  const rawText = (event.text || "").replace(/<@[^>]+>\s*/g, "").trim();
+  const text = rawText.toLowerCase();
+  const channel = event.channel;
+  const thread_ts = event.thread_ts || event.ts;
+  const truck = extractTruckId(text);
+
+  if (!rawText || /help|使い方|what can you/.test(text)) {
+    return slackPostMessage(env, HELP_TEXT, { channel, thread_ts });
+  }
+
+  const [data, logs] = await Promise.all([
+    loadJson("data.json", env.GITHUB_PAT),
+    loadJson("service_logs.json", env.GITHUB_PAT),
+  ]);
+
+  if (truck && /ticket|jira/.test(text)) {
+    let tickets = {};
+    try { tickets = await loadJson("tickets.json", env.GITHUB_PAT); } catch (e) { /* optional file */ }
+    const list = tickets[truck] || [];
+    const reply = list.length
+      ? `*${truck}* open tickets:\n` + list.map(t => `• ${t.key} — ${t.summary} (${t.status})`).join("\n")
+      : `No open tickets found for *${truck}*.`;
+    return slackPostMessage(env, reply, { channel, thread_ts });
+  }
+
+  if (truck && /next|due|service|filter|oil|when|schedule/.test(text)) {
+    const info = data[truck];
+    if (!info || info.hours == null) {
+      return slackPostMessage(env, `No hours on file for *${truck}* yet.`, { channel, thread_ts });
+    }
+    if (info.grounded) {
+      return slackPostMessage(env, `*${truck}* is grounded (${info.groundedNote || "under repair"}) — maintenance schedule is paused.`, { channel, thread_ts });
+    }
+    const list = nextDueList(truck, info.hours, logs).slice(0, 3);
+    const lines = list.map(t => `• ${t.name} — ${fmtRem(t.rem)} (last done ${t.last != null ? t.last + "h" : "never"})`);
+    return slackPostMessage(env, `*${truck}* @ ${info.hours}h — next up:\n` + lines.join("\n"), { channel, thread_ts });
+  }
+
+  if (truck && /hours|status|update/.test(text)) {
+    const info = data[truck];
+    if (!info || info.hours == null) {
+      return slackPostMessage(env, `No hours on file for *${truck}* yet.`, { channel, thread_ts });
+    }
+    if (info.grounded) {
+      return slackPostMessage(env, `*${truck}* — ${info.hours}h, grounded (${info.groundedNote || "under repair"}).`, { channel, thread_ts });
+    }
+    const critical = nextDueList(truck, info.hours, logs)[0];
+    return slackPostMessage(env,
+      `*${truck}* — ${info.hours}h. Most urgent: ${critical.name} (${fmtRem(critical.rem)}).`,
+      { channel, thread_ts });
+  }
+
+  if (truck) {
+    // Truck mentioned but no recognized keyword — give the same status summary.
+    const info = data[truck];
+    if (!info || info.hours == null) {
+      return slackPostMessage(env, `No hours on file for *${truck}* yet.`, { channel, thread_ts });
+    }
+    const critical = nextDueList(truck, info.hours, logs)[0];
+    const groundedNote = info.grounded ? ` — grounded (${info.groundedNote || "under repair"})` : "";
+    return slackPostMessage(env,
+      `*${truck}* — ${info.hours}h${groundedNote}. Most urgent: ${critical.name} (${fmtRem(critical.rem)}).`,
+      { channel, thread_ts });
+  }
+
+  if (/grounded|down|repair/.test(text)) {
+    const grounded = Object.keys(data).filter(t => data[t] && data[t].grounded);
+    const reply = grounded.length
+      ? "Grounded:\n" + grounded.map(t => `• ${t} — ${data[t].groundedNote || "under repair"}`).join("\n")
+      : "No trucks are currently grounded.";
+    return slackPostMessage(env, reply, { channel, thread_ts });
+  }
+
+  if (/overdue|due soon|fleet|status|summary/.test(text)) {
+    const rows = Object.keys(data)
+      .filter(t => data[t] && data[t].hours != null && !data[t].grounded)
+      .map(t => ({ truck: t, critical: nextDueList(t, data[t].hours, logs)[0] }));
+    const overdue = rows.filter(r => r.critical.rem <= 0);
+    const warn = rows.filter(r => r.critical.rem > 0 && r.critical.rem <= 25);
+    const lines = [];
+    if (overdue.length) lines.push("*Overdue:*\n" + overdue.map(r => `• ${r.truck} — ${r.critical.name} (${fmtRem(r.critical.rem)})`).join("\n"));
+    if (warn.length) lines.push("*Due soon:*\n" + warn.map(r => `• ${r.truck} — ${r.critical.name} (${fmtRem(r.critical.rem)})`).join("\n"));
+    return slackPostMessage(env, lines.length ? lines.join("\n\n") : "Nothing overdue or due soon across the fleet 🎉", { channel, thread_ts });
+  }
+
+  return slackPostMessage(env, "すみません、わかりませんでした 🙏 Try `@げんきくん help` for things I can answer.", { channel, thread_ts });
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
@@ -167,9 +310,21 @@ export default {
         return new Response(slackPayload.challenge, { headers: { "Content-Type": "text/plain" } });
       }
 
+      // Slack retries delivery if it doesn't get a 200 within ~3s. Our answers
+      // involve a couple of GitHub reads plus a Slack post, so an occasional
+      // retry is expected — without this guard a slow-but-successful first
+      // attempt would get a duplicate reply posted on top of it.
+      if (request.headers.get("X-Slack-Retry-Num")) {
+        return new Response("ok", { status: 200 });
+      }
+
       if (slackPayload.type === "event_callback") {
         try {
-          await handleSlackMessageEvent(slackPayload.event, env);
+          if (slackPayload.event && slackPayload.event.type === "app_mention") {
+            await answerMention(slackPayload.event, env);
+          } else {
+            await handleSlackMessageEvent(slackPayload.event, env);
+          }
         } catch (e) {
           console.error("Slack event processing failed", e);
         }
