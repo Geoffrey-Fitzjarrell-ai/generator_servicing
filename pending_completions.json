@@ -26,5 +26,22 @@
     "loggedAt": "2026-07-07T03:10:37.381Z",
     "hours": 460,
     "alreadyLogged": true
+  },
+  {
+    "truck": "HD14",
+    "tasks": [
+      "Fuel filter change",
+      "Air filter & battery check",
+      "Check coolant lines",
+      "Check drive belt & tension",
+      "Clean radiator"
+    ],
+    "postedBy": {
+      "id": "U0AT1RYRS1Z",
+      "name": null
+    },
+    "loggedAt": "2026-07-07T06:28:14.283Z",
+    "hours": 552,
+    "alreadyLogged": true
   }
 ]
