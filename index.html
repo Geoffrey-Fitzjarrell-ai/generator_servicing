@@ -653,6 +653,27 @@ function App() {
   const dataAgeLabel = dataAgeH==null ? "" : dataAgeH<1 ? "DATA <1H OLD" : "DATA "+Math.floor(dataAgeH)+"H OLD";
   const dataAgeClass = dataAgeH==null ? "" : dataAgeH>12 ? " stale" : dataAgeH>6 ? " warn" : "";
 
+  // Predicted due date from actual accumulated runtime, not a flat global
+  // average — trucks don't all run the same hours/day (some sit grounded,
+  // some run double shifts), so this uses each truck's own trailing daily_hours
+  // history. Falls back to null (caller shows plain "Xh left") until enough
+  // history has accumulated for that truck.
+  const MIN_DAYS_FOR_PREDICTION = 3;
+  const predictDueDate=(remHours,truckId)=>{
+    if(remHours==null||remHours<=0)return null;
+    const entries=(dailyHours[truckId]||[]).filter(e=>e.hours>0);
+    if(entries.length<MIN_DAYS_FOR_PREDICTION)return null;
+    const recent=entries.slice(-14);
+    const avgPerDay=recent.reduce((s,e)=>s+e.hours,0)/recent.length;
+    if(!avgPerDay)return null;
+    const days=remHours/avgPerDay;
+    if(!isFinite(days)||days<=0)return null;
+    const daysRounded=Math.max(1,Math.round(days));
+    const d=new Date();d.setDate(d.getDate()+daysRounded);
+    const label=d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+    return "~"+daysRounded+(daysRounded===1?" day":" days")+" ("+label+")";
+  };
+
   const exportHistoryCsv=()=>{
     const esc=v=>{const s=String(v==null?"":v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
     const rows=[["truck","date","hours","technician","tasks","notes"]];
@@ -687,6 +708,7 @@ function App() {
       const ringPct=Math.max(0,Math.min(1,criticalTask.pct||0));
       const ringColor=criticalTask.status==="overdue"?"var(--red)":criticalTask.status==="warn"?"var(--amber)":"var(--green)";
       const r=15,c=2*Math.PI*r;
+      const pred=remHours>0?predictDueDate(remHours,selected):null;
       return React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8}},
         React.createElement("svg",{viewBox:"0 0 36 36",style:{width:34,height:34,flexShrink:0}},
           React.createElement("circle",{cx:18,cy:18,r,fill:"none",stroke:"#1a2235",strokeWidth:4}),
@@ -696,7 +718,8 @@ function App() {
         React.createElement("div",null,
           React.createElement("div",{className:"stat-val",style:{fontSize:16}},
             remHours<=0?("+"+Math.abs(remHours)):remHours,React.createElement("span",{className:"unit"},"h")),
-          React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:9,color:"var(--text-faint)"}},criticalTask.name)
+          React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:9,color:"var(--text-faint)"}},criticalTask.name),
+          pred?React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:9,color:"var(--text-faint)",marginTop:2}},pred):null
         )
       );
     }
@@ -911,12 +934,13 @@ function App() {
                   ),
                   React.createElement("div",{className:"task-interval"},task.interval+"h"),
                   React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
-                  React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:task.status==="overdue"?"var(--red)":task.status==="warn"?"var(--amber)":"var(--text-faint)",whiteSpace:"nowrap"}},
+                  React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:task.status==="overdue"?"var(--red)":task.status==="warn"?"var(--amber)":"var(--text-faint)",whiteSpace:"nowrap",textAlign:"right"}},
                     task.rem!=null
                       ? task.rem<=0
                         ? "+" + Math.abs(Math.round(task.rem)) + "h over"
                         : "@" + (hours + Math.round(task.rem)) + "h"
-                      : "—"
+                      : "—",
+                    task.rem>0?React.createElement("div",{style:{fontSize:9,color:"var(--text-faint)",fontWeight:400,marginTop:1}},predictDueDate(task.rem,selected)||"\u00A0"):null
                   ),
                   logMode
                     ? React.createElement("div",{className:"task-check"+(checked[task.key]?" checked":""),onClick:e=>{e.stopPropagation();setChecked(p=>({...p,[task.key]:!p[task.key]}));}},
