@@ -1,0 +1,129 @@
+name: Nightly Consistency Check
+
+on:
+  schedule:
+    # 02:00 JST == 17:00 UTC previous day
+    - cron: '0 17 * * *'
+  workflow_dispatch:
+
+jobs:
+  consistency-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate data invariants
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          python3 - <<'EOF'
+          import os, json, base64, sys, urllib.request
+          from datetime import datetime, timezone, timedelta
+
+          SLACK_TOKEN = os.environ["SLACK_TOKEN"]
+          GH_TOKEN    = os.environ["GH_TOKEN"]
+          GEOFF       = "U07RU3LH24F"
+          REPO        = "Geoffrey-Fitzjarrell-ai/generator_servicing"
+          NOW         = datetime.now(timezone.utc)
+
+          def gh_get(path):
+              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
+              req = urllib.request.Request(url, headers={
+                  "Authorization": f"Bearer {GH_TOKEN}",
+                  "Accept": "application/vnd.github+json"})
+              with urllib.request.urlopen(req) as r:
+                  return json.loads(base64.b64decode(json.loads(r.read())["content"]).decode())
+
+          def slack_dm(text):
+              req = urllib.request.Request(
+                  "https://slack.com/api/chat.postMessage",
+                  data=json.dumps({"channel": GEOFF, "text": text}).encode(),
+                  headers={"Authorization": f"Bearer {SLACK_TOKEN}", "Content-Type": "application/json"})
+              with urllib.request.urlopen(req) as r:
+                  return json.loads(r.read())
+
+          issues = []
+
+          # 1. Files parse and have expected shape
+          try:
+              data = gh_get("data.json")
+          except Exception as e:
+              issues.append(f"data.json unreadable: {e}"); data = {}
+          try:
+              logs = gh_get("service_logs.json")
+          except Exception as e:
+              issues.append(f"service_logs.json unreadable: {e}"); logs = {}
+          try:
+              hist = gh_get("service_history.json")
+          except Exception as e:
+              issues.append(f"service_history.json unreadable: {e}"); hist = {}
+          try:
+              pending = gh_get("pending_completions.json")
+          except Exception:
+              pending = []
+          try:
+              daily = gh_get("daily_hours.json")
+          except Exception:
+              daily = {}
+
+          # 2. No task's last-done hours may exceed the truck's current hours.
+          #    (This is the HD9-class failure mode: a completion logged against
+          #    hours the truck hasn't reached would mean corrupt/mismatched data.)
+          for truck, tl in logs.items():
+              hours = (data.get(truck) or {}).get("hours")
+              if hours is None:
+                  continue
+              for key, last in (tl or {}).items():
+                  if isinstance(last, (int, float)) and last > hours + 2:
+                      issues.append(f"{truck}: {key} last-done at {last}h exceeds current {hours}h")
+
+          # 3. intervalStart must not exceed current hours
+          for truck, td in data.items():
+              h = (td or {}).get("hours")
+              istart = (td or {}).get("intervalStart") or 0
+              if h is not None and istart > h:
+                  issues.append(f"{truck}: intervalStart {istart} > hours {h}")
+
+          # 4. Pending completions should be empty at 02:00 JST — the cron
+          #    clears them every 3h, so anything still here at night is stuck.
+          if pending:
+              issues.append(f"pending_completions.json has {len(pending)} stuck entr(y/ies): "
+                            + ", ".join(sorted({e.get('truck','?') for e in pending})))
+
+          # 5. daily_hours dates must parse and never be in the future
+          for truck, entries in (daily or {}).items():
+              for e in entries or []:
+                  try:
+                      d = datetime.strptime(e["date"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                      if d > NOW + timedelta(days=1):
+                          issues.append(f"{truck}: daily_hours future date {e['date']}")
+                      if e.get("hours", 0) < 0 or e.get("hours", 0) > 26:
+                          issues.append(f"{truck}: implausible daily hours {e.get('hours')} on {e['date']}")
+                  except Exception:
+                      issues.append(f"{truck}: unparseable daily_hours entry {e}")
+
+          # 6. Stale fleet warning — no truck updated in 48h+ (excl. grounded/null)
+          def parse_dt(s):
+              try:
+                  return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+              except Exception:
+                  return None
+          fresh = [parse_dt((td or {}).get("lastUpdated")) for td in data.values()
+                   if td and not td.get("grounded") and td.get("hours")]
+          fresh = [d for d in fresh if d]
+          if fresh and (NOW - max(fresh)) > timedelta(hours=48):
+              issues.append(f"No hours update anywhere in fleet for {(NOW - max(fresh)).total_seconds()/3600:.0f}h "
+                            f"— Slack sync may be broken")
+
+          if issues:
+              text = ("⚠️ *Generator tracker nightly consistency check failed* "
+                      f"({len(issues)} issue(s), {NOW.strftime('%Y-%m-%d %H:%M UTC')}):\n"
+                      + "\n".join(f"• {i}" for i in issues[:20]))
+              r = slack_dm(text)
+              print(text)
+              if not r.get("ok"):
+                  print(f"DM failed: {r.get('error')}")
+              sys.exit(1)
+          else:
+              print("All consistency checks passed.")
+          EOF
