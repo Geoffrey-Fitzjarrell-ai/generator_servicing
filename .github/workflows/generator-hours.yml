@@ -126,7 +126,42 @@ jobs:
               if not result.get("ok"):
                   print(f"Failed to post rejection for {truck_id}: {result.get('error')}")
 
-          candidates = {}  # truck_id -> {hours, user_id}
+          def ack(reply_ts, truck_id, hours):
+              msg = f"✅ *{truck_id}* {hours}h、記録しました！ありがとうございます🙏"
+              result = slack_post({"channel": CHANNEL, "text": msg, "thread_ts": reply_ts})
+              if not result.get("ok"):
+                  print(f"Failed to ack {truck_id}: {result.get('error')}")
+
+          # ── Idempotency ledger ────────────────────────────────────────────
+          # The 24h lookback means every reply gets re-seen across ~8 cron
+          # runs. Without a ledger the bot would re-reject (or re-ack) the
+          # same post on every run — an already-ingested reading equals the
+          # stored value, which the "not higher than stored" check would
+          # otherwise bounce with a reply, spamming the thread. Every reply
+          # ts we act on (accept, reject, or correct) is recorded here and
+          # skipped forever after. Pruned past 48h since the lookback is 24h.
+          try:
+              bot_state, state_sha = gh_get("bot_state.json")
+          except Exception:
+              bot_state, state_sha = {"handled": {}}, None
+          handled = bot_state.get("handled", {})
+          cutoff_ts = (NOW - timedelta(hours=48)).timestamp()
+          handled = {ts: v for ts, v in handled.items() if float(ts) >= cutoff_ts}
+          state_dirty = False
+
+          # Replies older than this get processed silently (no thread reply):
+          # a rejection hours after the fact only confuses drivers, and on the
+          # ledger's first run we must not blast replies at the whole window.
+          REPLY_MAX_AGE_S = 6 * 3600
+
+          def is_fresh(reply_ts):
+              return (NOW.timestamp() - float(reply_ts)) < REPLY_MAX_AGE_S
+
+          ADMIN_IDS = {"U07RU3LH24F", "U07P40V9SKH"}  # Geoff, TakaY
+          corr_pattern = re.compile(r'(HD\d+)\s*(?:correction|修正)\s*[:：]\s*(\d+(?:\.\d+)?)\s*h?', re.IGNORECASE)
+
+          candidates = {}   # truck_id -> {hours, user_id}
+          corrections = {}  # truck_id -> {hours, user_id, ts}
           if hist.get("ok"):
               for msg in hist.get("messages", []):
                   if not msg.get("reply_count"):
@@ -140,53 +175,125 @@ jobs:
                   if not replies.get("ok"):
                       continue
                   for reply in replies.get("messages", []):
-                      if reply["ts"] == msg["ts"]:
+                      rts = reply["ts"]
+                      if rts == msg["ts"]:
                           continue  # skip parent message
-                      for m in pattern.finditer(reply.get("text", "")):
+                      if rts in handled:
+                          continue  # already acted on in a previous run
+                      text    = reply.get("text", "")
+                      user_id = reply.get("user")
+
+                      # ── Correction override ───────────────────────────
+                      # "HDXX correction: XXXXh" / "HDXX 修正: XXXXh" from
+                      # anyone bypasses both validation rules. Needed for
+                      # typo fixes (HD8's 11474→1474 on 7/7 would otherwise
+                      # be un-postable, since the real value is *lower* than
+                      # the bad stored one) and for hour-meter resets after
+                      # a generator swap (e.g. HD17 coming back from repair).
+                      cm = corr_pattern.search(text)
+                      if cm:
+                          truck_id = cm.group(1).upper()
+                          corrections[truck_id] = {"hours": round(float(cm.group(2))),
+                                                   "user_id": user_id, "ts": rts}
+                          handled[rts] = "corrected"; state_dirty = True
+                          continue
+
+                      for m in pattern.finditer(text):
                           truck_id = m.group(1).upper()
                           hours    = round(float(m.group(2)))
-                          user_id  = reply.get("user")
 
                           if expected_truck and truck_id != expected_truck:
-                              print(f"SKIP likely copy-paste error: reply says {truck_id} but "
-                                    f"posted in {expected_truck}'s thread (ts={reply['ts']})")
-                              reject(reply["ts"], user_id, truck_id,
-                                     f"この投稿は *{expected_truck}* のスレッド内にありますが、"
-                                     f"内容は *{truck_id}* の稼働時間になっています。"
-                                     f"トラック名の入力間違いの可能性があります。")
+                              print(f"REJECT wrong-thread: {truck_id} posted in "
+                                    f"{expected_truck}'s thread (ts={rts})")
+                              if is_fresh(rts):
+                                  reject(rts, user_id, truck_id,
+                                         f"この投稿は *{expected_truck}* のスレッド内にありますが、"
+                                         f"内容は *{truck_id}* の稼働時間になっています。"
+                                         f"トラック名の入力間違いの可能性があります。")
+                              handled[rts] = "rejected"; state_dirty = True
                               continue
 
                           stored_entry = data.get(truck_id) or {}
                           stored = stored_entry.get("hours")
                           last_dt = parse_dt(stored_entry.get("lastUpdated"))
 
-                          if stored is not None and hours <= stored:
-                              print(f"Skip {truck_id}: {hours}h not higher than stored {stored}h")
-                              reject(reply["ts"], user_id, truck_id,
-                                     f"投稿値: {hours}h ／ 現在の記録値: {stored}h\n"
-                                     f"記録されている値より低いため、古い読み取りやトラック名の"
-                                     f"入力間違いの可能性があります。")
+                          if stored is not None and hours == stored:
+                              # Same value already on record — a duplicate or
+                              # this run's own earlier write. Never a reply.
+                              handled[rts] = "accepted"; state_dirty = True
+                              continue
+
+                          if stored is not None and hours < stored:
+                              if user_id in ADMIN_IDS:
+                                  # Admin plain-format post that fails the floor
+                                  # check = treat as a correction (this is exactly
+                                  # how Geoff posted the HD8 fix on 7/7).
+                                  corrections[truck_id] = {"hours": hours, "user_id": user_id, "ts": rts}
+                                  handled[rts] = "corrected"; state_dirty = True
+                                  continue
+                              print(f"REJECT {truck_id}: {hours}h below stored {stored}h")
+                              if is_fresh(rts):
+                                  reject(rts, user_id, truck_id,
+                                         f"投稿値: {hours}h ／ 現在の記録値: {stored}h\n"
+                                         f"記録されている値より低いため、古い読み取りやトラック名の"
+                                         f"入力間違いの可能性があります。\n"
+                                         f"※値の修正が必要な場合は「{truck_id} 修正: 正しい値h」の"
+                                         f"形式で投稿してください。")
+                              handled[rts] = "rejected"; state_dirty = True
                               continue
 
                           if stored is not None and last_dt is not None:
                               elapsed_hours = (NOW - last_dt).total_seconds() / 3600
                               delta = hours - stored
                               if delta > elapsed_hours + BUFFER_HOURS:
-                                  print(f"Skip {truck_id}: {hours}h is {delta}h above stored "
-                                        f"{stored}h but only {elapsed_hours:.1f}h have passed "
-                                        f"since the last update — not physically possible.")
-                                  reject(reply["ts"], user_id, truck_id,
-                                         f"投稿値: {hours}h ／ 現在の記録値: {stored}h（増加量: {delta}h）\n"
-                                         f"前回の更新から経過した時間は約{elapsed_hours:.1f}時間のため、"
-                                         f"増加量が経過時間を超えており、発電機の稼働時間としては"
-                                         f"あり得ません。トラック名や数値の入力間違いの可能性があります。")
+                                  if user_id in ADMIN_IDS:
+                                      corrections[truck_id] = {"hours": hours, "user_id": user_id, "ts": rts}
+                                      handled[rts] = "corrected"; state_dirty = True
+                                      continue
+                                  print(f"REJECT {truck_id}: +{delta}h in {elapsed_hours:.1f}h elapsed")
+                                  if is_fresh(rts):
+                                      reject(rts, user_id, truck_id,
+                                             f"投稿値: {hours}h ／ 現在の記録値: {stored}h（増加量: {delta}h）\n"
+                                             f"前回の更新から経過した時間は約{elapsed_hours:.1f}時間のため、"
+                                             f"増加量が経過時間を超えており、発電機の稼働時間としては"
+                                             f"あり得ません。トラック名や数値の入力間違いの可能性があります。\n"
+                                             f"※値の修正が必要な場合は「{truck_id} 修正: 正しい値h」の"
+                                             f"形式で投稿してください。")
+                                  handled[rts] = "rejected"; state_dirty = True
                                   continue
 
+                          # Valid reading — ack it so the driver knows it
+                          # landed (short in-thread thank-you; no new Slack
+                          # scope needed, unlike an emoji reaction).
+                          if is_fresh(rts):
+                              ack(rts, truck_id, hours)
+                          handled[rts] = "accepted"; state_dirty = True
                           # keep highest valid value seen across all replies this run
                           if truck_id not in candidates or hours > candidates[truck_id]["hours"]:
                               candidates[truck_id] = {"hours": hours, "user_id": user_id}
           else:
               print(f"Slack error: {hist.get('error')}")
+
+          # ── Apply corrections (bypass all validation, skip daily deltas —
+          #    the previous stored value was wrong, so a delta is meaningless)
+          if corrections:
+              for truck_id, info in corrections.items():
+                  old = (data.get(truck_id) or {}).get("hours")
+                  user_info = get_user_info(info["user_id"]) if info.get("user_id") else {"id": None, "name": None}
+                  if truck_id not in data:
+                      data[truck_id] = {"hours": None, "intervalStart": 0, "overdue": False,
+                                        "technician": "", "lastUpdated": None, "postedBy": None}
+                  data[truck_id]["hours"]       = info["hours"]
+                  data[truck_id]["lastUpdated"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
+                  data[truck_id]["postedBy"]    = user_info
+                  print(f"CORRECTED {truck_id}: {old}h -> {info['hours']}h by {user_info['name']}")
+                  if is_fresh(info["ts"]):
+                      msg = (f"げんきくんです！*{truck_id}* の稼働時間を修正しました🔧\n"
+                             f"{old}h → *{info['hours']}h*\nご報告ありがとうございます！")
+                      slack_post({"channel": CHANNEL, "text": msg, "thread_ts": info["ts"]})
+              gh_put("data.json", data, sha,
+                     f"fix: hour corrections {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
+              data, sha = gh_get("data.json")  # refresh sha for the candidates write below
 
           if candidates:
               changed = False
@@ -346,5 +453,25 @@ jobs:
               print(f"Processed {len(pending)} completion entry(s).")
           else:
               print("No pending completions.")
+
+          # ── Persist idempotency ledger ─────────────────────────────────
+          if state_dirty or bot_state.get("handled") != handled:
+              bot_state["handled"] = handled
+              if state_sha:
+                  gh_put("bot_state.json", bot_state, state_sha,
+                         f"chore: bot reply ledger {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
+              else:
+                  # first run: create the file (no sha)
+                  url = f"https://api.github.com/repos/{REPO}/contents/bot_state.json"
+                  payload = {"message": "chore: create bot reply ledger",
+                             "content": base64.b64encode(json.dumps(bot_state, indent=2).encode()).decode()}
+                  req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={
+                      "Authorization": f"Bearer {GH_TOKEN}",
+                      "Accept": "application/vnd.github+json",
+                      "Content-Type": "application/json",
+                  }, method="PUT")
+                  with urllib.request.urlopen(req) as r:
+                      r.read()
+              print(f"Ledger saved: {len(handled)} handled ts")
 
           EOF
