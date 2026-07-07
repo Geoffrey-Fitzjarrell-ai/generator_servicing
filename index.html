@@ -830,7 +830,6 @@ function App() {
           React.createElement("div",{className:"daily-hours-lbl"},"Daily Hours"),
           (() => {
             const raw = dailyHours[selected]||[];
-            if(!raw.length) return React.createElement("div",{className:"daily-no-data"},"Awaiting CCR trigger — will backfill automatically");
             const byDate = {};
             raw.forEach(e=>{ byDate[e.date] = e.hours; });
             const days = [];
@@ -841,7 +840,7 @@ function App() {
               days.push({date:key, hours: byDate[key]||0});
             }
             const max = Math.max(...days.map(e=>e.hours), 1);
-            return React.createElement("div",{className:"daily-bars"},
+            const frame = React.createElement("div",{className:"daily-bars"},
               days.map(e=>React.createElement("div",{key:e.date,className:"daily-bar-wrap"},
                 React.createElement("div",{
                   className:"daily-bar"+(e.hours?"":" empty"),
@@ -851,6 +850,9 @@ function App() {
                 React.createElement("div",{className:"daily-bar-date"},e.date.slice(5))
               ))
             );
+            if(!raw.length) return React.createElement(React.Fragment,null,frame,
+              React.createElement("div",{className:"daily-no-data"},"No hours logged yet — fills in automatically from daily Slack posts"));
+            return frame;
           })()
         )
       ),
