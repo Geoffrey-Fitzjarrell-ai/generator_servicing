@@ -28,6 +28,9 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .header-title { font-size:13px; color:var(--text-dim); letter-spacing:0.04em; }
 .header-right { display:flex; align-items:center; gap:12px; }
 .sync-dot { width:5px; height:5px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:pulse 2s ease-in-out infinite; display:inline-block; margin-right:6px; }
+.data-age { font-family:var(--mono); font-size:9px; letter-spacing:0.08em; padding:3px 9px; border-radius:3px; text-transform:uppercase; background:var(--green-dim); color:var(--green); border:1px solid transparent; }
+.data-age.warn { background:var(--amber-dim); color:var(--amber); }
+.data-age.stale { background:var(--red-dim); color:var(--red); }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 .sync-time { font-family:var(--mono); font-size:11px; color:var(--text-faint); letter-spacing:0.06em; }
 .btn-ghost { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; padding:5px 12px; background:transparent; color:var(--text-dim); border:1px solid var(--border2); border-radius:var(--radius); cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
@@ -641,6 +644,33 @@ function App() {
   const warnTasks=taskStatus.filter(t=>t.status==="warn");
   const histEntries=(svcHistory[selected]||[]).filter(e=>e.date||e.hours).slice().reverse();
 
+  // Newest lastUpdated across the fleet = how fresh the *data* is (distinct
+  // from syncedAt, which is only when this page last fetched). This is the
+  // number that answers "am I looking at stale cache?" — the HD6 false-green
+  // incident on 7/7 was exactly this confusion.
+  const newestDataMs = fleet ? Math.max(0, ...Object.values(fleet).map(t=>t&&t.lastUpdated?new Date(t.lastUpdated).getTime():0)) : 0;
+  const dataAgeH = newestDataMs ? (Date.now()-newestDataMs)/3600000 : null;
+  const dataAgeLabel = dataAgeH==null ? "" : dataAgeH<1 ? "DATA <1H OLD" : "DATA "+Math.floor(dataAgeH)+"H OLD";
+  const dataAgeClass = dataAgeH==null ? "" : dataAgeH>12 ? " stale" : dataAgeH>6 ? " warn" : "";
+
+  const exportHistoryCsv=()=>{
+    const esc=v=>{const s=String(v==null?"":v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+    const rows=[["truck","date","hours","technician","tasks","notes"]];
+    Object.keys(svcHistory).sort((a,b)=>parseInt(a.slice(2))-parseInt(b.slice(2))).forEach(tr=>{
+      (svcHistory[tr]||[]).forEach(e=>{
+        rows.push([tr, e.date||"", e.hours!=null?e.hours:"", e.technician||"",
+          (e.tasks||[]).map(t=>t.label).join("; "), (e.notes||[]).join("; ")]);
+      });
+    });
+    const csv=rows.map(r=>r.map(esc).join(",")).join("\n");
+    const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="generator_service_history_"+new Date().toISOString().slice(0,10)+".csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
   const nextServiceCard=()=>{
     if(!hours)return React.createElement("div",{className:"stat-val"},"—");
     if(overdueTasks.length)return React.createElement("div",null,
@@ -683,6 +713,7 @@ function App() {
       React.createElement("div",{className:"header-right"},
         React.createElement("span",{className:"sync-dot"}),
         React.createElement("span",{className:"sync-time"},syncedAt?syncAgo:"—"),
+        dataAgeH!=null?React.createElement("span",{className:"data-age"+dataAgeClass,title:"Newest hours reading in data.json: "+new Date(newestDataMs).toLocaleString()},dataAgeLabel):null,
         React.createElement("a",{
         href:"https://onan.xmsi.net/981-0522%20Onan%20HDKA%20(spec%20A-M)%20Diesel%20RV%20Genset%20Service%20manual%20(06-2010).pdf",
         target:"_blank",rel:"noopener noreferrer",
@@ -938,7 +969,10 @@ function App() {
             :React.createElement("div",{className:"empty-msg"},"No open tickets for this truck")
         ),
         React.createElement("div",null,
-          React.createElement("div",{className:"section-title"},selected+" — Service Log"),
+          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+            React.createElement("div",{className:"section-title",style:{marginBottom:0}},selected+" — Service Log"),
+            React.createElement("button",{className:"btn-ghost",onClick:exportHistoryCsv,title:"Download service history for all trucks as CSV"},"⬇ EXPORT CSV")
+          ),
           !histEntries.length?React.createElement("div",{className:"empty-msg"},"No service records found for this truck."):
           React.createElement("table",{className:"history-table"},
             React.createElement("thead",null,React.createElement("tr",null,
