@@ -99,6 +99,33 @@ jobs:
 
           thread_truck_pattern = re.compile(r'HD\d+', re.IGNORECASE)
 
+          # Load data.json up front so every reading can be sanity-checked
+          # against the truck's current stored hours as we go, instead of
+          # only after the fact. This is what lets us kick back an
+          # explanation in-thread the moment a bad reading shows up, rather
+          # than silently skipping it in a CI log nobody reads (which is how
+          # HD8's "11474h" typo and HD11's mislabeled-HD10 reading both sat
+          # live on the dashboard for hours on 2026-07-07).
+          data, sha = gh_get("data.json")
+          BUFFER_HOURS = 2  # small allowance for clock skew / rounding
+
+          def parse_dt(s):
+              if not s:
+                  return None
+              try:
+                  return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+              except Exception:
+                  return None
+
+          def reject(reply_ts, user_id, truck_id, reason_jp):
+              mention = f"<@{user_id}> さん、" if user_id else ""
+              msg = (f"げんきくんです！{mention}*{truck_id}* の稼働時間の投稿を確認しましたが、"
+                     f"反映できませんでした🙅\n{reason_jp}\n"
+                     f"お手数ですが、正しい値をご確認の上、再投稿をお願いします🙏")
+              result = slack_post({"channel": CHANNEL, "text": msg, "thread_ts": reply_ts})
+              if not result.get("ok"):
+                  print(f"Failed to post rejection for {truck_id}: {result.get('error')}")
+
           candidates = {}  # truck_id -> {hours, user_id}
           if hist.get("ok"):
               for msg in hist.get("messages", []):
@@ -118,18 +145,50 @@ jobs:
                       for m in pattern.finditer(reply.get("text", "")):
                           truck_id = m.group(1).upper()
                           hours    = round(float(m.group(2)))
+                          user_id  = reply.get("user")
+
                           if expected_truck and truck_id != expected_truck:
                               print(f"SKIP likely copy-paste error: reply says {truck_id} but "
                                     f"posted in {expected_truck}'s thread (ts={reply['ts']})")
+                              reject(reply["ts"], user_id, truck_id,
+                                     f"この投稿は *{expected_truck}* のスレッド内にありますが、"
+                                     f"内容は *{truck_id}* の稼働時間になっています。"
+                                     f"トラック名の入力間違いの可能性があります。")
                               continue
-                          # keep highest value seen across all replies this run
+
+                          stored_entry = data.get(truck_id) or {}
+                          stored = stored_entry.get("hours")
+                          last_dt = parse_dt(stored_entry.get("lastUpdated"))
+
+                          if stored is not None and hours <= stored:
+                              print(f"Skip {truck_id}: {hours}h not higher than stored {stored}h")
+                              reject(reply["ts"], user_id, truck_id,
+                                     f"投稿値: {hours}h ／ 現在の記録値: {stored}h\n"
+                                     f"記録されている値より低いため、古い読み取りやトラック名の"
+                                     f"入力間違いの可能性があります。")
+                              continue
+
+                          if stored is not None and last_dt is not None:
+                              elapsed_hours = (NOW - last_dt).total_seconds() / 3600
+                              delta = hours - stored
+                              if delta > elapsed_hours + BUFFER_HOURS:
+                                  print(f"Skip {truck_id}: {hours}h is {delta}h above stored "
+                                        f"{stored}h but only {elapsed_hours:.1f}h have passed "
+                                        f"since the last update — not physically possible.")
+                                  reject(reply["ts"], user_id, truck_id,
+                                         f"投稿値: {hours}h ／ 現在の記録値: {stored}h（増加量: {delta}h）\n"
+                                         f"前回の更新から経過した時間は約{elapsed_hours:.1f}時間のため、"
+                                         f"増加量が経過時間を超えており、発電機の稼働時間としては"
+                                         f"あり得ません。トラック名や数値の入力間違いの可能性があります。")
+                                  continue
+
+                          # keep highest valid value seen across all replies this run
                           if truck_id not in candidates or hours > candidates[truck_id]["hours"]:
-                              candidates[truck_id] = {"hours": hours, "user_id": reply.get("user")}
+                              candidates[truck_id] = {"hours": hours, "user_id": user_id}
           else:
               print(f"Slack error: {hist.get('error')}")
 
           if candidates:
-              data, sha = gh_get("data.json")
               changed = False
               daily_deltas = {}  # truck_id -> hours run today (this sync)
               for truck_id, info in candidates.items():
