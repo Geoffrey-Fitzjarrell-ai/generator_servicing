@@ -96,11 +96,13 @@ const SLACK_CHANNEL = "C08L1TWLU14";
 // to pick it up out of pending_completions.json. Requires a SLACK_TOKEN
 // secret on this Worker (Settings -> Variables and Secrets) — the same
 // bot token used by the GitHub Actions workflow's SLACK_TOKEN repo secret.
-function buildCompletionText(userId, truck, tasks) {
+function buildCompletionText(userId, truck, tasks, notes) {
   const taskList = (tasks || []).map(t => "• " + t).join("\n");
   const mention = userId ? `<@${userId}> さん、` : "";
+  const noteLine = (notes && notes.length) ? `📝 メモ: ${notes.join(" / ")}\n` : "";
   return `げんきくんです！${mention}*${truck}* で以下の作業が完了したことを確認しました🔧✨\n`
        + `${taskList}\n`
+       + noteLine
        + `担当してくれた技術者さん、いつも素晴らしい仕事をありがとうございます、お疲れ様でした！`;
 }
 
@@ -204,10 +206,14 @@ export default {
       }
 
       if (action === "logCompletion") {
-        const { truck, technician, hours, tasks } = payload;
+        const { truck, technician, hours, tasks, notes } = payload;
         if (!truck || !Array.isArray(tasks) || tasks.length === 0) {
           return json({ error: "Missing truck or tasks" }, 400);
         }
+        // Notes are free text destined for a JSON file rendered in the UI —
+        // cap length and count so a bad client can't bloat the repo.
+        const noteList = (Array.isArray(notes) ? notes : [])
+          .map(n => String(n).slice(0, 300)).filter(Boolean).slice(0, 5);
 
         // Update service_logs.json — bumps each task's "last done at" hour count.
         const logsFile = await ghGet("service_logs.json", env.GITHUB_PAT);
@@ -228,7 +234,7 @@ export default {
           hours,
           technician: technician || "",
           tasks: tasks.map(t => ({ key: t.key, label: t.label })),
-          notes: [],
+          notes: noteList,
         });
         await ghPut(
           "service_history.json", env.GITHUB_PAT, hist, histFile.sha,
@@ -248,7 +254,7 @@ export default {
         // still send it within a few hours — same safety-net principle as
         // the log write itself.
         const userId = entry.postedBy && entry.postedBy.id;
-        const text = buildCompletionText(userId, entry.truck, entry.tasks);
+        const text = buildCompletionText(userId, entry.truck, entry.tasks, entry.notes);
         const slackResult = await slackPostMessage(env, text);
         entry.notified = !!slackResult.ok;
         if (!slackResult.ok) {

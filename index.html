@@ -360,6 +360,7 @@ async function writeServiceLogToRepo(truck, log, entry) {
         technician: entry.technician,
         hours: entry.hours,
         tasks: entry.tasks,
+        notes: entry.notes || [],
       })
     });
     return res.ok;
@@ -420,6 +421,7 @@ function App() {
   const [checked,    setChecked]    = useState({});
   const [showSuccess,   setShowSuccess]   = useState(false);
   const [techName,      setTechName]      = useState("Geoff Fitzjarrell");
+  const [svcNotes,      setSvcNotes]      = useState("");
   const [tickets,       setTickets]       = useState({});
   const [dailyHours,    setDailyHours]    = useState({});
   const [expandedTask,  setExpandedTask]  = useState(null);
@@ -591,10 +593,12 @@ function App() {
     // landed do we touch local state / show success, so a failure here can never
     // look like a successful save (this is what silently ate an HD9 completion
     // before: the notification fired regardless of whether this write worked).
+    const noteList = svcNotes.trim() ? [svcNotes.trim()] : [];
     const ok = await writeServiceLogToRepo(selected,newLog,{
       technician:techName,
       hours,
-      tasks:done.map(t=>({key:t.key,label:t.name}))
+      tasks:done.map(t=>({key:t.key,label:t.name})),
+      notes:noteList
     });
 
     // The pending entry drives the Slack "tasks completed" notification. It also
@@ -608,6 +612,7 @@ function App() {
       postedBy:truck.postedBy,
       loggedAt:new Date().toISOString(),
       hours,
+      notes:noteList,
       alreadyLogged: ok,
     });
 
@@ -616,10 +621,10 @@ function App() {
       try{localStorage.setItem("svc:"+selected,JSON.stringify(newLog));}catch(e){}
       setSvcHistory(p=>{
         const arr=p[selected]?[...p[selected]]:[];
-        arr.push({date:new Date().toISOString().slice(0,10),hours,technician:techName,tasks:done.map(t=>({key:t.key,label:t.name})),notes:[]});
+        arr.push({date:new Date().toISOString().slice(0,10),hours,technician:techName,tasks:done.map(t=>({key:t.key,label:t.name})),notes:noteList});
         return {...p,[selected]:arr};
       });
-      setChecked({});setLogMode(false);
+      setChecked({});setLogMode(false);setSvcNotes("");
       setShowSuccess(true);setTimeout(()=>setShowSuccess(false),1400);
     } else {
       // Leave checked/logMode as-is so Geoff can see exactly what didn't save
@@ -974,8 +979,15 @@ function App() {
               placeholder:"Technician name",
               style:{padding:"8px 10px",background:"var(--surface2)",border:"1px solid var(--border2)",borderRadius:"var(--radius)",color:"var(--text)",fontFamily:"var(--sans)",fontSize:12,width:180}
             }),
+            React.createElement("input",{
+              type:"text", value:svcNotes,
+              onChange:e=>setSvcNotes(e.target.value),
+              placeholder:"Notes (optional) — e.g. part #, condition found, follow-up needed",
+              maxLength:300,
+              style:{padding:"8px 10px",background:"var(--surface2)",border:"1px solid var(--border2)",borderRadius:"var(--radius)",color:"var(--text)",fontFamily:"var(--sans)",fontSize:12,flex:1,minWidth:220}
+            }),
             React.createElement("button",{className:"btn-primary",onClick:handleSave,disabled:saving||Object.values(checked).every(v=>!v)},saving?"Saving…":"Save Completed Tasks"),
-            React.createElement("button",{className:"btn-cancel",disabled:saving,onClick:()=>{setLogMode(false);setChecked({});setTechName("Geoff Fitzjarrell");setSaveError(null);}},"Cancel"),
+            React.createElement("button",{className:"btn-cancel",disabled:saving,onClick:()=>{setLogMode(false);setChecked({});setTechName("Geoff Fitzjarrell");setSvcNotes("");setSaveError(null);}},"Cancel"),
             React.createElement("span",{className:"save-hint"},"Check tasks above, then save")
           )
         ),

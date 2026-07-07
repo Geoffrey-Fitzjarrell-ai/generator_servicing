@@ -406,12 +406,13 @@ jobs:
 
                           if truck not in hist:
                               hist[truck] = []
+                          user_notes = [str(n)[:300] for n in (entry.get("notes") or []) if n][:5]
                           hist[truck].append({
                               "date": NOW.strftime("%Y-%m-%d"),
                               "hours": hours,
                               "technician": poster.get("name") or "",
                               "tasks": [{"key": k, "label": l} for k, l in keys],
-                              "notes": ["Promoted by cron safety-net (dashboard write "
+                              "notes": user_notes + ["Promoted by cron safety-net (dashboard write "
                                         "did not land before this run)."],
                           })
                           hist_changed = True
