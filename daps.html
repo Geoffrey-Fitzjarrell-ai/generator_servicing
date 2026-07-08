@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAPS — Team Handshake Power Rankings</title>
+<style>
+  :root{
+    --bg:#161006;
+    --leather:#1f1709;
+    --card:#261c0c;
+    --card2:#2e2210;
+    --line:#4a3a1c;
+    --gold:#e8b33c;
+    --gold-dim:#a37c22;
+    --paper:#f2e8d5;
+    --chalk:#b8ab8e;
+    --faint:#7d7156;
+    --red:#d6402b;
+    --green:#7fb069;
+    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+    --disp:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, #2a1f0d 0%, transparent 60%),
+      var(--bg);
+    color:var(--paper);
+    font-family:var(--disp);
+    min-height:100vh;
+    padding-bottom:80px;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+
+  /* ── hero ── */
+  header{padding:52px 0 20px;text-align:center;position:relative}
+  .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:.35em;
+    color:var(--gold-dim);text-transform:uppercase;margin-bottom:10px;
+  }
+  h1{
+    font-size:clamp(72px,16vw,150px);
+    font-weight:900;letter-spacing:-.02em;line-height:.85;
+    text-transform:uppercase;
+    transform:skewX(-6deg);
+    color:var(--gold);
+    text-shadow:4px 4px 0 #4a3005, 8px 8px 0 rgba(0,0,0,.5);
+  }
+  .subtitle{
+    margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--chalk);
+    letter-spacing:.08em;
+  }
+  .subtitle b{color:var(--gold)}
+  .rules{
+    margin-top:6px;font-family:var(--mono);font-size:10px;color:var(--faint);
+  }
+
+  /* ── leaderboard ── */
+  .board{margin-top:34px;display:flex;flex-direction:column;gap:14px}
+  .fighter{
+    position:relative;
+    background:linear-gradient(135deg,var(--card),var(--card2));
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 20px 16px 20px;
+    display:grid;
+    grid-template-columns:64px 1fr auto;
+    gap:18px;align-items:center;
+    overflow:hidden;
+  }
+  .fighter.top{
+    border-color:var(--gold-dim);
+    box-shadow:0 0 0 1px var(--gold-dim), 0 10px 30px -12px rgba(232,179,60,.25);
+  }
+  .rank{
+    font-weight:900;font-size:42px;line-height:1;
+    transform:skewX(-8deg);
+    color:var(--faint);text-align:center;
+  }
+  .fighter.top .rank{color:var(--gold)}
+  .rank small{display:block;font-family:var(--mono);font-size:9px;font-weight:400;
+    letter-spacing:.2em;transform:skewX(8deg);margin-top:4px;color:var(--faint)}
+  .who{min-width:0}
+  .name{font-weight:800;font-size:20px;letter-spacing:.01em;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .name .score{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400}
+  .signature{font-family:var(--mono);font-size:10.5px;color:var(--chalk);margin-top:3px;font-style:italic}
+  .bars{margin-top:11px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .cat{min-width:0}
+  .cat-lbl{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:var(--faint);
+    text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cat-track{height:7px;background:#171006;border-radius:4px;margin-top:4px;overflow:hidden;border:1px solid #000}
+  .cat-fill{height:100%;background:var(--gold);border-radius:4px;transition:width .5s cubic-bezier(.2,.9,.3,1.2)}
+  .cat-val{font-family:var(--mono);font-size:9px;color:var(--chalk);margin-top:2px}
+
+  /* tier stamp — the signature element */
+  .stamp{
+    justify-self:end;align-self:center;
+    font-family:var(--mono);font-weight:700;
+    border:2.5px dashed currentColor;border-radius:8px;
+    padding:8px 12px 7px;
+    transform:rotate(6deg);
+    text-align:center;line-height:1.1;
+    opacity:.92;user-select:none;
+    letter-spacing:.06em;
+  }
+  .stamp .grade{font-size:30px;font-weight:900;letter-spacing:0}
+  .stamp .verdict{font-size:8px;letter-spacing:.18em;margin-top:2px;text-transform:uppercase}
+  .tier-S{color:#ffd76a;text-shadow:0 0 14px rgba(255,215,106,.45)}
+  .tier-A{color:var(--gold)}
+  .tier-B{color:var(--green)}
+  .tier-C{color:var(--chalk)}
+  .tier-D{color:#c98a4b}
+  .tier-F{color:var(--red)}
+
+  .row-actions{position:absolute;top:8px;right:10px;display:flex;gap:6px;opacity:0;transition:opacity .15s}
+  .fighter:hover .row-actions{opacity:1}
+  .mini-btn{
+    background:none;border:1px solid var(--line);color:var(--chalk);
+    font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:5px;cursor:pointer;
+  }
+  .mini-btn:hover{border-color:var(--gold-dim);color:var(--gold)}
+
+  /* ── request-a-rating ── */
+  .request-zone{margin-top:34px;text-align:center}
+  .request-btn{
+    width:100%;
+    font-family:var(--disp);font-weight:900;font-size:clamp(15px,3vw,22px);
+    letter-spacing:.04em;text-transform:uppercase;
+    background:linear-gradient(135deg,var(--gold),#c99427);
+    color:#241a06;border:none;border-radius:12px;cursor:pointer;
+    padding:22px 24px;
+    transform:skewX(-3deg);
+    box-shadow:0 6px 0 #6b4d0e, 0 14px 30px -10px rgba(232,179,60,.4);
+    transition:transform .08s, box-shadow .08s;
+  }
+  .request-btn:hover{filter:brightness(1.07)}
+  .request-btn:active{transform:skewX(-3deg) translateY(4px);box-shadow:0 2px 0 #6b4d0e}
+  .request-form{
+    margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+    background:var(--leather);border:1px solid var(--line);border-radius:12px;padding:16px;
+  }
+  .request-form input[type=text]{flex:1;min-width:180px}
+  .request-status{width:100%;font-family:var(--mono);font-size:11px;min-height:16px;margin-top:2px}
+  .request-status.ok{color:var(--green)}
+  .request-status.err{color:var(--red)}
+
+  /* ── form ── */
+  .panel{
+    margin-top:40px;background:var(--leather);border:1px solid var(--line);
+    border-radius:12px;padding:22px;
+  }
+  .panel h2{
+    font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.14em;
+    color:var(--gold);transform:skewX(-4deg);display:inline-block;
+  }
+  .panel .hint{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:4px}
+  .form-grid{margin-top:18px;display:grid;gap:16px}
+  .frow{display:grid;grid-template-columns:110px 1fr 44px;gap:14px;align-items:center}
+  .frow label{font-family:var(--mono);font-size:11px;color:var(--chalk);letter-spacing:.06em}
+  .frow label small{display:block;font-size:9px;color:var(--faint)}
+  input[type=range]{
+    width:100%;accent-color:var(--gold);height:22px;cursor:pointer;background:transparent;
+  }
+  .slider-val{font-family:var(--mono);font-size:15px;color:var(--gold);text-align:right;font-weight:700}
+  input[type=text]{
+    width:100%;background:#171006;border:1px solid var(--line);border-radius:7px;
+    color:var(--paper);font-family:var(--disp);font-size:14px;padding:9px 12px;
+  }
+  input[type=text]:focus{outline:2px solid var(--gold-dim);outline-offset:1px}
+  .form-foot{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .btn{
+    font-family:var(--disp);font-weight:800;font-size:13px;letter-spacing:.06em;
+    text-transform:uppercase;border:none;border-radius:8px;cursor:pointer;
+    padding:11px 22px;
+  }
+  .btn-gold{background:var(--gold);color:#241a06}
+  .btn-gold:hover{background:#f5c655}
+  .btn-ghost{background:none;border:1px solid var(--line);color:var(--chalk)}
+  .btn-ghost:hover{border-color:var(--gold-dim);color:var(--gold)}
+  .live-tier{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .live-tier b{font-size:16px}
+
+  /* ── footer ── */
+  .foot{
+    margin-top:36px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--faint);
+    line-height:1.9;
+  }
+  .foot .legend span{margin:0 7px;white-space:nowrap}
+
+  .empty{
+    text-align:center;padding:50px 20px;font-family:var(--mono);color:var(--faint);
+    border:1px dashed var(--line);border-radius:12px;font-size:12px;line-height:2;
+  }
+
+  @media(max-width:640px){
+    .fighter{grid-template-columns:44px 1fr;gap:12px}
+    .rank{font-size:30px}
+    .stamp{grid-column:2;justify-self:start;transform:rotate(-3deg);margin-top:4px}
+    .bars{grid-template-columns:repeat(5,1fr);gap:5px}
+    .frow{grid-template-columns:90px 1fr 36px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .cat-fill{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Japan VOps · 拳計測部 · Official Rankings</div>
+    <h1>Daps</h1>
+    <div class="subtitle">TEAM HANDSHAKE POWER RANKINGS — <b>sanctioned</b> · season 2026</div>
+    <div class="rules">judged on five disciplines · no gloves · left-hangs result in immediate F review</div>
+  </header>
+
+  <div id="board" class="board"></div>
+
+  <div class="request-zone">
+    <button class="request-btn" onclick="toggleRequest()">
+      🤝 REQUEST GEOFF TO RATE YOUR DAP — CLICK HERE
+    </button>
+    <div class="request-form" id="req-form" hidden>
+      <input type="text" id="req-name" placeholder="Your name" maxlength="60">
+      <input type="text" id="req-msg" placeholder='Optional message, e.g. "I&#39;ve been practicing"' maxlength="200">
+      <button class="btn btn-gold" id="req-send" onclick="sendDapRequest()">Send to Geoff</button>
+      <div class="request-status" id="req-status"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>⊕ Log a Dap Assessment</h2>
+    <div class="hint">New name creates a fighter. Existing name overwrites their card (latest dap counts — stay sharp).</div>
+    <div class="form-grid">
+      <div class="frow">
+        <label>NAME</label>
+        <input type="text" id="f-name" placeholder="Who dapped you?" list="roster">
+        <datalist id="roster"></datalist>
+        <span></span>
+      </div>
+      <div class="frow"><label>GRIP <small>握力 · firmness</small></label><input type="range" id="f-grip" min="0" max="10" value="5"><span class="slider-val" id="v-grip">5</span></div>
+      <div class="frow"><label>SNAP <small>音 · the sound</small></label><input type="range" id="f-snap" min="0" max="10" value="5"><span class="slider-val" id="v-snap">5</span></div>
+      <div class="frow"><label>SYNC <small>呼吸 · timing</small></label><input type="range" id="f-sync" min="0" max="10" value="5"><span class="slider-val" id="v-sync">5</span></div>
+      <div class="frow"><label>STYLE <small>型 · flair</small></label><input type="range" id="f-style" min="0" max="10" value="5"><span class="slider-val" id="v-style">5</span></div>
+      <div class="frow"><label>CLUTCH <small>安定感 · reliability</small></label><input type="range" id="f-clutch" min="0" max="10" value="5"><span class="slider-val" id="v-clutch">5</span></div>
+      <div class="frow">
+        <label>NOTES <small>scout report</small></label>
+        <input type="text" id="f-note" placeholder='e.g. "added a shoulder lean. bold."'>
+        <span></span>
+      </div>
+    </div>
+    <div class="form-foot">
+      <button class="btn btn-gold" onclick="saveFighter()">Record Dap</button>
+      <button class="btn btn-ghost" onclick="exportData()">Export JSON</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">Import</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+      <div class="live-tier">projected: <b id="live-grade" class="tier-C">C</b></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="legend">
+      <span class="tier-S">S — CERTIFIED CRISP</span>
+      <span class="tier-A">A — CLEAN</span>
+      <span class="tier-B">B — SOLID</span>
+      <span class="tier-C">C — MID</span>
+      <span class="tier-D">D — FUMBLE RISK</span>
+      <span class="tier-F">F — WET FISH</span>
+    </div>
+    <div>rankings recalculated on every recorded dap · commissioner's decisions are final</div>
+  </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// Data lives in memory. Export/Import JSON to persist between
+// sessions (or ask Geoff's AI to add localStorage when hosted).
+// ─────────────────────────────────────────────────────────────
+const CATS = [
+  {key:"grip",   lbl:"GRIP 握力"},
+  {key:"snap",   lbl:"SNAP 音"},
+  {key:"sync",   lbl:"SYNC 呼吸"},
+  {key:"style",  lbl:"STYLE 型"},
+  {key:"clutch", lbl:"CLUTCH 安定感"},
+];
+
+const TIERS = [
+  {min:9.0, grade:"S", verdict:"CERTIFIED CRISP", cls:"tier-S"},
+  {min:7.5, grade:"A", verdict:"CLEAN",           cls:"tier-A"},
+  {min:6.0, grade:"B", verdict:"SOLID",           cls:"tier-B"},
+  {min:4.5, grade:"C", verdict:"MID",             cls:"tier-C"},
+  {min:3.0, grade:"D", verdict:"FUMBLE RISK",     cls:"tier-D"},
+  {min:0,   grade:"F", verdict:"WET FISH",        cls:"tier-F"},
+];
+
+// Official season 2026 opening rankings — commissioner's order.
+let fighters = [
+  {name:"Joe",     grip:10, snap:9, sync:9, style:10, clutch:9, note:"the standard. other daps are measured against this."},
+  {name:"Taka",    grip:9,  snap:9, sync:8, style:9,  clutch:9, note:"consistent. never leaves you hanging."},
+  {name:"Enrique", grip:8,  snap:9, sync:7, style:9,  clutch:8, note:"loudest snap in the garage."},
+  {name:"Seba",    grip:8,  snap:8, sync:7, style:8,  clutch:7, note:"strong fundamentals. room at the top."},
+  {name:"Dimas",   grip:7,  snap:7, sync:7, style:8,  clutch:6, note:"flashes of brilliance. consistency pending."},
+  {name:"Tom",     grip:7,  snap:6, sync:6, style:7,  clutch:6, note:"solid mechanics. needs more snap."},
+  {name:"Bex",     grip:6,  snap:6, sync:5, style:6,  clutch:6, note:"developing. upside visible."},
+  {name:"Aida",    grip:5,  snap:5, sync:6, style:5,  clutch:5, note:"mid-table. one good dap from a run."},
+  {name:"Zijian",  grip:5,  snap:4, sync:5, style:5,  clutch:4, note:"rebuilding season. the comeback starts now."},
+];
+
+const overall = f => CATS.reduce((s,c)=>s+(+f[c.key]||0),0)/CATS.length;
+const tierOf  = v => TIERS.find(t=>v>=t.min);
+const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+function render(){
+  const board = document.getElementById("board");
+  const sorted = [...fighters].sort((a,b)=>overall(b)-overall(a));
+  if(!sorted.length){
+    board.innerHTML = '<div class="empty">NO FIGHTERS ON RECORD<br>the rankings await their first dap ⊕</div>';
+    return;
+  }
+  board.innerHTML = sorted.map((f,i)=>{
+    const ov = overall(f);
+    const t  = tierOf(ov);
+    const bars = CATS.map(c=>{
+      const v=+f[c.key]||0;
+      return `<div class="cat">
+        <div class="cat-lbl">${c.lbl}</div>
+        <div class="cat-track"><div class="cat-fill" style="width:${v*10}%"></div></div>
+        <div class="cat-val">${v}/10</div>
+      </div>`;
+    }).join("");
+    return `<div class="fighter${i===0?" top":""}">
+      <div class="rank">${i+1}<small>${i===0?"CHAMP":"RANK"}</small></div>
+      <div class="who">
+        <div class="name">${esc(f.name)} <span class="score">${ov.toFixed(1)} / 10</span></div>
+        ${f.note?`<div class="signature">“${esc(f.note)}”</div>`:""}
+        <div class="bars">${bars}</div>
+      </div>
+      <div class="stamp ${t.cls}">
+        <div class="grade">${t.grade}</div>
+        <div class="verdict">${t.verdict}</div>
+      </div>
+      <div class="row-actions">
+        <button class="mini-btn" onclick="editFighter('${esc(f.name).replace(/'/g,"\\'")}')">EDIT</button>
+        <button class="mini-btn" onclick="deleteFighter('${esc(f.name).replace(/'/g,"\\'")}')">CUT</button>
+      </div>
+    </div>`;
+  }).join("");
+  // roster datalist
+  document.getElementById("roster").innerHTML =
+    fighters.map(f=>`<option value="${esc(f.name)}">`).join("");
+}
+
+function readForm(){
+  return {
+    name:   document.getElementById("f-name").value.trim(),
+    grip:   +document.getElementById("f-grip").value,
+    snap:   +document.getElementById("f-snap").value,
+    sync:   +document.getElementById("f-sync").value,
+    style:  +document.getElementById("f-style").value,
+    clutch: +document.getElementById("f-clutch").value,
+    note:   document.getElementById("f-note").value.trim(),
+  };
+}
+
+function saveFighter(){
+  const f = readForm();
+  if(!f.name){ document.getElementById("f-name").focus(); return; }
+  const idx = fighters.findIndex(x=>x.name.toLowerCase()===f.name.toLowerCase());
+  if(idx>=0) fighters[idx] = {...fighters[idx], ...f};
+  else fighters.push(f);
+  render();
+  document.getElementById("f-name").value="";
+  document.getElementById("f-note").value="";
+}
+
+function editFighter(name){
+  const f = fighters.find(x=>x.name===name);
+  if(!f) return;
+  document.getElementById("f-name").value = f.name;
+  document.getElementById("f-note").value = f.note||"";
+  for(const c of CATS){
+    document.getElementById("f-"+c.key).value = f[c.key];
+    document.getElementById("v-"+c.key).textContent = f[c.key];
+  }
+  updateLiveTier();
+  document.querySelector(".panel").scrollIntoView({behavior:"smooth"});
+}
+
+function deleteFighter(name){
+  if(!confirm(name+" will be CUT from the rankings. Confirm?")) return;
+  fighters = fighters.filter(x=>x.name!==name);
+  render();
+}
+
+function exportData(){
+  const blob = new Blob([JSON.stringify(fighters,null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "daps_rankings_"+new Date().toISOString().slice(0,10)+".json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importData(ev){
+  const file = ev.target.files[0];
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const data = JSON.parse(r.result);
+      if(Array.isArray(data)){ fighters = data; render(); }
+      else alert("That file isn't a valid rankings export.");
+    }catch(e){ alert("Couldn't read that file: "+e.message); }
+  };
+  r.readAsText(file);
+  ev.target.value = "";
+}
+
+function updateLiveTier(){
+  const f = readForm();
+  const t = tierOf(overall(f));
+  const el = document.getElementById("live-grade");
+  el.textContent = t.grade;
+  el.className = t.cls;
+}
+
+for(const c of CATS){
+  const slider = document.getElementById("f-"+c.key);
+  slider.addEventListener("input", ()=>{
+    document.getElementById("v-"+c.key).textContent = slider.value;
+    updateLiveTier();
+  });
+}
+// ── Request-a-rating: posts through the fleet Worker proxy, which DMs
+//    Geoff a Block Kit card with an "Open DAPS Rankings" button. ──
+const PROXY_URL  = "https://ai.generator-fleet-proxy.workers.dev/";
+const PROXY_KEY  = "poopooface69";
+
+function toggleRequest(){
+  const f = document.getElementById("req-form");
+  f.hidden = !f.hidden;
+  if(!f.hidden) document.getElementById("req-name").focus();
+}
+
+async function sendDapRequest(){
+  const name = document.getElementById("req-name").value.trim();
+  const msg  = document.getElementById("req-msg").value.trim();
+  const status = document.getElementById("req-status");
+  const btn = document.getElementById("req-send");
+  if(!name){ document.getElementById("req-name").focus(); return; }
+  btn.disabled = true; btn.textContent = "Sending…";
+  status.className = "request-status"; status.textContent = "";
+  try{
+    const r = await fetch(PROXY_URL, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json", "X-Auth-Key":PROXY_KEY },
+      body: JSON.stringify({ action:"dapRequest", name, message: msg,
+        dashboardUrl: location.href.startsWith("http") ? location.href : undefined }),
+    });
+    const data = await r.json().catch(()=>({}));
+    if(r.ok && data.ok){
+      status.className = "request-status ok";
+      status.textContent = "✅ Request sent. The commissioner has been notified. Warm up your hand.";
+      document.getElementById("req-name").value = "";
+      document.getElementById("req-msg").value = "";
+    }else{
+      status.className = "request-status err";
+      status.textContent = "✗ Couldn't reach the commissioner ("+(data.slackError||data.error||("HTTP "+r.status))+"). Try again or just dap him unannounced.";
+    }
+  }catch(e){
+    status.className = "request-status err";
+    status.textContent = "✗ Network error — the commissioner remains unaware. ("+e.message+")";
+  }finally{
+    btn.disabled = false; btn.textContent = "Send to Geoff";
+  }
+}
+
+document.getElementById("f-name").addEventListener("keydown", e=>{ if(e.key==="Enter") saveFighter(); });
+
+render();
+updateLiveTier();
+</script>
+</body>
+</html>

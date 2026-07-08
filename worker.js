@@ -370,6 +370,37 @@ export default {
     const { action } = payload;
 
     try {
+      // ── DAPS: teammate requests an official handshake assessment ──
+      // Sends Geoff a DM with a Block Kit card + link button. Uses the same
+      // bot token as everything else. Note: DMing a user via chat.postMessage
+      // may require the im:write scope depending on workspace config — if
+      // Slack returns channel_not_found / missing_scope, that's the fix.
+      if (action === "dapRequest") {
+        const GEOFF_UID = "U07RU3LH24F";
+        const name = String(payload.name || "").slice(0, 60).trim();
+        const msg  = String(payload.message || "").slice(0, 200).trim();
+        if (!name) return json({ error: "Missing name" }, 400);
+        const blocks = [
+          { type: "header", text: { type: "plain_text", text: "🤝 DAP ASSESSMENT REQUEST", emoji: true } },
+          { type: "section", text: { type: "mrkdwn",
+            text: `*${name}* is formally requesting an official dap evaluation.` +
+                  (msg ? `\n> _"${msg}"_` : "") } },
+          { type: "context", elements: [{ type: "mrkdwn",
+            text: "Five disciplines: GRIP 握力 · SNAP 音 · SYNC 呼吸 · STYLE 型 · CLUTCH 安定感 ｜ commissioner's decision is final" }] },
+          { type: "actions", elements: [
+            { type: "button",
+              text: { type: "plain_text", text: "📋 Open DAPS Rankings", emoji: true },
+              url: payload.dashboardUrl || "https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/daps.html",
+              style: "primary" },
+          ]},
+        ];
+        const result = await slackPostMessage(env, `🤝 ${name} is requesting a dap assessment`, {
+          channel: GEOFF_UID, blocks,
+        });
+        if (!result.ok) return json({ ok: false, slackError: result.error }, 502);
+        return json({ ok: true });
+      }
+
       if (action === "setGrounded") {
         const { truck, grounded, note } = payload;
         if (!truck) return json({ error: "Missing truck" }, 400);
