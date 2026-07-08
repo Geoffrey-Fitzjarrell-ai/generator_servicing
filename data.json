@@ -21,14 +21,14 @@
     "groundedNote": "Under repair"
   },
   "HD8": {
-    "hours": 1474,
+    "hours": 1476,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Daichi Hayakawa",
-    "lastUpdated": "2026-07-07T01:42:09Z",
+    "lastUpdated": "2026-07-08T05:08:36Z",
     "postedBy": {
-      "id": "U07RU3LH24F",
-      "name": "Geoff Fitzjarrell"
+      "id": "U09V64E0352",
+      "name": null
     }
   },
   "HD9": {
