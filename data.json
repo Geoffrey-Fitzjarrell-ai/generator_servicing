@@ -32,14 +32,14 @@
     }
   },
   "HD9": {
-    "hours": 1494,
+    "hours": 1495,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Kaede Fujiwara",
-    "lastUpdated": "2026-07-07T01:42:36Z",
+    "lastUpdated": "2026-07-08T08:43:17Z",
     "postedBy": {
-      "id": "U07RU3LH24F",
-      "name": null
+      "id": "U0AT2E00R5G",
+      "name": "U0AT2E00R5G"
     }
   },
   "HD10": {
@@ -87,14 +87,14 @@
     }
   },
   "HD14": {
-    "hours": 552,
+    "hours": 559,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Kazuya Oiwa",
-    "lastUpdated": "2026-07-07T01:05:42Z",
+    "lastUpdated": "2026-07-08T08:43:17Z",
     "postedBy": {
       "id": "U0AT1RYRS1Z",
-      "name": null
+      "name": "U0AT1RYRS1Z"
     }
   },
   "HD15": {
