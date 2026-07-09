@@ -227,6 +227,37 @@ async function writeHours(env, truck, hours, userId, userName, commitMsg, force)
   throw new Error("data.json write failed after retries");
 }
 
+// Mirror the cron's daily-runtime bookkeeping (dashboard bar chart + the
+// trailing averages behind predicted due dates). Same schema and UTC-date
+// convention; refetch-merge on conflict.
+async function bumpDailyHours(env, truck, delta) {
+  if (!delta || delta <= 0) return;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      let daily = {};
+      let sha;
+      try {
+        const f = await ghGet("daily_hours.json", env.GITHUB_PAT);
+        daily = b64json(f);
+        sha = f.sha;
+      } catch (e) { /* file may not exist yet */ }
+      const today = new Date().toISOString().slice(0, 10);
+      if (!daily[truck]) daily[truck] = [];
+      const entries = daily[truck];
+      if (entries.length && entries[entries.length - 1].date === today) {
+        entries[entries.length - 1].hours = Math.round((entries[entries.length - 1].hours + delta) * 10) / 10;
+      } else {
+        entries.push({ date: today, hours: Math.round(delta * 10) / 10 });
+      }
+      daily[truck] = entries.slice(-14);
+      await ghPut("daily_hours.json", env.GITHUB_PAT, daily, sha,
+                  `chore: track daily hours (worker) ${truck} +${delta}h`, 0);
+      return;
+    } catch (e) { /* 409 or transient — loop refetches */ }
+  }
+  console.error("bumpDailyHours failed for", truck, "+" + delta);
+}
+
 // Real-time ingest of "HDXX Generator hours: XXXXh" posts. Mirrors the cron's
 // validation exactly (wrong-thread, below-floor, impossible-jump, admin
 // auto-correction) and replies in-thread immediately, then ledgers the ts so
@@ -337,6 +368,7 @@ async function handleSlackMessageEvent(event, env) {
   const res = await writeHours(env, truck, hours, userId, name,
                                `Real-time sync: ${truck} ${hours}h`, false);
   if (res.wrote) {
+    await bumpDailyHours(env, truck, hours - (res.prev || 0));
     await slackPostMessage(env,
       `✅ *${truck}* ${hours}h、記録しました！ありがとうございます🙏`,
       { channel, thread_ts: thread });
