@@ -85,6 +85,8 @@
   .name{font-weight:800;font-size:20px;letter-spacing:.01em;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
   .name .score{font-family:var(--mono);font-size:13px;color:var(--gold);font-weight:400}
   .signature{font-family:var(--mono);font-size:10.5px;color:var(--chalk);margin-top:3px;font-style:italic}
+  .ruling{font-family:var(--mono);font-size:9.5px;color:var(--gold-dim);margin-top:4px;letter-spacing:.04em}
+  .ruling b{color:var(--gold);letter-spacing:.14em}
   .bars{margin-top:11px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
   .cat{min-width:0}
   .cat-lbl{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:var(--faint);
@@ -300,7 +302,7 @@ let fighters = [
   {name:"Joe",     grip:10, snap:9, sync:9, style:10, clutch:9, note:"the standard. other daps are measured against this."},
   {name:"Taka",    grip:9,  snap:9, sync:8, style:9,  clutch:9, note:"consistent. never leaves you hanging."},
   {name:"Enrique", grip:8,  snap:9, sync:7, style:9,  clutch:8, note:"loudest snap in the garage."},
-  {name:"Daniel",  grip:8,  snap:8, sync:7, style:8,  clutch:8, note:"walked in mid-season and immediately made the podium chase."},
+  {name:"Daniel",  grip:8,  snap:8, sync:7, style:8,  clutch:8, note:"walked in mid-season and immediately made the podium chase.", ruling:"technique certified California-native. on this technicality, eligible to overtake higher positions."},
   {name:"Seba",    grip:8,  snap:8, sync:7, style:8,  clutch:7, note:"strong fundamentals. room at the top."},
   {name:"Dimas",   grip:7,  snap:7, sync:7, style:8,  clutch:6, note:"flashes of brilliance. consistency pending."},
   {name:"Tom",     grip:7,  snap:6, sync:6, style:7,  clutch:6, note:"solid mechanics. needs more snap."},
@@ -338,6 +340,7 @@ function render(){
       <div class="who">
         <div class="name">${esc(f.name)} <span class="score">${ov.toFixed(1)} / 10</span></div>
         ${f.note?`<div class="signature">“${esc(f.note)}”</div>`:""}
+        ${f.ruling?`<div class="ruling"><b>※ COMMISSION RULING</b> — ${esc(f.ruling)}</div>`:""}
         <div class="bars">${bars}</div>
       </div>
       <div class="stamp ${t.cls}">
