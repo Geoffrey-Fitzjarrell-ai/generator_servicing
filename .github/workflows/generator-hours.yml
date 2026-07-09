@@ -21,7 +21,7 @@ jobs:
 
           SLACK_TOKEN = os.environ["SLACK_TOKEN"]
           GH_TOKEN    = os.environ["GH_TOKEN"]
-          CHANNEL     = "C08L1TWLU14"
+          CHANNEL_JP  = "C08L1TWLU14"  # always included regardless of discovery
           REPO        = "Geoffrey-Fitzjarrell-ai/generator_servicing"
           NOW         = datetime.now(timezone.utc)
 
@@ -73,29 +73,49 @@ jobs:
                   return {"id": user_id, "name": name}
               return {"id": user_id, "name": user_id}
 
+          # Any channel this bot has been invited into gets covered automatically —
+          # no hardcoded channel ID to update when a new one comes online. Needs the
+          # channels:read scope; if that's not granted yet, falls back to just the
+          # known JP channel so nothing breaks in the meantime.
+          def list_bot_channels():
+              found = {CHANNEL_JP}
+              cursor = None
+              for _ in range(5):
+                  params = {"types": "public_channel,private_channel", "limit": 200,
+                            "exclude_archived": "true"}
+                  if cursor:
+                      params["cursor"] = cursor
+                  resp = slack_get("conversations.list", params)
+                  if not resp.get("ok"):
+                      print(f"conversations.list failed ({resp.get('error')}) — "
+                            f"channels:read scope may not be granted yet; "
+                            f"falling back to known channel only")
+                      break
+                  for ch in resp.get("channels", []):
+                      if ch.get("is_member"):
+                          found.add(ch["id"])
+                  cursor = resp.get("response_metadata", {}).get("next_cursor")
+                  if not cursor:
+                      break
+              return sorted(found)
+
+          CHANNELS = list_bot_channels()
+          print(f"Polling channels: {CHANNELS}")
+
+          # HD5 (the US truck) always gets English replies; every other truck
+          # keeps げんきくん's Japanese persona — same bot, same channel(s),
+          # language picked per-truck rather than per-channel.
+          def is_english(truck_id):
+              return truck_id == "HD5"
+
           # ── 1. Parse generator hours from thread replies ──────────────────────
           pattern = re.compile(r'(HD\d+)\s+Generator hours:\s*(\d+(?:\.\d+)?)\s*h?', re.IGNORECASE)
+          confirm_pattern = re.compile(r'^\s*(confirm|yes|correct|ok)\b', re.IGNORECASE)
 
           # Look back 24h for threads (shift reports may start earlier in the day),
           # but only process replies posted in the last 6h.
           oldest_threads = str((NOW - timedelta(hours=24)).timestamp())
           oldest_replies = str((NOW - timedelta(hours=24)).timestamp())
-
-          all_messages = []
-          cursor = None
-          for _ in range(5):  # up to 5000 messages — generous ceiling for a 24h window
-              params = {"channel": CHANNEL, "oldest": oldest_threads, "limit": 1000}
-              if cursor:
-                  params["cursor"] = cursor
-              hist = slack_get("conversations.history", params)
-              if not hist.get("ok"):
-                  print(f"Slack error: {hist.get('error')}")
-                  break
-              all_messages.extend(hist.get("messages", []))
-              cursor = hist.get("response_metadata", {}).get("next_cursor")
-              if not cursor:
-                  break
-          hist = {"ok": True, "messages": all_messages}
 
           thread_truck_pattern = re.compile(r'HD\d+', re.IGNORECASE)
 
@@ -117,29 +137,45 @@ jobs:
               except Exception:
                   return None
 
-          def reject(reply_ts, user_id, truck_id, reason_jp):
-              mention = f"<@{user_id}> さん、" if user_id else ""
-              msg = (f"げんきくんです！{mention}*{truck_id}* の稼働時間の投稿を確認しましたが、"
-                     f"反映できませんでした🙅\n{reason_jp}\n"
-                     f"お手数ですが、正しい値をご確認の上、再投稿をお願いします🙏")
-              result = slack_post({"channel": CHANNEL, "text": msg, "thread_ts": reply_ts})
+          def reject(channel, reply_ts, user_id, truck_id, reason_en, reason_jp):
+              if is_english(truck_id):
+                  mention = f"<@{user_id}> " if user_id else ""
+                  msg = (f"Hi {mention}I checked *{truck_id}*'s hours post but couldn't record it 🙅\n"
+                         f"{reason_en}\nPlease double-check the value and re-post.")
+              else:
+                  mention = f"<@{user_id}> さん、" if user_id else ""
+                  msg = (f"げんきくんです！{mention}*{truck_id}* の稼働時間の投稿を確認しましたが、"
+                         f"反映できませんでした🙅\n{reason_jp}\n"
+                         f"お手数ですが、正しい値をご確認の上、再投稿をお願いします🙏")
+              result = slack_post({"channel": channel, "text": msg, "thread_ts": reply_ts})
               if not result.get("ok"):
                   print(f"Failed to post rejection for {truck_id}: {result.get('error')}")
 
-          def ack(reply_ts, truck_id, hours):
-              msg = f"✅ *{truck_id}* {hours}h、記録しました！ありがとうございます🙏"
-              result = slack_post({"channel": CHANNEL, "text": msg, "thread_ts": reply_ts})
+          def ack(channel, reply_ts, truck_id, hours):
+              msg = (f"✅ *{truck_id}* {hours}h — recorded. Thanks!" if is_english(truck_id)
+                     else f"✅ *{truck_id}* {hours}h、記録しました！ありがとうございます🙏")
+              result = slack_post({"channel": channel, "text": msg, "thread_ts": reply_ts})
               if not result.get("ok"):
                   print(f"Failed to ack {truck_id}: {result.get('error')}")
 
-          # ── Idempotency ledger ────────────────────────────────────────────
-          # The 24h lookback means every reply gets re-seen across ~8 cron
-          # runs. Without a ledger the bot would re-reject (or re-ack) the
-          # same post on every run — an already-ingested reading equals the
-          # stored value, which the "not higher than stored" check would
-          # otherwise bounce with a reply, spamming the thread. Every reply
-          # ts we act on (accept, reject, or correct) is recorded here and
-          # skipped forever after. Pruned past 48h since the lookback is 24h.
+          def ask_confirm(channel, reply_ts, user_id, truck_id, hours, stored, delta, elapsed_hours):
+              mention = f"<@{user_id}> " if user_id else ""
+              msg = (f"Hi {mention}{truck_id} posted at {hours}h — that's {delta}h more than the last "
+                     f"reading ({stored}h), over about {elapsed_hours:.1f}h since the last post. It's "
+                     f"been a while, so I just want to confirm before recording it.\n"
+                     f"Reply \"confirm\" in this thread to accept {hours}h, or repost the correct value.")
+              result = slack_post({"channel": channel, "text": msg, "thread_ts": reply_ts})
+              if not result.get("ok"):
+                  print(f"Failed to post confirm-prompt for {truck_id}: {result.get('error')}")
+
+          # ── Idempotency ledger + pending-confirmation ledger ────────────────
+          # `handled` — as before, every reply ts we've acted on gets skipped
+          # forever after (48h prune). `pending` is new: a truck_id -> reading
+          # waiting on a "confirm" reply. Shared schema with the Cloudflare
+          # Worker's real-time path (bot_state.json), so either side can set
+          # a pending confirmation and either side can resolve it — whichever
+          # sees the "confirm" reply first wins; the other finds it already
+          # cleared and skips silently.
           try:
               bot_state, state_sha = gh_get("bot_state.json")
           except Exception:
@@ -147,6 +183,7 @@ jobs:
           handled = bot_state.get("handled", {})
           cutoff_ts = (NOW - timedelta(hours=48)).timestamp()
           handled = {ts: v for ts, v in handled.items() if float(ts) >= cutoff_ts}
+          pending = bot_state.get("pending", {})
           state_dirty = False
 
           # Replies older than this get processed silently (no thread reply):
@@ -160,9 +197,29 @@ jobs:
           ADMIN_IDS = {"U07RU3LH24F", "U07P40V9SKH"}  # Geoff, TakaY
           corr_pattern = re.compile(r'(HD\d+)\s*(?:correction|修正)\s*[:：]\s*(\d+(?:\.\d+)?)\s*h?', re.IGNORECASE)
 
-          candidates = {}   # truck_id -> {hours, user_id}
-          corrections = {}  # truck_id -> {hours, user_id, ts}
-          if hist.get("ok"):
+          candidates = {}   # truck_id -> {hours, user_id, channel}
+          corrections = {}  # truck_id -> {hours, user_id, ts, channel}
+
+          for CHANNEL in CHANNELS:
+              all_messages = []
+              cursor = None
+              for _ in range(5):  # up to 5000 messages — generous ceiling for a 24h window
+                  params = {"channel": CHANNEL, "oldest": oldest_threads, "limit": 1000}
+                  if cursor:
+                      params["cursor"] = cursor
+                  hist = slack_get("conversations.history", params)
+                  if not hist.get("ok"):
+                      print(f"Slack error on {CHANNEL}: {hist.get('error')}")
+                      break
+                  all_messages.extend(hist.get("messages", []))
+                  cursor = hist.get("response_metadata", {}).get("next_cursor")
+                  if not cursor:
+                      break
+              hist = {"ok": True, "messages": all_messages}
+
+              if not hist.get("ok"):
+                  continue
+
               for msg in hist.get("messages", []):
                   if not msg.get("reply_count"):
                       continue
@@ -183,6 +240,25 @@ jobs:
                       text    = reply.get("text", "")
                       user_id = reply.get("user")
 
+                      # ── Confirmation reply for a pending long-gap reading ──
+                      # Checked before the hours/correction patterns since a
+                      # bare "confirm" won't match either of those.
+                      cfm = confirm_pattern.match(text)
+                      if cfm and not pattern.search(text):
+                          matched_truck = None
+                          for tid, p in pending.items():
+                              if p.get("thread_ts") == msg["ts"] and \
+                                 (user_id == p.get("user_id") or user_id in ADMIN_IDS):
+                                  matched_truck = tid
+                                  break
+                          if matched_truck:
+                              p = pending.pop(matched_truck)
+                              corrections[matched_truck] = {"hours": p["hours"], "user_id": p["user_id"],
+                                                            "ts": rts, "channel": CHANNEL,
+                                                            "confirmed": True, "prev": p.get("prev")}
+                              handled[rts] = "confirmed"; state_dirty = True
+                              continue
+
                       # ── Correction override ───────────────────────────
                       # "HDXX correction: XXXXh" / "HDXX 修正: XXXXh" from
                       # anyone bypasses both validation rules. Needed for
@@ -194,7 +270,7 @@ jobs:
                       if cm:
                           truck_id = cm.group(1).upper()
                           corrections[truck_id] = {"hours": round(float(cm.group(2))),
-                                                   "user_id": user_id, "ts": rts}
+                                                   "user_id": user_id, "ts": rts, "channel": CHANNEL}
                           handled[rts] = "corrected"; state_dirty = True
                           continue
 
@@ -206,7 +282,9 @@ jobs:
                               print(f"REJECT wrong-thread: {truck_id} posted in "
                                     f"{expected_truck}'s thread (ts={rts})")
                               if is_fresh(rts):
-                                  reject(rts, user_id, truck_id,
+                                  reject(CHANNEL, rts, user_id, truck_id,
+                                         f"This post is in *{expected_truck}*'s thread, but the hours "
+                                         f"are for *{truck_id}*. Possibly the wrong truck name was typed.",
                                          f"この投稿は *{expected_truck}* のスレッド内にありますが、"
                                          f"内容は *{truck_id}* の稼働時間になっています。"
                                          f"トラック名の入力間違いの可能性があります。")
@@ -235,7 +313,7 @@ jobs:
                                   and (stored_entry.get("postedBy") or {}).get("id") == user_id
                               )
                               if synced_by_worker and is_fresh(rts):
-                                  ack(rts, truck_id, hours)
+                                  ack(CHANNEL, rts, truck_id, hours)
                               handled[rts] = "accepted"; state_dirty = True
                               continue
 
@@ -244,12 +322,16 @@ jobs:
                                   # Admin plain-format post that fails the floor
                                   # check = treat as a correction (this is exactly
                                   # how Geoff posted the HD8 fix on 7/7).
-                                  corrections[truck_id] = {"hours": hours, "user_id": user_id, "ts": rts}
+                                  corrections[truck_id] = {"hours": hours, "user_id": user_id, "ts": rts,
+                                                           "channel": CHANNEL}
                                   handled[rts] = "corrected"; state_dirty = True
                                   continue
                               print(f"REJECT {truck_id}: {hours}h below stored {stored}h")
                               if is_fresh(rts):
-                                  reject(rts, user_id, truck_id,
+                                  reject(CHANNEL, rts, user_id, truck_id,
+                                         f"Posted: {hours}h / On record: {stored}h\nThe posted value is "
+                                         f"lower than what's on record — could be a stale reading or the "
+                                         f"wrong truck.",
                                          f"投稿値: {hours}h ／ 現在の記録値: {stored}h\n"
                                          f"記録されている値より低いため、古い読み取りやトラック名の"
                                          f"入力間違いの可能性があります。\n"
@@ -263,12 +345,28 @@ jobs:
                               delta = hours - stored
                               if delta > elapsed_hours + BUFFER_HOURS:
                                   if user_id in ADMIN_IDS:
-                                      corrections[truck_id] = {"hours": hours, "user_id": user_id, "ts": rts}
+                                      corrections[truck_id] = {"hours": hours, "user_id": user_id, "ts": rts,
+                                                               "channel": CHANNEL}
                                       handled[rts] = "corrected"; state_dirty = True
                                       continue
+
+                                  # HD5 leniency: long gaps between posts are routine
+                                  # for a truck that isn't posting every shift, so ask
+                                  # the poster to confirm instead of hard-rejecting.
+                                  if is_english(truck_id):
+                                      pending[truck_id] = {"hours": hours, "user_id": user_id,
+                                                           "thread_ts": msg["ts"], "prev": stored}
+                                      state_dirty = True
+                                      if is_fresh(rts):
+                                          ask_confirm(CHANNEL, rts, user_id, truck_id, hours, stored,
+                                                     delta, elapsed_hours)
+                                      handled[rts] = "pending_confirm"; state_dirty = True
+                                      continue
+
                                   print(f"REJECT {truck_id}: +{delta}h in {elapsed_hours:.1f}h elapsed")
                                   if is_fresh(rts):
-                                      reject(rts, user_id, truck_id,
+                                      reject(CHANNEL, rts, user_id, truck_id,
+                                             None,
                                              f"投稿値: {hours}h ／ 現在の記録値: {stored}h（増加量: {delta}h）\n"
                                              f"前回の更新から経過した時間は約{elapsed_hours:.1f}時間のため、"
                                              f"増加量が経過時間を超えており、発電機の稼働時間としては"
@@ -282,13 +380,11 @@ jobs:
                           # landed (short in-thread thank-you; no new Slack
                           # scope needed, unlike an emoji reaction).
                           if is_fresh(rts):
-                              ack(rts, truck_id, hours)
+                              ack(CHANNEL, rts, truck_id, hours)
                           handled[rts] = "accepted"; state_dirty = True
                           # keep highest valid value seen across all replies this run
                           if truck_id not in candidates or hours > candidates[truck_id]["hours"]:
-                              candidates[truck_id] = {"hours": hours, "user_id": user_id}
-          else:
-              print(f"Slack error: {hist.get('error')}")
+                              candidates[truck_id] = {"hours": hours, "user_id": user_id, "channel": CHANNEL}
 
           # ── Apply corrections (bypass all validation, skip daily deltas —
           #    the previous stored value was wrong, so a delta is meaningless)
@@ -302,11 +398,19 @@ jobs:
                   data[truck_id]["hours"]       = info["hours"]
                   data[truck_id]["lastUpdated"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
                   data[truck_id]["postedBy"]    = user_info
-                  print(f"CORRECTED {truck_id}: {old}h -> {info['hours']}h by {user_info['name']}")
+                  verb = "CONFIRMED" if info.get("confirmed") else "CORRECTED"
+                  print(f"{verb} {truck_id}: {old}h -> {info['hours']}h by {user_info['name']}")
                   if is_fresh(info["ts"]):
-                      msg = (f"げんきくんです！*{truck_id}* の稼働時間を修正しました🔧\n"
-                             f"{old}h → *{info['hours']}h*\nご報告ありがとうございます！")
-                      slack_post({"channel": CHANNEL, "text": msg, "thread_ts": info["ts"]})
+                      if info.get("confirmed"):
+                          msg = f"✅ {truck_id} confirmed at {info['hours']}h — recorded. Thanks!"
+                      elif is_english(truck_id):
+                          msg = (f"Corrected *{truck_id}*'s hours 🔧\n"
+                                 f"{old}h → *{info['hours']}h*\nThanks for the update!")
+                      else:
+                          msg = (f"げんきくんです！*{truck_id}* の稼働時間を修正しました🔧\n"
+                                 f"{old}h → *{info['hours']}h*\nご報告ありがとうございます！")
+                      slack_post({"channel": info.get("channel", CHANNEL_JP), "text": msg,
+                                 "thread_ts": info["ts"]})
               gh_put("data.json", data, sha,
                      f"fix: hour corrections {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
               data, sha = gh_get("data.json")  # refresh sha for the candidates write below
@@ -451,7 +555,7 @@ jobs:
                               f"{task_list}\n"
                               f"担当してくれた技術者さん、いつも素晴らしい仕事をありがとうございます、"
                               f"お疲れ様でした！")
-                      result = slack_post({"channel": CHANNEL, "text": text})
+                      result = slack_post({"channel": CHANNEL_JP, "text": text})
                       if result.get("ok"):
                           print(f"Notified {user_id} re: {truck} ({len(tasks)} task(s))")
                       else:
@@ -471,9 +575,10 @@ jobs:
           else:
               print("No pending completions.")
 
-          # ── Persist idempotency ledger ─────────────────────────────────
-          if state_dirty or bot_state.get("handled") != handled:
+          # ── Persist idempotency + pending-confirmation ledgers ──────────
+          if state_dirty or bot_state.get("handled") != handled or bot_state.get("pending") != pending:
               bot_state["handled"] = handled
+              bot_state["pending"] = pending
               if state_sha:
                   gh_put("bot_state.json", bot_state, state_sha,
                          f"chore: bot reply ledger {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
@@ -489,6 +594,6 @@ jobs:
                   }, method="PUT")
                   with urllib.request.urlopen(req) as r:
                       r.read()
-              print(f"Ledger saved: {len(handled)} handled ts")
+              print(f"Ledger saved: {len(handled)} handled ts, {len(pending)} pending")
 
           EOF

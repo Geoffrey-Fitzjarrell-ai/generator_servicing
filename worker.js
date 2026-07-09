@@ -258,6 +258,81 @@ async function bumpDailyHours(env, truck, delta) {
   console.error("bumpDailyHours failed for", truck, "+" + delta);
 }
 
+// HD5 (US truck) always gets English replies, everyone else stays in
+// げんきくん's Japanese persona — the bot now serves two audiences in one
+// channel-agnostic pipeline.
+function isEnglishTruck(truck) {
+  return truck === "HD5";
+}
+
+// Load/save the pending-confirmation ledger. Separate from `handled` because
+// a pending entry isn't a verdict yet — it's a question waiting on a reply.
+// Keyed by truck (only one truck needs this today) rather than by ts, since
+// the lookup at confirm-time is "does HD5 have anything pending", not
+// "does this specific reply resolve something".
+async function loadPending(env) {
+  try {
+    const f = await ghGet("bot_state.json", env.GITHUB_PAT);
+    const state = b64json(f);
+    return { pending: state.pending || {}, sha: f.sha, state };
+  } catch (e) {
+    return { pending: {}, sha: undefined, state: { handled: {} } };
+  }
+}
+
+async function savePending(env, truck, entry) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const { state, sha } = await loadPending(env);
+    if (!state.pending) state.pending = {};
+    if (entry === null) delete state.pending[truck];
+    else state.pending[truck] = entry;
+    try {
+      await ghPut("bot_state.json", env.GITHUB_PAT, state, sha,
+                  `chore: pending confirmation ${entry ? "set" : "clear"} ${truck}`, 0);
+      return true;
+    } catch (e) { /* 409 — loop refetches */ }
+  }
+  console.error("savePending failed for", truck);
+  return false;
+}
+
+let _botUserIdCache = null;
+async function getBotUserId(env) {
+  if (_botUserIdCache) return _botUserIdCache;
+  try {
+    const r = await fetch("https://slack.com/api/auth.test", {
+      headers: { "Authorization": "Bearer " + env.SLACK_TOKEN },
+    });
+    const j = await r.json();
+    if (j.ok) { _botUserIdCache = j.user_id; return j.user_id; }
+  } catch (e) { /* fall through */ }
+  return null;
+}
+
+const WELCOME_TEXT =
+  "👋 Hi, I'm the generator hours tracking bot for the HD fleet.\n\n" +
+  "*How to log hours:* post `HDXX Generator hours: NNNh` — e.g. `HD5 Generator hours: 1650h` " +
+  "— and I'll record it and reply to confirm. A meter photo attached to the same message is fine.\n\n" +
+  "*Corrections:* `HDXX correction: NNNh` (bypasses the normal checks — for fixing typos or a " +
+  "meter reset).\n\n" +
+  "*Ask me things* — mention me with:\n" +
+  "• `HDXX hours` — current hours + status\n" +
+  "• `HDXX next` — what's due next, most urgent first\n" +
+  "• `overdue` / `fleet status` — what's overdue or due soon across the fleet\n\n" +
+  "Dashboard: https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/\n" +
+  "Nothing else needs to be set up on your end — this posts automatically the moment I'm added " +
+  "to a channel.";
+
+// Fires once, automatically, the moment this bot is invited into any channel —
+// so whichever channel ends up hosting HD5's posts, no one has to remember to
+// ask for a how-to. member_joined_channel fires for every join, not just the
+// bot's own, so this checks the joining user against the bot's own ID first.
+async function handleMemberJoined(event, env) {
+  const botId = await getBotUserId(env);
+  if (!botId || event.user !== botId) return; // some other member joined — not our cue
+  await slackPostMessage(env, WELCOME_TEXT, { channel: event.channel });
+}
+
 // Real-time ingest of "HDXX Generator hours: XXXXh" posts. Mirrors the cron's
 // validation exactly (wrong-thread, below-floor, impossible-jump, admin
 // auto-correction) and replies in-thread immediately, then ledgers the ts so
@@ -273,8 +348,33 @@ async function handleSlackMessageEvent(event, env) {
   // skipped. This filter is why the Worker missed HD9's and HD8's
   // photo-attached posts on 2026-07-09 while catching the plain ones.
   if (event.subtype && event.subtype !== "file_share") return;
-  const text = event.text || "";
+  const text    = (event.text || "").trim();
   const channel = event.channel;
+  const userId  = event.user || null;
+  const isAdmin = ADMIN_IDS.includes(userId);
+
+  // ── Confirmation replies for a pending HD5 (long-gap) reading ──
+  // Only checked on threaded replies that aren't themselves a fresh hours
+  // post — a plain "confirm" from the original poster or an admin, in the
+  // same thread the prompt was posted in, finalizes the pending value.
+  if (event.thread_ts && !HOURS_PATTERN.test(text) && /^(confirm|yes|correct|OK)\b/i.test(text)) {
+    const { pending } = await loadPending(env);
+    const p = pending["HD5"];
+    if (p && p.thread_ts === event.thread_ts && (userId === p.user_id || isAdmin)) {
+      const name = await slackUserName(env, userId);
+      const res = await writeHours(env, "HD5", p.hours, p.user_id, name,
+                                   `Real-time sync (confirmed after long gap): HD5 ${p.hours}h`, true);
+      await bumpDailyHours(env, "HD5", Math.max(0, p.hours - (p.prev || 0)));
+      await slackPostMessage(env,
+        `✅ HD5 confirmed at ${p.hours}h — recorded. Thanks!`,
+        { channel, thread_ts: event.thread_ts });
+      await recordHandled(env, event.ts, "confirmed");
+      await savePending(env, "HD5", null);
+      return;
+    }
+    // Not a match for any pending HD5 confirmation — fall through; it's
+    // just an ordinary message that happens to start with "confirm".
+  }
 
   // Corrections stay cron-only: exactly one code path may move hours backwards.
   if (CORR_PATTERN.test(text)) return;
@@ -285,19 +385,21 @@ async function handleSlackMessageEvent(event, env) {
   const hours   = Math.round(parseFloat(m[2]));
   const rts     = event.ts;
   const thread  = event.thread_ts || event.ts;
-  const userId  = event.user || null;
-  const isAdmin = ADMIN_IDS.includes(userId);
-  const mention = userId ? `<@${userId}> さん、` : "";
+  const en      = isEnglishTruck(truck);
+  const mention = userId ? (en ? `<@${userId}> ` : `<@${userId}> さん、`) : "";
 
-  const rejectHint = (t) =>
-    `\n※値の修正が必要な場合は「${t} 修正: 正しい値h」の形式で投稿してください。`;
+  const rejectHint = (t) => en
+    ? `\nIf ${t}'s value needs correcting, post "${t} correction: <correct value>h".`
+    : `\n※値の修正が必要な場合は「${t} 修正: 正しい値h」の形式で投稿してください。`;
 
-  async function reject(reason_jp) {
-    await slackPostMessage(env,
-      `げんきくんです！${mention}*${truck}* の稼働時間の投稿を確認しましたが、` +
-      `反映できませんでした🙅\n${reason_jp}\n` +
-      `お手数ですが、正しい値をご確認の上、再投稿をお願いします🙏`,
-      { channel, thread_ts: thread });
+  async function reject(reason_en, reason_jp) {
+    const msg = en
+      ? `Hi ${mention}I checked *${truck}*'s hours post but couldn't record it 🙅\n${reason_en}\n` +
+        `Please double-check the value and re-post.`
+      : `げんきくんです！${mention}*${truck}* の稼働時間の投稿を確認しましたが、` +
+        `反映できませんでした🙅\n${reason_jp}\n` +
+        `お手数ですが、正しい値をご確認の上、再投稿をお願いします🙏`;
+    await slackPostMessage(env, msg, { channel, thread_ts: thread });
     await recordHandled(env, rts, "rejected");
   }
 
@@ -313,9 +415,12 @@ async function handleSlackMessageEvent(event, env) {
       const tm = parentText.match(/HD\d+/i);
       if (tm && tm[0].toUpperCase() !== truck) {
         const expected = tm[0].toUpperCase();
-        await reject(`この投稿は *${expected}* のスレッド内にありますが、` +
-                     `内容は *${truck}* の稼働時間になっています。` +
-                     `トラック名の入力間違いの可能性があります。`);
+        await reject(
+          `This post is in *${expected}*'s thread, but the hours are for *${truck}*. ` +
+          `Possibly the wrong truck name was typed.`,
+          `この投稿は *${expected}* のスレッド内にありますが、` +
+          `内容は *${truck}* の稼働時間になっています。` +
+          `トラック名の入力間違いの可能性があります。`);
         return;
       }
     } catch (e) { /* can't fetch parent — fall through, cron backstops this check */ }
@@ -340,18 +445,23 @@ async function handleSlackMessageEvent(event, env) {
     const name = await slackUserName(env, userId);
     const res = await writeHours(env, truck, hours, userId, name,
                                  `Real-time sync (admin correction): ${truck} ${hours}h`, true);
-    await slackPostMessage(env,
-      `げんきくんです！*${truck}* の稼働時間を修正しました🔧\n` +
-      `${res.prev != null ? res.prev : "—"}h → *${hours}h*\nご報告ありがとうございます！`,
-      { channel, thread_ts: thread });
+    const msg = en
+      ? `Corrected *${truck}*'s hours 🔧\n${res.prev != null ? res.prev : "—"}h → *${hours}h*\nThanks for the update!`
+      : `げんきくんです！*${truck}* の稼働時間を修正しました🔧\n` +
+        `${res.prev != null ? res.prev : "—"}h → *${hours}h*\nご報告ありがとうございます！`;
+    await slackPostMessage(env, msg, { channel, thread_ts: thread });
     await recordHandled(env, rts, "corrected");
   };
 
   if (stored !== null && hours < stored) {
     if (isAdmin) return adminCorrect(); // same auto-correct path the cron gives admins
-    await reject(`投稿値: ${hours}h ／ 現在の記録値: ${stored}h\n` +
-                 `記録されている値より低いため、古い読み取りやトラック名の` +
-                 `入力間違いの可能性があります。` + rejectHint(truck));
+    await reject(
+      `Posted: ${hours}h / On record: ${stored}h\nThe posted value is lower than what's on record — ` +
+      `could be a stale reading or the wrong truck.`,
+      `投稿値: ${hours}h ／ 現在の記録値: ${stored}h\n` +
+      `記録されている値より低いため、古い読み取りやトラック名の` +
+      `入力間違いの可能性があります。`
+    );
     return;
   }
 
@@ -360,11 +470,32 @@ async function handleSlackMessageEvent(event, env) {
     const delta = hours - stored;
     if (delta > elapsedH + BUFFER_HOURS) {
       if (isAdmin) return adminCorrect();
-      await reject(`投稿値: ${hours}h ／ 現在の記録値: ${stored}h（増加量: ${delta}h）\n` +
-                   `前回の更新から経過した時間は約${elapsedH.toFixed(1)}時間のため、` +
-                   `増加量が経過時間を超えており、発電機の稼働時間としては` +
-                   `あり得ません。トラック名や数値の入力間違いの可能性があります。` +
-                   rejectHint(truck));
+
+      // HD5 gets leniency here specifically, not at the floor check: long
+      // gaps between posts (different channel, different cadence, possible
+      // transit downtime) make a big-but-plausible jump routine rather than
+      // suspicious, so ask the poster to confirm instead of bouncing it.
+      if (en) {
+        await savePending(env, truck, {
+          hours, user_id: userId, ts: rts, thread_ts: thread, prev: stored,
+        });
+        await slackPostMessage(env,
+          `Hi ${mention}HD5 posted at ${hours}h — that's ${delta}h more than the last reading ` +
+          `(${stored}h), over about ${elapsedH.toFixed(1)}h since the last post. It's been a ` +
+          `while, so I just want to confirm before recording it.\n` +
+          `Reply "confirm" in this thread to accept ${hours}h, or repost the correct value.`,
+          { channel, thread_ts: thread });
+        await recordHandled(env, rts, "pending_confirm");
+        return;
+      }
+
+      await reject(
+        null,
+        `投稿値: ${hours}h ／ 現在の記録値: ${stored}h（増加量: ${delta}h）\n` +
+        `前回の更新から経過した時間は約${elapsedH.toFixed(1)}時間のため、` +
+        `増加量が経過時間を超えており、発電機の稼働時間としては` +
+        `あり得ません。トラック名や数値の入力間違いの可能性があります。`
+      );
       return;
     }
   }
@@ -375,9 +506,10 @@ async function handleSlackMessageEvent(event, env) {
                                `Real-time sync: ${truck} ${hours}h`, false);
   if (res.wrote) {
     await bumpDailyHours(env, truck, hours - (res.prev || 0));
-    await slackPostMessage(env,
-      `✅ *${truck}* ${hours}h、記録しました！ありがとうございます🙏`,
-      { channel, thread_ts: thread });
+    const msg = en
+      ? `✅ *${truck}* ${hours}h — recorded. Thanks!`
+      : `✅ *${truck}* ${hours}h、記録しました！ありがとうございます🙏`;
+    await slackPostMessage(env, msg, { channel, thread_ts: thread });
     await recordHandled(env, rts, "accepted");
   }
   // res.wrote === false → a higher value landed between validation and write;
@@ -559,8 +691,11 @@ export default {
       if (slackPayload.type === "event_callback") {
         const work = (async () => {
           try {
-            if (slackPayload.event && slackPayload.event.type === "app_mention") {
+            const evtType = slackPayload.event && slackPayload.event.type;
+            if (evtType === "app_mention") {
               await answerMention(slackPayload.event, env);
+            } else if (evtType === "member_joined_channel") {
+              await handleMemberJoined(slackPayload.event, env);
             } else {
               await handleSlackMessageEvent(slackPayload.event, env);
             }
