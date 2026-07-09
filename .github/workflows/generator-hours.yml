@@ -386,8 +386,13 @@ jobs:
                           if truck_id not in candidates or hours > candidates[truck_id]["hours"]:
                               candidates[truck_id] = {"hours": hours, "user_id": user_id, "channel": CHANNEL}
 
-          # ── Apply corrections (bypass all validation, skip daily deltas —
-          #    the previous stored value was wrong, so a delta is meaningless)
+          # ── Apply corrections (skip daily deltas for genuine typo/reset
+          #    fixes — the previous stored value was wrong, so a delta
+          #    against it is meaningless. Confirmed HD5 long-gap readings
+          #    are different: the previous value was correct, the gap was
+          #    just longer than usual, so that delta IS real runtime and
+          #    gets tracked below alongside the candidates' deltas.)
+          confirmed_deltas = {}  # truck_id -> real runtime credited via confirm, not correction
           if corrections:
               for truck_id, info in corrections.items():
                   old = (data.get(truck_id) or {}).get("hours")
@@ -398,6 +403,8 @@ jobs:
                   data[truck_id]["hours"]       = info["hours"]
                   data[truck_id]["lastUpdated"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
                   data[truck_id]["postedBy"]    = user_info
+                  if info.get("confirmed") and old is not None and info["hours"] > old:
+                      confirmed_deltas[truck_id] = info["hours"] - old
                   verb = "CONFIRMED" if info.get("confirmed") else "CORRECTED"
                   print(f"{verb} {truck_id}: {old}h -> {info['hours']}h by {user_info['name']}")
                   if is_fresh(info["ts"]):
@@ -415,9 +422,10 @@ jobs:
                      f"fix: hour corrections {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
               data, sha = gh_get("data.json")  # refresh sha for the candidates write below
 
+          daily_deltas = dict(confirmed_deltas)  # merged with candidates' deltas below
+          changed = bool(confirmed_deltas)
+
           if candidates:
-              changed = False
-              daily_deltas = {}  # truck_id -> hours run today (this sync)
               for truck_id, info in candidates.items():
                   stored = (data.get(truck_id) or {}).get("hours") or 0
                   if info["hours"] <= stored:
@@ -427,7 +435,7 @@ jobs:
                   if truck_id not in data:
                       data[truck_id] = {"hours": None, "intervalStart": 0, "overdue": False,
                                         "technician": "", "lastUpdated": None, "postedBy": None}
-                  daily_deltas[truck_id] = info["hours"] - stored
+                  daily_deltas[truck_id] = daily_deltas.get(truck_id, 0) + (info["hours"] - stored)
                   data[truck_id]["hours"]       = info["hours"]
                   data[truck_id]["lastUpdated"] = NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
                   data[truck_id]["postedBy"]    = user_info
@@ -436,27 +444,28 @@ jobs:
               if changed:
                   gh_put("data.json", data, sha,
                          f"chore: update generator hours {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
-
-                  # Track daily runtime for the dashboard's "Daily Hours" bar chart.
-                  # Accumulates multiple same-day syncs into one bar; keeps a rolling window.
-                  try:
-                      daily, daily_sha = gh_get("daily_hours.json")
-                  except Exception:
-                      daily, daily_sha = {}, None
-                  today_str = NOW.strftime("%Y-%m-%d")
-                  for truck_id, delta in daily_deltas.items():
-                      if truck_id not in daily:
-                          daily[truck_id] = []
-                      entries = daily[truck_id]
-                      if entries and entries[-1]["date"] == today_str:
-                          entries[-1]["hours"] = round(entries[-1]["hours"] + delta, 1)
-                      else:
-                          entries.append({"date": today_str, "hours": round(delta, 1)})
-                      daily[truck_id] = entries[-14:]  # keep a small rolling buffer past the 7 shown
-                  gh_put("daily_hours.json", daily, daily_sha,
-                         f"chore: track daily hours {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
-          else:
+          elif not confirmed_deltas:
               print("No generator-hour replies found.")
+
+          if changed and daily_deltas:
+              # Track daily runtime for the dashboard's "Daily Hours" bar chart.
+              # Accumulates multiple same-day syncs into one bar; keeps a rolling window.
+              try:
+                  daily, daily_sha = gh_get("daily_hours.json")
+              except Exception:
+                  daily, daily_sha = {}, None
+              today_str = NOW.strftime("%Y-%m-%d")
+              for truck_id, delta in daily_deltas.items():
+                  if truck_id not in daily:
+                      daily[truck_id] = []
+                  entries = daily[truck_id]
+                  if entries and entries[-1]["date"] == today_str:
+                      entries[-1]["hours"] = round(entries[-1]["hours"] + delta, 1)
+                  else:
+                      entries.append({"date": today_str, "hours": round(delta, 1)})
+                  daily[truck_id] = entries[-14:]  # keep a small rolling buffer past the 7 shown
+              gh_put("daily_hours.json", daily, daily_sha,
+                     f"chore: track daily hours {NOW.strftime('%Y-%m-%d %H:%M UTC')}")
 
           # ── 2. Process pending completions ────────────────────────────────────
           # Task label -> log key, must mirror the TASKS array in index.html exactly.
