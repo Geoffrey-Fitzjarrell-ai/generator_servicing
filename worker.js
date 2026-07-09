@@ -266,7 +266,13 @@ async function bumpDailyHours(env, truck, delta) {
 // "value already on record" dedupe swallow every ack (and let bad readings
 // sync live unvalidated) — the 2026-07-08/09 missing-confirmation bug.
 async function handleSlackMessageEvent(event, env) {
-  if (!event || event.type !== "message" || event.subtype || event.bot_id) return;
+  if (!event || event.type !== "message" || event.bot_id) return;
+  // Drivers usually attach a meter photo, which gives the message
+  // subtype "file_share" — that's a real post, not noise. Every other
+  // subtype (message_changed, message_deleted, channel_join, ...) is
+  // skipped. This filter is why the Worker missed HD9's and HD8's
+  // photo-attached posts on 2026-07-09 while catching the plain ones.
+  if (event.subtype && event.subtype !== "file_share") return;
   const text = event.text || "";
   const channel = event.channel;
 
