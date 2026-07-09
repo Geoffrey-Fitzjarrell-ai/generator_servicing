@@ -218,8 +218,24 @@ jobs:
                           last_dt = parse_dt(stored_entry.get("lastUpdated"))
 
                           if stored is not None and hours == stored:
-                              # Same value already on record — a duplicate or
-                              # this run's own earlier write. Never a reply.
+                              # Same value already on record. Two ways in:
+                              #  (a) The Cloudflare Worker's real-time sync already
+                              #      wrote THIS reply's value to data.json before we
+                              #      ran. The Worker's write lands within seconds of
+                              #      the post, so lastUpdated ~= reply ts and postedBy
+                              #      matches the reply author. The driver still needs
+                              #      an ack — without this, every Worker-synced post
+                              #      is silently swallowed here (the 2026-07-08/09
+                              #      missing-confirmation bug).
+                              #  (b) A genuine duplicate / re-post of an old value —
+                              #      stays silent, as before.
+                              synced_by_worker = (
+                                  last_dt is not None
+                                  and abs(float(rts) - last_dt.timestamp()) < 180
+                                  and (stored_entry.get("postedBy") or {}).get("id") == user_id
+                              )
+                              if synced_by_worker and is_fresh(rts):
+                                  ack(rts, truck_id, hours)
                               handled[rts] = "accepted"; state_dirty = True
                               continue
 

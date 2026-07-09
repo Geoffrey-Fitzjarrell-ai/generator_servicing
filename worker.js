@@ -150,27 +150,200 @@ function bar(ratio, width = 10) {
 }
 
 const HOURS_PATTERN = /(HD\d+)\s+Generator hours:\s*(\d+(?:\.\d+)?)\s*h?/i;
+const CORR_PATTERN  = /(HD\d+)\s*(?:correction|修正)\s*[:：]\s*(\d+(?:\.\d+)?)\s*h?/i;
+const ADMIN_IDS     = ["U07RU3LH24F", "U07P40V9SKH"]; // Geoff, TakaY
+const CHANNEL_JP    = "C08L1TWLU14";
+const BUFFER_HOURS  = 2; // clock skew / rounding allowance, same as the cron
 
+function b64json(file) {
+  return JSON.parse(decodeURIComponent(escape(atob(file.content))));
+}
+
+async function slackUserName(env, userId) {
+  if (!userId) return null;
+  try {
+    const r = await fetch("https://slack.com/api/users.info?user=" + encodeURIComponent(userId), {
+      headers: { "Authorization": "Bearer " + env.SLACK_TOKEN },
+    });
+    const j = await r.json();
+    if (j.ok) {
+      const p = (j.user && j.user.profile) || {};
+      return p.display_name || p.real_name || null;
+    }
+  } catch (e) { /* missing users:read scope etc. — name stays null */ }
+  return null;
+}
+
+// Record a reply ts in bot_state.json so the 3-hourly cron never re-processes
+// (or re-replies to) a message the Worker already handled. Refetch-and-merge
+// on conflict instead of blind-retrying a stale payload — a cron ledger commit
+// can land at any moment, and clobbering it would cause duplicate replies.
+async function recordHandled(env, rts, verdict) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      let state = { handled: {} };
+      let sha;
+      try {
+        const f = await ghGet("bot_state.json", env.GITHUB_PAT);
+        state = b64json(f);
+        sha = f.sha;
+      } catch (e) { /* first run — file may not exist yet */ }
+      if (!state.handled) state.handled = {};
+      state.handled[rts] = verdict;
+      const cutoff = Date.now() / 1000 - 48 * 3600; // prune like the cron does
+      for (const k of Object.keys(state.handled)) {
+        if (parseFloat(k) < cutoff) delete state.handled[k];
+      }
+      await ghPut("bot_state.json", env.GITHUB_PAT, state, sha,
+                  `chore: bot reply ledger (worker) ${verdict} ${rts}`, 0);
+      return true;
+    } catch (e) { /* 409 or transient — loop refetches fresh state */ }
+  }
+  console.error("recordHandled failed for", rts, "— cron backstop will handle the reply");
+  return false;
+}
+
+// Write validated hours to data.json. Refetches and re-applies on conflict so a
+// concurrent write to another truck is never clobbered. `force` bypasses the
+// only-move-forward floor (admin corrections).
+async function writeHours(env, truck, hours, userId, userName, commitMsg, force) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const file = await ghGet("data.json", env.GITHUB_PAT);
+    const data = b64json(file);
+    const prev = (data[truck] && data[truck].hours);
+    if (!force && hours <= (prev || 0)) return { wrote: false, prev };
+    if (!data[truck]) {
+      data[truck] = { hours: null, intervalStart: 0, overdue: false,
+                      technician: "", lastUpdated: null, postedBy: null };
+    }
+    data[truck].hours = hours;
+    data[truck].lastUpdated = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+    data[truck].postedBy = { id: userId || null, name: userName || null };
+    try {
+      await ghPut("data.json", env.GITHUB_PAT, data, file.sha, commitMsg, 0);
+      return { wrote: true, prev };
+    } catch (e) { /* 409 — refetch and re-apply */ }
+  }
+  throw new Error("data.json write failed after retries");
+}
+
+// Real-time ingest of "HDXX Generator hours: XXXXh" posts. Mirrors the cron's
+// validation exactly (wrong-thread, below-floor, impossible-jump, admin
+// auto-correction) and replies in-thread immediately, then ledgers the ts so
+// the cron skips it. History: the first version of this handler wrote
+// data.json with no reply and no ledger entry, which made the cron's
+// "value already on record" dedupe swallow every ack (and let bad readings
+// sync live unvalidated) — the 2026-07-08/09 missing-confirmation bug.
 async function handleSlackMessageEvent(event, env) {
   if (!event || event.type !== "message" || event.subtype || event.bot_id) return;
-  const m = HOURS_PATTERN.exec(event.text || "");
+  const text = event.text || "";
+  const channel = event.channel;
+
+  // Corrections stay cron-only: exactly one code path may move hours backwards.
+  if (CORR_PATTERN.test(text)) return;
+
+  const m = HOURS_PATTERN.exec(text);
   if (!m) return;
-  const truck = m[1].toUpperCase();
-  const hours = Math.round(parseFloat(m[2]));
+  const truck   = m[1].toUpperCase();
+  const hours   = Math.round(parseFloat(m[2]));
+  const rts     = event.ts;
+  const thread  = event.thread_ts || event.ts;
+  const userId  = event.user || null;
+  const isAdmin = ADMIN_IDS.includes(userId);
+  const mention = userId ? `<@${userId}> さん、` : "";
 
-  const file = await ghGet("data.json", env.GITHUB_PAT);
-  const data = JSON.parse(decodeURIComponent(escape(atob(file.content))));
-  const stored = (data[truck] && data[truck].hours) || 0;
-  if (hours <= stored) return; // only ever move forward, same rule as the polling job
+  const rejectHint = (t) =>
+    `\n※値の修正が必要な場合は「${t} 修正: 正しい値h」の形式で投稿してください。`;
 
-  if (!data[truck]) {
-    data[truck] = { hours: null, intervalStart: 0, overdue: false, technician: "", lastUpdated: null, postedBy: null };
+  async function reject(reason_jp) {
+    await slackPostMessage(env,
+      `げんきくんです！${mention}*${truck}* の稼働時間の投稿を確認しましたが、` +
+      `反映できませんでした🙅\n${reason_jp}\n` +
+      `お手数ですが、正しい値をご確認の上、再投稿をお願いします🙏`,
+      { channel, thread_ts: thread });
+    await recordHandled(env, rts, "rejected");
   }
-  data[truck].hours = hours;
-  data[truck].lastUpdated = new Date().toISOString().replace(/\.\d+Z$/, "Z");
-  data[truck].postedBy = { id: event.user || null, name: null };
 
-  await ghPut("data.json", env.GITHUB_PAT, data, file.sha, `Real-time sync: ${truck} ${hours}h`);
+  // ── Wrong-thread check: hours for HDXX posted inside HDYY's thread ──
+  if (event.thread_ts && event.thread_ts !== event.ts) {
+    try {
+      const r = await fetch("https://slack.com/api/conversations.replies?" +
+        new URLSearchParams({ channel, ts: event.thread_ts, limit: "1" }), {
+        headers: { "Authorization": "Bearer " + env.SLACK_TOKEN },
+      });
+      const j = await r.json();
+      const parentText = (j.ok && j.messages && j.messages[0] && j.messages[0].text) || "";
+      const tm = parentText.match(/HD\d+/i);
+      if (tm && tm[0].toUpperCase() !== truck) {
+        const expected = tm[0].toUpperCase();
+        await reject(`この投稿は *${expected}* のスレッド内にありますが、` +
+                     `内容は *${truck}* の稼働時間になっています。` +
+                     `トラック名の入力間違いの可能性があります。`);
+        return;
+      }
+    } catch (e) { /* can't fetch parent — fall through, cron backstops this check */ }
+  }
+
+  // ── Load current record for floor / jump validation ──
+  let stored = null, lastDtMs = NaN;
+  try {
+    const data = b64json(await ghGet("data.json", env.GITHUB_PAT));
+    const entry = data[truck] || {};
+    stored = (entry.hours != null) ? entry.hours : null;
+    lastDtMs = Date.parse(entry.lastUpdated || "");
+  } catch (e) { /* unreadable — treat as no record; cron will reconcile */ }
+
+  if (stored !== null && hours === stored) {
+    // True duplicate (Worker can't have written it yet — we haven't). Silent.
+    await recordHandled(env, rts, "accepted");
+    return;
+  }
+
+  const adminCorrect = async () => {
+    const name = await slackUserName(env, userId);
+    const res = await writeHours(env, truck, hours, userId, name,
+                                 `Real-time sync (admin correction): ${truck} ${hours}h`, true);
+    await slackPostMessage(env,
+      `げんきくんです！*${truck}* の稼働時間を修正しました🔧\n` +
+      `${res.prev != null ? res.prev : "—"}h → *${hours}h*\nご報告ありがとうございます！`,
+      { channel, thread_ts: thread });
+    await recordHandled(env, rts, "corrected");
+  };
+
+  if (stored !== null && hours < stored) {
+    if (isAdmin) return adminCorrect(); // same auto-correct path the cron gives admins
+    await reject(`投稿値: ${hours}h ／ 現在の記録値: ${stored}h\n` +
+                 `記録されている値より低いため、古い読み取りやトラック名の` +
+                 `入力間違いの可能性があります。` + rejectHint(truck));
+    return;
+  }
+
+  if (stored !== null && !isNaN(lastDtMs)) {
+    const elapsedH = (Date.now() - lastDtMs) / 3600e3;
+    const delta = hours - stored;
+    if (delta > elapsedH + BUFFER_HOURS) {
+      if (isAdmin) return adminCorrect();
+      await reject(`投稿値: ${hours}h ／ 現在の記録値: ${stored}h（増加量: ${delta}h）\n` +
+                   `前回の更新から経過した時間は約${elapsedH.toFixed(1)}時間のため、` +
+                   `増加量が経過時間を超えており、発電機の稼働時間としては` +
+                   `あり得ません。トラック名や数値の入力間違いの可能性があります。` +
+                   rejectHint(truck));
+      return;
+    }
+  }
+
+  // ── Valid reading: write, ack, ledger ──
+  const name = await slackUserName(env, userId);
+  const res = await writeHours(env, truck, hours, userId, name,
+                               `Real-time sync: ${truck} ${hours}h`, false);
+  if (res.wrote) {
+    await slackPostMessage(env,
+      `✅ *${truck}* ${hours}h、記録しました！ありがとうございます🙏`,
+      { channel, thread_ts: thread });
+    await recordHandled(env, rts, "accepted");
+  }
+  // res.wrote === false → a higher value landed between validation and write;
+  // leave un-ledgered so the cron applies its own verdict on this reply.
 }
 
 // ---- Q&A: someone @-mentions the bot with a question in the channel ----
@@ -318,7 +491,7 @@ async function answerMention(event, env) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
     if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
@@ -346,15 +519,21 @@ export default {
       }
 
       if (slackPayload.type === "event_callback") {
-        try {
-          if (slackPayload.event && slackPayload.event.type === "app_mention") {
-            await answerMention(slackPayload.event, env);
-          } else {
-            await handleSlackMessageEvent(slackPayload.event, env);
+        const work = (async () => {
+          try {
+            if (slackPayload.event && slackPayload.event.type === "app_mention") {
+              await answerMention(slackPayload.event, env);
+            } else {
+              await handleSlackMessageEvent(slackPayload.event, env);
+            }
+          } catch (e) {
+            console.error("Slack event processing failed", e);
           }
-        } catch (e) {
-          console.error("Slack event processing failed", e);
-        }
+        })();
+        // Ack Slack within its ~3s window and keep working in the background —
+        // the validated ingest path (parent fetch + data + ledger + reply) can
+        // exceed 3s, and a slow ack triggers duplicate retry deliveries.
+        if (ctx && ctx.waitUntil) ctx.waitUntil(work); else await work;
       }
 
       return new Response("ok", { status: 200 }); // Slack just wants a fast 200
