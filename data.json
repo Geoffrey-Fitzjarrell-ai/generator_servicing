@@ -21,14 +21,14 @@
     "groundedNote": "Under repair"
   },
   "HD8": {
-    "hours": 1513,
+    "hours": 1522,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Daichi Hayakawa",
-    "lastUpdated": "2026-07-10T04:12:23Z",
+    "lastUpdated": "2026-07-10T11:02:29Z",
     "postedBy": {
-      "id": "U09TT0S0UF8",
-      "name": "U09TT0S0UF8"
+      "id": "U0AEE78SP2R",
+      "name": null
     }
   },
   "HD9": {
