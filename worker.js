@@ -154,6 +154,11 @@ const CORR_PATTERN  = /(HD\d+)\s*(?:correction|修正)\s*[:：]\s*(\d+(?:\.\d+)?
 const ADMIN_IDS     = ["U07RU3LH24F", "U07P40V9SKH"]; // Geoff, TakaY
 const CHANNEL_JP    = "C08L1TWLU14";
 const BUFFER_HOURS  = 2; // clock skew / rounding allowance, same as the cron
+// Absolute backstop: no legitimate single reading grows by more than this,
+// regardless of how long since the last post. Catches typos (11474 for 1474)
+// and cross-truck posts even when lastUpdated is missing/unparseable/stale,
+// where the elapsed-time check below can't run or has gone toothless.
+const MAX_ABS_JUMP  = 48;
 
 function b64json(file) {
   return JSON.parse(decodeURIComponent(escape(atob(file.content))));
@@ -465,6 +470,22 @@ async function handleSlackMessageEvent(event, env) {
     return;
   }
 
+  // ── Absolute jump ceiling (runs even if lastUpdated is missing/stale) ──
+  // HD5 (en) is exempt: long transit gaps make big-but-real jumps routine, so
+  // it falls through to the confirm-prompt in the elapsed check below instead.
+  if (stored !== null && !en && (hours - stored) > MAX_ABS_JUMP) {
+    if (isAdmin) return adminCorrect();
+    const delta = hours - stored;
+    await reject(
+      `Posted: ${hours}h / on record: ${stored}h (+${delta}h). That's a larger jump ` +
+      `than a generator can accumulate between readings — likely a typo or the wrong truck.`,
+      `投稿値: ${hours}h ／ 現在の記録値: ${stored}h（増加量: ${delta}h）\n` +
+      `1回の読み取りとしては増加量が大きすぎます。入力間違い、または` +
+      `別トラックの数値の可能性があります。`
+    );
+    return;
+  }
+
   if (stored !== null && !isNaN(lastDtMs)) {
     const elapsedH = (Date.now() - lastDtMs) / 3600e3;
     const delta = hours - stored;
@@ -662,6 +683,12 @@ async function answerMention(event, env) {
 
 export default {
   async fetch(request, env, ctx) {
+    // Drift check: GET /version returns the commit this Worker was built from,
+    // injected at deploy time. Compare against the repo HEAD to confirm the
+    // live Worker matches source. No auth — it exposes nothing sensitive.
+    if (request.method === "GET" && new URL(request.url).pathname === "/version") {
+      return json({ build: env.BUILD_SHA || "unknown", repo: `${OWNER}/${REPO}` });
+    }
     if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
     if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
