@@ -1,0 +1,15 @@
+# Cloudflare Worker deploy config.
+#
+# ‼️ The `name` below MUST exactly match the name of your EXISTING live Worker
+#    (CF dashboard → Workers & Pages → open the worker → name shown at the top).
+#    If it doesn't match, a deploy creates a brand-new Worker and your live one
+#    (with its URL + secrets) stays untouched and stale. This is the one line to
+#    get right.
+name = "REPLACE_WITH_LIVE_WORKER_NAME"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# Secrets (GITHUB_PAT, SLACK_TOKEN, SHARED_SECRET, SLACK_SIGNING_SECRET) are NOT
+# listed here — they live encrypted on the Worker and persist across deploys.
+# BUILD_SHA is injected at deploy time by the workflow (--var), so /version can
+# report which commit is live.
