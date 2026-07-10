@@ -606,3 +606,88 @@ jobs:
               print(f"Ledger saved: {len(handled)} handled ts, {len(pending)} pending")
 
           EOF
+
+      - name: Reconcile hours ledger (self-heal impossible jumps)
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          python3 - <<'PYEOF'
+          import os, json, base64, urllib.request, urllib.error
+
+          GH_TOKEN    = os.environ["GH_TOKEN"]
+          SLACK_TOKEN = os.environ["SLACK_TOKEN"]
+          REPO        = "Geoffrey-Fitzjarrell-ai/generator_servicing"
+          GEOFF_UID   = "U07RU3LH24F"
+          MAX_ABS_JUMP = 48            # mirrors the Worker's absolute ceiling
+          EN_TRUCKS    = {"HD5"}       # exempt: long transit gaps make big real jumps
+
+          def gh_get(path):
+              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
+              req = urllib.request.Request(url, headers={
+                  "Authorization": f"Bearer {GH_TOKEN}",
+                  "Accept": "application/vnd.github+json"})
+              try:
+                  with urllib.request.urlopen(req) as r:
+                      resp = json.loads(r.read())
+                  return json.loads(base64.b64decode(resp["content"]).decode()), resp["sha"]
+              except urllib.error.HTTPError as e:
+                  if e.code == 404:
+                      return None, None
+                  raise
+
+          def gh_put(path, content, sha, message):
+              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
+              payload = {"message": message,
+                         "content": base64.b64encode(json.dumps(content, indent=2).encode()).decode()}
+              if sha:
+                  payload["sha"] = sha
+              req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={
+                  "Authorization": f"Bearer {GH_TOKEN}",
+                  "Accept": "application/vnd.github+json",
+                  "Content-Type": "application/json"}, method="PUT")
+              with urllib.request.urlopen(req) as r:
+                  r.read()
+
+          def slack_dm(text):
+              payload = {"channel": GEOFF_UID, "text": text}
+              req = urllib.request.Request("https://slack.com/api/chat.postMessage",
+                  data=json.dumps(payload).encode(),
+                  headers={"Authorization": f"Bearer {SLACK_TOKEN}", "Content-Type": "application/json"})
+              with urllib.request.urlopen(req) as r:
+                  return json.loads(r.read())
+
+          data, data_sha = gh_get("data.json")
+          ledger, led_sha = gh_get("hours_ledger.json")
+          if ledger is None:
+              ledger = {}
+
+          reverts = []
+          for truck, entry in data.items():
+              if not isinstance(entry, dict):
+                  continue
+              cur = entry.get("hours")
+              if cur is None:
+                  continue
+              prev = ledger.get(truck)
+              if truck not in EN_TRUCKS and prev is not None and (cur - prev) > MAX_ABS_JUMP:
+                  entry["hours"] = prev                       # self-heal: revert to last good
+                  reverts.append((truck, cur, prev))
+              else:
+                  ledger[truck] = cur                         # accept as new last-good
+
+          if reverts:
+              lines = "\n".join(f"• {t}: reverted {c}h → {p}h (+{c-p}h, over ceiling)" for t, c, p in reverts)
+              gh_put("data.json", data, data_sha,
+                     "Reconcile: auto-revert impossible jump(s) " +
+                     ", ".join(t for t, _, _ in reverts))
+              slack_dm(f"⚠️ Reconciliation reverted an impossible hours jump:\n{lines}\n"
+                       f"Likely a stale-Worker write or a typo that slipped through. "
+                       f"If any value is actually correct, post `HDXX correction: NNNh`.")
+              print(f"Reverted: {reverts}")
+
+          # ledger.json always saved (bootstraps on first run, tracks last-good after)
+          gh_put("hours_ledger.json", ledger, led_sha,
+                 "chore: update hours reconciliation ledger")
+          print(f"Ledger tracks {len(ledger)} trucks; {len(reverts)} reverts this run")
+          PYEOF
