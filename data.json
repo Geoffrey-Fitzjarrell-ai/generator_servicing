@@ -109,13 +109,13 @@
     }
   },
   "HD16": {
-    "hours": 391,
+    "hours": 400,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Yutaro Ranko",
-    "lastUpdated": "2026-07-10T00:01:16Z",
+    "lastUpdated": "2026-07-10T11:11:15Z",
     "postedBy": {
-      "id": "U09UPB6CG56",
+      "id": "U0A16F5RUF4",
       "name": null
     }
   },
