@@ -1,0 +1,17 @@
+{
+  "ok": false,
+  "checked_at": "2026-07-11T03:51:20Z",
+  "passed": [
+    "slack token ok (generator_service_bot)",
+    "generator-hours.yml healthy",
+    "daily-digest.yml healthy",
+    "pages-build-deployment healthy",
+    "dashboard serving",
+    "all 8 data files parse"
+  ],
+  "issues": [
+    "Worker DOWN: GET /version failed twice (HTTP Error 403: Forbidden)",
+    "Worker auth probe: expected 401, got 403",
+    "Workflow consistency-check.yml: latest completed run #4 -> failure (https://github.com/Geoffrey-Fitzjarrell-ai/generator_servicing/actions/runs/29114519439)"
+  ]
+}
