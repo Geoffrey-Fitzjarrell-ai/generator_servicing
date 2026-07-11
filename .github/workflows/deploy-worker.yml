@@ -1,17 +1,15 @@
 name: Deploy Worker to Cloudflare
 
-# Manual-only until Cloudflare credentials are configured (see setup below).
-# Once CF_API_TOKEN (secret) and CF_ACCOUNT_ID (variable) are set and you've
-# confirmed wrangler.toml `name` matches the live Worker, uncomment the `push`
-# block to auto-deploy on every change to worker.js.
+# Auto-deploys on any change to the Worker source; manual dispatch kept for
+# re-deploys. CF_API_TOKEN secret verified working 2026-07-11 (build e696f58f).
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [main]
-  #   paths:
-  #     - 'worker.js'
-  #     - 'wrangler.toml'
-  #     - '.github/workflows/deploy-worker.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'worker.js'
+      - 'wrangler.toml'
+      - '.github/workflows/deploy-worker.yml'
 
 jobs:
   deploy:
