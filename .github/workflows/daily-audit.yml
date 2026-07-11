@@ -13,8 +13,9 @@ name: Daily System Audit
 #   F. Dashboard serving       — GitHub Pages URL returns 200 with real content
 #   G. Data files parse        — every *.json in the repo is valid JSON
 #
-# Pass  -> commits audit_status.json (green heartbeat), silent otherwise.
-# Fail  -> commits audit_status.json, DMs Geoff, exits 1 (red X in Actions).
+# Every run DMs Geoff the result — ✅ one-liner when green, 🔴 issue list when
+# not — and commits audit_status.json. A missing morning DM means the audit
+# itself died (red X in Actions).
 
 on:
   schedule:
@@ -230,26 +231,32 @@ jobs:
           except Exception as e:
               print(f"WARNING: could not write audit_status.json: {e}")
 
-          # ---- Report ---------------------------------------------------------------
+          # ---- Report + daily DM (good or bad) ---------------------------------------
           print(f"PASSED ({len(passed)}):")
           for p in passed: print(f"  ✓ {p}")
+          JST = (NOW + timedelta(hours=9)).strftime("%Y-%m-%d %H:%M JST")
           if issues:
               print(f"ISSUES ({len(issues)}):")
               for i in issues: print(f"  ✗ {i}")
-              text = (f"🔴 *Daily system audit failed* ({len(issues)} issue(s), "
-                      f"{NOW.strftime('%Y-%m-%d %H:%M UTC')}):\n"
+              text = (f"🔴 *Daily system audit — {len(issues)} issue(s)* ({JST}):\n"
                       + "\n".join(f"• {i}" for i in issues[:15])
                       + f"\n_{len(passed)} other check(s) passed. Details: Actions → Daily System Audit._")
-              try:
-                  with http("https://slack.com/api/chat.postMessage",
-                            data=json.dumps({"channel": GEOFF, "text": text}).encode(),
-                            headers={"Authorization": f"Bearer {SLACK_TOKEN}",
-                                     "Content-Type": "application/json"}) as r:
-                      resp = json.loads(r.read())
-                  if not resp.get("ok"):
-                      print(f"DM failed: {resp.get('error')}")
-              except Exception as e:
-                  print(f"DM unreachable: {e}")
+          else:
+              build_note = f", worker {build[:8]}" if build and build != "unknown" else ""
+              text = f"✅ Daily system audit — all {len(passed)} checks green ({JST}{build_note})"
+          dm_ok = False
+          try:
+              with http("https://slack.com/api/chat.postMessage",
+                        data=json.dumps({"channel": GEOFF, "text": text}).encode(),
+                        headers={"Authorization": f"Bearer {SLACK_TOKEN}",
+                                 "Content-Type": "application/json"}) as r:
+                  resp = json.loads(r.read())
+              dm_ok = bool(resp.get("ok"))
+              if not dm_ok:
+                  print(f"DM failed: {resp.get('error')}")
+          except Exception as e:
+              print(f"DM unreachable: {e}")
+          if issues or not dm_ok:
               sys.exit(1)
-          print("All system checks passed.")
+          print("All system checks passed; heartbeat DM sent.")
           EOF
