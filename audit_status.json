@@ -1,6 +1,6 @@
 {
-  "ok": true,
-  "checked_at": "2026-07-11T04:44:41Z",
+  "ok": false,
+  "checked_at": "2026-07-11T22:28:29Z",
   "passed": [
     "worker alive",
     "worker up to date (build fe70fb93)",
@@ -10,8 +10,9 @@
     "consistency-check.yml healthy",
     "daily-digest.yml healthy",
     "pages-build-deployment healthy",
-    "dashboard serving",
-    "all 8 data files parse"
+    "dashboard serving"
   ],
-  "issues": []
+  "issues": [
+    "Unparseable data file(s): pending_completions.json (HTTP Error 502: Bad Gateway)"
+  ]
 }
