@@ -455,12 +455,33 @@ jobs:
               except Exception:
                   daily, daily_sha = {}, None
               today_str = NOW.strftime("%Y-%m-%d")
+              today_d   = NOW.date()
               for truck_id, delta in daily_deltas.items():
                   if truck_id not in daily:
                       daily[truck_id] = []
                   entries = daily[truck_id]
+                  last_d = None
+                  if entries:
+                      try:
+                          last_d = datetime.strptime(entries[-1]["date"], "%Y-%m-%d").date()
+                      except Exception:
+                          pass
+                  gap = (today_d - last_d).days if last_d else 0
                   if entries and entries[-1]["date"] == today_str:
                       entries[-1]["hours"] = round(entries[-1]["hours"] + delta, 1)
+                  elif gap > 1 and delta > 0:
+                      # Delta accumulated over a multi-day posting gap — spread at the
+                      # true daily average instead of booking it all on one date
+                      # (mirrors worker.js bumpDailyHours; HD15 +32h/3-day incident).
+                      per = delta / gap
+                      n = min(gap, 14)
+                      total = round(per * n, 1)
+                      acc = 0.0
+                      for i in range(n - 1, -1, -1):
+                          d = today_d - timedelta(days=i)
+                          h = round(total - acc, 1) if i == 0 else round(per, 1)
+                          entries.append({"date": d.strftime("%Y-%m-%d"), "hours": h})
+                          acc = round(acc + h, 1)
                   else:
                       entries.append({"date": today_str, "hours": round(delta, 1)})
                   daily[truck_id] = entries[-14:]  # keep a small rolling buffer past the 7 shown

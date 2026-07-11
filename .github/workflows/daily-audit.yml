@@ -67,7 +67,9 @@ jobs:
           issues, passed = [], []
 
           def http(url, data=None, headers=None, method=None, timeout=15):
-              req = urllib.request.Request(url, data=data, headers=headers or {}, method=method)
+              h = {"User-Agent": "generator-servicing-audit/1.0"}
+              h.update(headers or {})
+              req = urllib.request.Request(url, data=data, headers=h, method=method)
               return urllib.request.urlopen(req, timeout=timeout)
 
           def gh_api(path):

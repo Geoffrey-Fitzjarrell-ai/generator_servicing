@@ -249,8 +249,25 @@ async function bumpDailyHours(env, truck, delta) {
       const today = new Date().toISOString().slice(0, 10);
       if (!daily[truck]) daily[truck] = [];
       const entries = daily[truck];
-      if (entries.length && entries[entries.length - 1].date === today) {
+      const last = entries.length ? entries[entries.length - 1].date : null;
+      const gapDays = last ? Math.round((Date.parse(today) - Date.parse(last)) / 86400000) : 0;
+      if (entries.length && last === today) {
         entries[entries.length - 1].hours = Math.round((entries[entries.length - 1].hours + delta) * 10) / 10;
+      } else if (gapDays > 1) {
+        // Reading arrived after a multi-day gap: the delta accumulated over the
+        // whole gap, not today. Spread it at the true daily average so no single
+        // bar shows an impossible >24h day (HD15 2026-07-10 incident: +32h over a
+        // 3-day gap was booked on one date and tripped the nightly check).
+        const per = delta / gapDays;
+        const n = Math.min(gapDays, 14);            // window keeps 14 entries anyway
+        const total = Math.round(per * n * 10) / 10;
+        let acc = 0;
+        for (let i = n - 1; i >= 0; i--) {
+          const d = new Date(Date.parse(today) - i * 86400000).toISOString().slice(0, 10);
+          const h = i === 0 ? Math.round((total - acc) * 10) / 10 : Math.round(per * 10) / 10;
+          entries.push({ date: d, hours: h });
+          acc = Math.round((acc + h) * 10) / 10;
+        }
       } else {
         entries.push({ date: today, hours: Math.round(delta * 10) / 10 });
       }
