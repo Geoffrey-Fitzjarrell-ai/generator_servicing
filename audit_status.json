@@ -1,7 +1,9 @@
 {
-  "ok": false,
-  "checked_at": "2026-07-11T03:55:59Z",
+  "ok": true,
+  "checked_at": "2026-07-11T04:38:10Z",
   "passed": [
+    "worker alive",
+    "worker up to date (build e696f58f)",
     "worker auth enforced (401 on bad key)",
     "slack token ok (generator_service_bot)",
     "generator-hours.yml healthy",
@@ -11,7 +13,5 @@
     "dashboard serving",
     "all 8 data files parse"
   ],
-  "issues": [
-    "Worker DOWN: GET /version failed twice (HTTP Error 405: Method Not Allowed)"
-  ]
+  "issues": []
 }
