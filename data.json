@@ -21,14 +21,14 @@
     "groundedNote": "Under repair"
   },
   "HD8": {
-    "hours": 1522,
+    "hours": 1531,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Daichi Hayakawa",
-    "lastUpdated": "2026-07-10T11:02:29Z",
+    "lastUpdated": "2026-07-11T03:40:13Z",
     "postedBy": {
-      "id": "U0AEE78SP2R",
-      "name": null
+      "id": "U09TT0S0UF8",
+      "name": "U09TT0S0UF8"
     }
   },
   "HD9": {
@@ -120,12 +120,15 @@
     }
   },
   "HD17": {
-    "hours": 334,
+    "hours": 335,
     "intervalStart": 0,
     "overdue": false,
     "technician": "",
-    "lastUpdated": "2026-07-02T08:30:23Z",
-    "postedBy": null
+    "lastUpdated": "2026-07-11T03:40:13Z",
+    "postedBy": {
+      "id": "U0A9VRK4Z5K",
+      "name": "U0A9VRK4Z5K"
+    }
   },
   "HD18": {
     "hours": 213,
