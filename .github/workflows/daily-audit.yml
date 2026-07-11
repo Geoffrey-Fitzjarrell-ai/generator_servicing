@@ -1,0 +1,253 @@
+name: Daily System Audit
+
+# Full-stack health check, daily 06:40 JST — after the 02:00 nightly consistency
+# check (data invariants), before the 07:00 digest. This audits the SYSTEM:
+#   A. Worker alive            — GET /version answers
+#   B. Worker version drift    — live BUILD_SHA is >= the last commit that touched
+#                                worker.js / wrangler.toml (the stale-Worker
+#                                incident class that let the bogus HD13 entry in)
+#   C. Worker auth enforcement — POST with a bogus X-Auth-Key must get 401
+#   D. Slack bot token valid   — auth.test ok
+#   E. Cron workflow health    — every scheduled workflow's latest completed run
+#                                succeeded, and ran recently enough
+#   F. Dashboard serving       — GitHub Pages URL returns 200 with real content
+#   G. Data files parse        — every *.json in the repo is valid JSON
+#
+# Pass  -> commits audit_status.json (green heartbeat), silent otherwise.
+# Fail  -> commits audit_status.json, DMs Geoff, exits 1 (red X in Actions).
+
+on:
+  schedule:
+    # 06:40 JST == 21:40 UTC previous day
+    - cron: '40 21 * * *'
+  workflow_dispatch:
+    inputs:
+      force_fail:
+        description: 'Inject a fake failure to test the alert path'
+        required: false
+        default: 'false'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run system audit
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          FORCE_FAIL: ${{ github.event.inputs.force_fail }}
+        run: |
+          python3 - <<'EOF'
+          import os, json, base64, sys, urllib.request, urllib.error
+          from datetime import datetime, timezone, timedelta
+
+          SLACK_TOKEN = os.environ["SLACK_TOKEN"]
+          GH_TOKEN    = os.environ["GH_TOKEN"]
+          GEOFF       = "U07RU3LH24F"
+          REPO        = "Geoffrey-Fitzjarrell-ai/generator_servicing"
+          WORKER      = "https://ai.generator-fleet-proxy.workers.dev"
+          PAGES       = "https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/"
+          NOW         = datetime.now(timezone.utc)
+
+          DATA_FILES = ["data.json", "daily_hours.json", "service_logs.json",
+                        "service_history.json", "bot_state.json", "hours_ledger.json",
+                        "pending_completions.json", "tickets.json"]
+
+          # workflow file -> max age (hours) of its latest completed run.
+          # None = only check conclusion, not freshness.
+          WORKFLOWS = {
+              ".github/workflows/generator-hours.yml":   4,    # runs every 3h
+              ".github/workflows/consistency-check.yml": 26,   # nightly
+              ".github/workflows/daily-digest.yml":      26,   # daily
+              ".github/workflows/weekly-summary.yml":    192,  # weekly
+              "dynamic/pages/pages-build-deployment":    None, # on every commit
+          }
+
+          issues, passed = [], []
+
+          def http(url, data=None, headers=None, method=None, timeout=15):
+              req = urllib.request.Request(url, data=data, headers=headers or {}, method=method)
+              return urllib.request.urlopen(req, timeout=timeout)
+
+          def gh_api(path):
+              with http(f"https://api.github.com{path}", headers={
+                      "Authorization": f"Bearer {GH_TOKEN}",
+                      "Accept": "application/vnd.github+json"}) as r:
+                  return json.loads(r.read())
+
+          # ---- A. Worker alive + B. version drift --------------------------------
+          build = None
+          for attempt in (1, 2):  # one retry for transient blips
+              try:
+                  with http(f"{WORKER}/version") as r:
+                      build = json.loads(r.read()).get("build")
+                  break
+              except Exception as e:
+                  if attempt == 2:
+                      issues.append(f"Worker DOWN: GET /version failed twice ({e})")
+                  else:
+                      import time; time.sleep(5)
+          if build is not None:
+              passed.append("worker alive")
+              try:
+                  changes = []
+                  for p in ("worker.js", "wrangler.toml"):
+                      c = gh_api(f"/repos/{REPO}/commits?path={p}&per_page=1")
+                      if c:
+                          changes.append((c[0]["commit"]["committer"]["date"], c[0]["sha"]))
+                  last_change_date, last_change_sha = max(changes)
+                  if build == "unknown":
+                      issues.append("Worker DRIFT: live build is 'unknown' — deployed manually "
+                                    "without BUILD_SHA. Run the 'Deploy Worker to Cloudflare' "
+                                    "workflow (needs CF_API_TOKEN secret + CF_ACCOUNT_ID var + "
+                                    "real name in wrangler.toml) so /version can be verified.")
+                  else:
+                      try:
+                          bc = gh_api(f"/repos/{REPO}/commits/{build}")
+                          if bc["commit"]["committer"]["date"] >= last_change_date:
+                              passed.append(f"worker up to date (build {build[:8]})")
+                          else:
+                              issues.append(f"Worker DRIFT: live build {build[:8]} "
+                                            f"({bc['commit']['committer']['date']}) predates last "
+                                            f"worker source change {last_change_sha[:8]} "
+                                            f"({last_change_date}). Redeploy.")
+                      except urllib.error.HTTPError:
+                          issues.append(f"Worker DRIFT: live build '{build[:12]}' is not a commit "
+                                        f"in this repo — unknown code is serving.")
+              except Exception as e:
+                  issues.append(f"Drift check errored: {e}")
+
+          # ---- C. Worker rejects bad auth ----------------------------------------
+          try:
+              http(f"{WORKER}/", data=json.dumps({"action": "audit-probe"}).encode(),
+                   headers={"Content-Type": "application/json", "X-Auth-Key": "audit-probe-invalid"})
+              issues.append("Worker AUTH BROKEN: POST with a bogus X-Auth-Key was accepted (expected 401)")
+          except urllib.error.HTTPError as e:
+              if e.code == 401:
+                  passed.append("worker auth enforced (401 on bad key)")
+              else:
+                  issues.append(f"Worker auth probe: expected 401, got {e.code}")
+          except Exception as e:
+              # network failure already reported by check A if total; note anyway
+              issues.append(f"Worker auth probe failed to run: {e}")
+
+          # ---- D. Slack token ----------------------------------------------------
+          try:
+              with http("https://slack.com/api/auth.test",
+                        headers={"Authorization": f"Bearer {SLACK_TOKEN}"}) as r:
+                  a = json.loads(r.read())
+              if a.get("ok"):
+                  passed.append(f"slack token ok ({a.get('user','?')})")
+              else:
+                  issues.append(f"Slack token INVALID: auth.test -> {a.get('error')}")
+          except Exception as e:
+              issues.append(f"Slack auth.test unreachable: {e}")
+
+          # ---- E. Workflow run health --------------------------------------------
+          for wf, max_age_h in WORKFLOWS.items():
+              try:
+                  wf_id = wf if wf.startswith(".github") else None
+                  # dynamic pages workflow must be resolved by listing
+                  if wf_id:
+                      runs = gh_api(f"/repos/{REPO}/actions/workflows/{wf.split('/')[-1]}"
+                                    f"/runs?status=completed&per_page=1")
+                  else:
+                      all_wf = gh_api(f"/repos/{REPO}/actions/workflows")["workflows"]
+                      match = [w for w in all_wf if w["path"] == wf]
+                      if not match:
+                          continue
+                      runs = gh_api(f"/repos/{REPO}/actions/workflows/{match[0]['id']}"
+                                    f"/runs?status=completed&per_page=1")
+                  rs = runs.get("workflow_runs", [])
+                  name = wf.split("/")[-1]
+                  if not rs:
+                      continue  # never run — deploy-worker case is handled by drift check
+                  latest = rs[0]
+                  if latest["conclusion"] != "success":
+                      issues.append(f"Workflow {name}: latest completed run #{latest['run_number']} "
+                                    f"-> {latest['conclusion']} ({latest['html_url']})")
+                  else:
+                      age_h = (NOW - datetime.strptime(latest["created_at"],
+                               "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)).total_seconds()/3600
+                      if max_age_h is not None and age_h > max_age_h:
+                          issues.append(f"Workflow {name}: last successful run is {age_h:.0f}h old "
+                                        f"(expected < {max_age_h}h) — schedule may be dead")
+                      else:
+                          passed.append(f"{name} healthy")
+              except Exception as e:
+                  issues.append(f"Workflow health check for {wf} errored: {e}")
+
+          # ---- F. Dashboard serving ----------------------------------------------
+          try:
+              with http(PAGES) as r:
+                  body = r.read().decode(errors="replace")
+              if r.status == 200 and "generator-fleet-proxy" in body:
+                  passed.append("dashboard serving")
+              else:
+                  issues.append(f"Dashboard: HTTP {r.status} or unexpected content at {PAGES}")
+          except Exception as e:
+              issues.append(f"Dashboard DOWN: {PAGES} -> {e}")
+
+          # ---- G. Data files parse -------------------------------------------------
+          bad = []
+          for f in DATA_FILES:
+              try:
+                  raw = gh_api(f"/repos/{REPO}/contents/{f}")
+                  json.loads(base64.b64decode(raw["content"]).decode())
+              except Exception as e:
+                  bad.append(f"{f} ({e})")
+          if bad:
+              issues.append("Unparseable data file(s): " + ", ".join(bad))
+          else:
+              passed.append(f"all {len(DATA_FILES)} data files parse")
+
+          # ---- Optional forced failure (alert-path test) ---------------------------
+          if os.environ.get("FORCE_FAIL", "false") == "true":
+              issues.append("TEST: forced failure via workflow_dispatch — alert path check, ignore")
+
+          # ---- Persist heartbeat ----------------------------------------------------
+          status = {"ok": not issues, "checked_at": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "passed": passed, "issues": issues}
+          try:
+              url = f"https://api.github.com/repos/{REPO}/contents/audit_status.json"
+              sha = None
+              try:
+                  sha = gh_api(f"/repos/{REPO}/contents/audit_status.json")["sha"]
+              except urllib.error.HTTPError:
+                  pass
+              payload = {"message": ("chore: daily system audit ✅ pass" if not issues else
+                                     f"chore: daily system audit 🔴 {len(issues)} issue(s)"),
+                         "content": base64.b64encode(
+                             json.dumps(status, indent=2, ensure_ascii=False).encode()).decode()}
+              if sha: payload["sha"] = sha
+              http(url, data=json.dumps(payload).encode(), method="PUT", headers={
+                  "Authorization": f"Bearer {GH_TOKEN}",
+                  "Accept": "application/vnd.github+json",
+                  "Content-Type": "application/json"}).read()
+          except Exception as e:
+              print(f"WARNING: could not write audit_status.json: {e}")
+
+          # ---- Report ---------------------------------------------------------------
+          print(f"PASSED ({len(passed)}):")
+          for p in passed: print(f"  ✓ {p}")
+          if issues:
+              print(f"ISSUES ({len(issues)}):")
+              for i in issues: print(f"  ✗ {i}")
+              text = (f"🔴 *Daily system audit failed* ({len(issues)} issue(s), "
+                      f"{NOW.strftime('%Y-%m-%d %H:%M UTC')}):\n"
+                      + "\n".join(f"• {i}" for i in issues[:15])
+                      + f"\n_{len(passed)} other check(s) passed. Details: Actions → Daily System Audit._")
+              try:
+                  with http("https://slack.com/api/chat.postMessage",
+                            data=json.dumps({"channel": GEOFF, "text": text}).encode(),
+                            headers={"Authorization": f"Bearer {SLACK_TOKEN}",
+                                     "Content-Type": "application/json"}) as r:
+                      resp = json.loads(r.read())
+                  if not resp.get("ok"):
+                      print(f"DM failed: {resp.get('error')}")
+              except Exception as e:
+                  print(f"DM unreachable: {e}")
+              sys.exit(1)
+          print("All system checks passed.")
+          EOF
