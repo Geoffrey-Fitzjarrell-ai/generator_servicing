@@ -6,6 +6,7 @@
 #    (with its URL + secrets) stays untouched and stale. This is the one line to
 #    get right.
 name = "ai"  # from live URL https://ai.generator-fleet-proxy.workers.dev (name.subdomain.workers.dev)
+account_id = "6ca06b8628809eea279dfde888416aa4"  # not secret; pinned so deploys don't rely on token auto-detect
 main = "worker.js"
 compatibility_date = "2025-01-01"
 
