@@ -501,6 +501,25 @@ jobs:
               "Change air filter":          "airfilter_500",
           }
 
+          # Same root-cause fix as worker.js: mention the technician who
+          # actually did the work, not postedBy (whoever last posted the
+          # truck's hours — often a driver, unrelated to who serviced it).
+          # Exact-match only, never fuzzy — an unmapped name prints as plain
+          # bold text instead of ever guessing at the wrong person.
+          TECHNICIAN_SLACK_IDS = {
+              "geoff fitzjarrell": "U07RU3LH24F",
+              "masakiyo":           "U0BBE3JUHUY",
+              "masakiyo kato":      "U0BBE3JUHUY",
+              "jake albano":        "U0779MALYKY",
+              "thapa biliv":        "U0AFM5Z1GUA",
+              "reon zeniya":        "U0AV3PG35JM",
+          }
+
+          def technician_mention(name):
+              if not name:
+                  return None
+              return TECHNICIAN_SLACK_IDS.get(name.strip().lower())
+
           try:
               pending, p_sha = gh_get("pending_completions.json")
           except Exception:
@@ -526,8 +545,6 @@ jobs:
                   truck   = entry.get("truck", "")
                   tasks   = entry.get("tasks", [])
                   hours   = entry.get("hours")
-                  poster  = entry.get("postedBy") or {}
-                  user_id = poster.get("id", "")
                   already_logged = entry.get("alreadyLogged", False)
 
                   # Determine which of the named tasks are NOT yet reflected in
@@ -560,7 +577,7 @@ jobs:
                           hist[truck].append({
                               "date": NOW.strftime("%Y-%m-%d"),
                               "hours": hours,
-                              "technician": poster.get("name") or "",
+                              "technician": entry.get("technician") or "",
                               "tasks": [{"key": k, "label": l} for k, l in keys],
                               "notes": user_notes + ["Promoted by cron safety-net (dashboard write "
                                         "did not land before this run)."],
@@ -579,17 +596,22 @@ jobs:
                   if entry.get("notified"):
                       print(f"Skip Slack notify for {truck}: already notified immediately by worker")
                   else:
+                      technician_name = entry.get("technician")
+                      tech_id = technician_mention(technician_name)
+                      who = (f"<@{tech_id}> さん、" if tech_id
+                             else (f"*{technician_name}* さん、" if technician_name else ""))
                       task_list = "\n".join(f"• {t}" for t in tasks)
-                      text = (f"げんきくんです！<@{user_id}> さん、*{truck}* で以下の作業が"
+                      text = (f"げんきくんです！{who}*{truck}* で以下の作業が"
                               f"完了したことを確認しました🔧✨\n"
                               f"{task_list}\n"
                               f"担当してくれた技術者さん、いつも素晴らしい仕事をありがとうございます、"
                               f"お疲れ様でした！")
-                      result = slack_post({"channel": CHANNEL_JP, "text": text})
+                      result = slack_post({"channel": entry.get("channel", CHANNEL_JP), "text": text})
                       if result.get("ok"):
-                          print(f"Notified {user_id} re: {truck} ({len(tasks)} task(s))")
+                          print(f"Notified re: {truck} ({len(tasks)} task(s)), "
+                                f"technician={technician_name or 'unattributed'}")
                       else:
-                          print(f"Failed to notify {user_id}: {result.get('error')}")
+                          print(f"Failed to notify re: {truck}: {result.get('error')}")
 
               if logs_changed:
                   gh_put("service_logs.json", logs, logs_sha,

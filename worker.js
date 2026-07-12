@@ -108,16 +108,41 @@ async function verifySlackSignature(request, rawBody, signingSecret) {
 
 const SLACK_CHANNEL = "C08L1TWLU14";
 
+// Known field technicians who log completions on the dashboard. The
+// dashboard's technician field is free text (index.html "Technician name"
+// input), so this is a best-effort, exact-match (case-insensitive) lookup —
+// deliberately NOT fuzzy. Root cause of the wrong-mention bug: the
+// completion notifier used to mention `postedBy` (whoever last posted the
+// truck's HOURS in Slack — a driver, often unrelated to who serviced it)
+// instead of the technician who actually did the work, because the
+// technician's name wasn't even being sent to this endpoint. An unmapped
+// name now just prints as plain bold text (no @mention) rather than ever
+// guessing at — and pinging — the wrong person.
+const TECHNICIAN_SLACK_IDS = {
+  "geoff fitzjarrell": "U07RU3LH24F",
+  "masakiyo":           "U0BBE3JUHUY",
+  "masakiyo kato":      "U0BBE3JUHUY",
+  "jake albano":        "U0779MALYKY",
+  "thapa biliv":        "U0AFM5Z1GUA",
+  "reon zeniya":        "U0AV3PG35JM",
+};
+
+function technicianMention(name) {
+  if (!name) return null;
+  return TECHNICIAN_SLACK_IDS[name.trim().toLowerCase()] || null;
+}
+
 // Fires the "task(s) completed" confirmation the moment a completion is
 // logged from the dashboard, instead of waiting for the 3-hourly cron sweep
 // to pick it up out of pending_completions.json. Requires a SLACK_TOKEN
 // secret on this Worker (Settings -> Variables and Secrets) — the same
 // bot token used by the GitHub Actions workflow's SLACK_TOKEN repo secret.
-function buildCompletionText(userId, truck, tasks, notes) {
+function buildCompletionText(technicianName, truck, tasks, notes) {
   const taskList = (tasks || []).map(t => "• " + t).join("\n");
-  const mention = userId ? `<@${userId}> さん、` : "";
+  const id = technicianMention(technicianName);
+  const who = id ? `<@${id}> さん、` : (technicianName ? `*${technicianName}* さん、` : "");
   const noteLine = (notes && notes.length) ? `📝 メモ: ${notes.join(" / ")}\n` : "";
-  return `げんきくんです！${mention}*${truck}* で以下の作業が完了したことを確認しました🔧✨\n`
+  return `げんきくんです！${who}*${truck}* で以下の作業が完了したことを確認しました🔧✨\n`
        + `${taskList}\n`
        + noteLine
        + `担当してくれた技術者さん、いつも素晴らしい仕事をありがとうございます、お疲れ様でした！`;
@@ -862,8 +887,7 @@ export default {
         // entry.notified stays false and the cron job's fallback path will
         // still send it within a few hours — same safety-net principle as
         // the log write itself.
-        const userId = entry.postedBy && entry.postedBy.id;
-        const text = buildCompletionText(userId, entry.truck, entry.tasks, entry.notes);
+        const text = buildCompletionText(entry.technician, entry.truck, entry.tasks, entry.notes);
         const slackResult = await slackPostMessage(env, text);
         entry.notified = !!slackResult.ok;
         if (!slackResult.ok) {

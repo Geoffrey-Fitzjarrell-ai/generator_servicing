@@ -613,6 +613,7 @@ function App() {
     await writePending({
       truck:selected,
       tasks:done.map(t=>t.name),
+      technician:techName,
       postedBy:truck.postedBy,
       loggedAt:new Date().toISOString(),
       hours,
