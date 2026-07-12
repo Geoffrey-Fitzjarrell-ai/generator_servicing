@@ -18,6 +18,20 @@ jobs:
         run: |
           python3 - <<'EOF'
           import os, json, base64, urllib.request
+          # --- resilient urlopen: retry transient 5xx/429/network blips ---
+          import time as _t, urllib.error as _ue
+          def _urlopen(request, timeout=30, _tries=4):
+              for _i in range(_tries):
+                  try:
+                      return urllib.request.urlopen(request, timeout=timeout)
+                  except _ue.HTTPError as _e:
+                      if _e.code in (429, 500, 502, 503, 504) and _i < _tries - 1:
+                          _t.sleep(2 ** _i); continue
+                      raise
+                  except _ue.URLError:
+                      if _i < _tries - 1:
+                          _t.sleep(2 ** _i); continue
+                      raise
           from datetime import datetime, timezone, timedelta
 
           SLACK_TOKEN = os.environ["SLACK_TOKEN"]
@@ -32,7 +46,7 @@ jobs:
                   "https://slack.com/api/chat.postMessage", data=data,
                   headers={"Authorization": f"Bearer {SLACK_TOKEN}", "Content-Type": "application/json"},
               )
-              with urllib.request.urlopen(req) as r:
+              with _urlopen(req) as r:
                   return json.loads(r.read())
 
           def gh_get(path):
@@ -41,7 +55,7 @@ jobs:
                   "Authorization": f"Bearer {GH_TOKEN}",
                   "Accept": "application/vnd.github+json",
               })
-              with urllib.request.urlopen(req) as r:
+              with _urlopen(req) as r:
                   resp = json.loads(r.read())
               return json.loads(base64.b64decode(resp["content"]).decode())
 

@@ -41,6 +41,20 @@ jobs:
         run: |
           python3 - <<'EOF'
           import os, json, base64, sys, urllib.request, urllib.error
+          # --- resilient urlopen: retry transient 5xx/429/network blips ---
+          import time as _t, urllib.error as _ue
+          def _urlopen(request, timeout=30, _tries=4):
+              for _i in range(_tries):
+                  try:
+                      return urllib.request.urlopen(request, timeout=timeout)
+                  except _ue.HTTPError as _e:
+                      if _e.code in (429, 500, 502, 503, 504) and _i < _tries - 1:
+                          _t.sleep(2 ** _i); continue
+                      raise
+                  except _ue.URLError:
+                      if _i < _tries - 1:
+                          _t.sleep(2 ** _i); continue
+                      raise
           from datetime import datetime, timezone, timedelta
 
           SLACK_TOKEN = os.environ["SLACK_TOKEN"]
@@ -71,7 +85,7 @@ jobs:
               h = {"User-Agent": "generator-servicing-audit/1.0"}
               h.update(headers or {})
               req = urllib.request.Request(url, data=data, headers=h, method=method)
-              return urllib.request.urlopen(req, timeout=timeout)
+              return _urlopen(req, timeout=timeout)
 
           def gh_api(path):
               with http(f"https://api.github.com{path}", headers={
