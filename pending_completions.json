@@ -17,5 +17,22 @@
     ],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD15",
+    "tasks": [
+      "Air filter & battery check",
+      "Check drive belt & tension",
+      "Clean radiator"
+    ],
+    "postedBy": {
+      "id": "U0AU900KF5M",
+      "name": null
+    },
+    "loggedAt": "2026-07-12T00:49:02.034Z",
+    "hours": 527,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
