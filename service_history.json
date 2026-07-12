@@ -796,6 +796,24 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-12",
+      "hours": 407,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": [
+        "Will do fuel filter during the week since its Open Loop. Had an issue with oil filter, be mindful of tightness"
+      ]
     }
   ],
   "HD17": [
