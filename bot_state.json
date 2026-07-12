@@ -19,60 +19,25 @@
     "1783822727.171039": "accepted",
     "1783830998.628279": "accepted",
     "1783837550.642829": "rejected",
-    "1783839224.195689": "accepted"
+    "1783839224.195689": "accepted",
+    "1783838430.397679": "corrected"
   },
   "pending": [
     {
-      "truck": "HD6",
+      "truck": "HD10",
       "tasks": [
         "Oil / filter change",
-        "Check drive belt & tension",
         "Air filter & battery check"
-      ],
-      "postedBy": {
-        "id": "U0AFM5Z1GUA",
-        "name": null
-      },
-      "loggedAt": "2026-07-12T00:36:01.867Z",
-      "hours": 1680,
-      "notes": [
-        "Need to follow up on air filter next time its due for service"
-      ],
-      "alreadyLogged": true,
-      "notified": true
-    },
-    {
-      "truck": "HD15",
-      "tasks": [
-        "Air filter & battery check",
-        "Check drive belt & tension",
-        "Clean radiator"
-      ],
-      "postedBy": {
-        "id": "U0AU900KF5M",
-        "name": null
-      },
-      "loggedAt": "2026-07-12T00:49:02.034Z",
-      "hours": 527,
-      "notes": [],
-      "alreadyLogged": true,
-      "notified": true
-    },
-    {
-      "truck": "HD16",
-      "tasks": [
-        "Air filter & battery check",
-        "Oil / filter change"
       ],
       "technician": "Geoff Fitzjarrell",
       "postedBy": {
-        "id": "U09UPB6CG56",
+        "id": "U0AT1RYRS1Z",
         "name": null
       },
-      "loggedAt": "2026-07-12T03:22:48.445Z",
-      "hours": 407,
+      "loggedAt": "2026-07-12T06:28:46.669Z",
+      "hours": 1540,
       "notes": [
-        "Will do fuel filter during the week since its Open Loop. Had an issue with oil filter, be mindful of tightness"
+        "Oil check is done, air filter and battery check were not done due to the urgency of getting the truck out on the route.  Air filter's have consistently been ok up until their replacement time.  Battery check ok"
       ],
       "alreadyLogged": true,
       "notified": true
