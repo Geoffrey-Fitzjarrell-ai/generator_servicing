@@ -93,6 +93,28 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-12",
+      "hours": 1680,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "drive_belt",
+          "label": "Check drive belt & tension"
+        },
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        }
+      ],
+      "notes": [
+        "Need to follow up on air filter next time its due for service"
+      ]
     }
   ],
   "HD7": [],
