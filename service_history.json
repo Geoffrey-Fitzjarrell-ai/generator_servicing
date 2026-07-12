@@ -364,6 +364,24 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-12",
+      "hours": 1540,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        }
+      ],
+      "notes": [
+        "Oil check is done, air filter and battery check were not done due to the urgency of getting the truck out on the route.  Air filter's have consistently been ok up until their replacement time.  Battery check ok"
+      ]
     }
   ],
   "HD11": [
