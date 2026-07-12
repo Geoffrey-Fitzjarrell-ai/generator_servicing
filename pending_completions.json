@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "truck": "HD6",
+    "tasks": [
+      "Oil / filter change",
+      "Check drive belt & tension",
+      "Air filter & battery check"
+    ],
+    "postedBy": {
+      "id": "U0AFM5Z1GUA",
+      "name": null
+    },
+    "loggedAt": "2026-07-12T00:36:01.867Z",
+    "hours": 1680,
+    "notes": [
+      "Need to follow up on air filter next time its due for service"
+    ],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
