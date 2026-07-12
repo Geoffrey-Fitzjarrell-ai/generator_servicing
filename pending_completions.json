@@ -34,5 +34,24 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD16",
+    "tasks": [
+      "Air filter & battery check",
+      "Oil / filter change"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U09UPB6CG56",
+      "name": null
+    },
+    "loggedAt": "2026-07-12T03:22:48.445Z",
+    "hours": 407,
+    "notes": [
+      "Will do fuel filter during the week since its Open Loop. Had an issue with oil filter, be mindful of tightness"
+    ],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
