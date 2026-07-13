@@ -214,6 +214,24 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-13",
+      "hours": 1550,
+      "technician": "Masakiyo",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": [
+        "There was oil residue around the oil filter, so it was cleaned; it will be necessary to check for leaks during the next service."
+      ]
     }
   ],
   "HD9": [
