@@ -15,5 +15,23 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD9",
+    "tasks": [
+      "Change air filter"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U09V64E0352",
+      "name": null
+    },
+    "loggedAt": "2026-07-13T05:37:50.884Z",
+    "hours": 1532,
+    "notes": [
+      "Air filter was black, replaced."
+    ],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
