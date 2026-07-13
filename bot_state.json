@@ -24,5 +24,60 @@
     "1783903135.815749": "accepted",
     "1783920637.170139": "accepted"
   },
-  "pending": []
+  "pending": [
+    {
+      "truck": "HD9",
+      "tasks": [
+        "Air filter & battery check",
+        "Oil / filter change"
+      ],
+      "technician": "Geoff Fitzjarrell",
+      "postedBy": {
+        "id": "U09V64E0352",
+        "name": null
+      },
+      "loggedAt": "2026-07-13T05:36:47.063Z",
+      "hours": 1532,
+      "notes": [],
+      "alreadyLogged": true,
+      "notified": true
+    },
+    {
+      "truck": "HD9",
+      "tasks": [
+        "Change air filter"
+      ],
+      "technician": "Geoff Fitzjarrell",
+      "postedBy": {
+        "id": "U09V64E0352",
+        "name": null
+      },
+      "loggedAt": "2026-07-13T05:37:50.884Z",
+      "hours": 1532,
+      "notes": [
+        "Air filter was black, replaced."
+      ],
+      "alreadyLogged": true,
+      "notified": true
+    },
+    {
+      "truck": "HD8",
+      "tasks": [
+        "Air filter & battery check",
+        "Oil / filter change"
+      ],
+      "technician": "Masakiyo",
+      "postedBy": {
+        "id": "U09TT0S0UF8",
+        "name": null
+      },
+      "loggedAt": "2026-07-13T06:48:42.668Z",
+      "hours": 1550,
+      "notes": [
+        "There was oil residue around the oil filter, so it was cleaned; it will be necessary to check for leaks during the next service."
+      ],
+      "alreadyLogged": true,
+      "notified": true
+    }
+  ]
 }
