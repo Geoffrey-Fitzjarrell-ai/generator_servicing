@@ -290,6 +290,22 @@
       "notes": [
         "Recovered: originally logged 2026-07-04 04:28 UTC but wiped by the pending-completions cron before being promoted to history. Reconstructed from GitHub commit c243fef."
       ]
+    },
+    {
+      "date": "2026-07-13",
+      "hours": 1532,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter & battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD10": [
