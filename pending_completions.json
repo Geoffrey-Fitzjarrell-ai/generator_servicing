@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "truck": "HD9",
+    "tasks": [
+      "Air filter & battery check",
+      "Oil / filter change"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U09V64E0352",
+      "name": null
+    },
+    "loggedAt": "2026-07-13T05:36:47.063Z",
+    "hours": 1532,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
