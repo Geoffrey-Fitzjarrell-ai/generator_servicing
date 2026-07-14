@@ -460,7 +460,10 @@ function App() {
   const [fleet,      setFleet]      = useState(null);
   const [svcLogs,    setSvcLogs]    = useState({});
   const [svcHistory, setSvcHistory] = useState({});
-  const [selected,   setSelected]   = useState("HD6");
+  const [selected,   setSelected]   = useState(()=>{
+    const p = new URLSearchParams(window.location.search).get("truck");
+    return (p && TRUCKS.includes(p)) ? p : "HD6";
+  });
   const [loaded,     setLoaded]     = useState(false);
   const [error,      setError]      = useState(null);
   const [syncedAt,   setSyncedAt]   = useState(null);

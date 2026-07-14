@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HD GEN2 · Fleet Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --bg:#080b12; --surface:#0d1117; --surface2:#131925; --surface3:#1a2235;
+  --border:#1e2840; --border2:#28364f;
+  --amber:#f0a500; --amber-dim:#3d2900;
+  --red:#e04545; --red-dim:#3a1010;
+  --green:#3da870; --green-dim:#0f2e1e;
+  --blue:#4a7cf5; --blue-dim:#101e40;
+  --purple:#9880cc; --purple-dim:#1e1533;
+  --text:#dde4f0; --text-dim:#6e7f99; --text-faint:#38465a;
+  --mono:'JetBrains Mono',monospace; --sans:'Inter',sans-serif; --radius:8px;
+}
+html,body { height:100%; background:var(--bg); color:var(--text); font-family:var(--sans);
+  background-image:url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23ffffff06'/%3E%3C/svg%3E"); }
+#root { min-height:100%; }
+.wrap { max-width:1240px; margin:0 auto; padding:22px 24px 48px; }
+body.embed .wrap { padding:14px 14px 22px; max-width:none; }
+
+/* header */
+.head { display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding-bottom:16px; margin-bottom:18px;
+  border-bottom:1px solid var(--border); position:relative; }
+.head::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--blue) 40%,var(--amber) 60%,transparent); opacity:0.3; }
+.brand { display:flex; align-items:center; gap:10px; }
+.badge-hd { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:0.18em; color:var(--bg);
+  background:var(--amber); padding:3px 8px; border-radius:3px; }
+.title { font-size:15px; font-weight:600; letter-spacing:0.01em; }
+.head-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+.sync { display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10px; color:var(--text-dim);
+  letter-spacing:0.06em; }
+.sync-dot { width:5px; height:5px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green);
+  animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+.age { font-family:var(--mono); font-size:9px; letter-spacing:0.08em; padding:3px 9px; border-radius:3px;
+  text-transform:uppercase; background:var(--green-dim); color:var(--green); }
+.age.warn { background:var(--amber-dim); color:var(--amber); }
+.age.stale { background:var(--red-dim); color:var(--red); }
+.link { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase;
+  padding:5px 12px; color:var(--text-dim); border:1px solid var(--border2); border-radius:var(--radius);
+  text-decoration:none; transition:all .15s; }
+.link:hover { color:var(--text); border-color:var(--blue); }
+body.embed .head { display:none; }
+
+/* health bar + kpis */
+.health { margin-bottom:16px; }
+.health-bar { height:8px; border-radius:4px; overflow:hidden; display:flex; background:var(--surface3); }
+.health-seg { height:100%; transition:width .5s ease; }
+.kpis { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+.kpi { flex:1 1 0; min-width:120px; background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:12px 14px; cursor:pointer; position:relative; overflow:hidden;
+  transition:border-color .15s, transform .1s; }
+.kpi::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--text-faint); }
+.kpi.k-overdue::before{background:var(--red)} .kpi.k-warn::before{background:var(--amber)}
+.kpi.k-due::before{background:var(--blue)} .kpi.k-ok::before{background:var(--green)}
+.kpi.k-grounded::before{background:var(--purple)}
+.kpi:hover { border-color:var(--border2); }
+.kpi.active { border-color:currentColor; }
+.kpi.k-overdue.active{border-color:var(--red)} .kpi.k-warn.active{border-color:var(--amber)}
+.kpi.k-due.active{border-color:var(--blue)} .kpi.k-ok.active{border-color:var(--green)}
+.kpi.k-grounded.active{border-color:var(--purple)}
+.kpi.dim { opacity:.4; }
+.kpi-val { font-family:var(--mono); font-size:26px; font-weight:700; line-height:1; }
+.k-overdue .kpi-val{color:var(--red)} .k-warn .kpi-val{color:var(--amber)}
+.k-due .kpi-val{color:var(--blue)} .k-ok .kpi-val{color:var(--green)}
+.k-grounded .kpi-val{color:var(--purple)}
+.kpi-lbl { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--text-dim); margin-top:7px; }
+
+/* grid */
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(232px,1fr)); gap:12px; }
+.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:14px 15px 12px; position:relative; overflow:hidden; cursor:pointer;
+  transition:border-color .15s, transform .1s; animation:rise .35s ease both; }
+@keyframes rise { from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:translateY(0)} }
+.card:hover { border-color:var(--border2); transform:translateY(-2px); }
+.card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; }
+.card.s-overdue::before{background:var(--red)} .card.s-warn::before{background:var(--amber)}
+.card.s-due::before{background:var(--blue)} .card.s-ok::before{background:var(--green)}
+.card.s-grounded::before{background:var(--purple)} .card.s-none::before{background:var(--text-faint)}
+.card.s-overdue { animation:rise .35s ease both, pulseRed 2.6s ease-in-out infinite .35s; }
+@keyframes pulseRed { 0%,100%{box-shadow:none} 50%{box-shadow:inset 0 0 34px rgba(224,69,69,.10),0 0 0 1px rgba(224,69,69,.25)} }
+.c-top { display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+.c-id { font-family:var(--mono); font-size:22px; font-weight:700; letter-spacing:0.02em; }
+.s-overdue .c-id{color:var(--red)} .s-warn .c-id{color:var(--amber)} .s-due .c-id{color:var(--blue)}
+.s-ok .c-id{color:var(--text)} .s-grounded .c-id{color:var(--purple)} .s-none .c-id{color:var(--text-dim)}
+.c-badge { font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase;
+  padding:3px 7px; border-radius:3px; white-space:nowrap; }
+.b-overdue{background:var(--red-dim);color:var(--red);animation:flash 2.2s ease-in-out infinite}
+.b-warn{background:var(--amber-dim);color:var(--amber)} .b-due{background:var(--blue-dim);color:var(--blue)}
+.b-ok{background:var(--green-dim);color:var(--green)} .b-grounded{background:var(--purple-dim);color:var(--purple)}
+.b-none{background:var(--surface3);color:var(--text-dim)}
+@keyframes flash { 0%,100%{opacity:1} 50%{opacity:.45} }
+.c-hours { font-family:var(--mono); font-size:12px; color:var(--text-dim); margin-top:2px; }
+.c-hours b { color:var(--text); font-weight:700; font-size:14px; }
+.c-bar-track { height:5px; border-radius:3px; background:var(--surface3); margin:12px 0 8px; overflow:hidden; }
+.c-bar-fill { height:100%; border-radius:3px; transition:width .5s ease; }
+.c-task { display:flex; align-items:baseline; justify-content:space-between; gap:8px; font-size:11px; }
+.c-task-name { color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.c-task-rem { font-family:var(--mono); font-size:10px; white-space:nowrap; flex-shrink:0; }
+.c-foot { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:11px;
+  padding-top:9px; border-top:1px solid var(--border); font-size:10px; color:var(--text-dim); }
+.c-tech { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.c-tech.unassigned { color:var(--text-faint); font-style:italic; }
+.c-fresh { display:flex; align-items:center; gap:5px; font-family:var(--mono); white-space:nowrap; flex-shrink:0; }
+.fresh-dot { width:4px; height:4px; border-radius:50%; background:var(--green); }
+.fresh-dot.warn{background:var(--amber)} .fresh-dot.stale{background:var(--red)}
+.c-note { font-size:11px; color:var(--purple); margin-top:10px; line-height:1.4; }
+
+.state { text-align:center; padding:80px 20px; color:var(--text-dim); font-family:var(--mono); font-size:13px; }
+.state .retry { margin-top:14px; }
+.retry { font-family:var(--mono); font-size:11px; letter-spacing:0.08em; padding:7px 16px; background:transparent;
+  color:var(--text-dim); border:1px solid var(--border2); border-radius:var(--radius); cursor:pointer; }
+.retry:hover { color:var(--text); }
+@media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script>
+const { useState, useEffect } = React;
+const h = React.createElement;
+
+const REPO = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/";
+const DATA_URL = REPO + "data.json";
+const LOGS_URL = REPO + "service_logs.json";
+
+// Trucks tracked (HD18 omitted, same as the detail dashboard).
+const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14","HD15","HD16","HD17"];
+
+// ── Severity model — MUST mirror index.html / worker.js ──────────────────────
+// type "replace" (oil change, air-filter change) escalates to OVERDUE (red).
+// type "service" (checks, cleanings, fuel filter) never goes overdue — past its
+// interval it shows a calm blue DUE state instead.
+const TASKS = [
+  { key:"airfilter_battery", name:"Air filter & battery check", interval:50,  type:"service" },
+  { key:"oil_filter",        name:"Oil / filter change",        interval:150, type:"replace" },
+  { key:"airfilter_clean",   name:"Air filter cleaning",        interval:250, type:"service" },
+  { key:"coolant_lines",     name:"Check coolant lines",        interval:250, type:"service" },
+  { key:"fuel_filter",       name:"Fuel filter change",         interval:250, type:"service" },
+  { key:"drive_belt",        name:"Check drive belt & tension", interval:500, type:"service" },
+  { key:"clean_radiator",    name:"Clean radiator",             interval:500, type:"service" },
+  { key:"airfilter_500",     name:"Change air filter",          interval:500, type:"replace" },
+];
+function tasksForTruck(id){ return TASKS.filter(t => t.key!=="airfilter_clean" || id==="HD5"); }
+function pastDueStatus(task){ return task.type==="replace" ? "overdue" : "due"; }
+function ratioStatus(task, ratio){
+  if(ratio>=1) return pastDueStatus(task);
+  if(task.type==="replace" && ratio>=0.9) return "warn";
+  return "ok";
+}
+
+function truckStatus(td, tlogs){
+  if(!td) return "none";
+  if(td.grounded) return "grounded";
+  if(td.hours==null) return "none";
+  const statuses = tasksForTruck(td._id).map(task=>{
+    const last = tlogs[task.key];
+    if(last==null) return (task.key==="airfilter_clean" || td.hours<task.interval) ? "ok" : pastDueStatus(task);
+    return ratioStatus(task, (td.hours-last)/task.interval);
+  });
+  if(statuses.includes("overdue")) return "overdue";
+  if(statuses.includes("warn")) return "warn";
+  if(statuses.includes("due")) return "due";
+  return "ok";
+}
+
+// Most-urgent item for a truck (smallest hours remaining), for the card bar/label.
+function criticalItem(td, tlogs){
+  if(!td || td.hours==null) return null;
+  const list = tasksForTruck(td._id).map(task=>{
+    const last = tlogs[task.key];
+    const dueAt = (last!=null?last:0) + task.interval;
+    return { ...task, last:last!=null?last:null, dueAt, rem: dueAt - td.hours };
+  }).sort((a,b)=>a.rem-b.rem);
+  return list[0] || null;
+}
+
+const STATUS_META = {
+  overdue:  { label:"Overdue",   color:"var(--red)" },
+  warn:     { label:"Due soon",  color:"var(--amber)" },
+  due:      { label:"Check/clean",color:"var(--blue)" },
+  ok:       { label:"OK",        color:"var(--green)" },
+  grounded: { label:"Grounded",  color:"var(--purple)" },
+  none:     { label:"No data",   color:"var(--text-faint)" },
+};
+const SORT_RANK = { overdue:0, warn:1, due:2, ok:3, none:4, grounded:5 };
+
+function agoParts(iso){
+  if(!iso) return null;
+  const ms = Date.now() - new Date(iso).getTime();
+  if(isNaN(ms)) return null;
+  const m = Math.floor(ms/60000);
+  let label, level="ok";
+  if(m<1) label="just now";
+  else if(m<60) label=m+"m ago";
+  else if(m<1440){ label=Math.floor(m/60)+"h ago"; if(m>=1440*0.75) level="warn"; }
+  else { const d=Math.floor(m/1440); label=d+"d ago"; level = d>=3?"stale":"warn"; }
+  return { label, level, ms };
+}
+
+function Card({ id, td, tlogs }){
+  const status = truckStatus(td, tlogs);
+  const meta = STATUS_META[status];
+  const crit = criticalItem(td, tlogs);
+  const fresh = agoParts(td && td.lastUpdated);
+  const tech = (td && td.technician) ? td.technician : null;
+  const onClick = ()=>{ window.top.location.href = "index.html?truck=" + id; };
+
+  let bar = null, taskLine = null, note = null;
+  if(status==="grounded"){
+    note = h("div",{className:"c-note"}, "⬡ " + ((td && td.groundedNote) || "Out of service"));
+  } else if(td && td.hours!=null && crit){
+    const ratio = Math.max(0, Math.min((crit.interval - crit.rem)/crit.interval, 1));
+    const barColor = status==="overdue"?"var(--red)":status==="warn"?"var(--amber)":status==="due"?"var(--blue)":"var(--green)";
+    bar = h("div",{className:"c-bar-track"}, h("div",{className:"c-bar-fill",style:{width:(ratio*100)+"%",background:barColor}}));
+    const over = crit.rem <= 0;
+    const remTxt = over
+      ? (crit.type==="replace" ? "+"+Math.abs(Math.round(crit.rem))+"h over" : "+"+Math.abs(Math.round(crit.rem))+"h due")
+      : Math.round(crit.rem)+"h left";
+    const remColor = over ? (crit.type==="replace"?"var(--red)":"var(--blue)") : status==="warn"?"var(--amber)":"var(--text-dim)";
+    taskLine = h("div",{className:"c-task"},
+      h("span",{className:"c-task-name",title:crit.name}, crit.name),
+      h("span",{className:"c-task-rem",style:{color:remColor}}, remTxt)
+    );
+  }
+
+  return h("div",{className:"card s-"+status, onClick},
+    h("div",{className:"c-top"},
+      h("div",{className:"c-id"}, id),
+      h("div",{className:"c-badge b-"+status}, meta.label)
+    ),
+    (td && td.hours!=null)
+      ? h("div",{className:"c-hours"}, h("b",null, td.hours), "h logged")
+      : h("div",{className:"c-hours"}, "No hours on file"),
+    bar, taskLine, note,
+    h("div",{className:"c-foot"},
+      h("span",{className:"c-tech"+(tech?"":" unassigned")}, tech || "unassigned"),
+      fresh ? h("span",{className:"c-fresh"}, h("span",{className:"fresh-dot "+fresh.level}), fresh.label) : h("span",{className:"c-fresh"}, "—")
+    )
+  );
+}
+
+function App(){
+  const [data,setData] = useState(null);
+  const [logs,setLogs] = useState({});
+  const [err,setErr] = useState(false);
+  const [syncedAt,setSyncedAt] = useState(null);
+  const [tick,setTick] = useState(0);
+  const [filter,setFilter] = useState(null);
+  const embed = new URLSearchParams(location.search).get("embed")==="1";
+
+  async function load(){
+    setErr(false);
+    try{
+      const bust = "?_="+Date.now();
+      const [rd,rl] = await Promise.all([fetch(DATA_URL+bust), fetch(LOGS_URL+bust)]);
+      if(!rd.ok) throw new Error();
+      const d = await rd.json();
+      const l = rl.ok ? await rl.json() : {};
+      setData(d); setLogs(l); setSyncedAt(new Date());
+    }catch(e){ setErr(true); }
+  }
+  useEffect(()=>{
+    load();
+    const iv = setInterval(()=>{
+      const jst = new Date(Date.now()+9*3600*1000).getUTCHours();
+      if(jst>=6 && jst<22) load();
+    }, 5*60*1000);
+    return ()=>clearInterval(iv);
+  },[]);
+  useEffect(()=>{ document.body.classList.toggle("embed", embed); },[embed]);
+  useEffect(()=>{ const t=setInterval(()=>setTick(x=>x+1),30000); return ()=>clearInterval(t); },[]);
+
+  if(err) return h("div",{className:"wrap"}, h("div",{className:"state"},
+    "Fleet data unavailable — check the connection and try again.",
+    h("div",{className:"retry-wrap"}, h("button",{className:"retry",onClick:load},"RETRY"))
+  ));
+  if(!data) return h("div",{className:"wrap"}, h("div",{className:"state"},"Loading fleet…"));
+
+  const rows = TRUCKS.map(id=>{
+    const td = { ...(data[id]||{}), _id:id };
+    const tlogs = logs[id] || {};
+    return { id, td, tlogs, status: truckStatus(td, tlogs) };
+  });
+  const counts = rows.reduce((a,r)=>{ a[r.status]=(a[r.status]||0)+1; return a; },{});
+  const total = TRUCKS.length;
+
+  const sorted = rows.slice().sort((a,b)=>{
+    const d = (SORT_RANK[a.status]??3)-(SORT_RANK[b.status]??3);
+    if(d) return d;
+    const ca = criticalItem(a.td,a.tlogs), cb = criticalItem(b.td,b.tlogs);
+    return ((ca?ca.rem:1e9)-(cb?cb.rem:1e9));
+  });
+  const shown = filter ? sorted.filter(r=>r.status===filter) : sorted;
+
+  const kpiOrder = ["overdue","warn","due","ok","grounded"];
+  const segOrder = ["overdue","warn","due","ok","grounded","none"];
+
+  const freshest = rows.map(r=>r.td && r.td.lastUpdated ? new Date(r.td.lastUpdated).getTime() : 0)
+    .reduce((a,b)=>Math.max(a,b),0);
+  const dataAge = freshest ? agoParts(new Date(freshest).toISOString()) : null;
+  const syncAgo = syncedAt ? (agoParts(syncedAt.toISOString())||{}).label : "";
+
+  return h("div",{className:"wrap"},
+    h("header",{className:"head"},
+      h("div",{className:"brand"},
+        h("span",{className:"badge-hd"},"HD GEN2"),
+        h("span",{className:"title"},"Fleet Overview")
+      ),
+      h("div",{className:"head-right"},
+        h("span",{className:"sync"}, h("span",{className:"sync-dot"}), syncAgo||"—"),
+        dataAge ? h("span",{className:"age "+(dataAge.level==="stale"?"stale":dataAge.level==="warn"?"warn":""),title:"Newest hours reading across the fleet"}, "data "+dataAge.label) : null,
+        h("a",{className:"link",href:"index.html"},"Detailed view →")
+      )
+    ),
+    h("div",{className:"health"},
+      h("div",{className:"health-bar"},
+        segOrder.filter(s=>counts[s]).map(s=>
+          h("div",{key:s,className:"health-seg",style:{width:(counts[s]/total*100)+"%",background:STATUS_META[s].color}}))
+      ),
+      h("div",{className:"kpis"},
+        kpiOrder.map(s=>{
+          const active = filter===s;
+          const dim = filter && !active;
+          return h("div",{key:s,
+            className:"kpi k-"+s+(active?" active":"")+(dim?" dim":""),
+            onClick:()=>setFilter(active?null:s)},
+            h("div",{className:"kpi-val"}, counts[s]||0),
+            h("div",{className:"kpi-lbl"}, STATUS_META[s].label)
+          );
+        })
+      )
+    ),
+    shown.length
+      ? h("div",{className:"grid"}, shown.map(r=> h(Card,{key:r.id, id:r.id, td:r.td, tlogs:r.tlogs})))
+      : h("div",{className:"state"}, "No trucks in this status.",
+          h("div",{className:"retry-wrap"}, h("button",{className:"retry",onClick:()=>setFilter(null)},"CLEAR FILTER")))
+  );
+}
+
+ReactDOM.render(h(App), document.getElementById("root"));
+</script>
+</body>
+</html>
