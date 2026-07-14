@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "truck": "HD16",
+    "tasks": [
+      "Fuel filter change"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0BEARESY3W",
+      "name": null
+    },
+    "loggedAt": "2026-07-14T10:13:29.899Z",
+    "hours": 430,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
