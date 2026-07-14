@@ -32,24 +32,8 @@
     "1784027474.417449": "accepted",
     "1784027482.603169": "accepted",
     "1784029110.725419": "rejected",
-    "1784029151.663329": "accepted"
+    "1784029151.663329": "accepted",
+    "1784029194.201719": "accepted"
   },
-  "pending": [
-    {
-      "truck": "HD16",
-      "tasks": [
-        "Fuel filter change"
-      ],
-      "technician": "Geoff Fitzjarrell",
-      "postedBy": {
-        "id": "U0BEARESY3W",
-        "name": null
-      },
-      "loggedAt": "2026-07-14T10:13:29.899Z",
-      "hours": 430,
-      "notes": [],
-      "alreadyLogged": true,
-      "notified": true
-    }
-  ]
+  "pending": []
 }
