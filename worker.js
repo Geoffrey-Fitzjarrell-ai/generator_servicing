@@ -22,14 +22,14 @@ const REPO  = "generator_servicing";
 // Worker doesn't share a module with the dashboard. If you add/change a task
 // there, update it here too or "next due" answers will drift.
 const TASKS = [
-  { key:"airfilter_battery", name:"Air filter & battery check", interval:50  },
-  { key:"oil_filter",        name:"Oil / filter change",        interval:150 },
-  { key:"airfilter_clean",   name:"Air filter cleaning",         interval:250 },
-  { key:"coolant_lines",     name:"Check coolant lines",         interval:250 },
-  { key:"fuel_filter",       name:"Fuel filter change",          interval:250 },
-  { key:"drive_belt",        name:"Check drive belt & tension",  interval:500 },
-  { key:"clean_radiator",    name:"Clean radiator",              interval:500 },
-  { key:"airfilter_500",     name:"Change air filter",           interval:500 },
+  { key:"airfilter_battery", name:"Air filter & battery check", interval:50,  type:"service" },
+  { key:"oil_filter",        name:"Oil / filter change",        interval:150, type:"replace" },
+  { key:"airfilter_clean",   name:"Air filter cleaning",         interval:250, type:"service" },
+  { key:"coolant_lines",     name:"Check coolant lines",         interval:250, type:"service" },
+  { key:"fuel_filter",       name:"Fuel filter change",          interval:250, type:"service" },
+  { key:"drive_belt",        name:"Check drive belt & tension",  interval:500, type:"service" },
+  { key:"clean_radiator",    name:"Clean radiator",              interval:500, type:"service" },
+  { key:"airfilter_500",     name:"Change air filter",           interval:500, type:"replace" },
 ];
 function tasksForTruck(id) {
   return TASKS.filter(t => t.key !== "airfilter_clean" || id === "HD5");
@@ -601,8 +601,19 @@ function nextDueList(truck, hoursNow, logs) {
   }).sort((a, b) => a.rem - b.rem);
 }
 
-function fmtRem(rem) {
-  return rem <= 0 ? `overdue by ${Math.abs(Math.round(rem))}h` : `due in ${Math.round(rem)}h`;
+// Checks & cleanings never read as "overdue" — only replacements (oil, fuel
+// filter, air filter change) do. Mirrors the severity split in index.html.
+function isReplace(task){ return task && task.type === "replace"; }
+function fmtRem(rem, task) {
+  if (rem > 0) return `due in ${Math.round(rem)}h`;
+  return isReplace(task)
+    ? `overdue by ${Math.abs(Math.round(rem))}h`
+    : `check/clean due (${Math.abs(Math.round(rem))}h past)`;
+}
+// Short tail used in the monospace list rows.
+function remTail(t) {
+  if (t.rem > 0) return `${Math.round(t.rem)}h left`;
+  return isReplace(t) ? `over ${Math.abs(Math.round(t.rem))}h` : `due ${Math.abs(Math.round(t.rem))}h`;
 }
 
 const HELP_TEXT =
@@ -652,10 +663,10 @@ async function answerMention(event, env) {
     const rows = list.map(t => {
       const ratio = (t.interval - t.rem) / t.interval;
       const pct = Math.min(Math.round(ratio * 100), 999);
-      const tail = t.rem <= 0 ? `over ${Math.abs(Math.round(t.rem))}h` : `${Math.round(t.rem)}h left`;
+      const tail = remTail(t);
       return `${bar(ratio)} ${String(pct).padStart(3)}%  ${t.name} — ${tail}`;
     }).join("\n");
-    const fallback = `${truck} @ ${info.hours}h — next: ${list[0].name} (${fmtRem(list[0].rem)})`;
+    const fallback = `${truck} @ ${info.hours}h — next: ${list[0].name} (${fmtRem(list[0].rem, list[0])})`;
     return slackPostMessage(env, fallback, { channel, thread_ts, blocks: [
       { type: "section", text: { type: "mrkdwn", text: `*${truck}* @ *${info.hours}h* — upcoming maintenance:\n\`\`\`${rows}\`\`\`` } },
       { type: "context", elements: [{ type: "mrkdwn", text: "▓ = interval elapsed ｜ <https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/|📊 dashboard>" }] },
@@ -672,7 +683,7 @@ async function answerMention(event, env) {
     }
     const critical = nextDueList(truck, info.hours, logs)[0];
     return slackPostMessage(env,
-      `*${truck}* — ${info.hours}h. Most urgent: ${critical.name} (${fmtRem(critical.rem)}).`,
+      `*${truck}* — ${info.hours}h. Most urgent: ${critical.name} (${fmtRem(critical.rem, critical)}).`,
       { channel, thread_ts });
   }
 
@@ -685,7 +696,7 @@ async function answerMention(event, env) {
     const critical = nextDueList(truck, info.hours, logs)[0];
     const groundedNote = info.grounded ? ` — grounded (${info.groundedNote || "under repair"})` : "";
     return slackPostMessage(env,
-      `*${truck}* — ${info.hours}h${groundedNote}. Most urgent: ${critical.name} (${fmtRem(critical.rem)}).`,
+      `*${truck}* — ${info.hours}h${groundedNote}. Most urgent: ${critical.name} (${fmtRem(critical.rem, critical)}).`,
       { channel, thread_ts });
   }
 
@@ -706,15 +717,18 @@ async function answerMention(event, env) {
     const rowLine = r => {
       const ratio = (r.critical.interval - r.critical.rem) / r.critical.interval;
       const pct = Math.min(Math.round(ratio * 100), 999);
-      const tail = r.critical.rem <= 0 ? `over ${Math.abs(Math.round(r.critical.rem))}h` : `${Math.round(r.critical.rem)}h left`;
+      const tail = remTail(r.critical);
       return `${r.truck.padEnd(5)} ${bar(ratio)} ${String(pct).padStart(3)}%  ${r.critical.name} — ${tail}`;
     };
     if (!flagged.length) {
       return slackPostMessage(env, "Nothing overdue or due soon across the fleet 🎉", { channel, thread_ts });
     }
     const body = flagged.map(rowLine).join("\n");
-    const nOver = flagged.filter(r => r.critical.rem <= 0).length;
-    return slackPostMessage(env, `Fleet: ${nOver} overdue, ${flagged.length - nOver} due soon`, { channel, thread_ts, blocks: [
+    const nOver = flagged.filter(r => r.critical.rem <= 0 && isReplace(r.critical)).length;
+    const nCheck = flagged.filter(r => r.critical.rem <= 0 && !isReplace(r.critical)).length;
+    const nSoon = flagged.length - nOver - nCheck;
+    const summary = `Fleet: ${nOver} overdue` + (nCheck ? `, ${nCheck} check/clean due` : "") + `, ${nSoon} due soon`;
+    return slackPostMessage(env, summary, { channel, thread_ts, blocks: [
       { type: "section", text: { type: "mrkdwn", text: `*Fleet — overdue & due soon (≤25h):*\n\`\`\`${body}\`\`\`` } },
       { type: "context", elements: [{ type: "mrkdwn", text: "▓ = interval elapsed ｜ <https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/|📊 dashboard>" }] },
     ]});

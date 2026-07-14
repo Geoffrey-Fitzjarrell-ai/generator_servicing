@@ -48,11 +48,13 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 @keyframes barGrow { from{width:0%} }
 .fleet-row-fill.fs-overdue  { background:linear-gradient(90deg,#8b1f1f,var(--red)); }
 .fleet-row-fill.fs-warn     { background:linear-gradient(90deg,#7a5010,var(--amber)); }
+.fleet-row-fill.fs-due      { background:linear-gradient(90deg,#16305f,var(--blue)); }
 .fleet-row-fill.fs-ok       { background:linear-gradient(90deg,#0f4028,var(--green)); }
 .fleet-row-fill.fs-grounded { background:linear-gradient(90deg,#2a1845,#7060a0); }
 .fleet-row-pct { font-family:var(--mono); font-size:11px; font-weight:700; width:36px; flex-shrink:0; text-align:right; }
 .fs-overdue  .fleet-row-pct { color:var(--red); }
 .fs-warn     .fleet-row-pct { color:var(--amber); }
+.fs-due      .fleet-row-pct { color:var(--blue); }
 .fs-ok       .fleet-row-pct { color:var(--green); }
 .fs-grounded .fleet-row-pct { color:#9880cc; }
 
@@ -82,6 +84,7 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .truck-tab.active::before { background:var(--amber); box-shadow:0 0 8px var(--amber); }
 .truck-tab.st-overdue::before { background:var(--red); box-shadow:0 0 8px var(--red); }
 .truck-tab.st-warn::before { background:var(--amber); }
+.truck-tab.st-due::before { background:var(--blue); box-shadow:0 0 8px var(--blue); }
 .truck-tab.st-ok::before { background:var(--green); }
 .truck-tab.st-grounded::before { background:#7060a0; box-shadow:0 0 8px #7060a0; }
 .truck-tab.st-grounded .truck-name { color:#9880cc; }
@@ -89,6 +92,7 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .truck-name { font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:0.06em; color:var(--text-dim); transition:color 0.2s; }
 .truck-tab.active .truck-name { color:var(--amber); }
 .truck-tab.st-overdue .truck-name { color:var(--red); }
+.truck-tab.st-due .truck-name { color:var(--blue); }
 .truck-hours-badge { font-family:var(--mono); font-size:11px; color:var(--text-faint); }
 
 /* MAIN */
@@ -113,6 +117,7 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .stat-card::before { content:''; position:absolute; top:0; left:0; bottom:0; width:2px; }
 .stat-card.s-ok::before { background:var(--green); }
 .stat-card.s-warn::before { background:var(--amber); }
+.stat-card.s-due::before { background:var(--blue); }
 .stat-card.s-overdue::before { background:var(--red); }
 .stat-card.s-neutral::before { background:var(--border2); }
 .stat-lbl { font-size:11px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
@@ -133,6 +138,17 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .due-soon-body { flex:1; }
 .due-soon-title { font-family:var(--mono); font-size:10px; font-weight:700; color:var(--amber); letter-spacing:0.08em; margin-bottom:4px; }
 .due-soon-item { font-size:11px; color:#ffe4a0; line-height:1.6; }
+
+/* CHECK / CLEAN DUE BANNER (checks & cleanings past interval — calm, never alarming) */
+.service-due-banner {
+  padding:10px 12px; border-radius:var(--radius); margin-bottom:14px;
+  background:var(--blue-dim); border:1px solid rgba(74,124,245,0.3);
+  display:flex; gap:10px; align-items:flex-start;
+}
+.service-due-icon { color:var(--blue); font-size:13px; margin-top:1px; }
+.service-due-title { font-family:var(--mono); font-size:10px; font-weight:700; color:var(--blue); letter-spacing:0.08em; margin-bottom:4px; }
+.service-due-item { font-size:11px; color:#bcd0ff; line-height:1.6; }
+.due-tag-svc { color:var(--blue) !important; }
  padding:10px 12px; border-radius:var(--radius); margin-bottom:14px; background:var(--red-dim); border:1px solid rgba(224,69,69,0.3); display:flex; gap:10px; align-items:flex-start; animation:shake 0.55s cubic-bezier(0.36,0.07,0.19,0.97) 0.2s both; }
 @keyframes shake { 0%{transform:translateX(0)} 15%{transform:translateX(-7px)} 30%{transform:translateX(6px)} 45%{transform:translateX(-4px)} 60%{transform:translateX(3px)} 100%{transform:translateX(0)} }
 .attention-icon { color:var(--red); font-size:13px; margin-top:1px; }
@@ -161,6 +177,7 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .task-row:hover { background:var(--surface3); }
 .task-row.r-overdue { border-left-color:var(--red); background:#160d0d; }
 .task-row.r-warn    { border-left-color:var(--amber); }
+.task-row.r-due     { border-left-color:var(--blue); }
 .task-row.r-ok      { border-left-color:var(--green); }
 .task-row.r-no_record { border-left-color:#1e3050; }
 .task-name { font-size:14px; color:var(--text); }
@@ -170,6 +187,7 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .badge { font-family:var(--mono); font-size:11px; font-weight:700; padding:3px 7px; border-radius:3px; text-align:center; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; transition:background 0.3s, color 0.3s; }
 .badge.ok        { background:var(--green-dim); color:var(--green); }
 .badge.warn      { background:var(--amber-dim); color:var(--amber); }
+.badge.due       { background:var(--blue-dim);  color:var(--blue); }
 .badge.overdue   { background:var(--red-dim);   color:var(--red); animation:overdueFlash 2.2s ease-in-out infinite; }
 @keyframes overdueFlash { 0%,100%{opacity:1} 50%{opacity:0.45} }
 .badge.no_record { background:#141c2a; color:#5a7a9a; border:1px solid #1e3050; letter-spacing:0.06em; }
@@ -257,15 +275,21 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 const { useState, useEffect, useRef } = React;
 
 const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14","HD15","HD16","HD17"];
+// type "replace" = escalates to OVERDUE (red) past interval — only the oil
+//   change and the air-filter change (airfilter_500). These are the hard ones.
+// type "service" = a check, cleaning, or filter service (air-filter check,
+//   radiator/air-filter clean, coolant/belt checks, fuel filter). These NEVER
+//   go overdue; past their interval they show a calm DUE (blue) state and do
+//   not trigger the truck's red overdue alarm or overdue counts.
 const TASKS = [
-  { key:"airfilter_battery", name:"Air filter & battery check",        interval:50  },
-  { key:"oil_filter",        name:"Oil / filter change",               interval:150 },
-  { key:"airfilter_clean",   name:"Air filter cleaning",               interval:250 },
-  { key:"coolant_lines",     name:"Check coolant lines",               interval:250 },
-  { key:"fuel_filter",       name:"Fuel filter change",                interval:250 },
-  { key:"drive_belt",        name:"Check drive belt & tension",        interval:500 },
-  { key:"clean_radiator",    name:"Clean radiator",                    interval:500 },
-  { key:"airfilter_500",    name:"Change air filter",                 interval:500 },
+  { key:"airfilter_battery", name:"Air filter & battery check",        interval:50,  type:"service" },
+  { key:"oil_filter",        name:"Oil / filter change",               interval:150, type:"replace" },
+  { key:"airfilter_clean",   name:"Air filter cleaning",               interval:250, type:"service" },
+  { key:"coolant_lines",     name:"Check coolant lines",               interval:250, type:"service" },
+  { key:"fuel_filter",       name:"Fuel filter change",                interval:250, type:"service" },
+  { key:"drive_belt",        name:"Check drive belt & tension",        interval:500, type:"service" },
+  { key:"clean_radiator",    name:"Clean radiator",                    interval:500, type:"service" },
+  { key:"airfilter_500",    name:"Change air filter",                 interval:500, type:"replace" },
 ];
 
 // Air filter cleaning (250h) is only performed on HD5; every other truck
@@ -273,6 +297,21 @@ const TASKS = [
 function tasksForTruck(id){
   return TASKS.filter(t => t.key!=="airfilter_clean" || id==="HD5");
 }
+
+// Terminal state for a task past its interval: replacements go OVERDUE (red),
+// checks/cleanings go DUE (blue, non-alarming). Single source of truth so the
+// three status computations below can never drift apart.
+function pastDueStatus(task){ return task.type==="replace" ? "overdue" : "due"; }
+// Status from a "hours-since-last-done / interval" ratio. Replacements get an
+// amber WARN heads-up in the last 10%; checks/cleanings stay green until due.
+function ratioStatus(task, ratio){
+  if(ratio>=1) return pastDueStatus(task);
+  if(task.type==="replace" && ratio>=0.9) return "warn";
+  return "ok";
+}
+// A status that should raise the red "service required" alarm. DUE (checks /
+// cleanings past interval) deliberately does NOT.
+function isAlarm(status){ return status==="overdue"; }
 
 const DATA_URL    = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/data.json";
 const LOGS_URL    = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/service_logs.json";
@@ -379,18 +418,23 @@ function Gauge({ criticalTask, hours }) {
   const dueAt    = lastDone + criticalTask.interval;
   const pct      = Math.min(Math.max((hours - lastDone) / criticalTask.interval, 0), 1);
   const overdue  = hours >= dueAt;
+  const isService = criticalTask.type && criticalTask.type!=="replace";
   const W=220, H=48, bx=0, by=20, bw=220, bh=14;
   const fillW = Math.round(bw * pct);
   const uid = "g" + Math.round(pct*1000);
-  const fillColor = overdue ? "#e04545" : pct > 0.85 ? "#f0a500" : "#3da870";
+  const dueColor = isService ? "#4a7cf5" : "#e04545";
+  const fillColor = overdue ? dueColor : pct > 0.85 ? (isService ? "#4a7cf5" : "#f0a500") : "#3da870";
   const needleX = Math.min(Math.max(fillW, 2), bw-2);
 
   return React.createElement("svg",{width:"100%",height:H,viewBox:`0 0 ${W} ${H}`,style:{display:"block"}},
     React.createElement("defs",null,
       React.createElement("linearGradient",{id:"zg"+uid,x1:"0",y1:"0",x2:"1",y2:"0"},
-        React.createElement("stop",{offset:"0%",stopColor:"#3da870"}),
-        React.createElement("stop",{offset:"70%",stopColor:"#f0a500"}),
-        React.createElement("stop",{offset:"100%",stopColor:"#e04545"})
+        isService
+          ? [React.createElement("stop",{key:"a",offset:"0%",stopColor:"#3da870"}),
+             React.createElement("stop",{key:"b",offset:"100%",stopColor:"#4a7cf5"})]
+          : [React.createElement("stop",{key:"a",offset:"0%",stopColor:"#3da870"}),
+             React.createElement("stop",{key:"b",offset:"70%",stopColor:"#f0a500"}),
+             React.createElement("stop",{key:"c",offset:"100%",stopColor:"#e04545"})]
       ),
       React.createElement("clipPath",{id:"cp"+uid},
         React.createElement("rect",{x:bx,y:by,width:fillW,height:bh})
@@ -510,12 +554,13 @@ function App() {
     const since=hasRec&&hours!=null?hours-last:null;
     const rem=since!=null?task.interval-since:null;
     const pct=since!=null?Math.min(since/task.interval,1):(hours!=null&&!hasRec&&task.key!=="airfilter_clean"&&hours>=task.interval?1:0);
-    const status=hours==null?"unknown":!hasRec&&task.key==="airfilter_clean"?"no_record":!hasRec&&hours<task.interval?"no_record":!hasRec?"overdue":since>=task.interval?"overdue":since>=task.interval*0.9?"warn":"ok";
+    const status=hours==null?"unknown":!hasRec&&task.key==="airfilter_clean"?"no_record":!hasRec&&hours<task.interval?"no_record":!hasRec?pastDueStatus(task):ratioStatus(task,since/task.interval);
     return {...task,last,hasRec,since,rem,pct,status};
   });
 
   const anyOverdue=!isGrounded&&taskStatus.some(t=>t.status==="overdue");
   const anyWarn=!isGrounded&&taskStatus.some(t=>t.status==="warn");
+  const anyDue=!isGrounded&&taskStatus.some(t=>t.status==="due");
   const recordedTasks = taskStatus.filter(t => t.since != null);
   const criticalTask = isGrounded ? null
     : recordedTasks.length > 0
@@ -537,15 +582,13 @@ function App() {
     const statuses = tasksHere.map(task=>{
       const last=tl[task.key];
       if(last==null){
-        return (task.key==="airfilter_clean"||td.hours<task.interval) ? "ok" : "overdue";
+        return (task.key==="airfilter_clean"||td.hours<task.interval) ? "ok" : pastDueStatus(task);
       }
-      const since=td.hours-last;
-      if(since>=task.interval)return "overdue";
-      if(since>=task.interval*0.9)return "warn";
-      return "ok";
+      return ratioStatus(task, (td.hours-last)/task.interval);
     });
     if(statuses.includes("overdue"))return "overdue";
     if(statuses.includes("warn"))return "warn";
+    if(statuses.includes("due"))return "due";
     return "ok";
   }
 
@@ -564,12 +607,12 @@ function App() {
       if(taskKey==="airfilter_clean"||hrs<task.interval){
         return{status:"no_record",pct:Math.min(hrs/task.interval,1),hours:hrs,dueAt:task.interval,remaining:task.interval-hrs};
       }
-      return{status:"overdue",pct:1,hours:hrs,dueAt:task.interval,over:hrs-task.interval};
+      return{status:pastDueStatus(task),pct:1,hours:hrs,dueAt:task.interval,over:hrs-task.interval};
     }
     const since=hrs-last;
     const pct=Math.min(since/task.interval,1);
     const dueAt=last+task.interval;
-    const status=since>=task.interval?"overdue":since>=task.interval*0.9?"warn":"ok";
+    const status=ratioStatus(task, since/task.interval);
     return{status,pct,hours:hrs,since,dueAt,last,remaining:dueAt-hrs,over:hrs-dueAt};
   }
 
@@ -644,14 +687,16 @@ function App() {
     const st=truckStatus(t);
     if(st==="overdue") acc.overdue++;
     else if(st==="warn") acc.warn++;
+    else if(st==="due") acc.due++;
     else if(st==="ok") acc.ok++;
     else if(st==="grounded") acc.grounded++;
     return acc;
-  },{overdue:0,warn:0,ok:0,grounded:0});
+  },{overdue:0,warn:0,due:0,ok:0,grounded:0});
 
-  const statusLabel={ok:"OK",warn:"DUE SOON",overdue:"OVERDUE",unknown:"—",no_record:"UPCOMING"};
+  const statusLabel={ok:"OK",warn:"DUE SOON",due:"DUE",overdue:"OVERDUE",unknown:"—",no_record:"UPCOMING"};
   const overdueTasks=taskStatus.filter(t=>t.status==="overdue");
   const warnTasks=taskStatus.filter(t=>t.status==="warn");
+  const dueTasks=taskStatus.filter(t=>t.status==="due");
   const histEntries=(svcHistory[selected]||[]).filter(e=>e.date||e.hours).slice().reverse();
 
   // Newest lastUpdated across the fleet = how fresh the *data* is (distinct
@@ -712,11 +757,15 @@ function App() {
       React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:10,fontWeight:700,color:"var(--amber)",letterSpacing:"0.08em",marginBottom:5}},"DUE SOON"),
       React.createElement("div",{className:"due-list"},warnTasks.map(t=>React.createElement("div",{key:t.key,className:"due-tag"},t.name)))
     );
+    if(dueTasks.length)return React.createElement("div",null,
+      React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:10,fontWeight:700,color:"var(--blue)",letterSpacing:"0.08em",marginBottom:5}},"CHECK / CLEAN DUE"),
+      React.createElement("div",{className:"due-list"},dueTasks.map(t=>React.createElement("div",{key:t.key,className:"due-tag due-tag-svc"},t.name)))
+    );
     if(criticalTask){
       const dueAt=(criticalTask.last||0)+criticalTask.interval;
       const remHours=Math.round(dueAt-hours);
       const ringPct=Math.max(0,Math.min(1,criticalTask.pct||0));
-      const ringColor=criticalTask.status==="overdue"?"var(--red)":criticalTask.status==="warn"?"var(--amber)":"var(--green)";
+      const ringColor=criticalTask.status==="overdue"?"var(--red)":criticalTask.status==="due"?"var(--blue)":criticalTask.status==="warn"?"var(--amber)":"var(--green)";
       const r=15,c=2*Math.PI*r;
       const pred=remHours>0?predictDueDate(remHours,selected):null;
       return React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8}},
@@ -764,6 +813,7 @@ function App() {
         ...[
           {key:"overdue",  label:"Overdue",  count:fleetCounts.overdue},
           {key:"warn",     label:"Due Soon", count:fleetCounts.warn},
+          {key:"due",      label:"Check/Clean Due", count:fleetCounts.due},
           {key:"ok",       label:"OK",       count:fleetCounts.ok},
           {key:"grounded", label:"Grounded", count:fleetCounts.grounded},
         ].map(s=>{
@@ -795,17 +845,18 @@ function App() {
           .filter(t=>tasksForTruck(t).some(x=>x.key===svcLookup))
           .map(t=>({t,info:taskStatusForTruck(t,svcLookup)}))
           .sort((a,b)=>{
-            const order={overdue:0,warn:1,no_record:2,ok:3,unknown:4,grounded:5};
+            const order={overdue:0,warn:1,due:2,no_record:3,ok:4,unknown:5,grounded:6};
             const oa=order[a.info.status]??4,ob=order[b.info.status]??4;
             if(oa!==ob)return oa-ob;
             return (b.info.pct||0)-(a.info.pct||0);
           })
           .map(({t,info})=>{
-            const fillColor=info.status==="overdue"?"#e04545":info.status==="warn"?"#f0a500":info.status==="grounded"?"#7060a0":info.status==="ok"?"#3da870":"#38465a";
+            const fillColor=info.status==="overdue"?"#e04545":info.status==="warn"?"#f0a500":info.status==="due"?"#4a7cf5":info.status==="grounded"?"#7060a0":info.status==="ok"?"#3da870":"#38465a";
             const pctDisp=Math.round((info.pct||0)*100);
             const sub=info.status==="grounded"?"Grounded":
               info.status==="unknown"?"No hours data":
               info.status==="overdue"?Math.max(Math.round(info.over||0),0)+"h overdue":
+              info.status==="due"?Math.max(Math.round(info.over||0),0)+"h past · check/clean":
               info.status==="no_record"?Math.max(Math.round(info.remaining||0),0)+"h until due":
               info.status==="warn"?Math.max(Math.round(info.remaining||0),0)+"h left · due soon":
               Math.max(Math.round(info.remaining||0),0)+"h left";
@@ -825,7 +876,7 @@ function App() {
     ),
     React.createElement("nav",{className:"truck-strip"},
       [...TRUCKS].sort((a,b)=>{
-        const order={overdue:0,warn:1,ok:2,none:3,grounded:4};
+        const order={overdue:0,warn:1,due:2,ok:3,none:4,grounded:5};
         return (order[truckStatus(a)]??3)-(order[truckStatus(b)]??3);
       }).map(t=>{
         const st=truckStatus(t);const td=fleet[t];
@@ -845,7 +896,7 @@ function App() {
     React.createElement("div",{className:"main"},
       React.createElement("div",{className:"left-panel "+(isOverdue?"is-overdue ":"")+(transitioning?"panel-exit":"panel-enter"),key:"L"+displayKey},
         React.createElement("div",{className:"truck-header"},
-          React.createElement("div",{className:"truck-id",style:{color:isGrounded?"#9880cc":isOverdue?"var(--red)":anyWarn?"var(--amber)":"var(--text)"}},selected),
+          React.createElement("div",{className:"truck-id",style:{color:isGrounded?"#9880cc":isOverdue?"var(--red)":anyWarn?"var(--amber)":anyDue?"var(--blue)":"var(--text)"}},selected),
           React.createElement("div",{className:"truck-sub"},"HD GEN2 · Japan Fleet")
         ),
         React.createElement("div",{className:"gauge-wrap"},
@@ -858,7 +909,7 @@ function App() {
             React.createElement("div",{className:"stat-val "+(isOverdue?"c-overdue":anyWarn?"c-warn":"")},
               countedHours!=null?countedHours:"—",countedHours!=null?React.createElement("span",{className:"unit"},"h"):null)
           ),
-          React.createElement("div",{className:"stat-card "+(isOverdue?"s-overdue":anyWarn?"s-warn":"s-ok")},
+          React.createElement("div",{className:"stat-card "+(isOverdue?"s-overdue":anyWarn?"s-warn":anyDue?"s-due":"s-ok")},
             React.createElement("div",{className:"stat-lbl"},"Next Service"),
             nextServiceCard()
           )
@@ -875,6 +926,14 @@ function App() {
             React.createElement("div",{className:"due-soon-title"},"COMING UP"),
             ...warnTasks.map(t=>React.createElement("div",{key:t.key,className:"due-soon-item"},
               t.name+" — "+Math.round(t.rem)+"h away"
+            ))
+          )
+        ):anyDue?React.createElement("div",{className:"service-due-banner",key:"due"+displayKey},
+          React.createElement("span",{className:"service-due-icon"},"◎"),
+          React.createElement("div",{className:"due-soon-body"},
+            React.createElement("div",{className:"service-due-title"},"CHECK / CLEAN DUE"),
+            ...dueTasks.map(t=>React.createElement("div",{key:t.key,className:"service-due-item"},
+              t.name+(t.rem!=null?" — "+Math.abs(Math.round(t.rem))+"h past":"")
             ))
           )
         ):null,
@@ -946,15 +1005,15 @@ function App() {
                     React.createElement("svg",{viewBox:"0 0 200 4",className:"task-mini-bar",preserveAspectRatio:"none"},
                       React.createElement("rect",{x:0,y:0,width:200,height:4,rx:2,fill:"#1a2235"}),
                       React.createElement("rect",{x:0,y:0,width:Math.max(0,Math.min(200,200*(task.pct||0))),height:4,rx:2,
-                        fill:task.status==="overdue"?"var(--red)":task.status==="warn"?"var(--amber)":"var(--green)"})
+                        fill:task.status==="overdue"?"var(--red)":task.status==="due"?"var(--blue)":task.status==="warn"?"var(--amber)":"var(--green)"})
                     )
                   ),
                   React.createElement("div",{className:"task-interval"},task.interval+"h"),
                   React.createElement("div",{className:"badge "+task.status},statusLabel[task.status]),
-                  React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:task.status==="overdue"?"var(--red)":task.status==="warn"?"var(--amber)":"var(--text-faint)",whiteSpace:"nowrap",textAlign:"right"}},
+                  React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:task.status==="overdue"?"var(--red)":task.status==="due"?"var(--blue)":task.status==="warn"?"var(--amber)":"var(--text-faint)",whiteSpace:"nowrap",textAlign:"right"}},
                     task.rem!=null
                       ? task.rem<=0
-                        ? "+" + Math.abs(Math.round(task.rem)) + "h over"
+                        ? (task.status==="due"?"+"+Math.abs(Math.round(task.rem))+"h · due":"+" + Math.abs(Math.round(task.rem)) + "h over")
                         : "@" + (hours + Math.round(task.rem)) + "h"
                       : "—",
                     task.rem>0?React.createElement("div",{style:{fontSize:9,color:"var(--text-faint)",fontWeight:400,marginTop:1}},predictDueDate(task.rem,selected)||"\u00A0"):null
