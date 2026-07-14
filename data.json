@@ -65,13 +65,13 @@
     }
   },
   "HD12": {
-    "hours": 657,
+    "hours": 668,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Kaiho Haruto",
-    "lastUpdated": "2026-07-13T10:43:11Z",
+    "lastUpdated": "2026-07-14T00:18:58Z",
     "postedBy": {
-      "id": "U0AV3PG35JM",
+      "id": "U0AT1RYRS1Z",
       "name": null
     }
   },
