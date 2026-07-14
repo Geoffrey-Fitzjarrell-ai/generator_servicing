@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HD GEN2 · Generator Service Monitor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&family=Titillium+Web:ital,wght@0,400;0,600;0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -265,6 +265,125 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .task-expand-icon.open { transform:rotate(180deg); }
 .full-center { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; gap:14px; }
 .err-msg { font-size:13px; color:var(--red); max-width:340px; text-align:center; line-height:1.6; }
+
+/* ══ unified app tab bar ══════════════════════════════════════════════ */
+.app-tabs { display:flex; gap:2px; align-items:stretch; padding:0 20px; background:#0a0d13;
+  border-bottom:1px solid var(--border); position:sticky; top:0; z-index:60; }
+.app-tab { font-family:'Titillium Web',sans-serif; font-weight:700; font-style:italic; font-size:13px;
+  letter-spacing:0.05em; text-transform:uppercase; padding:12px 22px; color:var(--text-dim);
+  background:transparent; border:none; border-bottom:2px solid transparent; cursor:pointer; transition:color .15s; }
+.app-tab:hover { color:var(--text); }
+.app-tab.active { color:#fff; border-bottom-color:var(--f1red); }
+.app-view { display:none; }
+.app-view.show { display:block; }
+
+/* ══ pit-wall fleet view (scoped) ═════════════════════════════════════ */
+.pitwall {
+  --carbon:#12121a; --carbon2:#1a1a24; --panel:#1e1e2a; --panel2:#252534;
+  --line:#2c2c3a; --line2:#3a3a4c;
+  --f1red:#e10600; --yellow:#ffd200; --green:#22e08a; --blue:#2e9bff; --garage:#7a8296;
+  --white:#f4f5f8; --grey:#9a9fb0; --faint:#5a6072;
+  --disp:'Titillium Web',sans-serif; --mono2:'JetBrains Mono',monospace;
+  min-height:calc(100vh - 46px); color:var(--white); font-family:var(--disp);
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.012) 0 2px, transparent 2px 4px),
+    linear-gradient(180deg,#15151f 0%, #101017 100%);
+}
+:root { --f1red:#e10600; }
+.pitwall .wrap { max-width:1280px; margin:0 auto; padding:20px 22px 44px; }
+.pitwall .pw { position:relative; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  padding:14px 18px; margin-bottom:16px; background:linear-gradient(90deg,var(--panel),transparent 80%);
+  border-left:4px solid var(--f1red); overflow:hidden; }
+.pitwall .pw::before { content:''; position:absolute; right:0; top:0; bottom:0; width:120px;
+  background-image:
+   linear-gradient(45deg,#ffffff08 25%,transparent 25%,transparent 50%,#ffffff08 50%,#ffffff08 75%,transparent 75%),
+   linear-gradient(45deg,#ffffff08 25%,transparent 25%,transparent 50%,#ffffff08 50%,#ffffff08 75%,transparent 75%);
+  background-size:12px 12px; background-position:0 0, 6px 6px; opacity:.5; }
+.pitwall .pw-brand { display:flex; align-items:baseline; gap:12px; z-index:1; }
+.pitwall .pw-mark { font-weight:900; font-style:italic; font-size:15px; letter-spacing:0.02em;
+  color:var(--f1red); text-transform:uppercase; }
+.pitwall .pw-title { font-weight:900; font-style:italic; font-size:23px; letter-spacing:-0.01em;
+  text-transform:uppercase; line-height:1; }
+.pitwall .pw-sub { font-family:var(--mono2); font-size:10px; letter-spacing:0.22em; color:var(--grey);
+  text-transform:uppercase; align-self:flex-end; }
+.pitwall .pw-right { margin-left:auto; display:flex; align-items:center; gap:12px; z-index:1; }
+.pitwall .live { display:inline-flex; align-items:center; gap:6px; font-family:var(--mono2); font-size:10px;
+  font-weight:700; letter-spacing:0.16em; color:var(--green); }
+.pitwall .live-dot { width:6px; height:6px; border-radius:50%; background:var(--green);
+  box-shadow:0 0 9px var(--green); animation:pwblink 1.6s ease-in-out infinite; }
+@keyframes pwblink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.pitwall .age { font-family:var(--mono2); font-size:9px; letter-spacing:0.1em; padding:3px 9px;
+  text-transform:uppercase; background:#ffffff0f; color:var(--grey); clip-path:polygon(6px 0,100% 0,100% 100%,0 100%); }
+.pitwall .age.warn { color:var(--yellow); } .pitwall .age.stale { color:var(--f1red); }
+
+.pitwall .status-strip { display:flex; height:6px; gap:2px; margin-bottom:12px; }
+.pitwall .status-tick { flex:1; border-radius:1px; opacity:.9; }
+.pitwall .flags { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.pitwall .flag-chip { flex:1 1 0; min-width:104px; display:flex; align-items:center; gap:10px; cursor:pointer;
+  background:var(--panel); border:1px solid var(--line); padding:9px 12px;
+  clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%); transition:background .15s; }
+.pitwall .flag-chip:hover { background:var(--panel2); }
+.pitwall .flag-chip.dim { opacity:.35; }
+.pitwall .flag-swatch { width:16px; height:22px; flex-shrink:0; border-radius:1px; }
+.pitwall .flag-meta { display:flex; flex-direction:column; line-height:1; }
+.pitwall .flag-count { font-family:var(--mono2); font-weight:700; font-size:20px; }
+.pitwall .flag-lbl { font-family:var(--mono2); font-size:8px; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--grey); margin-top:4px; }
+
+.pitwall .tower-head { display:grid; align-items:center; gap:12px; padding:0 14px 6px 0;
+  grid-template-columns:46px minmax(120px,1.4fr) 96px minmax(90px,1.1fr) 96px 128px 78px;
+  font-family:var(--mono2); font-size:8px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+.pitwall .tower-head span:first-child { padding-left:14px; }
+.pitwall .tower { display:flex; flex-direction:column; gap:5px; }
+.pitwall .row { display:grid; align-items:center; gap:12px; position:relative;
+  grid-template-columns:46px minmax(120px,1.4fr) 96px minmax(90px,1.1fr) 96px 128px 78px;
+  background:linear-gradient(90deg,var(--panel) 0%, var(--carbon2) 100%);
+  border-left:3px solid var(--flag); padding:0 14px 0 0; height:52px;
+  clip-path:polygon(0 0, 100% 0, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  animation:pwslot .3s ease both; cursor:pointer; }
+@keyframes pwslot { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+.pitwall .row:hover { background:linear-gradient(90deg,var(--panel2) 0%, var(--panel) 100%); }
+.pitwall .row.rf { box-shadow:inset 0 0 0 1px rgba(225,6,0,.35); animation:pwslot .3s ease both, pwrf 2.4s ease-in-out infinite .3s; }
+@keyframes pwrf { 0%,100%{box-shadow:inset 0 0 0 1px rgba(225,6,0,.35)} 50%{box-shadow:inset 0 0 26px rgba(225,6,0,.16),inset 0 0 0 1px rgba(225,6,0,.6)} }
+.pitwall .row.garage { opacity:.62; }
+.pitwall .pos { justify-self:start; width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+  background:var(--flag); color:#0c0c12; font-weight:900; font-style:italic; font-size:19px; transform:skewX(-11deg); margin-left:-2px; }
+.pitwall .pos span { transform:skewX(11deg); }
+.pitwall .pos.gcol { background:var(--garage); } .pitwall .pos.ncol { background:#33384a; color:var(--grey); }
+.pitwall .car { display:flex; flex-direction:column; min-width:0; }
+.pitwall .car-id { font-weight:900; font-style:italic; font-size:19px; letter-spacing:0.01em; line-height:1; }
+.pitwall .car-next { font-family:var(--mono2); font-size:9px; letter-spacing:0.04em; color:var(--grey); margin-top:3px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pitwall .flag-cell { display:flex; align-items:center; gap:7px; }
+.pitwall .flag-cell .fbar { width:14px; height:18px; border-radius:1px; background:var(--flag); flex-shrink:0; }
+.pitwall .flag-cell .fbar.gcol { background:var(--garage); } .pitwall .flag-cell .fbar.ncol { background:#33384a; }
+.pitwall .flag-word { font-weight:700; font-style:italic; font-size:12px; letter-spacing:0.03em;
+  text-transform:uppercase; color:var(--flag); white-space:nowrap; }
+.pitwall .flag-word.gcol { color:var(--garage); } .pitwall .flag-word.ncol { color:var(--grey); }
+.pitwall .stint { display:flex; flex-direction:column; gap:5px; }
+.pitwall .stint-track { height:5px; background:#0e0e16; border-radius:3px; overflow:hidden; }
+.pitwall .stint-fill { height:100%; background:var(--flag); border-radius:3px; transition:width .5s ease; }
+.pitwall .stint-pct { font-family:var(--mono2); font-size:8px; letter-spacing:0.08em; color:var(--grey); }
+.pitwall .delta { text-align:right; font-family:var(--mono2); font-weight:700; line-height:1; }
+.pitwall .delta-val { font-size:17px; } .pitwall .delta-unit { font-size:10px; color:var(--grey); font-weight:400; }
+.pitwall .delta-tag { font-family:var(--mono2); font-size:8px; letter-spacing:0.1em; text-transform:uppercase; color:var(--grey); margin-top:4px; }
+.pitwall .delta.over .delta-val { color:var(--flag); }
+.pitwall .crew { font-family:var(--mono2); font-size:10px; color:var(--grey); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pitwall .crew.none { color:var(--faint); font-style:italic; }
+.pitwall .updated { text-align:right; font-family:var(--mono2); font-size:9px; color:var(--grey); display:flex;
+  align-items:center; justify-content:flex-end; gap:5px; white-space:nowrap; }
+.pitwall .udot { width:4px; height:4px; border-radius:50%; background:var(--green); }
+.pitwall .udot.warn{background:var(--yellow)} .pitwall .udot.stale{background:var(--f1red)}
+.pitwall .empty { text-align:center; padding:70px 20px; font-family:var(--mono2); font-size:13px; color:var(--grey); }
+.pitwall .btn { margin-top:16px; font-weight:700; font-style:italic; font-size:11px; letter-spacing:0.08em;
+  text-transform:uppercase; padding:8px 18px; background:var(--panel2); color:var(--white); border:1px solid var(--line2);
+  cursor:pointer; clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%); }
+.pitwall .btn:hover { background:var(--f1red); border-color:var(--f1red); }
+@media (max-width:820px){
+  .pitwall .tower-head, .pitwall .row { grid-template-columns:40px minmax(90px,1.3fr) 84px 1fr 92px; }
+  .pitwall .stint, .pitwall .crew, .pitwall .updated,
+  .pitwall .tower-head span.h-stint, .pitwall .tower-head span.h-crew, .pitwall .tower-head span.h-upd { display:none; }
+}
 </style>
 </head>
 <body>
@@ -456,7 +575,178 @@ function Gauge({ criticalTask, hours }) {
   );
 }
 
-function App() {
+// ══ Pit-wall fleet view (F1 timing tower) ════════════════════════════════════
+// Reuses the top-level TASKS / tasksForTruck / pastDueStatus / ratioStatus so
+// severity stays identical to the detail view and the bot.
+const FLEET_H = React.createElement;
+function fleetTruckStatus(td, tlogs){
+  if(!td) return "none";
+  if(td.grounded) return "grounded";
+  if(td.hours==null) return "none";
+  const statuses = tasksForTruck(td._id).map(task=>{
+    const last = tlogs[task.key];
+    if(last==null) return (task.key==="airfilter_clean" || td.hours<task.interval) ? "ok" : pastDueStatus(task);
+    return ratioStatus(task, (td.hours-last)/task.interval);
+  });
+  if(statuses.includes("overdue")) return "overdue";
+  if(statuses.includes("warn")) return "warn";
+  if(statuses.includes("due")) return "due";
+  return "ok";
+}
+function fleetCritical(td, tlogs){
+  if(!td || td.hours==null) return null;
+  const list = tasksForTruck(td._id).map(task=>{
+    const last = tlogs[task.key];
+    const dueAt = (last!=null?last:0) + task.interval;
+    return { ...task, last:last!=null?last:null, dueAt, rem: dueAt - td.hours };
+  }).sort((a,b)=>a.rem-b.rem);
+  return list[0] || null;
+}
+const FLAG = {
+  overdue:  { word:"Red flag",  color:"var(--f1red)", cls:"" },
+  warn:     { word:"Yellow",    color:"var(--yellow)", cls:"" },
+  due:      { word:"Blue",      color:"var(--blue)",  cls:"" },
+  ok:       { word:"Green",     color:"var(--green)", cls:"" },
+  grounded: { word:"Garage",    color:"var(--garage)",cls:"gcol" },
+  none:     { word:"No time",   color:"var(--faint)", cls:"ncol" },
+};
+const FLEET_SORT = { overdue:0, warn:1, due:2, ok:3, none:4, grounded:5 };
+const FLAG_ORDER = ["overdue","warn","due","ok","grounded"];
+function fleetAgo(iso){
+  if(!iso) return null;
+  const ms = Date.now() - new Date(iso).getTime();
+  if(isNaN(ms)) return null;
+  const m = Math.floor(ms/60000);
+  let label, level="ok";
+  if(m<1) label="now";
+  else if(m<60) label=m+"m";
+  else if(m<1440){ label=Math.floor(m/60)+"h"; if(m>=1080) level="warn"; }
+  else { const d=Math.floor(m/1440); label=d+"d"; level = d>=3?"stale":"warn"; }
+  return { label, level };
+}
+
+function PitRow({ pos, id, td, tlogs, status, onOpen }){
+  const f = FLAG[status];
+  const crit = fleetCritical(td, tlogs);
+  const fresh = fleetAgo(td && td.lastUpdated);
+  const tech = (td && td.technician) ? td.technician : null;
+  const rowStyle = { "--flag": f.color };
+  let stint = FLEET_H("div",{className:"stint"});
+  let delta = FLEET_H("div",{className:"delta"}, FLEET_H("span",{className:"delta-unit"},"—"));
+  let nextName = "";
+  if(status==="grounded"){
+    nextName = (td && td.groundedNote) || "Out of service";
+    delta = FLEET_H("div",{className:"delta"}, FLEET_H("div",{className:"delta-tag"},"in garage"));
+  } else if(td && td.hours!=null && crit){
+    nextName = crit.name;
+    const ratio = Math.max(0, Math.min((crit.interval - crit.rem)/crit.interval, 1));
+    stint = FLEET_H("div",{className:"stint"},
+      FLEET_H("div",{className:"stint-track"}, FLEET_H("div",{className:"stint-fill",style:{width:(ratio*100)+"%"}})),
+      FLEET_H("div",{className:"stint-pct"}, Math.round(ratio*100)+"% of interval"));
+    const over = crit.rem <= 0;
+    delta = over
+      ? FLEET_H("div",{className:"delta over"},
+          FLEET_H("div",null, FLEET_H("span",{className:"delta-val"},"+"+Math.abs(Math.round(crit.rem))), FLEET_H("span",{className:"delta-unit"},"h")),
+          FLEET_H("div",{className:"delta-tag"}, crit.type==="replace" ? "overdue" : "check/clean due"))
+      : FLEET_H("div",{className:"delta"},
+          FLEET_H("div",null, FLEET_H("span",{className:"delta-val"},Math.round(crit.rem)), FLEET_H("span",{className:"delta-unit"},"h")),
+          FLEET_H("div",{className:"delta-tag"},"to service"));
+  } else { nextName = "No hours on file"; }
+
+  return FLEET_H("div",{className:"row "+(status==="overdue"?"rf ":"")+(status==="grounded"?"garage":""), style:rowStyle, onClick:()=>onOpen(id)},
+    FLEET_H("div",{className:"pos "+f.cls}, FLEET_H("span",null, status==="grounded" ? "\u25AA" : pos)),
+    FLEET_H("div",{className:"car"},
+      FLEET_H("div",{className:"car-id"}, id),
+      FLEET_H("div",{className:"car-next", title:nextName}, nextName)),
+    FLEET_H("div",{className:"flag-cell"},
+      FLEET_H("div",{className:"fbar "+f.cls}),
+      FLEET_H("div",{className:"flag-word "+f.cls}, f.word)),
+    stint, delta,
+    FLEET_H("div",{className:"crew"+(tech?"":" none")}, tech || "unassigned"),
+    FLEET_H("div",{className:"updated"}, fresh ? [FLEET_H("span",{key:"d",className:"udot "+fresh.level}), fresh.label] : "\u2014")
+  );
+}
+
+function FleetView({ onOpenTruck }){
+  const [data,setData] = useState(null);
+  const [logs,setLogs] = useState({});
+  const [err,setErr] = useState(false);
+  const [syncedAt,setSyncedAt] = useState(null);
+  const [,setTick] = useState(0);
+  const [filter,setFilter] = useState(null);
+
+  async function load(){
+    setErr(false);
+    try{
+      const bust = "?_="+Date.now();
+      const [rd,rl] = await Promise.all([fetch(DATA_URL+bust), fetch(LOGS_URL+bust)]);
+      if(!rd.ok) throw new Error();
+      const d = await rd.json();
+      const l = rl.ok ? await rl.json() : {};
+      setData(d); setLogs(l); setSyncedAt(new Date());
+    }catch(e){ setErr(true); }
+  }
+  useEffect(()=>{
+    load();
+    const iv = setInterval(()=>{ const jst=new Date(Date.now()+9*3600*1000).getUTCHours(); if(jst>=6&&jst<22) load(); }, 5*60*1000);
+    return ()=>clearInterval(iv);
+  },[]);
+  useEffect(()=>{ const t=setInterval(()=>setTick(x=>x+1),30000); return ()=>clearInterval(t); },[]);
+
+  if(err) return FLEET_H("div",{className:"wrap"}, FLEET_H("div",{className:"empty"},
+    "Fleet data unavailable — check the connection and try again.",
+    FLEET_H("div",null, FLEET_H("button",{className:"btn",onClick:load},"Retry"))));
+  if(!data) return FLEET_H("div",{className:"wrap"}, FLEET_H("div",{className:"empty"},"Connecting to timing feed…"));
+
+  const rows = TRUCKS.map(id=>{
+    const td = { ...(data[id]||{}), _id:id };
+    const tlogs = logs[id] || {};
+    return { id, td, tlogs, status: fleetTruckStatus(td, tlogs) };
+  });
+  const counts = rows.reduce((a,r)=>{ a[r.status]=(a[r.status]||0)+1; return a; },{});
+  const sorted = rows.slice().sort((a,b)=>{
+    const d = (FLEET_SORT[a.status]??3)-(FLEET_SORT[b.status]??3);
+    if(d) return d;
+    const ca=fleetCritical(a.td,a.tlogs), cb=fleetCritical(b.td,b.tlogs);
+    return ((ca?ca.rem:1e9)-(cb?cb.rem:1e9));
+  });
+  const shown = filter ? sorted.filter(r=>r.status===filter) : sorted;
+  const freshest = rows.map(r=>r.td&&r.td.lastUpdated?new Date(r.td.lastUpdated).getTime():0).reduce((a,b)=>Math.max(a,b),0);
+  const dataAge = freshest ? fleetAgo(new Date(freshest).toISOString()) : null;
+  const syncAgo = syncedAt ? (fleetAgo(syncedAt.toISOString())||{}).label : "";
+
+  return FLEET_H("div",{className:"wrap"},
+    FLEET_H("header",{className:"pw"},
+      FLEET_H("div",{className:"pw-brand"},
+        FLEET_H("span",{className:"pw-mark"},"HD GEN2"),
+        FLEET_H("span",{className:"pw-title"},"Pit Wall"),
+        FLEET_H("span",{className:"pw-sub"},"Japan Fleet")),
+      FLEET_H("div",{className:"pw-right"},
+        FLEET_H("span",{className:"live"}, FLEET_H("span",{className:"live-dot"}), "LIVE"),
+        syncAgo ? FLEET_H("span",{className:"age "+(dataAge&&dataAge.level==="stale"?"stale":dataAge&&dataAge.level==="warn"?"warn":"")}, "sync "+syncAgo+" ago") : null)),
+    FLEET_H("div",{className:"status-strip"},
+      sorted.map(r=> FLEET_H("div",{key:r.id,className:"status-tick",style:{background:FLAG[r.status].color},title:r.id+" · "+FLAG[r.status].word}))),
+    FLEET_H("div",{className:"flags"},
+      FLAG_ORDER.map(s=>{
+        const active=filter===s, dim=filter&&!active;
+        return FLEET_H("div",{key:s,className:"flag-chip"+(dim?" dim":""),onClick:()=>setFilter(active?null:s)},
+          FLEET_H("div",{className:"flag-swatch",style:{background:FLAG[s].color}}),
+          FLEET_H("div",{className:"flag-meta"},
+            FLEET_H("span",{className:"flag-count"}, counts[s]||0),
+            FLEET_H("span",{className:"flag-lbl"}, FLAG[s].word)));
+      })),
+    FLEET_H("div",{className:"tower-head"},
+      FLEET_H("span",null,"Pos"), FLEET_H("span",null,"Car"), FLEET_H("span",null,"Flag"),
+      FLEET_H("span",{className:"h-stint"},"Stint"), FLEET_H("span",null,"To service"),
+      FLEET_H("span",{className:"h-crew"},"Crew"), FLEET_H("span",{className:"h-upd"},"Updated")),
+    shown.length
+      ? FLEET_H("div",{className:"tower"}, shown.map((r,i)=> FLEET_H(PitRow,{key:r.id, pos:i+1, id:r.id, td:r.td, tlogs:r.tlogs, status:r.status, onOpen:onOpenTruck})))
+      : FLEET_H("div",{className:"empty"}, "No cars under this flag.",
+          FLEET_H("div",null, FLEET_H("button",{className:"btn",onClick:()=>setFilter(null)},"Clear filter")))
+  );
+}
+
+function App({ jump }) {
   const [fleet,      setFleet]      = useState(null);
   const [svcLogs,    setSvcLogs]    = useState({});
   const [svcHistory, setSvcHistory] = useState({});
@@ -464,6 +754,9 @@ function App() {
     const p = new URLSearchParams(window.location.search).get("truck");
     return (p && TRUCKS.includes(p)) ? p : "HD6";
   });
+  useEffect(()=>{
+    if(jump && jump.truck && TRUCKS.includes(jump.truck)) setSelected(jump.truck);
+  },[jump]);
   const [loaded,     setLoaded]     = useState(false);
   const [error,      setError]      = useState(null);
   const [syncedAt,   setSyncedAt]   = useState(null);
@@ -1107,7 +1400,26 @@ function App() {
   );
 }
 
-ReactDOM.render(React.createElement(App),document.getElementById("root"));
+function Root(){
+  const params = new URLSearchParams(window.location.search);
+  const [tab,setTab] = useState(params.get("truck") ? "detail" : "fleet");
+  const [jump,setJump] = useState(null);
+  const openTruck = (id)=>{ setJump({truck:id, n:Date.now()}); setTab("detail"); };
+  return React.createElement("div",{className:"app-shell"},
+    React.createElement("div",{className:"app-tabs"},
+      React.createElement("button",{className:"app-tab"+(tab==="fleet"?" active":""),onClick:()=>setTab("fleet")},"Fleet"),
+      React.createElement("button",{className:"app-tab"+(tab==="detail"?" active":""),onClick:()=>setTab("detail")},"Truck Detail")
+    ),
+    React.createElement("div",{className:"app-view"+(tab==="fleet"?" show":"")},
+      React.createElement("div",{className:"pitwall"}, React.createElement(FleetView,{onOpenTruck:openTruck}))
+    ),
+    React.createElement("div",{className:"app-view"+(tab==="detail"?" show":"")},
+      React.createElement(App,{jump})
+    )
+  );
+}
+
+ReactDOM.render(React.createElement(Root),document.getElementById("root"));
 </script>
 </body>
 </html>
