@@ -880,6 +880,18 @@
       "notes": [
         "Will do fuel filter during the week since its Open Loop. Had an issue with oil filter, be mindful of tightness"
       ]
+    },
+    {
+      "date": "2026-07-14",
+      "hours": 430,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "fuel_filter",
+          "label": "Fuel filter change"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD17": [
