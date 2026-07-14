@@ -26,7 +26,7 @@ const TASKS = [
   { key:"oil_filter",        name:"Oil / filter change",        interval:150, type:"replace" },
   { key:"airfilter_clean",   name:"Air filter cleaning",         interval:250, type:"service" },
   { key:"coolant_lines",     name:"Check coolant lines",         interval:250, type:"service" },
-  { key:"fuel_filter",       name:"Fuel filter change",          interval:250, type:"service" },
+  { key:"fuel_filter",       name:"Fuel filter change",          interval:250, type:"replace" },
   { key:"drive_belt",        name:"Check drive belt & tension",  interval:500, type:"service" },
   { key:"clean_radiator",    name:"Clean radiator",              interval:500, type:"service" },
   { key:"airfilter_500",     name:"Change air filter",           interval:500, type:"replace" },

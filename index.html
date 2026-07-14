@@ -275,18 +275,18 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 const { useState, useEffect, useRef } = React;
 
 const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14","HD15","HD16","HD17"];
-// type "replace" = escalates to OVERDUE (red) past interval — only the oil
-//   change and the air-filter change (airfilter_500). These are the hard ones.
-// type "service" = a check, cleaning, or filter service (air-filter check,
-//   radiator/air-filter clean, coolant/belt checks, fuel filter). These NEVER
-//   go overdue; past their interval they show a calm DUE (blue) state and do
-//   not trigger the truck's red overdue alarm or overdue counts.
+// type "replace" = escalates to OVERDUE (red) past interval — the oil change,
+//   the fuel filter change, and the air-filter change (airfilter_500).
+// type "service" = a check or cleaning (air-filter check, radiator/air-filter
+//   clean, coolant/belt checks). These NEVER go overdue; past their interval
+//   they show a calm DUE (blue) state and do not trigger the truck's red
+//   overdue alarm or overdue counts.
 const TASKS = [
   { key:"airfilter_battery", name:"Air filter & battery check",        interval:50,  type:"service" },
   { key:"oil_filter",        name:"Oil / filter change",               interval:150, type:"replace" },
   { key:"airfilter_clean",   name:"Air filter cleaning",               interval:250, type:"service" },
   { key:"coolant_lines",     name:"Check coolant lines",               interval:250, type:"service" },
-  { key:"fuel_filter",       name:"Fuel filter change",                interval:250, type:"service" },
+  { key:"fuel_filter",       name:"Fuel filter change",                interval:250, type:"replace" },
   { key:"drive_belt",        name:"Check drive belt & tension",        interval:500, type:"service" },
   { key:"clean_radiator",    name:"Clean radiator",                    interval:500, type:"service" },
   { key:"airfilter_500",    name:"Change air filter",                 interval:500, type:"replace" },

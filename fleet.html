@@ -139,15 +139,15 @@ const LOGS_URL = REPO + "service_logs.json";
 const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14","HD15","HD16","HD17"];
 
 // ── Severity model — MUST mirror index.html / worker.js ──────────────────────
-// type "replace" (oil change, air-filter change) escalates to OVERDUE (red).
-// type "service" (checks, cleanings, fuel filter) never goes overdue — past its
-// interval it shows a calm blue DUE state instead.
+// type "replace" (oil change, fuel filter, air-filter change) escalates to
+// OVERDUE (red). type "service" (checks, cleanings) never goes overdue — past
+// its interval it shows a calm blue DUE state instead.
 const TASKS = [
   { key:"airfilter_battery", name:"Air filter & battery check", interval:50,  type:"service" },
   { key:"oil_filter",        name:"Oil / filter change",        interval:150, type:"replace" },
   { key:"airfilter_clean",   name:"Air filter cleaning",        interval:250, type:"service" },
   { key:"coolant_lines",     name:"Check coolant lines",        interval:250, type:"service" },
-  { key:"fuel_filter",       name:"Fuel filter change",         interval:250, type:"service" },
+  { key:"fuel_filter",       name:"Fuel filter change",         interval:250, type:"replace" },
   { key:"drive_belt",        name:"Check drive belt & tension", interval:500, type:"service" },
   { key:"clean_radiator",    name:"Clean radiator",             interval:500, type:"service" },
   { key:"airfilter_500",     name:"Change air filter",          interval:500, type:"replace" },
