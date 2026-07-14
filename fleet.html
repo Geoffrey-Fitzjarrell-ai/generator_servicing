@@ -3,124 +3,150 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HD GEN2 · Fleet Overview</title>
+<title>HD GEN2 · Pit Wall</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,400;0,600;0,700;0,900;1,700;1,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 :root {
-  --bg:#080b12; --surface:#0d1117; --surface2:#131925; --surface3:#1a2235;
-  --border:#1e2840; --border2:#28364f;
-  --amber:#f0a500; --amber-dim:#3d2900;
-  --red:#e04545; --red-dim:#3a1010;
-  --green:#3da870; --green-dim:#0f2e1e;
-  --blue:#4a7cf5; --blue-dim:#101e40;
-  --purple:#9880cc; --purple-dim:#1e1533;
-  --text:#dde4f0; --text-dim:#6e7f99; --text-faint:#38465a;
-  --mono:'JetBrains Mono',monospace; --sans:'Inter',sans-serif; --radius:8px;
+  --carbon:#12121a; --carbon2:#1a1a24; --panel:#1e1e2a; --panel2:#252534;
+  --line:#2c2c3a; --line2:#3a3a4c;
+  --f1red:#e10600; --f1red-dk:#8f0400;
+  --yellow:#ffd200; --green:#22e08a; --blue:#2e9bff; --garage:#7a8296;
+  --white:#f4f5f8; --grey:#9a9fb0; --faint:#5a6072;
+  --disp:'Titillium Web',sans-serif; --mono:'JetBrains Mono',monospace;
 }
-html,body { height:100%; background:var(--bg); color:var(--text); font-family:var(--sans);
-  background-image:url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23ffffff06'/%3E%3C/svg%3E"); }
+html,body { height:100%; background:var(--carbon); color:var(--white); font-family:var(--disp); }
+body {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.012) 0 2px, transparent 2px 4px),
+    linear-gradient(180deg,#15151f 0%, #101017 100%);
+  background-attachment:fixed;
+}
 #root { min-height:100%; }
-.wrap { max-width:1240px; margin:0 auto; padding:22px 24px 48px; }
-body.embed .wrap { padding:14px 14px 22px; max-width:none; }
+.wrap { max-width:1280px; margin:0 auto; padding:20px 22px 44px; }
+body.embed .wrap { padding:12px; max-width:none; }
 
-/* header */
-.head { display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding-bottom:16px; margin-bottom:18px;
-  border-bottom:1px solid var(--border); position:relative; }
-.head::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:1px;
-  background:linear-gradient(90deg,transparent,var(--blue) 40%,var(--amber) 60%,transparent); opacity:0.3; }
-.brand { display:flex; align-items:center; gap:10px; }
-.badge-hd { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:0.18em; color:var(--bg);
-  background:var(--amber); padding:3px 8px; border-radius:3px; }
-.title { font-size:15px; font-weight:600; letter-spacing:0.01em; }
-.head-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
-.sync { display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10px; color:var(--text-dim);
-  letter-spacing:0.06em; }
-.sync-dot { width:5px; height:5px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green);
-  animation:pulse 2s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
-.age { font-family:var(--mono); font-size:9px; letter-spacing:0.08em; padding:3px 9px; border-radius:3px;
-  text-transform:uppercase; background:var(--green-dim); color:var(--green); }
-.age.warn { background:var(--amber-dim); color:var(--amber); }
-.age.stale { background:var(--red-dim); color:var(--red); }
-.link { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase;
-  padding:5px 12px; color:var(--text-dim); border:1px solid var(--border2); border-radius:var(--radius);
-  text-decoration:none; transition:all .15s; }
-.link:hover { color:var(--text); border-color:var(--blue); }
-body.embed .head { display:none; }
+/* ── header / pit wall banner ─────────────────────────────── */
+.pw { position:relative; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  padding:14px 18px; margin-bottom:16px; background:linear-gradient(90deg,var(--panel),transparent 80%);
+  border-left:4px solid var(--f1red); overflow:hidden; }
+.pw::before { content:''; position:absolute; right:0; top:0; bottom:0; width:120px;
+  background-image:
+   linear-gradient(45deg,#ffffff08 25%,transparent 25%,transparent 50%,#ffffff08 50%,#ffffff08 75%,transparent 75%),
+   linear-gradient(45deg,#ffffff08 25%,transparent 25%,transparent 50%,#ffffff08 50%,#ffffff08 75%,transparent 75%);
+  background-size:12px 12px; background-position:0 0, 6px 6px; opacity:.5; }
+.pw-brand { display:flex; align-items:baseline; gap:12px; z-index:1; }
+.pw-mark { font-family:var(--disp); font-weight:900; font-style:italic; font-size:15px; letter-spacing:0.02em;
+  color:var(--f1red); text-transform:uppercase; }
+.pw-title { font-family:var(--disp); font-weight:900; font-style:italic; font-size:23px; letter-spacing:-0.01em;
+  text-transform:uppercase; line-height:1; }
+.pw-sub { font-family:var(--mono); font-size:10px; letter-spacing:0.22em; color:var(--grey);
+  text-transform:uppercase; align-self:flex-end; }
+.pw-right { margin-left:auto; display:flex; align-items:center; gap:12px; z-index:1; }
+.live { display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10px;
+  font-weight:700; letter-spacing:0.16em; color:var(--green); }
+.live-dot { width:6px; height:6px; border-radius:50%; background:var(--green);
+  box-shadow:0 0 9px var(--green); animation:blink 1.6s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.age { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; padding:3px 9px;
+  text-transform:uppercase; background:#ffffff0f; color:var(--grey); clip-path:polygon(6px 0,100% 0,100% 100%,0 100%); }
+.age.warn { color:var(--yellow); } .age.stale { color:var(--f1red); }
+.detail-link { font-family:var(--disp); font-weight:700; font-style:italic; font-size:11px; letter-spacing:0.08em;
+  text-transform:uppercase; padding:6px 14px 6px 16px; color:var(--white); text-decoration:none;
+  background:var(--panel2); border:1px solid var(--line2);
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%); transition:background .15s; }
+.detail-link:hover { background:var(--f1red); border-color:var(--f1red); }
+body.embed .pw { display:none; }
 
-/* health bar + kpis */
-.health { margin-bottom:16px; }
-.health-bar { height:8px; border-radius:4px; overflow:hidden; display:flex; background:var(--surface3); }
-.health-seg { height:100%; transition:width .5s ease; }
-.kpis { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
-.kpi { flex:1 1 0; min-width:120px; background:var(--surface); border:1px solid var(--border);
-  border-radius:var(--radius); padding:12px 14px; cursor:pointer; position:relative; overflow:hidden;
-  transition:border-color .15s, transform .1s; }
-.kpi::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--text-faint); }
-.kpi.k-overdue::before{background:var(--red)} .kpi.k-warn::before{background:var(--amber)}
-.kpi.k-due::before{background:var(--blue)} .kpi.k-ok::before{background:var(--green)}
-.kpi.k-grounded::before{background:var(--purple)}
-.kpi:hover { border-color:var(--border2); }
-.kpi.active { border-color:currentColor; }
-.kpi.k-overdue.active{border-color:var(--red)} .kpi.k-warn.active{border-color:var(--amber)}
-.kpi.k-due.active{border-color:var(--blue)} .kpi.k-ok.active{border-color:var(--green)}
-.kpi.k-grounded.active{border-color:var(--purple)}
-.kpi.dim { opacity:.4; }
-.kpi-val { font-family:var(--mono); font-size:26px; font-weight:700; line-height:1; }
-.k-overdue .kpi-val{color:var(--red)} .k-warn .kpi-val{color:var(--amber)}
-.k-due .kpi-val{color:var(--blue)} .k-ok .kpi-val{color:var(--green)}
-.k-grounded .kpi-val{color:var(--purple)}
-.kpi-lbl { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase;
-  color:var(--text-dim); margin-top:7px; }
+/* ── track status bar + flag filter chips ─────────────────── */
+.status-strip { display:flex; height:6px; gap:2px; margin-bottom:12px; }
+.status-tick { flex:1; border-radius:1px; opacity:.9; }
+.flags { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.flag-chip { flex:1 1 0; min-width:104px; display:flex; align-items:center; gap:10px; cursor:pointer;
+  background:var(--panel); border:1px solid var(--line); padding:9px 12px;
+  clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%); transition:transform .1s, background .15s; }
+.flag-chip:hover { background:var(--panel2); }
+.flag-chip.dim { opacity:.35; }
+.flag-swatch { width:16px; height:22px; flex-shrink:0; border-radius:1px; position:relative; }
+.flag-swatch.checker { background-image:
+   linear-gradient(45deg,#000 25%,transparent 25%,transparent 75%,#000 75%),
+   linear-gradient(45deg,#000 25%,#fff 25%,#fff 75%,#000 75%);
+  background-size:8px 8px; background-position:0 0,4px 4px; background-color:#fff; }
+.flag-meta { display:flex; flex-direction:column; line-height:1; }
+.flag-count { font-family:var(--mono); font-weight:700; font-size:20px; }
+.flag-lbl { font-family:var(--mono); font-size:8px; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--grey); margin-top:4px; }
 
-/* grid */
-.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(232px,1fr)); gap:12px; }
-.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-  padding:14px 15px 12px; position:relative; overflow:hidden; cursor:pointer;
-  transition:border-color .15s, transform .1s; animation:rise .35s ease both; }
-@keyframes rise { from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:translateY(0)} }
-.card:hover { border-color:var(--border2); transform:translateY(-2px); }
-.card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; }
-.card.s-overdue::before{background:var(--red)} .card.s-warn::before{background:var(--amber)}
-.card.s-due::before{background:var(--blue)} .card.s-ok::before{background:var(--green)}
-.card.s-grounded::before{background:var(--purple)} .card.s-none::before{background:var(--text-faint)}
-.card.s-overdue { animation:rise .35s ease both, pulseRed 2.6s ease-in-out infinite .35s; }
-@keyframes pulseRed { 0%,100%{box-shadow:none} 50%{box-shadow:inset 0 0 34px rgba(224,69,69,.10),0 0 0 1px rgba(224,69,69,.25)} }
-.c-top { display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
-.c-id { font-family:var(--mono); font-size:22px; font-weight:700; letter-spacing:0.02em; }
-.s-overdue .c-id{color:var(--red)} .s-warn .c-id{color:var(--amber)} .s-due .c-id{color:var(--blue)}
-.s-ok .c-id{color:var(--text)} .s-grounded .c-id{color:var(--purple)} .s-none .c-id{color:var(--text-dim)}
-.c-badge { font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase;
-  padding:3px 7px; border-radius:3px; white-space:nowrap; }
-.b-overdue{background:var(--red-dim);color:var(--red);animation:flash 2.2s ease-in-out infinite}
-.b-warn{background:var(--amber-dim);color:var(--amber)} .b-due{background:var(--blue-dim);color:var(--blue)}
-.b-ok{background:var(--green-dim);color:var(--green)} .b-grounded{background:var(--purple-dim);color:var(--purple)}
-.b-none{background:var(--surface3);color:var(--text-dim)}
-@keyframes flash { 0%,100%{opacity:1} 50%{opacity:.45} }
-.c-hours { font-family:var(--mono); font-size:12px; color:var(--text-dim); margin-top:2px; }
-.c-hours b { color:var(--text); font-weight:700; font-size:14px; }
-.c-bar-track { height:5px; border-radius:3px; background:var(--surface3); margin:12px 0 8px; overflow:hidden; }
-.c-bar-fill { height:100%; border-radius:3px; transition:width .5s ease; }
-.c-task { display:flex; align-items:baseline; justify-content:space-between; gap:8px; font-size:11px; }
-.c-task-name { color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.c-task-rem { font-family:var(--mono); font-size:10px; white-space:nowrap; flex-shrink:0; }
-.c-foot { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:11px;
-  padding-top:9px; border-top:1px solid var(--border); font-size:10px; color:var(--text-dim); }
-.c-tech { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.c-tech.unassigned { color:var(--text-faint); font-style:italic; }
-.c-fresh { display:flex; align-items:center; gap:5px; font-family:var(--mono); white-space:nowrap; flex-shrink:0; }
-.fresh-dot { width:4px; height:4px; border-radius:50%; background:var(--green); }
-.fresh-dot.warn{background:var(--amber)} .fresh-dot.stale{background:var(--red)}
-.c-note { font-size:11px; color:var(--purple); margin-top:10px; line-height:1.4; }
+/* ── timing tower ─────────────────────────────────────────── */
+.tower-head { display:grid; align-items:center; gap:12px; padding:0 14px 6px 0;
+  grid-template-columns:46px minmax(120px,1.4fr) 96px minmax(90px,1.1fr) 96px 128px 78px;
+  font-family:var(--mono); font-size:8px; letter-spacing:0.14em; text-transform:uppercase; color:var(--faint); }
+.tower-head span:first-child { padding-left:14px; }
+.tower { display:flex; flex-direction:column; gap:5px; }
+.row { display:grid; align-items:center; gap:12px; position:relative;
+  grid-template-columns:46px minmax(120px,1.4fr) 96px minmax(90px,1.1fr) 96px 128px 78px;
+  background:linear-gradient(90deg,var(--panel) 0%, var(--carbon2) 100%);
+  border-left:3px solid var(--flag); padding:0 14px 0 0; height:52px;
+  clip-path:polygon(0 0, 100% 0, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  animation:slot .3s ease both; }
+@keyframes slot { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+.row:hover { background:linear-gradient(90deg,var(--panel2) 0%, var(--panel) 100%); cursor:pointer; }
+.row.rf { box-shadow:inset 0 0 0 1px rgba(225,6,0,.35); animation:slot .3s ease both, rfpulse 2.4s ease-in-out infinite .3s; }
+@keyframes rfpulse { 0%,100%{box-shadow:inset 0 0 0 1px rgba(225,6,0,.35)} 50%{box-shadow:inset 0 0 26px rgba(225,6,0,.16),inset 0 0 0 1px rgba(225,6,0,.6)} }
+.row.garage { opacity:.62; }
 
-.state { text-align:center; padding:80px 20px; color:var(--text-dim); font-family:var(--mono); font-size:13px; }
-.state .retry { margin-top:14px; }
-.retry { font-family:var(--mono); font-size:11px; letter-spacing:0.08em; padding:7px 16px; background:transparent;
-  color:var(--text-dim); border:1px solid var(--border2); border-radius:var(--radius); cursor:pointer; }
-.retry:hover { color:var(--text); }
-@media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+.pos { justify-self:start; width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+  background:var(--flag); color:#0c0c12; font-family:var(--disp); font-weight:900; font-style:italic; font-size:19px;
+  transform:skewX(-11deg); margin-left:-2px; }
+.pos span { transform:skewX(11deg); }
+.pos.gcol { background:var(--garage); }
+.pos.ncol { background:#33384a; color:var(--grey); }
+
+.car { display:flex; flex-direction:column; min-width:0; }
+.car-id { font-family:var(--disp); font-weight:900; font-style:italic; font-size:19px; letter-spacing:0.01em; line-height:1; }
+.car-next { font-family:var(--mono); font-size:9px; letter-spacing:0.04em; color:var(--grey); margin-top:3px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.flag-cell { display:flex; align-items:center; gap:7px; }
+.flag-cell .fbar { width:14px; height:18px; border-radius:1px; background:var(--flag); flex-shrink:0; }
+.flag-cell .fbar.gcol { background:var(--garage); }
+.flag-cell .fbar.ncol { background:#33384a; }
+.flag-word { font-family:var(--disp); font-weight:700; font-style:italic; font-size:12px; letter-spacing:0.03em;
+  text-transform:uppercase; color:var(--flag); white-space:nowrap; }
+.flag-word.gcol { color:var(--garage); } .flag-word.ncol { color:var(--grey); }
+
+.stint { display:flex; flex-direction:column; gap:5px; }
+.stint-track { height:5px; background:#0e0e16; border-radius:3px; overflow:hidden; }
+.stint-fill { height:100%; background:var(--flag); border-radius:3px; transition:width .5s ease; }
+.stint-pct { font-family:var(--mono); font-size:8px; letter-spacing:0.08em; color:var(--grey); }
+
+.delta { text-align:right; font-family:var(--mono); font-weight:700; line-height:1; }
+.delta-val { font-size:17px; }
+.delta-unit { font-size:10px; color:var(--grey); font-weight:400; }
+.delta-tag { font-family:var(--mono); font-size:8px; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--grey); margin-top:4px; }
+.delta.over .delta-val { color:var(--flag); }
+
+.crew { font-family:var(--mono); font-size:10px; color:var(--grey); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.crew.none { color:var(--faint); font-style:italic; }
+.updated { text-align:right; font-family:var(--mono); font-size:9px; color:var(--grey); display:flex;
+  align-items:center; justify-content:flex-end; gap:5px; white-space:nowrap; }
+.udot { width:4px; height:4px; border-radius:50%; background:var(--green); }
+.udot.warn{background:var(--yellow)} .udot.stale{background:var(--f1red)}
+
+.empty { text-align:center; padding:70px 20px; font-family:var(--mono); font-size:13px; color:var(--grey); }
+.btn { margin-top:16px; font-family:var(--disp); font-weight:700; font-style:italic; font-size:11px; letter-spacing:0.08em;
+  text-transform:uppercase; padding:8px 18px; background:var(--panel2); color:var(--white); border:1px solid var(--line2);
+  cursor:pointer; clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%); }
+.btn:hover { background:var(--f1red); border-color:var(--f1red); }
+
+@media (max-width:820px){
+  .tower-head, .row { grid-template-columns:40px minmax(90px,1.3fr) 84px 1fr 92px; }
+  .stint, .crew, .updated { display:none; }
+  .tower-head span.h-stint, .tower-head span.h-crew, .tower-head span.h-upd { display:none; }
+}
+@media (prefers-reduced-motion: reduce){ * { animation:none !important; transition:none !important; } }
 </style>
 </head>
 <body>
@@ -135,13 +161,12 @@ const REPO = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generato
 const DATA_URL = REPO + "data.json";
 const LOGS_URL = REPO + "service_logs.json";
 
-// Trucks tracked (HD18 omitted, same as the detail dashboard).
 const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14","HD15","HD16","HD17"];
 
 // ── Severity model — MUST mirror index.html / worker.js ──────────────────────
 // type "replace" (oil change, fuel filter, air-filter change) escalates to
-// OVERDUE (red). type "service" (checks, cleanings) never goes overdue — past
-// its interval it shows a calm blue DUE state instead.
+// OVERDUE (red flag). type "service" (checks, cleanings) never goes overdue —
+// past its interval it shows a calm blue-flag DUE state instead.
 const TASKS = [
   { key:"airfilter_battery", name:"Air filter & battery check", interval:50,  type:"service" },
   { key:"oil_filter",        name:"Oil / filter change",        interval:150, type:"replace" },
@@ -159,7 +184,6 @@ function ratioStatus(task, ratio){
   if(task.type==="replace" && ratio>=0.9) return "warn";
   return "ok";
 }
-
 function truckStatus(td, tlogs){
   if(!td) return "none";
   if(td.grounded) return "grounded";
@@ -174,8 +198,6 @@ function truckStatus(td, tlogs){
   if(statuses.includes("due")) return "due";
   return "ok";
 }
-
-// Most-urgent item for a truck (smallest hours remaining), for the card bar/label.
 function criticalItem(td, tlogs){
   if(!td || td.hours==null) return null;
   const list = tasksForTruck(td._id).map(task=>{
@@ -186,15 +208,17 @@ function criticalItem(td, tlogs){
   return list[0] || null;
 }
 
-const STATUS_META = {
-  overdue:  { label:"Overdue",   color:"var(--red)" },
-  warn:     { label:"Due soon",  color:"var(--amber)" },
-  due:      { label:"Check/clean",color:"var(--blue)" },
-  ok:       { label:"OK",        color:"var(--green)" },
-  grounded: { label:"Grounded",  color:"var(--purple)" },
-  none:     { label:"No data",   color:"var(--text-faint)" },
+// Status → racing-flag presentation.
+const FLAG = {
+  overdue:  { word:"Red flag",  color:"var(--f1red)", cls:"" },
+  warn:     { word:"Yellow",    color:"var(--yellow)", cls:"" },
+  due:      { word:"Blue",      color:"var(--blue)",  cls:"" },
+  ok:       { word:"Green",     color:"var(--green)", cls:"" },
+  grounded: { word:"Garage",    color:"var(--garage)",cls:"gcol" },
+  none:     { word:"No time",   color:"var(--faint)", cls:"ncol" },
 };
 const SORT_RANK = { overdue:0, warn:1, due:2, ok:3, none:4, grounded:5 };
+const FLAG_ORDER = ["overdue","warn","due","ok","grounded"];
 
 function agoParts(iso){
   if(!iso) return null;
@@ -202,52 +226,60 @@ function agoParts(iso){
   if(isNaN(ms)) return null;
   const m = Math.floor(ms/60000);
   let label, level="ok";
-  if(m<1) label="just now";
-  else if(m<60) label=m+"m ago";
-  else if(m<1440){ label=Math.floor(m/60)+"h ago"; if(m>=1440*0.75) level="warn"; }
-  else { const d=Math.floor(m/1440); label=d+"d ago"; level = d>=3?"stale":"warn"; }
-  return { label, level, ms };
+  if(m<1) label="now";
+  else if(m<60) label=m+"m";
+  else if(m<1440){ label=Math.floor(m/60)+"h"; if(m>=1080) level="warn"; }
+  else { const d=Math.floor(m/1440); label=d+"d"; level = d>=3?"stale":"warn"; }
+  return { label, level };
 }
 
-function Card({ id, td, tlogs }){
-  const status = truckStatus(td, tlogs);
-  const meta = STATUS_META[status];
+function Row({ pos, id, td, tlogs, status }){
+  const f = FLAG[status];
   const crit = criticalItem(td, tlogs);
   const fresh = agoParts(td && td.lastUpdated);
   const tech = (td && td.technician) ? td.technician : null;
-  const onClick = ()=>{ window.top.location.href = "index.html?truck=" + id; };
+  const onClick = ()=>{ window.open("index.html?truck=" + id, "_blank", "noopener"); };
+  const rowStyle = { "--flag": f.color };
 
-  let bar = null, taskLine = null, note = null;
+  let stint = h("div",{className:"stint"});
+  let delta = h("div",{className:"delta"}, h("span",{className:"delta-unit"},"—"));
+  let nextName = "";
   if(status==="grounded"){
-    note = h("div",{className:"c-note"}, "⬡ " + ((td && td.groundedNote) || "Out of service"));
+    nextName = (td && td.groundedNote) || "Out of service";
+    delta = h("div",{className:"delta"}, h("div",{className:"delta-tag"},"in garage"));
   } else if(td && td.hours!=null && crit){
+    nextName = crit.name;
     const ratio = Math.max(0, Math.min((crit.interval - crit.rem)/crit.interval, 1));
-    const barColor = status==="overdue"?"var(--red)":status==="warn"?"var(--amber)":status==="due"?"var(--blue)":"var(--green)";
-    bar = h("div",{className:"c-bar-track"}, h("div",{className:"c-bar-fill",style:{width:(ratio*100)+"%",background:barColor}}));
-    const over = crit.rem <= 0;
-    const remTxt = over
-      ? (crit.type==="replace" ? "+"+Math.abs(Math.round(crit.rem))+"h over" : "+"+Math.abs(Math.round(crit.rem))+"h due")
-      : Math.round(crit.rem)+"h left";
-    const remColor = over ? (crit.type==="replace"?"var(--red)":"var(--blue)") : status==="warn"?"var(--amber)":"var(--text-dim)";
-    taskLine = h("div",{className:"c-task"},
-      h("span",{className:"c-task-name",title:crit.name}, crit.name),
-      h("span",{className:"c-task-rem",style:{color:remColor}}, remTxt)
+    stint = h("div",{className:"stint"},
+      h("div",{className:"stint-track"}, h("div",{className:"stint-fill",style:{width:(ratio*100)+"%"}})),
+      h("div",{className:"stint-pct"}, Math.round(ratio*100)+"% of interval")
     );
+    const over = crit.rem <= 0;
+    delta = over
+      ? h("div",{className:"delta over"},
+          h("div",null, h("span",{className:"delta-val"},"+"+Math.abs(Math.round(crit.rem))), h("span",{className:"delta-unit"},"h")),
+          h("div",{className:"delta-tag"}, crit.type==="replace" ? "overdue" : "check/clean due"))
+      : h("div",{className:"delta"},
+          h("div",null, h("span",{className:"delta-val"},Math.round(crit.rem)), h("span",{className:"delta-unit"},"h")),
+          h("div",{className:"delta-tag"},"to service"));
+  } else {
+    nextName = "No hours on file";
   }
 
-  return h("div",{className:"card s-"+status, onClick},
-    h("div",{className:"c-top"},
-      h("div",{className:"c-id"}, id),
-      h("div",{className:"c-badge b-"+status}, meta.label)
+  return h("div",{className:"row "+(status==="overdue"?"rf ":"")+(status==="grounded"?"garage":""), style:rowStyle, onClick},
+    h("div",{className:"pos "+f.cls}, h("span",null, status==="grounded" ? "▪" : pos)),
+    h("div",{className:"car"},
+      h("div",{className:"car-id"}, id),
+      h("div",{className:"car-next", title:nextName}, nextName)
     ),
-    (td && td.hours!=null)
-      ? h("div",{className:"c-hours"}, h("b",null, td.hours), "h logged")
-      : h("div",{className:"c-hours"}, "No hours on file"),
-    bar, taskLine, note,
-    h("div",{className:"c-foot"},
-      h("span",{className:"c-tech"+(tech?"":" unassigned")}, tech || "unassigned"),
-      fresh ? h("span",{className:"c-fresh"}, h("span",{className:"fresh-dot "+fresh.level}), fresh.label) : h("span",{className:"c-fresh"}, "—")
-    )
+    h("div",{className:"flag-cell"},
+      h("div",{className:"fbar "+f.cls}),
+      h("div",{className:"flag-word "+f.cls}, f.word)
+    ),
+    stint,
+    delta,
+    h("div",{className:"crew"+(tech?"":" none")}, tech || "unassigned"),
+    h("div",{className:"updated"}, fresh ? [h("span",{key:"d",className:"udot "+fresh.level}), fresh.label] : "—")
   );
 }
 
@@ -256,7 +288,7 @@ function App(){
   const [logs,setLogs] = useState({});
   const [err,setErr] = useState(false);
   const [syncedAt,setSyncedAt] = useState(null);
-  const [tick,setTick] = useState(0);
+  const [,setTick] = useState(0);
   const [filter,setFilter] = useState(null);
   const embed = new URLSearchParams(location.search).get("embed")==="1";
 
@@ -282,11 +314,10 @@ function App(){
   useEffect(()=>{ document.body.classList.toggle("embed", embed); },[embed]);
   useEffect(()=>{ const t=setInterval(()=>setTick(x=>x+1),30000); return ()=>clearInterval(t); },[]);
 
-  if(err) return h("div",{className:"wrap"}, h("div",{className:"state"},
+  if(err) return h("div",{className:"wrap"}, h("div",{className:"empty"},
     "Fleet data unavailable — check the connection and try again.",
-    h("div",{className:"retry-wrap"}, h("button",{className:"retry",onClick:load},"RETRY"))
-  ));
-  if(!data) return h("div",{className:"wrap"}, h("div",{className:"state"},"Loading fleet…"));
+    h("div",null, h("button",{className:"btn",onClick:load},"Retry"))));
+  if(!data) return h("div",{className:"wrap"}, h("div",{className:"empty"},"Connecting to timing feed…"));
 
   const rows = TRUCKS.map(id=>{
     const td = { ...(data[id]||{}), _id:id };
@@ -294,7 +325,6 @@ function App(){
     return { id, td, tlogs, status: truckStatus(td, tlogs) };
   });
   const counts = rows.reduce((a,r)=>{ a[r.status]=(a[r.status]||0)+1; return a; },{});
-  const total = TRUCKS.length;
 
   const sorted = rows.slice().sort((a,b)=>{
     const d = (SORT_RANK[a.status]??3)-(SORT_RANK[b.status]??3);
@@ -304,48 +334,48 @@ function App(){
   });
   const shown = filter ? sorted.filter(r=>r.status===filter) : sorted;
 
-  const kpiOrder = ["overdue","warn","due","ok","grounded"];
-  const segOrder = ["overdue","warn","due","ok","grounded","none"];
-
-  const freshest = rows.map(r=>r.td && r.td.lastUpdated ? new Date(r.td.lastUpdated).getTime() : 0)
-    .reduce((a,b)=>Math.max(a,b),0);
+  const freshest = rows.map(r=>r.td && r.td.lastUpdated ? new Date(r.td.lastUpdated).getTime() : 0).reduce((a,b)=>Math.max(a,b),0);
   const dataAge = freshest ? agoParts(new Date(freshest).toISOString()) : null;
   const syncAgo = syncedAt ? (agoParts(syncedAt.toISOString())||{}).label : "";
 
   return h("div",{className:"wrap"},
-    h("header",{className:"head"},
-      h("div",{className:"brand"},
-        h("span",{className:"badge-hd"},"HD GEN2"),
-        h("span",{className:"title"},"Fleet Overview")
+    h("header",{className:"pw"},
+      h("div",{className:"pw-brand"},
+        h("span",{className:"pw-mark"},"HD GEN2"),
+        h("span",{className:"pw-title"},"Pit Wall"),
+        h("span",{className:"pw-sub"},"Japan Fleet")
       ),
-      h("div",{className:"head-right"},
-        h("span",{className:"sync"}, h("span",{className:"sync-dot"}), syncAgo||"—"),
-        dataAge ? h("span",{className:"age "+(dataAge.level==="stale"?"stale":dataAge.level==="warn"?"warn":""),title:"Newest hours reading across the fleet"}, "data "+dataAge.label) : null,
-        h("a",{className:"link",href:"index.html"},"Detailed view →")
+      h("div",{className:"pw-right"},
+        h("span",{className:"live"}, h("span",{className:"live-dot"}), "LIVE"),
+        syncAgo ? h("span",{className:"age "+(dataAge&&dataAge.level==="stale"?"stale":dataAge&&dataAge.level==="warn"?"warn":"")}, "sync "+syncAgo+" ago") : null,
+        h("a",{className:"detail-link",href:"index.html"},"Detailed view →")
       )
     ),
-    h("div",{className:"health"},
-      h("div",{className:"health-bar"},
-        segOrder.filter(s=>counts[s]).map(s=>
-          h("div",{key:s,className:"health-seg",style:{width:(counts[s]/total*100)+"%",background:STATUS_META[s].color}}))
-      ),
-      h("div",{className:"kpis"},
-        kpiOrder.map(s=>{
-          const active = filter===s;
-          const dim = filter && !active;
-          return h("div",{key:s,
-            className:"kpi k-"+s+(active?" active":"")+(dim?" dim":""),
-            onClick:()=>setFilter(active?null:s)},
-            h("div",{className:"kpi-val"}, counts[s]||0),
-            h("div",{className:"kpi-lbl"}, STATUS_META[s].label)
-          );
-        })
-      )
+    h("div",{className:"status-strip"},
+      sorted.map(r=> h("div",{key:r.id,className:"status-tick",style:{background:FLAG[r.status].color},title:r.id+" · "+FLAG[r.status].word}))
+    ),
+    h("div",{className:"flags"},
+      FLAG_ORDER.map(s=>{
+        const active = filter===s, dim = filter && !active;
+        return h("div",{key:s,className:"flag-chip"+(dim?" dim":""),onClick:()=>setFilter(active?null:s)},
+          h("div",{className:"flag-swatch",style:{background:FLAG[s].color}}),
+          h("div",{className:"flag-meta"},
+            h("span",{className:"flag-count"}, counts[s]||0),
+            h("span",{className:"flag-lbl"}, FLAG[s].word)
+          )
+        );
+      })
+    ),
+    h("div",{className:"tower-head"},
+      h("span",null,"Pos"), h("span",null,"Car"), h("span",null,"Flag"),
+      h("span",{className:"h-stint"},"Stint"), h("span",null,"To service"),
+      h("span",{className:"h-crew"},"Crew"), h("span",{className:"h-upd"},"Updated")
     ),
     shown.length
-      ? h("div",{className:"grid"}, shown.map(r=> h(Card,{key:r.id, id:r.id, td:r.td, tlogs:r.tlogs})))
-      : h("div",{className:"state"}, "No trucks in this status.",
-          h("div",{className:"retry-wrap"}, h("button",{className:"retry",onClick:()=>setFilter(null)},"CLEAR FILTER")))
+      ? h("div",{className:"tower"},
+          shown.map((r,i)=> h(Row,{key:r.id, pos:i+1, id:r.id, td:r.td, tlogs:r.tlogs, status:r.status})))
+      : h("div",{className:"empty"}, "No cars under this flag.",
+          h("div",null, h("button",{className:"btn",onClick:()=>setFilter(null)},"Clear filter")))
   );
 }
 
