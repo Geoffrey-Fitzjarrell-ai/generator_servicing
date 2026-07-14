@@ -131,13 +131,13 @@
     }
   },
   "HD18": {
-    "hours": 213,
+    "hours": 226,
     "intervalStart": 0,
     "overdue": false,
     "technician": "",
-    "lastUpdated": "2026-07-06T12:08:43Z",
+    "lastUpdated": "2026-07-14T03:33:11Z",
     "postedBy": {
-      "id": "U0971UJ8RKQ",
+      "id": "U0BC2F1B49L",
       "name": null
     }
   },
