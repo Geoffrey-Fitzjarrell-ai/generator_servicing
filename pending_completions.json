@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "truck": "HD14",
+    "tasks": [
+      "Battery Box check"
+    ],
+    "technician": "Masakiyo",
+    "postedBy": {
+      "id": "U0AT2E00R5G",
+      "name": null
+    },
+    "loggedAt": "2026-07-15T09:58:05.216Z",
+    "hours": 567,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
