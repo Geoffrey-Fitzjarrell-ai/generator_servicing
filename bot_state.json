@@ -1,6 +1,5 @@
 {
   "handled": {
-    "1783939381.861209": "accepted",
     "1783944289.894289": "rejected",
     "1783944502.543839": "accepted",
     "1783947934.265669": "rejected",
@@ -33,5 +32,22 @@
     "1784076237.635879": "accepted",
     "1784079077.898169": "accepted"
   },
-  "pending": []
+  "pending": [
+    {
+      "truck": "HD14",
+      "tasks": [
+        "Battery Box check"
+      ],
+      "technician": "Masakiyo",
+      "postedBy": {
+        "id": "U0AT2E00R5G",
+        "name": null
+      },
+      "loggedAt": "2026-07-15T09:58:05.216Z",
+      "hours": 567,
+      "notes": [],
+      "alreadyLogged": true,
+      "notified": true
+    }
+  ]
 }
