@@ -53,7 +53,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -73,7 +73,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "fuel_filter",
@@ -109,7 +109,7 @@
         },
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         }
       ],
       "notes": [
@@ -150,7 +150,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -182,7 +182,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "coolant_lines",
@@ -210,7 +210,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         }
       ],
       "notes": []
@@ -222,7 +222,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -254,7 +254,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -302,7 +302,7 @@
         },
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         }
       ],
       "notes": [
@@ -316,7 +316,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -372,7 +372,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -396,7 +396,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "clean_radiator",
@@ -424,7 +424,7 @@
         },
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         }
       ],
       "notes": [
@@ -452,7 +452,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -484,7 +484,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "coolant_lines",
@@ -526,7 +526,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -546,7 +546,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -592,7 +592,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -658,7 +658,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -694,7 +694,7 @@
         },
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "coolant_lines",
@@ -720,7 +720,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -764,7 +764,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "coolant_lines",
@@ -796,7 +796,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "drive_belt",
@@ -818,7 +818,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -842,7 +842,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "coolant_lines",
@@ -870,7 +870,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -902,7 +902,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "oil_filter",
@@ -934,7 +934,7 @@
       "tasks": [
         {
           "key": "airfilter_battery",
-          "label": "Air filter & battery check"
+          "label": "Air filter / Battery / Battery Box check"
         },
         {
           "key": "coolant_lines",
