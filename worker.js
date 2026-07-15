@@ -22,7 +22,8 @@ const REPO  = "generator_servicing";
 // Worker doesn't share a module with the dashboard. If you add/change a task
 // there, update it here too or "next due" answers will drift.
 const TASKS = [
-  { key:"airfilter_battery", name:"Air filter / Battery / Battery Box check", interval:50,  type:"service" },
+  { key:"airfilter_battery", name:"Air filter / Battery check", interval:50,  type:"service" },
+  { key:"battery_box",       name:"Battery Box check",         interval:50,  type:"service" },
   { key:"oil_filter",        name:"Oil / filter change",        interval:150, type:"replace" },
   { key:"airfilter_clean",   name:"Air filter cleaning",         interval:250, type:"service" },
   { key:"coolant_lines",     name:"Check coolant lines",         interval:250, type:"service" },

@@ -168,7 +168,8 @@ const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14"
 // OVERDUE (red flag). type "service" (checks, cleanings) never goes overdue —
 // past its interval it shows a calm blue-flag DUE state instead.
 const TASKS = [
-  { key:"airfilter_battery", name:"Air filter / Battery / Battery Box check", interval:50,  type:"service" },
+  { key:"airfilter_battery", name:"Air filter / Battery check", interval:50,  type:"service" },
+  { key:"battery_box",       name:"Battery Box check",         interval:50,  type:"service" },
   { key:"oil_filter",        name:"Oil / filter change",        interval:150, type:"replace" },
   { key:"airfilter_clean",   name:"Air filter cleaning",        interval:250, type:"service" },
   { key:"coolant_lines",     name:"Check coolant lines",        interval:250, type:"service" },

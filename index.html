@@ -401,7 +401,8 @@ const TRUCKS = ["HD5","HD6","HD7","HD8","HD9","HD10","HD11","HD12","HD13","HD14"
 //   they show a calm DUE (blue) state and do not trigger the truck's red
 //   overdue alarm or overdue counts.
 const TASKS = [
-  { key:"airfilter_battery", name:"Air filter / Battery / Battery Box check",        interval:50,  type:"service" },
+  { key:"airfilter_battery", name:"Air filter / Battery check",               interval:50,  type:"service" },
+  { key:"battery_box",       name:"Battery Box check",                        interval:50,  type:"service" },
   { key:"oil_filter",        name:"Oil / filter change",               interval:150, type:"replace" },
   { key:"airfilter_clean",   name:"Air filter cleaning",               interval:250, type:"service" },
   { key:"coolant_lines",     name:"Check coolant lines",               interval:250, type:"service" },
@@ -444,8 +445,13 @@ const TICKETS_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/g
 const TASK_INFO = {
   airfilter_battery: {
     replace: ["Air filter element", "Check battery terminals for corrosion"],
-    check:   ["Battery voltage (should be 12.4–12.8V)", "Air filter housing seal", "Battery hold-down secure"],
+    check:   ["Battery voltage (should be 12.4–12.8V)", "Air filter housing seal"],
     notes:   "Clean housing before installing new filter. Torque battery terminals snugly — do not overtighten."
+  },
+  battery_box: {
+    replace: ["Nothing routine — replace box hardware only if cracked or corroded"],
+    check:   ["Battery box for cracks or damage", "Hold-down bracket and hardware secure", "Vent/drain clear", "No debris or fluid pooling in box"],
+    notes:   "Inspect the enclosure and mounting, not just the battery. Clear any debris and confirm the box is seated and latched."
   },
   oil_filter: {
     replace: ["Engine oil (see manual for grade/quantity)", "Oil filter"],

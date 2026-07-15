@@ -7,6 +7,7 @@
   "HD6": {
     "oil_filter": 1680,
     "airfilter_battery": 1680,
+    "battery_box": 1680,
     "airfilter_500": 1465,
     "fuel_filter": 1578,
     "coolant_lines": 1578,
@@ -17,6 +18,7 @@
   "HD8": {
     "oil_filter": 1550,
     "airfilter_battery": 1550,
+    "battery_box": 1550,
     "airfilter_500": 1206,
     "coolant_lines": 1429,
     "fuel_filter": 1429,
@@ -26,6 +28,7 @@
   "HD9": {
     "oil_filter": 1532,
     "airfilter_battery": 1532,
+    "battery_box": 1532,
     "airfilter_500": 1532,
     "clean_radiator": 1454,
     "drive_belt": 1454,
@@ -35,6 +38,7 @@
   "HD10": {
     "oil_filter": 1540,
     "airfilter_battery": 1540,
+    "battery_box": 1540,
     "fuel_filter": 1381,
     "clean_radiator": 1489,
     "coolant_lines": 1489,
@@ -44,6 +48,7 @@
   "HD11": {
     "oil_filter": 1253,
     "airfilter_battery": 1337,
+    "battery_box": 1337,
     "airfilter_500": 1070,
     "coolant_lines": 1337,
     "fuel_filter": 1337,
@@ -53,6 +58,7 @@
   "HD12": {
     "oil_filter": 616,
     "airfilter_battery": 616,
+    "battery_box": 616,
     "airfilter_500": 456,
     "coolant_lines": 616,
     "fuel_filter": 616,
@@ -62,6 +68,7 @@
   "HD13": {
     "oil_filter": 460,
     "airfilter_battery": 456,
+    "battery_box": 456,
     "airfilter_500": 456,
     "coolant_lines": 460,
     "fuel_filter": 460
@@ -69,6 +76,7 @@
   "HD14": {
     "oil_filter": 450,
     "airfilter_battery": 552,
+    "battery_box": 552,
     "airfilter_500": 415,
     "fuel_filter": 552,
     "coolant_lines": 552,
@@ -77,6 +85,7 @@
   },
   "HD15": {
     "airfilter_battery": 527,
+    "battery_box": 527,
     "oil_filter": 480,
     "airfilter_500": 201,
     "coolant_lines": 447,
@@ -86,6 +95,7 @@
   },
   "HD16": {
     "airfilter_battery": 407,
+    "battery_box": 407,
     "oil_filter": 407,
     "fuel_filter": 430,
     "airfilter_500": 178,
@@ -94,6 +104,7 @@
   },
   "HD17": {
     "airfilter_battery": 334,
+    "battery_box": 334,
     "oil_filter": 230,
     "coolant_lines": 334,
     "fuel_filter": 334,
