@@ -46,5 +46,23 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD15",
+    "tasks": [
+      "Battery Box check"
+    ],
+    "technician": "Masakiyo",
+    "postedBy": {
+      "id": "U0B3NMN2DS4",
+      "name": null
+    },
+    "loggedAt": "2026-07-16T09:07:46.261Z",
+    "hours": 590,
+    "notes": [
+      "Please continue to observe GND bus bar towards rear of battery box for symptoms of loose nut"
+    ],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
