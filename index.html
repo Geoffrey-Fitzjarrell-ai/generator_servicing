@@ -1531,7 +1531,7 @@ function PlanningView({ onOpenTruck }){
     setOv(next); saveOverrides(next); setEditing(null);
   }
 
-  const COLW=150, LABELW=140;
+  const COLW=190, LABELW=140;
 
   // backlog: unscheduled open tickets
   let backlog=[]; Object.entries(tickets).forEach(([truck,arr])=>(arr||[]).forEach(t=>backlog.push({...t,truck})));
@@ -1584,53 +1584,58 @@ function PlanningView({ onOpenTruck }){
              borderLeft:"1px solid var(--border)"}},"W "+fmtWk(d)))
       ),
       // rows
-      groups.map(g=>PH("div",{key:g.key,style:{display:"grid",gridTemplateColumns:`${LABELW}px repeat(${weeks},${COLW}px)`,
-                       borderBottom:"1px solid var(--border)",minHeight:44,position:"relative"}},
-        // row label
-        PH("div",{onClick:()=>P.groupBy!=="engineer"&&onOpenTruck&&onOpenTruck(g.key),
-          style:{position:"sticky",left:0,zIndex:1,background:"var(--surface)",borderRight:"1px solid var(--border2)",
-                 padding:"6px 8px",cursor:P.groupBy==="engineer"?"default":"pointer",display:"flex",flexDirection:"column",justifyContent:"center"}},
-          PH("div",{style:{display:"flex",gap:6,alignItems:"center",fontWeight:700,fontSize:13,
-                    fontFamily:"var(--mono)",color:g.overdue?"var(--red)":"var(--text)"}},
-            P.groupBy==="engineer"?PH("span",{style:{width:8,height:8,borderRadius:"50%",background:g.sub}}):null, g.label),
-          g.sub&&P.groupBy!=="engineer"?PH("div",{style:{fontSize:10,color:g.overdue?"var(--red)":"var(--text-faint)"}},
-             g.overdue?"OVERDUE":g.sub):null
-        ),
-        // week cells (grid backdrop)
-        wkDates.map((d,i)=>PH("div",{key:i,style:{borderLeft:"1px solid var(--border)",
-             background: iso(d)<=todayISO && iso(addDays(d,6))>=todayISO?"rgba(225,6,0,.04)":"transparent"}})),
-        // bars (absolute over the week columns)
-        PH("div",{style:{position:"absolute",left:LABELW,right:0,top:0,bottom:0,pointerEvents:"none"}},
-          PH("div",{style:{position:"relative",height:"100%"}},
-            g.items.sort((a,b)=>a.date.localeCompare(b.date)).map(it=>{
-              const w=wkOf(it.date); if(w<0||w>=weeks) return null;
-              const m=TYPE_META[it.type]||TYPE_META.other;
-              const dow=(new Date(it.date).getDay()+6)%7; // 0..6 within week
-              const left=w*COLW + (dow/7)*COLW + 3;
-              return PH("div",{key:it.id,title:`${it.truck} · ${it.date} · ${m.lbl}\n${it.label}`,
-                onClick:()=>setEditing(editing===it.id?null:it.id),
-                style:{position:"absolute",left,top:5,width:COLW/7*1.8,minWidth:34,pointerEvents:"auto",cursor:"pointer",
-                       background:m.bg,border:`1px solid ${m.c}`,borderLeft:`3px solid ${m.c}`,borderRadius:4,
-                       padding:"3px 5px",overflow:"visible",opacity:it.historical?.85:1}},
-                show.label?PH("div",{style:{fontSize:10,color:"var(--text)",whiteSpace:"nowrap",overflow:"hidden",
-                     textOverflow:"ellipsis",maxWidth:COLW*1.6}},it.label):null,
-                show.shift&&it.shift?PH("div",{style:{fontSize:8,color:m.c,fontFamily:"var(--mono)"}},it.shift):null,
-                show.eng&&P.groupBy!=="engineer"?PH("div",{style:{marginTop:2,fontSize:9,color:"#fff",display:"inline-block",
-                     background:engColor(it.eng),borderRadius:3,padding:"1px 4px"}},initials(it.eng)):null,
-                // reassign popover
-                editing===it.id?PH("div",{style:{position:"absolute",top:"100%",left:0,zIndex:10,marginTop:3,
-                     background:"var(--surface3)",border:"1px solid var(--border2)",borderRadius:5,padding:6,minWidth:150,
-                     boxShadow:"0 6px 18px rgba(0,0,0,.5)"}},
-                  PH("div",{style:{fontSize:9,color:"var(--text-faint)",marginBottom:4}},"ASSIGN ENGINEER"),
-                  PH("select",{value:it.eng,onChange:e=>reassign(it.id,e.target.value),
-                       style:{width:"100%",...sel,fontSize:11}},
-                    roster.map(r=>PH("option",{key:r,value:r},r)))
-                ):null
-              );
-            })
-          )
-        )
-      ))
+      groups.map(g=>{
+        const byWk = Array.from({length:weeks},()=>[]);
+        g.items.forEach(it=>{ const w=wkOf(it.date); if(w>=0&&w<weeks) byWk[w].push(it); });
+        byWk.forEach(a=>a.sort((x,y)=>x.date.localeCompare(y.date)));
+        return PH("div",{key:g.key,style:{display:"grid",gridTemplateColumns:`${LABELW}px repeat(${weeks},${COLW}px)`,
+                       borderBottom:"1px solid var(--border)",minHeight:54}},
+          // row label
+          PH("div",{onClick:()=>P.groupBy!=="engineer"&&onOpenTruck&&onOpenTruck(g.key),
+            style:{position:"sticky",left:0,zIndex:1,background:"var(--surface)",borderRight:"1px solid var(--border2)",
+                   padding:"8px",cursor:P.groupBy==="engineer"?"default":"pointer",display:"flex",flexDirection:"column",justifyContent:"center"}},
+            PH("div",{style:{display:"flex",gap:6,alignItems:"center",fontWeight:700,fontSize:13,
+                      fontFamily:"var(--mono)",color:g.overdue?"var(--red)":"var(--text)"}},
+              P.groupBy==="engineer"?PH("span",{style:{width:8,height:8,borderRadius:"50%",background:g.sub,flexShrink:0}}):null, g.label),
+            g.sub&&P.groupBy!=="engineer"?PH("div",{style:{fontSize:10,color:g.overdue?"var(--red)":"var(--text-faint)"}},
+               g.overdue?"OVERDUE":g.sub):null
+          ),
+          // week cells with stacked chips
+          byWk.map((cellItems,i)=>{
+            const d=wkDates[i];
+            const isNow = iso(d)<=todayISO && iso(addDays(d,6))>=todayISO;
+            return PH("div",{key:i,style:{borderLeft:"1px solid var(--border)",padding:"6px 6px",
+                 background:isNow?"rgba(225,6,0,.05)":"transparent",display:"flex",flexDirection:"column",gap:6}},
+              cellItems.map(it=>{
+                const m=TYPE_META[it.type]||TYPE_META.other;
+                const dd=new Date(it.date);
+                const day=dd.toLocaleDateString("en-US",{weekday:"short"});
+                return PH("div",{key:it.id,title:`${it.truck} · ${it.date} · ${m.lbl}\n${it.label}`,
+                  onClick:()=>setEditing(editing===it.id?null:it.id),
+                  style:{position:"relative",cursor:"pointer",background:m.bg,border:`1px solid ${m.c}`,
+                         borderLeft:`3px solid ${m.c}`,borderRadius:4,padding:"5px 8px",opacity:it.historical?.9:1}},
+                  PH("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:6,
+                       marginBottom:show.label?3:0}},
+                    PH("span",{style:{fontSize:9,fontFamily:"var(--mono)",color:m.c,fontWeight:700,whiteSpace:"nowrap"}},
+                      day+" "+dd.getDate()+(show.shift&&it.shift?" · "+it.shift:"")),
+                    show.eng&&P.groupBy!=="engineer"?PH("span",{style:{fontSize:9,color:"#fff",flexShrink:0,
+                         background:engColor(it.eng),borderRadius:3,padding:"1px 5px"}},initials(it.eng)):null
+                  ),
+                  show.label?PH("div",{style:{fontSize:11,lineHeight:1.3,color:"var(--text)",
+                       display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden",wordBreak:"break-word"}},it.label):null,
+                  editing===it.id?PH("div",{style:{position:"absolute",top:"100%",left:0,zIndex:10,marginTop:3,
+                       background:"var(--surface3)",border:"1px solid var(--border2)",borderRadius:5,padding:6,minWidth:160,
+                       boxShadow:"0 6px 18px rgba(0,0,0,.5)"}},
+                    PH("div",{style:{fontSize:9,color:"var(--text-faint)",marginBottom:4}},"ASSIGN ENGINEER"),
+                    PH("select",{value:it.eng,onChange:e=>reassign(it.id,e.target.value),style:{width:"100%",...sel,fontSize:11}},
+                      roster.map(r=>PH("option",{key:r,value:r},r)))
+                  ):null
+                );
+              })
+            );
+          })
+        );
+      })
     ),
     // ── backlog + dashboard import ──
     PH("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:16}},
