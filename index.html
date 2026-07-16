@@ -1456,6 +1456,7 @@ function PlanningView({ onOpenTruck }){
   const [ov,setOv]               = useState(loadOverrides);
   const [editing,setEditing]     = useState(null);   // item id being reassigned
   const [imp,setImp]             = useState({ url:"", note:"" });
+  const [q,setQ]                 = useState("");
 
   useEffect(()=>{
     const bust = "?t="+Date.now();
@@ -1499,12 +1500,16 @@ function PlanningView({ onOpenTruck }){
   const wkDates = Array.from({length:weeks},(_,i)=>addDays(weekStart,i*7));
   const rangeStart=iso(weekStart), rangeEnd=iso(addDays(weekStart,weeks*7-1));
   const inRange = it => it.date>=rangeStart && it.date<=rangeEnd && P.types.includes(it.type);
+  const ql = q.trim().toLowerCase();
+  const matchQ = it => !ql || [it.truck,it.label,it.eng,it.type,it.shift,it.date].some(v=>String(v||"").toLowerCase().includes(ql));
+  const visible = it => inRange(it) && matchQ(it);
+  const matchCount = ql ? items.filter(visible).length : 0;
   const todayISO = iso(new Date());
 
   // group rows
   let groups;
   if(P.groupBy==="engineer"){
-    const byE={}; items.filter(inRange).forEach(it=>{ (byE[it.eng]=byE[it.eng]||[]).push(it); });
+    const byE={}; items.filter(visible).forEach(it=>{ (byE[it.eng]=byE[it.eng]||[]).push(it); });
     groups = roster.filter(e=>byE[e]).map(e=>({ key:e, label:e, sub:engColor(e), items:byE[e] }));
     if(!groups.length) groups=[{key:"Unassigned",label:"Unassigned",items:[]}];
   } else {
@@ -1512,7 +1517,7 @@ function PlanningView({ onOpenTruck }){
     groups = trucks.sort((a,b)=>truckNum(a)-truckNum(b)).map(t=>{
       const td=data[t]||{};
       const sub = td.overdue? "overdue" : (td.hours!=null? td.hours+"h":"");
-      return { key:t, label:t, sub, overdue:td.overdue, items:items.filter(it=>it.truck===t && inRange(it)) };
+      return { key:t, label:t, sub, overdue:td.overdue, items:items.filter(it=>it.truck===t && visible(it)) };
     });
   }
 
@@ -1526,7 +1531,8 @@ function PlanningView({ onOpenTruck }){
   const COLW=150, LABELW=140;
 
   // backlog: unscheduled open tickets
-  const backlog=[]; Object.entries(tickets).forEach(([truck,arr])=>(arr||[]).forEach(t=>backlog.push({...t,truck})));
+  let backlog=[]; Object.entries(tickets).forEach(([truck,arr])=>(arr||[]).forEach(t=>backlog.push({...t,truck})));
+  if(ql) backlog=backlog.filter(t=>[t.truck,t.key,t.summary,t.status,t.priority].some(v=>String(v||"").toLowerCase().includes(ql)));
 
   const cell = (v,style)=>PH("div",{style:Object.assign({padding:"0 8px"},style)},v);
 
@@ -1537,6 +1543,15 @@ function PlanningView({ onOpenTruck }){
         PH("button",{onClick:()=>setWeekStart(addDays(weekStart,-7)),style:navBtn},"‹"),
         PH("button",{onClick:()=>setWeekStart(addDays(mondayOf(new Date()),-14)),style:navBtn},"Today"),
         PH("button",{onClick:()=>setWeekStart(addDays(weekStart,7)),style:navBtn},"›")
+      ),
+      PH("div",{style:{position:"relative",display:"flex",alignItems:"center"}},
+        PH("input",{value:q,onChange:e=>setQ(e.target.value),placeholder:"Search truck, engineer, mission…",
+          style:{...sel,width:230,paddingLeft:26}}),
+        PH("span",{style:{position:"absolute",left:8,fontSize:12,color:"var(--text-faint)"}},"⌕"),
+        q?PH("button",{onClick:()=>setQ(""),title:"clear",
+          style:{...navBtn,padding:"3px 7px",marginLeft:4}},"×"):null,
+        q?PH("span",{style:{marginLeft:8,fontSize:11,fontFamily:"var(--mono)",
+          color:matchCount?"var(--green)":"var(--text-faint)"}},matchCount+" match"+(matchCount===1?"":"es")):null
       ),
       PH("select",{value:preset,onChange:e=>setPreset(e.target.value),style:sel},
         Object.entries(PRESETS).map(([k,v])=>PH("option",{key:k,value:k},v.name))),
