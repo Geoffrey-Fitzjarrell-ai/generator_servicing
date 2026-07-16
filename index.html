@@ -1434,8 +1434,8 @@ const TYPE_META = {
   maintenance:  { c:"var(--green)", bg:"rgba(61,168,112,.16)",  lbl:"Maintenance" },
   ticket:       { c:"var(--red)",   bg:"rgba(224,69,69,.14)",   lbl:"Open ticket" },
   planned:      { c:"#9880cc",      bg:"rgba(152,128,204,.16)", lbl:"Planned" },
-  shaken:       { c:"var(--red)",   bg:"rgba(224,69,69,.18)",   lbl:"車検・12ヶ月" },
-  inspection3m: { c:"#e08a3c",      bg:"rgba(224,138,60,.16)",  lbl:"3-Month inspection" },
+  shaken:       { c:"var(--red)",   bg:"rgba(224,69,69,.18)",   lbl:"車検・annual (3d)" },
+  inspection3m: { c:"var(--green)", bg:"rgba(61,168,112,.16)",  lbl:"3-month (1d)" },
   other:        { c:"var(--text-dim)", bg:"rgba(120,140,170,.12)", lbl:"Other" }
 };
 // PRE-PACKAGED PRESETS — filter what shows on the plan
@@ -1450,7 +1450,11 @@ const PRESETS = {
 
 function mondayOf(d){ const x=new Date(d); const day=(x.getDay()+6)%7; x.setDate(x.getDate()-day); x.setHours(0,0,0,0); return x; }
 function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function addMonths(d,n){ const x=new Date(d); const day=x.getDate(); x.setMonth(x.getMonth()+n); if(x.getDate()<day) x.setDate(0); return x; }
 function iso(d){ return new Date(d).toISOString().slice(0,10); }
+// tz-safe: build/parse local YYYY-MM-DD without UTC shift (matters for day-level placement in JST)
+function isoLocal(d){ const x=new Date(d); const y=x.getFullYear(), m=String(x.getMonth()+1).padStart(2,"0"), dd=String(x.getDate()).padStart(2,"0"); return `${y}-${m}-${dd}`; }
+function parseISO(s){ const [y,m,dd]=String(s).split("-").map(Number); return new Date(y,(m||1)-1,dd||1); }
 function fmtWk(d){ return d.toLocaleDateString("en-US",{month:"short",day:"numeric"}); }
 function truckNum(t){ const m=/HD(\d+)/.exec(t); return m?+m[1]:999; }
 function initials(name){ if(!name||name==="Unassigned") return "—"; return name.split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); }
@@ -1475,6 +1479,7 @@ function PlanningView({ onOpenTruck }){
   const [weeks,setWeeks]         = useState(4);
   const [preset,setPreset]       = useState("all");
   const [show,setShow]           = useState({ label:true, eng:true, shift:false });
+  const [gran,setGran]           = useState("week");   // "week" | "day"
   const [ov,setOv]               = useState(loadOverrides);
   const [editMode,setEditMode]   = useState(false);
   const [tasks,setTasks]         = useState(loadTasks);
@@ -1518,11 +1523,29 @@ function PlanningView({ onOpenTruck }){
                  eng:ov[id]||canonEng(e.technician)||"Unassigned", historical:true });
     }));
     tasks.forEach(t=>{ if(t.truck&&t.date) out.push({ ...t, eng:ov[t.id]||t.eng||"Unassigned", planned:true }); });
+    const todayS=isoLocal(new Date());
     Object.entries(inspections).forEach(([truck,rec])=>{
       if(!rec||truck[0]==="_"||!rec.events) return;
-      rec.events.forEach((e,i)=>{
+      // chain 3-month inspections: next is due within 3 months of the previous one's
+      // effective (done > booked > placeholder) date. Past = fact; future = tentative.
+      const evs=[...rec.events].sort((a,b)=>a.date.localeCompare(b.date));
+      let prev3m=null;
+      evs.forEach((e,i)=>{
         const id=`${truck}|${e.date}|i${i}`;
-        out.push({ id, truck, date:e.date, type:e.type, label:e.label, eng:ov[id]||"Unassigned", inspection:true, approx:!!e.approx });
+        const isAnnual = e.type==="shaken";
+        const eff = e.done || e.booked || e.date;      // date we actually plot on
+        const done = !!e.done || (!e.approx && eff < todayS && !isAnnual);
+        let dueBy=null, overWindow=false;
+        if(e.type==="inspection3m"){
+          if(prev3m){ dueBy=isoLocal(addMonths(parseISO(prev3m),3)); overWindow = eff > dueBy; }
+          prev3m = eff;
+        }
+        out.push({ id, truck, date:eff, type:e.type, label:e.label,
+          eng:ov[id]||"Unassigned", inspection:true,
+          approx: !!e.approx && !e.booked && !e.done,   // pure month-placeholder
+          done, booked:!!e.booked, adjusted: !!e.adjusted,
+          tentative: (!e.done && eff > todayS),
+          span: isAnnual?3:1, dueBy, overWindow });
       });
     });
     return out;
@@ -1533,13 +1556,13 @@ function PlanningView({ onOpenTruck }){
 
   const P = PRESETS[preset];
   const wkDates = Array.from({length:weeks},(_,i)=>addDays(weekStart,i*7));
-  const rangeStart=iso(weekStart), rangeEnd=iso(addDays(weekStart,weeks*7-1));
+  const rangeStart=isoLocal(weekStart), rangeEnd=isoLocal(addDays(weekStart,weeks*7-1));
   const inRange = it => it.date>=rangeStart && it.date<=rangeEnd && P.types.includes(it.type);
   const ql = q.trim().toLowerCase();
   const matchQ = it => !ql || [it.truck,it.label,it.eng,it.type,it.shift,it.date].some(v=>String(v||"").toLowerCase().includes(ql));
   const visible = it => inRange(it) && matchQ(it);
   const matchCount = ql ? items.filter(visible).length : 0;
-  const todayISO = iso(new Date());
+  const todayISO = isoLocal(new Date());
 
   // group rows
   let groups;
@@ -1585,6 +1608,89 @@ function PlanningView({ onOpenTruck }){
 
   const cell = (v,style)=>PH("div",{style:Object.assign({padding:"0 8px"},style)},v);
 
+  // ── day-granular timeline (exact-day placement; annual spans its 3 days) ──
+  const DAYW=30, BARH=20, GAP=3;
+  const totalDays=weeks*7;
+  const dayDates=Array.from({length:totalDays},(_,i)=>addDays(weekStart,i));
+  const dayIndex=ds=>Math.round((parseISO(ds)-weekStart)/864e5);
+  const todayIdx=dayIndex(isoLocal(new Date()));
+  function packLanes(list){
+    const sorted=[...list].sort((a,b)=>a.date.localeCompare(b.date));
+    const laneEnd=[]; const out=[];
+    sorted.forEach(it=>{
+      const s=dayIndex(it.date), e=s+(it.span||1)-1;
+      if(e<0||s>=totalDays) return;                 // fully off-range
+      let lane=laneEnd.findIndex(le=>le<s);
+      if(lane<0){ lane=laneEnd.length; laneEnd.push(e); } else laneEnd[lane]=e;
+      out.push({it,s,e,lane});
+    });
+    return out;
+  }
+  const dayHeader = PH("div",{style:{display:"flex",position:"sticky",top:0,zIndex:3,background:"var(--surface2)",borderBottom:"1px solid var(--border2)"}},
+    PH("div",{style:{width:LABELW,flexShrink:0,position:"sticky",left:0,zIndex:2,background:"var(--surface2)",
+         padding:"8px",fontSize:10,letterSpacing:".08em",color:"var(--text-faint)",display:"flex",alignItems:"center"}},
+      P.groupBy==="engineer"?"ENGINEER":"TRUCK"),
+    dayDates.map((d,i)=>{ const wd=d.getDay(), wknd=wd===0||wd===6, isToday=i===todayIdx;
+      return PH("div",{key:i,style:{width:DAYW,flexShrink:0,textAlign:"center",padding:"4px 0",boxSizing:"border-box",
+        borderLeft:(i%7===0?"1px solid var(--border2)":"1px solid var(--border)"),
+        background:isToday?"rgba(225,6,0,.14)":(wknd?"rgba(120,140,170,.05)":"transparent")}},
+        PH("div",{style:{fontSize:8,fontFamily:"var(--mono)",color:isToday?"var(--f1red)":"var(--text-faint)"}},"MTWTFSS"[(wd+6)%7]),
+        PH("div",{style:{fontSize:10,fontFamily:"var(--mono)",color:isToday?"var(--f1red)":"var(--text-dim)"}},d.getDate()));
+    })
+  );
+  const dayRows = groups.map(g=>{
+    const packed=packLanes(g.items);
+    const lanes=packed.reduce((mx,o)=>Math.max(mx,o.lane),-1)+1;
+    const rowH=Math.max(48, lanes*(BARH+GAP)+10);
+    return PH("div",{key:g.key,style:{display:"flex",borderBottom:"1px solid var(--border)"}},
+      PH("div",{onClick:()=>P.groupBy!=="engineer"&&onOpenTruck&&onOpenTruck(g.key),
+        style:{width:LABELW,flexShrink:0,position:"sticky",left:0,zIndex:1,background:"var(--surface)",
+               borderRight:"1px solid var(--border2)",padding:"8px",cursor:P.groupBy==="engineer"?"default":"pointer",
+               display:"flex",flexDirection:"column",justifyContent:"center"}},
+        PH("div",{style:{display:"flex",gap:6,alignItems:"center",fontWeight:700,fontSize:13,
+                  fontFamily:"var(--mono)",color:g.overdue?"var(--red)":"var(--text)"}},
+          P.groupBy==="engineer"?PH("span",{style:{width:8,height:8,borderRadius:"50%",background:g.sub,flexShrink:0}}):null, g.label),
+        g.sub&&P.groupBy!=="engineer"?PH("div",{style:{fontSize:10,color:g.overdue?"var(--red)":"var(--text-faint)"}},
+          g.overdue?"OVERDUE":g.sub):null
+      ),
+      PH("div",{style:{position:"relative",width:totalDays*DAYW,height:rowH,flexShrink:0,
+           backgroundImage:`repeating-linear-gradient(90deg, var(--border) 0 1px, transparent 1px ${DAYW}px)`}},
+        (todayIdx>=0&&todayIdx<totalDays)?PH("div",{style:{position:"absolute",top:0,bottom:0,left:todayIdx*DAYW,width:2,background:"rgba(225,6,0,.55)",zIndex:0}}):null,
+        packed.map(({it,s,e,lane})=>{
+          const m=TYPE_META[it.type]||TYPE_META.other;
+          const col=it.adjusted?"var(--amber)":m.c;
+          const bgc=it.adjusted?"rgba(240,165,0,.2)":m.bg;
+          const dashed=it.planned||it.approx||it.tentative;
+          const cs=Math.max(0,s), ce=Math.min(totalDays-1,e);
+          const left=cs*DAYW+1, width=(ce-cs+1)*DAYW-2;
+          const due=it.dueBy?`\n3-month window ends ${it.dueBy}`:"";
+          const spanTxt=it.span>1?` (${it.span}d)`:"";
+          const txt=P.groupBy==="engineer"?it.truck:(show.label?it.label:m.lbl);
+          return PH("div",{key:it.id,
+            title:`${it.truck} · ${it.date} · ${m.lbl}${spanTxt}\n${it.label}${due}${it.overWindow?"\n⚠ past 3-month window":""}`,
+            onClick:()=>{ if(editMode&&it.planned) return openEditTask(it); setEditing(editing===it.id?null:it.id); },
+            style:{position:"absolute",left,width,top:lane*(BARH+GAP)+5,height:BARH,zIndex:2,
+                   background:bgc,border:(dashed?`1px dashed ${col}`:`1px solid ${col}`),borderLeft:`3px solid ${col}`,
+                   borderRadius:3,display:"flex",alignItems:"center",gap:4,padding:"0 4px",cursor:"pointer",
+                   overflow:"hidden",boxSizing:"border-box",opacity:it.historical?.9:1}},
+            width>40?PH("span",{style:{fontSize:9,color:"var(--text)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},txt):null,
+            (show.eng&&P.groupBy!=="engineer"&&width>58)?PH("span",{style:{marginLeft:"auto",fontSize:8,color:"#fff",
+                 background:engColor(it.eng),borderRadius:2,padding:"0 3px",flexShrink:0}},initials(it.eng)):null,
+            editing===it.id?PH("div",{style:{position:"absolute",top:"100%",left:0,zIndex:20,marginTop:3,
+                 background:"var(--surface3)",border:"1px solid var(--border2)",borderRadius:5,padding:6,minWidth:160,
+                 boxShadow:"0 6px 18px rgba(0,0,0,.5)"}},
+              PH("div",{style:{fontSize:9,color:"var(--text-faint)",marginBottom:4}},"ASSIGN ENGINEER"),
+              PH("select",{value:it.eng,onChange:ev=>reassign(it.id,ev.target.value),style:{width:"100%",...sel,fontSize:11}},
+                roster.map(r=>PH("option",{key:r,value:r},r)))
+            ):null
+          );
+        })
+      )
+    );
+  });
+  const dayGridEl = PH("div",{style:{border:"1px solid var(--border)",borderRadius:"var(--radius)",overflow:"auto",background:"var(--surface)",width:"100%"}},
+    PH("div",{style:{minWidth:LABELW+totalDays*DAYW}}, dayHeader, ...dayRows));
+
   return PH("div",{style:{padding:"14px 18px 40px",fontFamily:"var(--sans)"}},
     // ── control bar ──
     PH("div",{style:{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}},
@@ -1606,6 +1712,10 @@ function PlanningView({ onOpenTruck }){
         Object.entries(PRESETS).map(([k,v])=>PH("option",{key:k,value:k},v.name))),
       PH("select",{value:weeks,onChange:e=>setWeeks(+e.target.value),style:sel},
         [4,6,8,12].map(n=>PH("option",{key:n,value:n},n+" weeks"))),
+      PH("div",{style:{display:"flex",gap:2},title:"How days are displayed"},
+        [["week","Weeks"],["day","Days"]].map(([gk,lbl])=>PH("button",{key:gk,onClick:()=>setGran(gk),
+          style:{...navBtn, background:gran===gk?"var(--blue)":"var(--surface3)",
+                 borderColor:gran===gk?"var(--blue)":"var(--border2)", color:gran===gk?"#fff":"var(--text)"}}, lbl))),
       PH("button",{onClick:()=>{ setEditMode(!editMode); setForm(null); },
         style:{...navBtn, background:editMode?"var(--f1red)":"var(--surface3)", borderColor:editMode?"var(--f1red)":"var(--border2)",
                color:editMode?"#fff":"var(--text)"}}, editMode?"✓ Editing":"✎ Edit"),
@@ -1620,9 +1730,12 @@ function PlanningView({ onOpenTruck }){
     PH("div",{style:{display:"flex",gap:14,marginBottom:10,fontSize:11,color:"var(--text-dim)",flexWrap:"wrap"}},
       Object.entries(TYPE_META).filter(([k])=>P.types.includes(k)).map(([k,m])=>
         PH("span",{key:k,style:{display:"flex",gap:5,alignItems:"center"}},
-          PH("span",{style:{width:10,height:10,borderRadius:2,background:m.c,display:"inline-block"}}),m.lbl))
+          PH("span",{style:{width:10,height:10,borderRadius:2,background:m.c,display:"inline-block"}}),m.lbl)),
+      (P.types.includes("inspection3m")||P.types.includes("shaken"))?PH("span",{key:"adj",style:{display:"flex",gap:5,alignItems:"center"}},
+        PH("span",{style:{width:10,height:10,borderRadius:2,background:"var(--amber)",display:"inline-block"}}),"Adjusted (kept in window)"):null
     ),
     // ── grid ──
+    gran==="day" ? dayGridEl :
     PH("div",{style:{border:"1px solid var(--border)",borderRadius:"var(--radius)",overflow:"auto",background:"var(--surface)",width:"100%"}},
       // header
       PH("div",{style:{display:"grid",gridTemplateColumns:`${LABELW}px repeat(${weeks},minmax(${COLW}px,1fr))`,
@@ -1658,17 +1771,22 @@ function PlanningView({ onOpenTruck }){
                  background:isNow?"rgba(225,6,0,.05)":"transparent",display:"flex",flexDirection:"column",gap:6}},
               cellItems.map(it=>{
                 const m=TYPE_META[it.type]||TYPE_META.other;
-                const dd=new Date(it.date);
+                const col=it.adjusted?"var(--amber)":m.c;
+                const bgc=it.adjusted?"rgba(240,165,0,.16)":m.bg;
+                const dashed=it.planned||it.approx||it.tentative;
+                const dd=parseISO(it.date);
                 const day=dd.toLocaleDateString("en-US",{weekday:"short"});
-                return PH("div",{key:it.id,title:`${it.truck} · ${it.date} · ${m.lbl}\n${it.label}`,
+                const due=it.dueBy?`\n3-month window ends ${it.dueBy}`:"";
+                const spanTxt=it.span>1?` (${it.span}d)`:"";
+                return PH("div",{key:it.id,title:`${it.truck} · ${it.date} · ${m.lbl}${spanTxt}\n${it.label}${due}${it.overWindow?"\n⚠ past 3-month window":""}`,
                   onClick:()=>{ if(editMode&&it.planned) return openEditTask(it); setEditing(editing===it.id?null:it.id); },
-                  style:{position:"relative",cursor:"pointer",background:m.bg,
-                         border:((it.planned||it.approx)?`1px dashed ${m.c}`:`1px solid ${m.c}`),
-                         borderLeft:`3px solid ${m.c}`,borderRadius:4,padding:"5px 8px",opacity:it.historical?.9:1}},
+                  style:{position:"relative",cursor:"pointer",background:bgc,
+                         border:(dashed?`1px dashed ${col}`:`1px solid ${col}`),
+                         borderLeft:`3px solid ${col}`,borderRadius:4,padding:"5px 8px",opacity:it.historical?.9:1}},
                   PH("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:6,
                        marginBottom:show.label?3:0}},
-                    PH("span",{style:{fontSize:9,fontFamily:"var(--mono)",color:m.c,fontWeight:700,whiteSpace:"nowrap"}},
-                      day+" "+dd.getDate()+(show.shift&&it.shift?" · "+it.shift:"")),
+                    PH("span",{style:{fontSize:9,fontFamily:"var(--mono)",color:col,fontWeight:700,whiteSpace:"nowrap"}},
+                      day+" "+dd.getDate()+spanTxt+(show.shift&&it.shift?" · "+it.shift:"")),
                     show.eng&&P.groupBy!=="engineer"?PH("span",{style:{fontSize:9,color:"#fff",flexShrink:0,
                          background:engColor(it.eng),borderRadius:3,padding:"1px 5px"}},initials(it.eng)):null
                   ),

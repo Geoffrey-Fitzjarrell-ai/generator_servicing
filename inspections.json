@@ -240,7 +240,7 @@
     "type": "inspection3m",
     "label": "3-Month inspection",
     "month": "2026-06",
-    "approx": true
+    "done": "2026-06-06"
    },
    {
     "date": "2026-09-12",
