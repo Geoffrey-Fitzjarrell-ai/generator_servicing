@@ -1,9 +1,8 @@
 {
-  "ok": true,
-  "checked_at": "2026-07-15T22:37:10Z",
+  "ok": false,
+  "checked_at": "2026-07-16T22:34:34Z",
   "passed": [
     "worker alive",
-    "worker up to date (build 368b9fe8)",
     "worker auth enforced (401 on bad key)",
     "slack token ok (generator_service_bot)",
     "generator-hours.yml healthy",
@@ -12,7 +11,9 @@
     "weekly-summary.yml healthy",
     "pages-build-deployment healthy",
     "dashboard serving",
-    "all 8 data files parse"
+    "all 10 data files parse"
   ],
-  "issues": []
+  "issues": [
+    "Drift check errored: HTTP Error 503: Service Unavailable"
+  ]
 }
