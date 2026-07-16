@@ -1463,6 +1463,7 @@ function PlanningView({ onOpenTruck }){
   const [editing,setEditing]     = useState(null);   // item id being reassigned
   const [imp,setImp]             = useState({ url:"", note:"" });
   const [q,setQ]                 = useState("");
+  const [board,setBoard]         = useState("ALL");
 
   useEffect(()=>{
     const bust = "?t="+Date.now();
@@ -1539,6 +1540,10 @@ function PlanningView({ onOpenTruck }){
   // backlog: unscheduled open tickets
   let backlog=[]; Object.entries(tickets).forEach(([truck,arr])=>(arr||[]).forEach(t=>backlog.push({...t,truck})));
   if(ql) backlog=backlog.filter(t=>[t.truck,t.key,t.summary,t.status,t.priority].some(v=>String(v||"").toLowerCase().includes(ql)));
+  const boardOf = t => String(t.key||"").split("-")[0].toUpperCase();
+  const boards = [...new Set(backlog.map(boardOf))].filter(Boolean).sort();
+  const boardCount = b => backlog.filter(t=>boardOf(t)===b).length;
+  const backlogShown = board==="ALL" ? backlog : backlog.filter(t=>boardOf(t)===board);
 
   const cell = (v,style)=>PH("div",{style:Object.assign({padding:"0 8px"},style)},v);
 
@@ -1643,8 +1648,17 @@ function PlanningView({ onOpenTruck }){
     // ── backlog + dashboard import ──
     PH("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:16}},
       PH("div",{style:panel},
-        PH("div",{style:panelH},"BACKLOG · open tickets"),
-        backlog.length?backlog.slice(0,12).map(t=>PH("div",{key:t.key,style:{display:"flex",gap:8,alignItems:"center",
+        PH("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10,flexWrap:"wrap",gap:8}},
+          PH("div",{style:{...panelH,marginBottom:0}},"BACKLOG · open tickets"),
+          PH("div",{style:{display:"flex",gap:4}},
+            ["ALL",...boards].map(b=>PH("button",{key:b,onClick:()=>setBoard(b),
+              style:{fontFamily:"var(--mono)",fontSize:10,fontWeight:700,letterSpacing:".04em",cursor:"pointer",
+                     borderRadius:4,padding:"3px 8px",border:"1px solid "+(board===b?"var(--f1red)":"var(--border2)"),
+                     background:board===b?"var(--f1red)":"var(--surface3)",color:board===b?"#fff":"var(--text-dim)"}},
+              b+(b==="ALL"?" "+backlog.length:" "+boardCount(b))))
+          )
+        ),
+        backlogShown.length?backlogShown.slice(0,14).map(t=>PH("div",{key:t.key,style:{display:"flex",gap:8,alignItems:"center",
              padding:"5px 0",borderBottom:"1px solid var(--border)",fontSize:12}},
           PH("span",{style:{fontFamily:"var(--mono)",color:"var(--f1red)",fontWeight:700,minWidth:74}},t.truck),
           PH("a",{href:t.url,target:"_blank",style:{color:"var(--blue)",fontFamily:"var(--mono)",fontSize:11}},t.key),
