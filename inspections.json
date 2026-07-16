@@ -13,14 +13,14 @@
    {
     "date": "2026-04-11",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-04",
     "approx": true
    },
    {
     "date": "2026-07-11",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-07",
     "approx": true
    },
@@ -32,7 +32,7 @@
    {
     "date": "2027-01-09",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2027-01",
     "approx": true
    }
@@ -45,14 +45,14 @@
    {
     "date": "2026-05-09",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-05",
     "approx": true
    },
    {
     "date": "2026-08-08",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-08",
     "approx": true
    },
@@ -64,7 +64,7 @@
    {
     "date": "2027-02-13",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2027-02",
     "approx": true
    }
@@ -77,14 +77,14 @@
    {
     "date": "2026-05-09",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-05",
     "approx": true
    },
    {
     "date": "2026-08-08",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-08",
     "approx": true
    },
@@ -96,7 +96,7 @@
    {
     "date": "2027-02-13",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2027-02",
     "approx": true
    }
@@ -110,14 +110,14 @@
    {
     "date": "2026-06-13",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-06",
     "approx": true
    },
    {
     "date": "2026-09-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-09",
     "approx": true
    },
@@ -129,7 +129,7 @@
    {
     "date": "2027-03-13",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2027-03",
     "approx": true
    }
@@ -142,14 +142,14 @@
    {
     "date": "2026-06-13",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-06",
     "approx": true
    },
    {
     "date": "2026-09-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-09",
     "approx": true
    },
@@ -161,7 +161,7 @@
    {
     "date": "2027-03-13",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2027-03",
     "approx": true
    }
@@ -174,21 +174,21 @@
    {
     "date": "2026-05-09",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-05",
     "approx": true
    },
    {
     "date": "2026-08-08",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-08",
     "approx": true
    },
    {
     "date": "2026-11-14",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-11",
     "approx": true
    },
@@ -206,21 +206,21 @@
    {
     "date": "2026-05-09",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-05",
     "approx": true
    },
    {
     "date": "2026-08-08",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-08",
     "approx": true
    },
    {
     "date": "2026-11-14",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-11",
     "approx": true
    },
@@ -238,21 +238,21 @@
    {
     "date": "2026-06-13",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-06",
     "approx": true
    },
    {
     "date": "2026-09-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-09",
     "approx": true
    },
    {
     "date": "2026-12-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-12",
     "approx": true
    },
@@ -270,21 +270,21 @@
    {
     "date": "2026-06-13",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-06",
     "approx": true
    },
    {
     "date": "2026-09-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-09",
     "approx": true
    },
    {
     "date": "2026-12-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-12",
     "approx": true
    },
@@ -302,21 +302,21 @@
    {
     "date": "2026-06-13",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-06",
     "approx": true
    },
    {
     "date": "2026-09-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-09",
     "approx": true
    },
    {
     "date": "2026-12-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-12",
     "approx": true
    },
@@ -334,21 +334,21 @@
    {
     "date": "2026-06-13",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-06",
     "approx": true
    },
    {
     "date": "2026-09-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-09",
     "approx": true
    },
    {
     "date": "2026-12-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-12",
     "approx": true
    },
@@ -366,21 +366,21 @@
    {
     "date": "2026-06-13",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-06",
     "approx": true
    },
    {
     "date": "2026-09-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-09",
     "approx": true
    },
    {
     "date": "2026-12-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-12",
     "approx": true
    },
@@ -398,21 +398,21 @@
    {
     "date": "2026-06-13",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-06",
     "approx": true
    },
    {
     "date": "2026-09-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-09",
     "approx": true
    },
    {
     "date": "2026-12-12",
     "type": "inspection3m",
-    "label": "3ヶ月点検",
+    "label": "3-Month inspection",
     "month": "2026-12",
     "approx": true
    },
