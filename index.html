@@ -1449,8 +1449,8 @@ function PlanningView({ onOpenTruck }){
   const [tickets,setTickets] = useState({});
   const [data,setData]       = useState({});
   const [err,setErr]         = useState(false);
-  const [weekStart,setWeekStart] = useState(()=> addDays(mondayOf(new Date()), -14));
-  const [weeks,setWeeks]         = useState(8);
+  const [weekStart,setWeekStart] = useState(()=> addDays(mondayOf(new Date()), -7));
+  const [weeks,setWeeks]         = useState(4);
   const [preset,setPreset]       = useState("all");
   const [show,setShow]           = useState({ label:true, eng:true, shift:false });
   const [ov,setOv]               = useState(loadOverrides);
@@ -1541,7 +1541,7 @@ function PlanningView({ onOpenTruck }){
     PH("div",{style:{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}},
       PH("div",{style:{display:"flex",gap:2,alignItems:"center"}},
         PH("button",{onClick:()=>setWeekStart(addDays(weekStart,-7)),style:navBtn},"‹"),
-        PH("button",{onClick:()=>setWeekStart(addDays(mondayOf(new Date()),-14)),style:navBtn},"Today"),
+        PH("button",{onClick:()=>setWeekStart(addDays(mondayOf(new Date()),-7)),style:navBtn},"Today"),
         PH("button",{onClick:()=>setWeekStart(addDays(weekStart,7)),style:navBtn},"›")
       ),
       PH("div",{style:{position:"relative",display:"flex",alignItems:"center"}},
