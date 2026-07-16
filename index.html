@@ -1457,6 +1457,8 @@ function engColor(name){ // deterministic hue per engineer
 
 function loadOverrides(){ try{ return JSON.parse(localStorage.getItem("planner_assign")||"{}"); }catch(e){ return {}; } }
 function saveOverrides(o){ try{ localStorage.setItem("planner_assign",JSON.stringify(o)); }catch(e){} }
+function loadTasks(){ try{ return JSON.parse(localStorage.getItem("planner_tasks")||"[]"); }catch(e){ return []; } }
+function saveTasks(a){ try{ localStorage.setItem("planner_tasks",JSON.stringify(a)); }catch(e){} }
 
 function PlanningView({ onOpenTruck }){
   const [sched,setSched]     = useState(null);
@@ -1469,6 +1471,9 @@ function PlanningView({ onOpenTruck }){
   const [preset,setPreset]       = useState("all");
   const [show,setShow]           = useState({ label:true, eng:true, shift:false });
   const [ov,setOv]               = useState(loadOverrides);
+  const [editMode,setEditMode]   = useState(false);
+  const [tasks,setTasks]         = useState(loadTasks);
+  const [form,setForm]           = useState(null);
   const [editing,setEditing]     = useState(null);   // item id being reassigned
   const [imp,setImp]             = useState({ url:"", note:"" });
   const [q,setQ]                 = useState("");
@@ -1506,8 +1511,9 @@ function PlanningView({ onOpenTruck }){
       out.push({ id, truck, date:e.date, type:"maintenance", label:lbl, hours:e.hours,
                  eng:ov[id]||canonEng(e.technician)||"Unassigned", historical:true });
     }));
+    tasks.forEach(t=>{ if(t.truck&&t.date) out.push({ ...t, eng:ov[t.id]||t.eng||"Unassigned", planned:true }); });
     return out;
-  },[sched,history,ov]);
+  },[sched,history,ov,tasks]);
 
   if(err) return PH("div",{style:{padding:40,color:"var(--red)",fontFamily:"var(--mono)"}},"Plan data unavailable — check connection.");
   if(!sched) return PH("div",{style:{padding:40,color:"var(--text-dim)",fontFamily:"var(--mono)"}},"Loading plan…");
@@ -1543,6 +1549,16 @@ function PlanningView({ onOpenTruck }){
     const next={...ov}; if(eng==="Unassigned") delete next[id]; else next[id]=eng;
     setOv(next); saveOverrides(next); setEditing(null);
   }
+  const truckList = (Object.keys(data).length?Object.keys(data):[...new Set(items.map(i=>i.truck))]).sort((a,b)=>truckNum(a)-truckNum(b));
+  function openNew(pref){ setEditing(null); setForm({ id:"p_"+Date.now(), truck:(pref&&pref.truck)||truckList[0]||"",
+      date:(pref&&pref.date)||todayISO, type:"planned", label:"", eng:"Unassigned", notes:"", jiraKey:"", jiraUrl:"" }); }
+  function openEditTask(t){ setEditing(null); setForm({ id:t.id, truck:t.truck, date:t.date, type:t.type, label:t.label,
+      eng:t.eng, notes:t.notes||"", jiraKey:t.jiraKey||"", jiraUrl:t.jiraUrl||"" }); }
+  function saveForm(){ if(!form.truck||!form.label.trim()){ setForm({...form,_err:"Truck and description are required."}); return; }
+    const clean={...form}; delete clean._err;
+    if(clean.jiraKey && !clean.jiraUrl) clean.jiraUrl="https://appliedintuition.atlassian.net/browse/"+clean.jiraKey.trim().toUpperCase();
+    const next=[...tasks.filter(x=>x.id!==clean.id),clean]; setTasks(next); saveTasks(next); setForm(null); }
+  function deleteTask(id){ const next=tasks.filter(x=>x.id!==id); setTasks(next); saveTasks(next); setForm(null); }
 
   const COLW=190, LABELW=140;
 
@@ -1577,6 +1593,10 @@ function PlanningView({ onOpenTruck }){
         Object.entries(PRESETS).map(([k,v])=>PH("option",{key:k,value:k},v.name))),
       PH("select",{value:weeks,onChange:e=>setWeeks(+e.target.value),style:sel},
         [4,6,8,12].map(n=>PH("option",{key:n,value:n},n+" weeks"))),
+      PH("button",{onClick:()=>{ setEditMode(!editMode); setForm(null); },
+        style:{...navBtn, background:editMode?"var(--f1red)":"var(--surface3)", borderColor:editMode?"var(--f1red)":"var(--border2)",
+               color:editMode?"#fff":"var(--text)"}}, editMode?"✓ Editing":"✎ Edit"),
+      editMode?PH("button",{onClick:()=>openNew(),style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"+ New task"):null,
       PH("div",{style:{display:"flex",gap:12,marginLeft:"auto",fontSize:12,color:"var(--text-dim)"}},
         ["label","eng","shift"].map(k=>PH("label",{key:k,style:{display:"flex",gap:4,cursor:"pointer",textTransform:"capitalize"}},
           PH("input",{type:"checkbox",checked:show[k],onChange:()=>setShow({...show,[k]:!show[k]})}),
@@ -1628,8 +1648,9 @@ function PlanningView({ onOpenTruck }){
                 const dd=new Date(it.date);
                 const day=dd.toLocaleDateString("en-US",{weekday:"short"});
                 return PH("div",{key:it.id,title:`${it.truck} · ${it.date} · ${m.lbl}\n${it.label}`,
-                  onClick:()=>setEditing(editing===it.id?null:it.id),
-                  style:{position:"relative",cursor:"pointer",background:m.bg,border:`1px solid ${m.c}`,
+                  onClick:()=>{ if(editMode&&it.planned) return openEditTask(it); setEditing(editing===it.id?null:it.id); },
+                  style:{position:"relative",cursor:"pointer",background:m.bg,
+                         border:(it.planned?`1px dashed ${m.c}`:`1px solid ${m.c}`),
                          borderLeft:`3px solid ${m.c}`,borderRadius:4,padding:"5px 8px",opacity:it.historical?.9:1}},
                   PH("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:6,
                        marginBottom:show.label?3:0}},
@@ -1640,6 +1661,11 @@ function PlanningView({ onOpenTruck }){
                   ),
                   show.label?PH("div",{style:{fontSize:11,lineHeight:1.3,color:"var(--text)",
                        display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden",wordBreak:"break-word"}},it.label):null,
+                  it.jiraKey?PH("a",{href:it.jiraUrl||"#",target:"_blank",onClick:e=>e.stopPropagation(),
+                       style:{display:"inline-block",marginTop:3,fontSize:9,fontFamily:"var(--mono)",color:"var(--blue)",textDecoration:"none"}},"🔗 "+it.jiraKey):null,
+                  it.notes?PH("div",{style:{marginTop:2,fontSize:9,color:"var(--text-faint)",fontStyle:"italic",
+                       display:"-webkit-box",WebkitLineClamp:1,WebkitBoxOrient:"vertical",overflow:"hidden"}},it.notes):null,
+                  (editMode&&it.planned)?PH("div",{style:{marginTop:2,fontSize:8,color:"var(--text-faint)"}},"tap to edit"):null,
                   editing===it.id?PH("div",{style:{position:"absolute",top:"100%",left:0,zIndex:10,marginTop:3,
                        background:"var(--surface3)",border:"1px solid var(--border2)",borderRadius:5,padding:6,minWidth:160,
                        boxShadow:"0 6px 18px rgba(0,0,0,.5)"}},
@@ -1686,7 +1712,71 @@ function PlanningView({ onOpenTruck }){
         ),
         imp.note?PH("div",{style:{marginTop:8,fontSize:11,color:"var(--amber)"}},imp.note):null
       )
-    )
+    ),
+    // ── task form modal ──
+    form?PH("div",{onClick:()=>setForm(null),
+      style:{position:"fixed",inset:0,background:"rgba(4,7,12,.72)",zIndex:100,display:"flex",
+             alignItems:"flex-start",justifyContent:"center",padding:"6vh 16px",overflow:"auto"}},
+      PH("div",{onClick:e=>e.stopPropagation(),
+        style:{width:480,maxWidth:"100%",background:"var(--surface2)",border:"1px solid var(--border2)",
+               borderRadius:10,padding:22,boxShadow:"0 20px 60px rgba(0,0,0,.6)"}},
+        PH("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
+          PH("div",{style:{fontSize:16,fontWeight:800,fontStyle:"italic",letterSpacing:".04em",
+               color:"#fff",textTransform:"uppercase"}}, tasks.some(x=>x.id===form.id)?"Edit task":"New task"),
+          PH("button",{onClick:()=>setForm(null),style:{...navBtn,padding:"3px 9px"}},"×")
+        ),
+        // truck + date
+        PH("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}},
+          PH("label",{style:fldL}, "Truck",
+            PH("select",{value:form.truck,onChange:e=>setForm({...form,truck:e.target.value}),style:{...sel,width:"100%",marginTop:4}},
+              truckList.map(t=>PH("option",{key:t,value:t},t)))),
+          PH("label",{style:fldL}, "Date",
+            PH("input",{type:"date",value:form.date,onChange:e=>setForm({...form,date:e.target.value}),style:{...sel,width:"100%",marginTop:4}}))
+        ),
+        // type + engineer
+        PH("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}},
+          PH("label",{style:fldL}, "Type",
+            PH("select",{value:form.type,onChange:e=>setForm({...form,type:e.target.value}),style:{...sel,width:"100%",marginTop:4}},
+              ["planned","maintenance","mission","calibration","other"].map(t=>PH("option",{key:t,value:t},TYPE_META[t]?TYPE_META[t].lbl:t)))),
+          PH("label",{style:fldL}, "Engineer",
+            PH("select",{value:form.eng,onChange:e=>setForm({...form,eng:e.target.value}),style:{...sel,width:"100%",marginTop:4}},
+              roster.map(r=>PH("option",{key:r,value:r},r))))
+        ),
+        // description
+        PH("label",{style:{...fldL,display:"block",marginBottom:12}}, "Description",
+          PH("input",{value:form.label,placeholder:"e.g. Oil / filter change, coolant top-up",
+            onChange:e=>setForm({...form,label:e.target.value}),style:{...sel,width:"100%",marginTop:4}})),
+        // attach jira
+        PH("div",{style:{border:"1px solid var(--border)",borderRadius:6,padding:12,marginBottom:12,background:"var(--surface)"}},
+          PH("div",{style:{...fldL,marginBottom:6}},"Attach Jira (optional)"),
+          PH("select",{value:form.jiraKey,onChange:e=>{ const k=e.target.value;
+                const all=Object.entries(tickets).flatMap(([tr,arr])=>(arr||[]).map(t=>({...t,truck:tr})));
+                const f=all.find(t=>t.key===k);
+                setForm({...form,jiraKey:k,jiraUrl:f?f.url:form.jiraUrl,label:(!form.label&&f)?f.summary:form.label}); },
+            style:{...sel,width:"100%",marginBottom:8}},
+            PH("option",{value:""},"— pick from open tickets —"),
+            Object.entries(tickets).flatMap(([tr,arr])=>(arr||[]).map(t=>
+              PH("option",{key:t.key,value:t.key},t.key+" · "+tr+" · "+String(t.summary||"").slice(0,40))))),
+          PH("input",{value:form.jiraKey,placeholder:"or type a key e.g. VCO-1234",
+            onChange:e=>setForm({...form,jiraKey:e.target.value.toUpperCase(),jiraUrl:""}),style:{...sel,width:"100%"}}),
+          form.jiraKey?PH("div",{style:{marginTop:6,fontSize:10,color:"var(--blue)",fontFamily:"var(--mono)"}},
+            "→ "+(form.jiraUrl||"https://appliedintuition.atlassian.net/browse/"+form.jiraKey)):null
+        ),
+        // notes
+        PH("label",{style:{...fldL,display:"block",marginBottom:14}}, "Notes / more info",
+          PH("textarea",{value:form.notes,rows:3,placeholder:"context, parts needed, blockers…",
+            onChange:e=>setForm({...form,notes:e.target.value}),
+            style:{...sel,width:"100%",marginTop:4,resize:"vertical",fontFamily:"var(--sans)"}})),
+        form._err?PH("div",{style:{color:"var(--red)",fontSize:12,marginBottom:10}},form._err):null,
+        // actions
+        PH("div",{style:{display:"flex",gap:8,justifyContent:"flex-end",alignItems:"center"}},
+          tasks.some(x=>x.id===form.id)?PH("button",{onClick:()=>deleteTask(form.id),
+            style:{...navBtn,color:"var(--red)",borderColor:"var(--red)",marginRight:"auto"}},"Delete"):null,
+          PH("button",{onClick:()=>setForm(null),style:navBtn},"Cancel"),
+          PH("button",{onClick:saveForm,style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"Save task")
+        )
+      )
+    ):null
   );
 }
 const navBtn={background:"var(--surface3)",color:"var(--text)",border:"1px solid var(--border2)",borderRadius:5,
@@ -1695,6 +1785,7 @@ const sel={background:"var(--surface3)",color:"var(--text)",border:"1px solid va
   padding:"5px 8px",fontSize:12,fontFamily:"var(--sans)"};
 const panel={background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"var(--radius)",padding:14};
 const panelH={fontSize:10,letterSpacing:".08em",color:"var(--text-faint)",marginBottom:10,fontWeight:700};
+const fldL={fontSize:11,letterSpacing:".04em",color:"var(--text-dim)",textTransform:"uppercase",fontWeight:700};
 
 function Root(){
   const params = new URLSearchParams(window.location.search);
