@@ -1543,9 +1543,9 @@ function PlanningView({ onOpenTruck }){
     // ── control bar ──
     PH("div",{style:{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}},
       PH("div",{style:{display:"flex",gap:2,alignItems:"center"}},
-        PH("button",{onClick:()=>setWeekStart(addDays(weekStart,-7)),style:navBtn},"‹"),
+        PH("button",{onClick:()=>setWeekStart(addDays(weekStart,-weeks*7)),style:navBtn},"‹"),
         PH("button",{onClick:()=>setWeekStart(addDays(mondayOf(new Date()),-7)),style:navBtn},"Today"),
-        PH("button",{onClick:()=>setWeekStart(addDays(weekStart,7)),style:navBtn},"›")
+        PH("button",{onClick:()=>setWeekStart(addDays(weekStart,weeks*7)),style:navBtn},"›")
       ),
       PH("div",{style:{position:"relative",display:"flex",alignItems:"center"}},
         PH("input",{value:q,onChange:e=>setQ(e.target.value),placeholder:"Search truck, engineer, mission…",
