@@ -267,13 +267,16 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .err-msg { font-size:13px; color:var(--red); max-width:340px; text-align:center; line-height:1.6; }
 
 /* ══ unified app tab bar ══════════════════════════════════════════════ */
-.app-tabs { display:flex; gap:2px; align-items:stretch; padding:0 20px; background:#0a0d13;
-  border-bottom:1px solid var(--border); position:sticky; top:0; z-index:60; }
-.app-tab { font-family:'Titillium Web',sans-serif; font-weight:700; font-style:italic; font-size:13px;
-  letter-spacing:0.05em; text-transform:uppercase; padding:12px 22px; color:var(--text-dim);
-  background:transparent; border:none; border-bottom:2px solid transparent; cursor:pointer; transition:color .15s; }
-.app-tab:hover { color:var(--text); }
-.app-tab.active { color:#fff; border-bottom-color:var(--f1red); }
+.app-tabs { display:flex; gap:6px; align-items:stretch; padding:10px 20px 0; background:#0a0d13;
+  border-bottom:2px solid var(--border2); position:sticky; top:0; z-index:60; }
+.app-tab { font-family:'Titillium Web',sans-serif; font-weight:700; font-style:italic; font-size:14px;
+  letter-spacing:0.06em; text-transform:uppercase; padding:12px 26px; color:var(--text);
+  background:var(--surface2); border:1px solid var(--border2); border-bottom:none;
+  border-radius:8px 8px 0 0; cursor:pointer; transition:all .15s; margin-bottom:-2px; position:relative; }
+.app-tab:hover { background:var(--surface3); color:#fff; }
+.app-tab.active { color:#fff; background:var(--f1red); border-color:var(--f1red);
+  box-shadow:0 -3px 10px rgba(225,6,0,.35); }
+.app-tab.active::after { content:''; position:absolute; left:0; right:0; bottom:-2px; height:2px; background:var(--f1red); }
 .app-view { display:none; }
 .app-view.show { display:block; }
 
