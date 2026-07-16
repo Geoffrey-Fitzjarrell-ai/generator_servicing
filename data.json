@@ -98,13 +98,13 @@
     }
   },
   "HD15": {
-    "hours": 566,
+    "hours": 590,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Reon Zeniya",
-    "lastUpdated": "2026-07-14T03:54:11Z",
+    "lastUpdated": "2026-07-16T03:10:31Z",
     "postedBy": {
-      "id": "U0BE3QDSBEZ",
+      "id": "U0B3NMN2DS4",
       "name": null
     }
   },
