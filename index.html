@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HD GEN2 · Generator Service Monitor</title>
+<title>HD GEN2 · Fleet Status</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&family=Titillium+Web:ital,wght@0,400;0,600;0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
 <style>
@@ -1092,7 +1092,7 @@ function App({ jump }) {
     React.createElement("header",{className:"header"},
       React.createElement("div",{className:"header-brand"},
         React.createElement("span",{className:"header-badge"},"HD GEN2"),
-        React.createElement("span",{className:"header-title"},"Generator Service Monitor")
+        React.createElement("span",{className:"header-title"},"Fleet Status")
       ),
       React.createElement("div",{className:"header-right"},
         React.createElement("span",{className:"sync-dot"}),
@@ -1406,15 +1406,260 @@ function App({ jump }) {
   );
 }
 
+// ══ Fleet planning view (week-calendar Gantt) ═══════════════════════════════
+const SCHEDULE_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/schedule.json";
+const PH = React.createElement;
+
+// engineers seen historically + known Japan VOps field techs
+const KNOWN_ENGINEERS = ["Geoff Fitzjarrell","Masakiyo Kato","Jake Albano","Thapa Biliv","Reon Zeniya","Junichi Tamagawa","Andy"];
+const TYPE_META = {
+  mission:      { c:"var(--blue)",  bg:"rgba(74,124,245,.16)",  lbl:"Mission" },
+  calibration:  { c:"var(--amber)", bg:"rgba(240,165,0,.14)",   lbl:"Calibration" },
+  maintenance:  { c:"var(--green)", bg:"rgba(61,168,112,.16)",  lbl:"Maintenance" },
+  ticket:       { c:"var(--red)",   bg:"rgba(224,69,69,.14)",   lbl:"Open ticket" },
+  planned:      { c:"#9880cc",      bg:"rgba(152,128,204,.16)", lbl:"Planned" },
+  other:        { c:"var(--text-dim)", bg:"rgba(120,140,170,.12)", lbl:"Other" }
+};
+// PRE-PACKAGED PRESETS — filter what shows on the plan
+const PRESETS = {
+  all:          { name:"All activity",      types:["mission","calibration","maintenance","planned","ticket","other"], groupBy:"truck" },
+  maint:        { name:"Maintenance only",  types:["maintenance","planned"], groupBy:"truck" },
+  missions:     { name:"Missions & cal",    types:["mission","calibration"], groupBy:"truck" },
+  byeng:        { name:"By engineer",       types:["mission","calibration","maintenance","planned"], groupBy:"engineer" },
+  tickets:      { name:"Open tickets",      types:["ticket","planned"], groupBy:"truck" }
+};
+
+function mondayOf(d){ const x=new Date(d); const day=(x.getDay()+6)%7; x.setDate(x.getDate()-day); x.setHours(0,0,0,0); return x; }
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function iso(d){ return new Date(d).toISOString().slice(0,10); }
+function fmtWk(d){ return d.toLocaleDateString("en-US",{month:"short",day:"numeric"}); }
+function truckNum(t){ const m=/HD(\d+)/.exec(t); return m?+m[1]:999; }
+function initials(name){ if(!name||name==="Unassigned") return "—"; return name.split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(); }
+function engColor(name){ // deterministic hue per engineer
+  if(!name||name==="Unassigned") return "#3a465e";
+  let h=0; for(const ch of name) h=(h*31+ch.charCodeAt(0))%360; return `hsl(${h} 55% 42%)`;
+}
+
+function loadOverrides(){ try{ return JSON.parse(localStorage.getItem("planner_assign")||"{}"); }catch(e){ return {}; } }
+function saveOverrides(o){ try{ localStorage.setItem("planner_assign",JSON.stringify(o)); }catch(e){} }
+
+function PlanningView({ onOpenTruck }){
+  const [sched,setSched]     = useState(null);
+  const [history,setHistory] = useState({});
+  const [tickets,setTickets] = useState({});
+  const [data,setData]       = useState({});
+  const [err,setErr]         = useState(false);
+  const [weekStart,setWeekStart] = useState(()=> addDays(mondayOf(new Date()), -14));
+  const [weeks,setWeeks]         = useState(8);
+  const [preset,setPreset]       = useState("all");
+  const [show,setShow]           = useState({ label:true, eng:true, shift:false });
+  const [ov,setOv]               = useState(loadOverrides);
+  const [editing,setEditing]     = useState(null);   // item id being reassigned
+  const [imp,setImp]             = useState({ url:"", note:"" });
+
+  useEffect(()=>{
+    const bust = "?t="+Date.now();
+    Promise.all([
+      fetch(SCHEDULE_URL+bust).then(r=>r.ok?r.json():{}).catch(()=>({})),
+      fetch(HISTORY_URL+bust).then(r=>r.ok?r.json():{}).catch(()=>({})),
+      fetch(TICKETS_URL+bust).then(r=>r.ok?r.json():{}).catch(()=>({})),
+      fetch(DATA_URL+bust).then(r=>r.ok?r.json():{}).catch(()=>({})),
+    ]).then(([s,h,t,d])=>{ setSched(s); setHistory(h||{}); setTickets(t||{}); setData(d||{}); })
+      .catch(()=>setErr(true));
+  },[]);
+
+  const roster = React.useMemo(()=>{
+    const set=new Set(KNOWN_ENGINEERS);
+    Object.values(history).forEach(arr=>(arr||[]).forEach(e=>e.technician&&set.add(e.technician)));
+    return ["Unassigned",...[...set].sort()];
+  },[history]);
+
+  // assemble items: {id, truck, date, type, label, eng, hours, url}
+  const items = React.useMemo(()=>{
+    const out=[];
+    if(sched) Object.entries(sched).forEach(([truck,days])=>{
+      Object.entries(days).forEach(([date,acts])=>acts.forEach((a,i)=>{
+        const id=`${truck}|${date}|s${i}`;
+        out.push({ id, truck, date, type:a.type, label:a.label, shift:a.shift, eng:ov[id]||"Unassigned" });
+      }));
+    });
+    Object.entries(history).forEach(([truck,arr])=>(arr||[]).forEach((e,i)=>{
+      const id=`${truck}|${e.date}|h${i}`;
+      const lbl=(e.tasks||[]).map(t=>t.label).join(", ")||"Service";
+      out.push({ id, truck, date:e.date, type:"maintenance", label:lbl, hours:e.hours,
+                 eng:ov[id]||e.technician||"Unassigned", historical:true });
+    }));
+    return out;
+  },[sched,history,ov]);
+
+  if(err) return PH("div",{style:{padding:40,color:"var(--red)",fontFamily:"var(--mono)"}},"Plan data unavailable — check connection.");
+  if(!sched) return PH("div",{style:{padding:40,color:"var(--text-dim)",fontFamily:"var(--mono)"}},"Loading plan…");
+
+  const P = PRESETS[preset];
+  const wkDates = Array.from({length:weeks},(_,i)=>addDays(weekStart,i*7));
+  const rangeStart=iso(weekStart), rangeEnd=iso(addDays(weekStart,weeks*7-1));
+  const inRange = it => it.date>=rangeStart && it.date<=rangeEnd && P.types.includes(it.type);
+  const todayISO = iso(new Date());
+
+  // group rows
+  let groups;
+  if(P.groupBy==="engineer"){
+    const byE={}; items.filter(inRange).forEach(it=>{ (byE[it.eng]=byE[it.eng]||[]).push(it); });
+    groups = roster.filter(e=>byE[e]).map(e=>({ key:e, label:e, sub:engColor(e), items:byE[e] }));
+    if(!groups.length) groups=[{key:"Unassigned",label:"Unassigned",items:[]}];
+  } else {
+    const trucks = Object.keys(data).length ? Object.keys(data) : [...new Set(items.map(i=>i.truck))];
+    groups = trucks.sort((a,b)=>truckNum(a)-truckNum(b)).map(t=>{
+      const td=data[t]||{};
+      const sub = td.overdue? "overdue" : (td.hours!=null? td.hours+"h":"");
+      return { key:t, label:t, sub, overdue:td.overdue, items:items.filter(it=>it.truck===t && inRange(it)) };
+    });
+  }
+
+  const wkOf = date => Math.floor((new Date(date)-weekStart)/(7*864e5));
+
+  function reassign(id,eng){
+    const next={...ov}; if(eng==="Unassigned") delete next[id]; else next[id]=eng;
+    setOv(next); saveOverrides(next); setEditing(null);
+  }
+
+  const COLW=150, LABELW=140;
+
+  // backlog: unscheduled open tickets
+  const backlog=[]; Object.entries(tickets).forEach(([truck,arr])=>(arr||[]).forEach(t=>backlog.push({...t,truck})));
+
+  const cell = (v,style)=>PH("div",{style:Object.assign({padding:"0 8px"},style)},v);
+
+  return PH("div",{style:{padding:"14px 18px 40px",fontFamily:"var(--sans)"}},
+    // ── control bar ──
+    PH("div",{style:{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}},
+      PH("div",{style:{display:"flex",gap:2,alignItems:"center"}},
+        PH("button",{onClick:()=>setWeekStart(addDays(weekStart,-7)),style:navBtn},"‹"),
+        PH("button",{onClick:()=>setWeekStart(addDays(mondayOf(new Date()),-14)),style:navBtn},"Today"),
+        PH("button",{onClick:()=>setWeekStart(addDays(weekStart,7)),style:navBtn},"›")
+      ),
+      PH("select",{value:preset,onChange:e=>setPreset(e.target.value),style:sel},
+        Object.entries(PRESETS).map(([k,v])=>PH("option",{key:k,value:k},v.name))),
+      PH("select",{value:weeks,onChange:e=>setWeeks(+e.target.value),style:sel},
+        [4,6,8,12].map(n=>PH("option",{key:n,value:n},n+" weeks"))),
+      PH("div",{style:{display:"flex",gap:12,marginLeft:"auto",fontSize:12,color:"var(--text-dim)"}},
+        ["label","eng","shift"].map(k=>PH("label",{key:k,style:{display:"flex",gap:4,cursor:"pointer",textTransform:"capitalize"}},
+          PH("input",{type:"checkbox",checked:show[k],onChange:()=>setShow({...show,[k]:!show[k]})}),
+          k==="eng"?"engineer":k))
+      )
+    ),
+    // ── legend ──
+    PH("div",{style:{display:"flex",gap:14,marginBottom:10,fontSize:11,color:"var(--text-dim)",flexWrap:"wrap"}},
+      Object.entries(TYPE_META).filter(([k])=>P.types.includes(k)).map(([k,m])=>
+        PH("span",{key:k,style:{display:"flex",gap:5,alignItems:"center"}},
+          PH("span",{style:{width:10,height:10,borderRadius:2,background:m.c,display:"inline-block"}}),m.lbl))
+    ),
+    // ── grid ──
+    PH("div",{style:{border:"1px solid var(--border)",borderRadius:"var(--radius)",overflow:"auto",background:"var(--surface)"}},
+      // header
+      PH("div",{style:{display:"grid",gridTemplateColumns:`${LABELW}px repeat(${weeks},${COLW}px)`,
+                       position:"sticky",top:0,zIndex:3,background:"var(--surface2)",borderBottom:"1px solid var(--border2)"}},
+        cell(P.groupBy==="engineer"?"ENGINEER":"TRUCK",{fontSize:10,letterSpacing:".08em",color:"var(--text-faint)",
+             padding:"10px 8px",position:"sticky",left:0,background:"var(--surface2)",zIndex:2}),
+        wkDates.map((d,i)=>PH("div",{key:i,style:{padding:"8px",fontSize:11,fontFamily:"var(--mono)",
+             color: iso(d)<=todayISO && iso(addDays(d,6))>=todayISO ? "var(--f1red)":"var(--text-dim)",
+             borderLeft:"1px solid var(--border)"}},"W "+fmtWk(d)))
+      ),
+      // rows
+      groups.map(g=>PH("div",{key:g.key,style:{display:"grid",gridTemplateColumns:`${LABELW}px repeat(${weeks},${COLW}px)`,
+                       borderBottom:"1px solid var(--border)",minHeight:44,position:"relative"}},
+        // row label
+        PH("div",{onClick:()=>P.groupBy!=="engineer"&&onOpenTruck&&onOpenTruck(g.key),
+          style:{position:"sticky",left:0,zIndex:1,background:"var(--surface)",borderRight:"1px solid var(--border2)",
+                 padding:"6px 8px",cursor:P.groupBy==="engineer"?"default":"pointer",display:"flex",flexDirection:"column",justifyContent:"center"}},
+          PH("div",{style:{display:"flex",gap:6,alignItems:"center",fontWeight:700,fontSize:13,
+                    fontFamily:"var(--mono)",color:g.overdue?"var(--red)":"var(--text)"}},
+            P.groupBy==="engineer"?PH("span",{style:{width:8,height:8,borderRadius:"50%",background:g.sub}}):null, g.label),
+          g.sub&&P.groupBy!=="engineer"?PH("div",{style:{fontSize:10,color:g.overdue?"var(--red)":"var(--text-faint)"}},
+             g.overdue?"OVERDUE":g.sub):null
+        ),
+        // week cells (grid backdrop)
+        wkDates.map((d,i)=>PH("div",{key:i,style:{borderLeft:"1px solid var(--border)",
+             background: iso(d)<=todayISO && iso(addDays(d,6))>=todayISO?"rgba(225,6,0,.04)":"transparent"}})),
+        // bars (absolute over the week columns)
+        PH("div",{style:{position:"absolute",left:LABELW,right:0,top:0,bottom:0,pointerEvents:"none"}},
+          PH("div",{style:{position:"relative",height:"100%"}},
+            g.items.sort((a,b)=>a.date.localeCompare(b.date)).map(it=>{
+              const w=wkOf(it.date); if(w<0||w>=weeks) return null;
+              const m=TYPE_META[it.type]||TYPE_META.other;
+              const dow=(new Date(it.date).getDay()+6)%7; // 0..6 within week
+              const left=w*COLW + (dow/7)*COLW + 3;
+              return PH("div",{key:it.id,title:`${it.truck} · ${it.date} · ${m.lbl}\n${it.label}`,
+                onClick:()=>setEditing(editing===it.id?null:it.id),
+                style:{position:"absolute",left,top:5,width:COLW/7*1.8,minWidth:34,pointerEvents:"auto",cursor:"pointer",
+                       background:m.bg,border:`1px solid ${m.c}`,borderLeft:`3px solid ${m.c}`,borderRadius:4,
+                       padding:"3px 5px",overflow:"visible",opacity:it.historical?.85:1}},
+                show.label?PH("div",{style:{fontSize:10,color:"var(--text)",whiteSpace:"nowrap",overflow:"hidden",
+                     textOverflow:"ellipsis",maxWidth:COLW*1.6}},it.label):null,
+                show.shift&&it.shift?PH("div",{style:{fontSize:8,color:m.c,fontFamily:"var(--mono)"}},it.shift):null,
+                show.eng&&P.groupBy!=="engineer"?PH("div",{style:{marginTop:2,fontSize:9,color:"#fff",display:"inline-block",
+                     background:engColor(it.eng),borderRadius:3,padding:"1px 4px"}},initials(it.eng)):null,
+                // reassign popover
+                editing===it.id?PH("div",{style:{position:"absolute",top:"100%",left:0,zIndex:10,marginTop:3,
+                     background:"var(--surface3)",border:"1px solid var(--border2)",borderRadius:5,padding:6,minWidth:150,
+                     boxShadow:"0 6px 18px rgba(0,0,0,.5)"}},
+                  PH("div",{style:{fontSize:9,color:"var(--text-faint)",marginBottom:4}},"ASSIGN ENGINEER"),
+                  PH("select",{value:it.eng,onChange:e=>reassign(it.id,e.target.value),
+                       style:{width:"100%",...sel,fontSize:11}},
+                    roster.map(r=>PH("option",{key:r,value:r},r)))
+                ):null
+              );
+            })
+          )
+        )
+      ))
+    ),
+    // ── backlog + dashboard import ──
+    PH("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:16}},
+      PH("div",{style:panel},
+        PH("div",{style:panelH},"BACKLOG · open tickets"),
+        backlog.length?backlog.slice(0,12).map(t=>PH("div",{key:t.key,style:{display:"flex",gap:8,alignItems:"center",
+             padding:"5px 0",borderBottom:"1px solid var(--border)",fontSize:12}},
+          PH("span",{style:{fontFamily:"var(--mono)",color:"var(--f1red)",fontWeight:700,minWidth:74}},t.truck),
+          PH("a",{href:t.url,target:"_blank",style:{color:"var(--blue)",fontFamily:"var(--mono)",fontSize:11}},t.key),
+          PH("span",{style:{color:"var(--text-dim)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},t.summary)
+        )):PH("div",{style:{color:"var(--text-faint)",fontSize:12}},"No open tickets.")
+      ),
+      PH("div",{style:panel},
+        PH("div",{style:panelH},"IMPORT FROM DASHBOARD"),
+        PH("div",{style:{fontSize:12,color:"var(--text-dim)",marginBottom:8}},
+          "Paste the dashboard URL to auto-parse rows into this plan. Parser wires up once the source format is confirmed."),
+        PH("div",{style:{display:"flex",gap:6}},
+          PH("input",{placeholder:"https://…",value:imp.url,onChange:e=>setImp({...imp,url:e.target.value}),
+               style:{flex:1,...sel}}),
+          PH("button",{onClick:()=>setImp({...imp,note:imp.url?"Saved — parser will map this source next pass.":"Enter a URL first."}),
+               style:navBtn},"Parse")
+        ),
+        imp.note?PH("div",{style:{marginTop:8,fontSize:11,color:"var(--amber)"}},imp.note):null
+      )
+    )
+  );
+}
+const navBtn={background:"var(--surface3)",color:"var(--text)",border:"1px solid var(--border2)",borderRadius:5,
+  padding:"5px 10px",fontSize:12,cursor:"pointer",fontFamily:"var(--sans)"};
+const sel={background:"var(--surface3)",color:"var(--text)",border:"1px solid var(--border2)",borderRadius:5,
+  padding:"5px 8px",fontSize:12,fontFamily:"var(--sans)"};
+const panel={background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"var(--radius)",padding:14};
+const panelH={fontSize:10,letterSpacing:".08em",color:"var(--text-faint)",marginBottom:10,fontWeight:700};
+
 function Root(){
   const params = new URLSearchParams(window.location.search);
-  const [tab,setTab] = useState(params.get("truck") ? "detail" : "fleet");
+  const [tab,setTab] = useState(params.get("truck") ? "detail" : "plan");
   const [jump,setJump] = useState(null);
   const openTruck = (id)=>{ setJump({truck:id, n:Date.now()}); setTab("detail"); };
   return React.createElement("div",{className:"app-shell"},
     React.createElement("div",{className:"app-tabs"},
-      React.createElement("button",{className:"app-tab"+(tab==="fleet"?" active":""),onClick:()=>setTab("fleet")},"Fleet"),
+      React.createElement("button",{className:"app-tab"+(tab==="plan"?" active":""),onClick:()=>setTab("plan")},"Fleet"),
+      React.createElement("button",{className:"app-tab"+(tab==="fleet"?" active":""),onClick:()=>setTab("fleet")},"Pit Wall"),
       React.createElement("button",{className:"app-tab"+(tab==="detail"?" active":""),onClick:()=>setTab("detail")},"Truck Detail")
+    ),
+    React.createElement("div",{className:"app-view"+(tab==="plan"?" show":"")},
+      React.createElement(PlanningView,{onOpenTruck:openTruck})
     ),
     React.createElement("div",{className:"app-view"+(tab==="fleet"?" show":"")},
       React.createElement("div",{className:"pitwall"}, React.createElement(FleetView,{onOpenTruck:openTruck}))

@@ -1,0 +1,1774 @@
+{
+"HD6": {
+"2026-06-01": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6 - Mission: Gotemba - Closed Loop and training Itou/Op - "
+}
+],
+"2026-06-09": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6 - Mission: Iwafune Open Loop Mizobe/Lin"
+}
+],
+"2026-06-10": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6 - Mission: Iwafune Closed Loop Day-Trip Nakamura/Thapa"
+}
+],
+"2026-06-12": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6 - Mission: Iwafune Closed Loop Day-Trip Matsumura/Fujiwa"
+}
+],
+"2026-06-15": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6- Mission: Gotemba Closed Loop (Gotemba) Kikuchi / Tanaka"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD6 - Mission:Iwafune Closed loop (Gotemba) Matsumura/Suzuki"
+}
+],
+"2026-06-22": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6- Mission: Iwafune Closed Loop -JARI + Oil Change Maniwa/"
+}
+],
+"2026-06-23": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "JARI Shirosato (Isuzu Training) Driver: Matsumura Operator: "
+}
+],
+"2026-06-29": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Load the weight at the TRC Tsuchimoto,Suzuki S"
+}
+],
+"2026-06-30": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6 - Mission: Closed Loop - Iwafune (TRC - Day Trip) Maniwa"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD6 - Mission: Closed Loop - Iwafune Nakamura/Inoue"
+}
+],
+"2026-07-01": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6- Mission: Closed Loop, Terminal + Urban (after ETC gate "
+}
+],
+"2026-07-06": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6- Mission: Closed Loop - Iwafune Tsuda/Hayakawa"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD6 - Mission: Closed Loop - SANO Nakamura/Fujiwara"
+}
+],
+"2026-07-07": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6 - Mission: Closed Loop - Iwafune, Terminal + Urban (Sano"
+}
+],
+"2026-07-12": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6- Mission: Closed Loop - Gotenba Matsumura/Jung"
+}
+],
+"2026-07-13": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6- Mission: Chubu Closed Loop Matsumura/ Haruto(Trainee) /"
+}
+],
+"2026-07-17": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Maintenance and Calibration"
+}
+],
+"2026-07-18": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD6 - Mission: Closed Loop - Iwafune, Terminal + Urban (Sano"
+}
+],
+"2026-08-01": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+]
+},
+"HD7": {
+"2026-08-01": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+]
+},
+"HD8": {
+"2026-06-01": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8 - Mission: Iwafune Closed Loop (Hotel in Iwafune) Kikuch"
+}
+],
+"2026-06-06": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8 - Mission: Iwafune Closed Loop （Iwafune) Yamaguchi/ Jung"
+}
+],
+"2026-06-08": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8 - Mission: Iwafune Closed Loop (Hotel in Iwafune) Kikuch"
+}
+],
+"2026-06-13": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8- Mission: Iwafune Closed Loop Matsumura/Jung This is not"
+}
+],
+"2026-06-15": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Generator Oil Change Check Air Filter"
+}
+],
+"2026-06-16": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8 - Mission: Iwafune Closed Loop and training Itou/Mizobe,"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD8- Mission: Iwafune - Closed Loop Nakamura/Inoue"
+}
+],
+"2026-06-22": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "JARI Shirosato (Isuzu Training) Driver: Matsumura Operator: "
+}
+],
+"2026-06-23": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "JARI Shirosato (High Speed Oval) Meguro(Trainee)Mito（Trainer"
+},
+{
+"shift": "NIGHT",
+"type": "other",
+"label": ""
+}
+],
+"2026-06-25": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8- Mission:Iwafune - Closed Loop Mito/Murata P-Driver: Meg"
+}
+],
+"2026-06-26": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8- Mission:Iwafune - Closed Loop Mitou/Murata"
+}
+],
+"2026-06-28": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8- Mission:Gotemba - Closed Loop (TRC Day Trip) Tsuda・Thap"
+}
+],
+"2026-06-29": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8 - Mission Closed Loop-Iwafune (TRC Day Trip) Hayashi/Joe"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD8 - Mission: Closed Loop -Iwafune Suzuki R/Tanaka"
+}
+],
+"2026-06-30": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8 - Mission: Gotemba Closed Loop and training Itou/Mizobe,"
+}
+],
+"2026-07-04": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8 - Mission: Closed Loop - Iwafune, Terminal + Urban (Sano"
+}
+],
+"2026-07-09": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8 - Mission: Closed Loop - Gotemba Tsuda/Hayakawa"
+}
+],
+"2026-07-13": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Calibration"
+}
+],
+"2026-07-14": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD8 - Mission: Gotemba Closed Loop and training (Gotemba) Mi"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD8 - Mission: Closed Loop - Iwafune Yamamoto/Thapa"
+}
+],
+"2026-07-20": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "HD8 - Mission: Gotemba Closed Loop and training (Gotemba) It"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD9 - Mission: Closed Loop - Iwafune Suzuki R / Tanaka"
+}
+],
+"2026-09-26": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-07-06": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD8- Mission: Closed Loop - Gotemba - SANO Kikuchi/Akiyoshi("
+}
+]
+},
+"HD9": {
+"2026-06-09": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "HD9 - Gotemba - Closed Loop and training Itou/Hayashi Traine"
+},
+{
+"shift": "NIGHT",
+"type": "other",
+"label": "HD9 - Gotemba - Closed Loop NIGHT Mitou / Inoue"
+}
+],
+"2026-06-15": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD9- Mission: Chubu Closed Loop Yamamoto/Thapa"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD9- Mission: Chubu Open Loop Suzuki R/Akiyoshi"
+}
+],
+"2026-06-22": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "HD9 - Mission:Iwafune - Open Loop Kikuchi/Koma + Unstructure"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD9- Mission: Iwafune Closed Loop Suzuki R/Tanaka"
+}
+],
+"2026-06-23": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "HD9- Iwafune - Closed Loop (Gotemba) Kikuchi / Koma/ Jung- P"
+}
+],
+"2026-06-29": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD9- Mission: Gotemba Closed Loop (Gotemba) Matsumura/ Koma "
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD9 - Mission: Closed - Gotemba Kikuchi/ Fujiwara"
+}
+],
+"2026-07-05": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD9- Mission: Gotemba Closed Loop (Gotemba) Matsumura/ Koma "
+}
+],
+"2026-07-07": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD9- Mission: Gotemba Closed Loop (Gotemba) Matsumura/ Harut"
+}
+],
+"2026-07-10": [
+{
+"shift": "DAY",
+"type": "maintenance",
+"label": "Garage Maintenance"
+}
+],
+"2026-07-11": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD9 - Mission: Closed Loop - Iwafune, Terminal + Urban (Sano"
+}
+],
+"2026-07-16": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "Transmission Oil Check HD9 - Mission: Closed Loop - Iwafune "
+}
+],
+"2026-07-17": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD9 - Mission: Closed Loop - Iwafune (SANO) Tsuda/Hayakawa"
+}
+],
+"2026-07-21": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD9 - Mission: Closed Loop - Iwafune Minoura / Yajima (Train"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD9 - Mission: Closed Loop - Iwafune Mitou/Akiyoshi"
+}
+],
+"2026-06-05": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD9 - Mission:Iwafune Open Loop Takahashi / Koma TRC -> Iwaf"
+}
+]
+},
+"HD10": {
+"2026-06-01": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10 Mission: Gotemba - Closed Loop (Hotel in Gotemba) Maniw"
+}
+],
+"2026-06-07": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10 - Mission: Chubu Closed Loop Tsuda / Arimura"
+}
+],
+"2026-06-12": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10- Mission: Iwafune closed Loop Day Trip Nakamura/Thapa"
+}
+],
+"2026-06-13": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10- Mission: Iwafune Open Loop Day Trip Nakamura/Watanabe "
+}
+],
+"2026-06-16": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10- Gotemba - Closed Loop (Gotemba) Mitou / Suenaga (Train"
+}
+],
+"2026-06-22": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Powernet modification Zijian"
+}
+],
+"2026-06-25": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10- Mission: Iwafune Open Loop Fukuchi/Suenaga"
+}
+],
+"2026-06-26": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10- Mission: Iwafune Open Loop Koizumi/Sunaga"
+}
+],
+"2026-06-27": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10 - Mission: Closed Loop - Iwafune (TRC Day Trip) Yamaguc"
+}
+],
+"2026-06-29": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10 Closed Loop- Iwafune (TRC Day Trip) Itou / Suzuki T"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD10- Mission: Closed Loop - Gotemba Takahashi/Akiyoshi(Trai"
+}
+],
+"2026-06-30": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10 - Mission: Closed Loop, Terminal + Urban (after ETC gat"
+}
+],
+"2026-07-07": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "Mission: Closed Loop - Gotemba Maniwa / Koma"
+}
+],
+"2026-07-10": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking Maniwa/Yajima"
+}
+],
+"2026-07-12": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10 Mission: Closed Loop - Gotemba Suzuki R/ Koma"
+}
+],
+"2026-07-15": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Calibration"
+}
+],
+"2026-07-16": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10 Mission: Closed Loop - Gotemba Suzuki R/ Koma"
+}
+],
+"2026-07-17": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10 Mission: Closed Loop - Gotemba Minoura/Haruto"
+}
+],
+"2026-07-19": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10 Mission: Closed Loop - Gotemba Kikuchi/Jung"
+}
+],
+"2026-07-20": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD10 Mission: Chubu Closed Loop Nakamura/ Haruto"
+}
+]
+},
+"HD11": {
+"2026-06-01": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Ansible 1.1 Provision Calibration"
+}
+],
+"2026-06-02": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11 - Mission: Iwafune Closed Loop (Hotel in Gotemba) Matsu"
+}
+],
+"2026-06-08": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11- Iwafune - Closed Loop Suzuki R / Tanaka (Trainee) / Su"
+}
+],
+"2026-06-13": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11 - Open loop: Mission Iwafune Yamaguchi/Kagami"
+}
+],
+"2026-06-14": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11 - Closed Loop Mission:Iwafune Open Loop (Iwafune) + Han"
+}
+],
+"2026-06-19": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11- Iwafune - Closed Loop Maniwa/Murata"
+}
+],
+"2026-06-20": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11- Mission:Iwafune - Open Loop Yamaguchi / Yajima"
+}
+],
+"2026-06-21": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11- Iwafune - Closed Loop, Terminal Test (6/22-24) Yamaguc"
+}
+],
+"2026-06-25": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11- Mission:Iwafune - Open Loop JARI SS Maniwa/Zeniya"
+}
+],
+"2026-06-30": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11- Mission:Iwafune - Closed Loop, Terminal + Urban (after"
+}
+],
+"2026-07-06": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11- Mission: Closed Loop - Chubu Itou/Tanaka (3-month insp"
+}
+],
+"2026-07-10": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking Itou/Tanaka"
+}
+],
+"2026-07-14": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "HD11 - Road Readiness Tests for VCI 4.02 - TRC Roof Nakamura"
+}
+],
+"2026-07-15": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Bring to JARI Shirosato"
+},
+{
+"shift": "NIGHT",
+"type": "other",
+"label": "JARI Shirosato HD11 - Testing Meguro/Takahashi (Operator)"
+}
+],
+"2026-07-19": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11- Mission: Gotenba Closed Loop Matsumura/ Suzuki S(Train"
+}
+],
+"2026-07-23": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11 - Mission: Closed Loop - Iwafune (SANO) Mizobe/Hayakawa"
+}
+],
+"2026-06-29": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD11-Mission:Closed Loop Iwafune (TRC Day Trip) Nakamura/Ino"
+}
+],
+"2026-07-01": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD11- Mission: Closed Loop - Gotemba Takahashi/Akiyoshi(Trai"
+}
+],
+"2026-07-16": [
+{
+"shift": "NIGHT",
+"type": "other",
+"label": "Transport HD11 to TRC from JARI SS Meguro/Takahashi"
+}
+]
+},
+"HD12": {
+"2026-06-05": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD12 - Mission: Iwafune Open Loop Suzuki S/ Lin Route: TRC -"
+}
+],
+"2026-06-06": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-06-07": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD12 - Mission: Iwafune Open Loop Suzuki S/ Watanabe J"
+}
+],
+"2026-06-10": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD12 - Mission: Iwafune Open Loop Mizobe/ Lin"
+}
+],
+"2026-06-16": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD12- Mission: Iwafune Open Loop Hayashi/Oiwa"
+}
+],
+"2026-06-17": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Generator Oil Change Already done"
+}
+],
+"2026-06-18": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD12- Mission: Iwafune Open Loop Hayashi/Arimura"
+}
+],
+"2026-06-19": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD12- Mission: Iwafune Open Loop Hayashi/Oiwa"
+}
+],
+"2026-06-20": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD12- Mission:Iwafune - Open Loop Hayashi/Watanabe J"
+}
+],
+"2026-06-22": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "HD12- Mission:Iwafune - Closed Loop + calibration Yamamoto/T"
+}
+],
+"2026-06-23": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD12 - Mission: Closed Loop - Gotemba NakamuraThapa"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD12 - Mission: OpenLoop - Gotemba Mizobe/Ranko"
+}
+],
+"2026-07-01": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "JARI Shirosato HD12- Testing Maniwa/Haruto Support car: Ichi"
+}
+],
+"2026-07-06": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD12- Mission: Iwafune Open Loop (TRC) Suzuki S/Kagami Tue t"
+}
+],
+"2026-07-13": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "HD12- Mission: Gotemba Closed Loop (Gotemba) Maniwa Yajima(T"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD12‐ Mission: Open loop - Gotemba Kikuchi/Zeniya"
+}
+],
+"2026-07-17": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD11 Mission: Open Loop - Gotemba Maniwa/Yajima"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD11 Mission: Open Loop - Gotemba Kikuchi/Suenaga"
+}
+],
+"2026-07-20": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "HOLD for Potential JARI Tests"
+}
+],
+"2026-09-05": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-06-04": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD12 - Mission:Iwafune Open Loop Yamamoto / Yajima TRC -> Iw"
+}
+]
+},
+"HD13": {
+"2026-06-01": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Ansible 1.1 Provision"
+}
+],
+"2026-06-02": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD13 - Mission: Chubu OpenLoop Nakamura/ Inoue"
+}
+],
+"2026-06-06": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-06-08": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "HD13 - Sensor Calibration Cancelled due to rain"
+},
+{
+"shift": "NIGHT",
+"type": "other",
+"label": "JARI SS Retests - DAYTRIP Takahashi / Koma"
+}
+],
+"2026-06-09": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD13- Mission: Iwafune Open Loop Nakamura/Thapa"
+}
+],
+"2026-06-10": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "HD13 - Sensor Calibration"
+}
+],
+"2026-06-11": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD13- Mission:Iwafune - Open Loop Matsumura/Fujiwara"
+}
+],
+"2026-06-22": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Generator Oil Change"
+}
+],
+"2026-06-23": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD13- Mission: Iwafune Open Loop Fukuchi/Watanabe J Change o"
+}
+],
+"2026-06-25": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD13- Mission: Iwafune Open Loop Toyooka/Oiwa"
+}
+],
+"2026-06-29": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "JARI J-Town Yamaguchi/Maniwa Hayakawa/Arimura Daniel - Drive"
+},
+{
+"shift": "NIGHT",
+"type": "calibration",
+"label": "JARI J-Town - Traffic Light Night Tests 3pm - 9pm Toyooka / "
+}
+],
+"2026-06-30": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "JARI J-Town Tsuda/Yamamoto Thapa/Haruto Daniel - Driver Trai"
+}
+],
+"2026-07-01": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD13- Mission: Gotemba Open Loop (TRC) Yamamoto/Yamazaki"
+}
+],
+"2026-07-04": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD13 - Mission:Iwafune - Open Loop Mitou/Ranko"
+}
+],
+"2026-07-06": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD13- Mission: Iwafune Open Loop Suzuki R/Itano"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD13- Mission: Iwafune Open Loop (TRC) Tsuchimoto/Suenaga"
+}
+],
+"2026-07-13": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "ISUZU DRIVER TRAINING - Mission Itou /Tanaka P-Driver Ichida"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "ISUZU OPERATOR TRAINING - Mission Suzuki T P-driver Sakato ("
+}
+],
+"2026-07-20": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Calibration"
+}
+],
+"2026-07-21": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD13 Mission: Chubu Open Loop Toyooka/Kagami"
+}
+],
+"2026-09-05": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-06-16": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD13- Mission: Iwafune Open Loop Minoura/Ranko"
+}
+],
+"2026-07-10": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD13- Mission: Iwafune Open Loop (TRC) Tsuchimoto/Suenaga"
+}
+]
+},
+"HD14": {
+"2026-06-01": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "*HD14 - Mission: Closed course testing JARI Shirosato (Multi"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD14 - Mission: Closed course testing JARI Shirosato (High S"
+}
+],
+"2026-06-05": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD14 - Mission: Bring back from JARI Suzuki R / Yamazaki Rou"
+}
+],
+"2026-06-06": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-06-09": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD14- Mission:Iwafune - Open Loop Matsumura/Fujiwara"
+}
+],
+"2026-06-10": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD14 - Mission: Swap HD16 and HD14 at JARI"
+},
+{
+"shift": "NIGHT",
+"type": "other",
+"label": "HD14- JARI Testing Takahashi/Koma"
+}
+],
+"2026-06-15": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD14- Mission: Iwafune Open Loop Toyooka/Itano"
+}
+],
+"2026-06-18": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Generator Oil Change"
+}
+],
+"2026-06-19": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD14- Mission: Iwafune Open Loop Fukuchi/Itano"
+}
+],
+"2026-06-22": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "JARI Shirosato (High Speed Oval) Takahashi/Akiyoshi/Orita Su"
+}
+],
+"2026-06-29": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Truck need [Rescheduled] Recalibration before departing: VST"
+}
+],
+"2026-06-30": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD14 - Mission: Iwafune - Open Loop (TRC) Fukuchi / Oiwa"
+}
+],
+"2026-07-02": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD14 - Mission: Iwafune - Open Loop (TRC) Meguro / Oiwa"
+}
+],
+"2026-07-03": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD14 - Mission: (TRC) Iwafune Open Loop Fukuchi/Ranko"
+}
+],
+"2026-07-06": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD14- Mission: Iwafune Open Loop (TRC) Koizumi/Yajima (Novat"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD14- Mission: Iwafune Open Loop (TRC) Fukuchi/Lin"
+}
+],
+"2026-07-09": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD14- Mission: Iwafune Open Loop (TRC) Koizumi/Ishii"
+}
+],
+"2026-07-12": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD14- Mission: Iwafune Open Loop Koizumi/Yamazaki"
+}
+],
+"2026-07-17": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD14 Mission: Iwafune Open Loop Mitou/Yamazaki(Fri)Zeniya(Sa"
+}
+],
+"2026-07-20": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "ISUZU OPERATOR TRAINING Suzuki T"
+},
+{
+"shift": "NIGHT",
+"type": "other",
+"label": "ISUZU OPERATOR TRAINING Murata P-Driver Tsuchimoto"
+}
+],
+"2026-09-05": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-06-11": [
+{
+"shift": "NIGHT",
+"type": "other",
+"label": "HD14 - Iwafune OpenLoop Takahashi/Koma"
+}
+],
+"2026-07-10": [
+{
+"shift": "NIGHT",
+"type": "other",
+"label": ""
+}
+]
+},
+"HD15": {
+"2026-06-01": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "オイル交換 + Bringing truck to JARI Minoura/Matsumura"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "*HD15 - JARI Shirosato Mission: Road Readiness (18:00 - 2:30"
+}
+],
+"2026-06-04": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15 - Mission: Bring back from JARI Mitou / Tanaka Route: J"
+}
+],
+"2026-06-05": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15 - Mission: Bring back from JARI Mitou / Akiyoshi Route:"
+}
+],
+"2026-06-08": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15- Mission: Chubu Open Loop Toyooka/Yajima"
+}
+],
+"2026-06-15": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15- Mission: Iwafune Open Loop Fukuchi/Zeniya"
+}
+],
+"2026-06-19": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-06-23": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15 - Mission: Closed Loop - Iwafune Yamamoto/Inoue"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD15 - Mission: Open Loop - Gotemba Hayashi/Itano"
+}
+],
+"2026-06-24": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15 - Mission: Closed Loop - Gotemba itou/Fujiwara(24~26)"
+}
+],
+"2026-06-30": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15- Mission: Iwafune Open Loop (TRC) Suzuki S/Zeniya"
+}
+],
+"2026-07-04": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15- Mission: Iwafune Open Loop Minoura/Watababe T"
+}
+],
+"2026-07-07": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15- TRC-JARI SS Minoura/Watababe T"
+},
+{
+"shift": "NIGHT",
+"type": "other",
+"label": "JARI Shirosato HD15- Testing Fukuchi/Suenaga Zeniya Lin Supp"
+}
+],
+"2026-07-10": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "JARI J-TOWN HD15- Testing Minoura/Haruto Support car: Mizobe"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD15- Mission: JTOWN-TRC Fukuchi/Lin"
+}
+],
+"2026-07-12": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15 Mission: Iwafune Open Loop Mizibe/Kagami"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD15 Mission: Iwafune Open Loop Meguro/Oiwa"
+}
+],
+"2026-07-14": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15 Mission: TRC-JARI SS Suzuki R/Yamada"
+},
+{
+"shift": "NIGHT",
+"type": "other",
+"label": "JARI Shirosato HD15- Testing Fukuchi/Suenaga Support car: Ab"
+}
+],
+"2026-07-16": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "HD15 Mission: JARI SS-TRC Calibration Mizibe/kagami"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD15 Mission: Iwafune Open Loop Fukuchi/Oiwa"
+}
+],
+"2026-07-17": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15 Mission: Iwafune Open Loop Mizobe/Ishii"
+}
+],
+"2026-07-18": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15 Mission: Iwafune Open Loop Mizobe/Watanabe T"
+}
+],
+"2026-07-20": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15 - Mission: Closed Loop - Gotemba - DAYTRIP Minoura / Ya"
+}
+],
+"2026-07-22": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD15 Mission: Iwafune Open Loop Takahashi/Yamada(Wed-Fri)Zin"
+}
+],
+"2026-07-30": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "TRC->JARI SS"
+}
+],
+"2026-07-31": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "JARI SS Brake test Truck/Operator P-car Ryu"
+}
+],
+"2026-08-01": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "JARI -SS -> TRC"
+}
+],
+"2026-09-12": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-06-09": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD15- Mission: Chubu Open Loop Minoura/Ranko"
+}
+],
+"2026-07-01": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD15- Mission: Gotemba Open Loop (TRC) Toyooka/Itano"
+}
+],
+"2026-07-06": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD15- Mission: Iwafune Open Loop Toyooka/Zeniya"
+}
+],
+"2026-07-13": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD15 Mission: Iwafune Open Loop Fukuchi/Oiwa"
+}
+]
+},
+"HD16": {
+"2026-06-08": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16- Mission: Iwafune Open Loop Fukuchi/Itano"
+}
+],
+"2026-06-11": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16- Mission: Iwafune Open Loop Fukuchi/Itano"
+}
+],
+"2026-06-15": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16- Mission: Iwafune Open Loop Takahashi/Haruto"
+}
+],
+"2026-06-22": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16 - Mission: Open Loop - Gotemba Tsuda/Haruto"
+}
+],
+"2026-06-23": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16 - Mission: Closed Loop - Gotemba Minoura/Hayakawa"
+}
+],
+"2026-06-24": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-06-25": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16 - Mission: Closed Loop - Gotemba Minoura/Hayakawa"
+}
+],
+"2026-06-27": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16- Mission:Iwafune - OPEN Loop Minoura/Suenaga"
+}
+],
+"2026-06-28": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16- Mission: Iwafune Open Loop Meguro/Suenaga"
+}
+],
+"2026-06-30": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16- Mission: Iwafune Open Loop (TRC) Tsuchimoto/Watanabe T"
+}
+],
+"2026-07-02": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16- Mission: (TRC) Iwafune Open Loop Tsuchimoto/Kagami"
+}
+],
+"2026-07-05": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16- Mission: Iwafune Open Loop (TRC) Meguro/Oiwa"
+}
+],
+"2026-07-07": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "ISUZU DRIVER TRAINING HD16- Mission Mitou Inoue P-Driver Ori"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "ISUZU OPERATOR TRAINING HD16- Mission Takahashi/Suzuki T P-d"
+}
+],
+"2026-07-12": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16 Mission: Iwafune Open Loop Toyooka/Itano"
+}
+],
+"2026-07-13": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16 Mission: Iwafune Open Loop Suzuki S/Yamada"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD16Mission: Iwafune Open Loop Tsuchimoto/Kawai"
+}
+],
+"2026-07-17": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16 Mission: Open Loop - Gotemba Minoura/Ranko(Fri)Yamada(S"
+}
+],
+"2026-07-19": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16 Mission: Iwafune Open Loop Meguro/Itano"
+}
+],
+"2026-07-20": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD16 Mission: Iwafune Open Loop Meguro/Harada(Mon-Tue)Takaha"
+}
+],
+"2026-07-30": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "TRC->JARI SS"
+}
+],
+"2026-07-31": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "JARI SS Brake test Truck/Operator P-car Enrique"
+}
+],
+"2026-08-01": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "JARI -SS -> TRC"
+}
+],
+"2026-09-19": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-06-03": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD16 - Mission:Iwafune Open Loop Toyooka / Haruto TRC -> Iwa"
+}
+],
+"2026-06-09": [
+{
+"shift": "NIGHT",
+"type": "other",
+"label": "HD16- JARI Testing Takahashi/Koma"
+}
+],
+"2026-06-29": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD16 - Mission: Gotemba Open Loop (TRC) Koizumi / Lin"
+}
+],
+"2026-07-14": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD16 Mission: Iwafune Open Loop Meguro/Takahashi"
+}
+]
+},
+"HD17": {
+"2026-06-01": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD17 - Mission: JTown - Terminal and Mitigation Removal test"
+}
+],
+"2026-06-08": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD17 - Mission: JARI Shirosato(Multi-purpose) Maniwa/ Akiyos"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD17 - Mission: JARI Shirosato(HandlingBraking) Yamamoto/ Ha"
+}
+],
+"2026-06-12": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD17- Mission: Pickup (Pick up from JARI Shirosato) + Genera"
+}
+],
+"2026-06-13": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD17- Mission:Iwafune - Open Loop Mizobe/Watanabe"
+}
+],
+"2026-06-14": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD17- Mission:Iwafune - Open Loop Tsuda/Watanabe"
+}
+],
+"2026-06-18": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD17- Mission:Iwafune - Open Loop Tsuda/Oiwa"
+}
+],
+"2026-06-21": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD17- Mission: Iwafune Open Loop Tsuda/Watanabe T"
+}
+],
+"2026-06-22": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-06-23": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD17- Mission: Iwafune Closed Loop Maniwa/Fujiwara"
+}
+],
+"2026-06-24": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "JARI J-Town Yamamoto/Inoue Operator/Support:Haruto Zeniya (6"
+}
+],
+"2026-06-27": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD17- Mission: Iwafune Open Loop Mitou/Yajima"
+}
+],
+"2026-07-07": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Generator Repair Suzuki S/Kagami"
+}
+],
+"2026-07-11": [
+{
+"shift": "DAY",
+"type": "mission",
+"label": "HD17 Mission: Chubu Open Loop (Chubu if hotel reservation po"
+}
+],
+"2026-07-16": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Calibration"
+},
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "HD17 Mission: Iwafune Open Loop Tsuchimoto/Kawai"
+}
+],
+"2026-07-20": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "JARI Shirosato - Multipurpose HD17- Testing Maniwa/Itano Sup"
+}
+],
+"2026-07-21": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "JARI Shirosato - Multipurpose HD17- Testing Maniwa/Itano Yam"
+}
+],
+"2026-09-19": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+]
+},
+"HD18": {
+"2026-06-04": [
+{
+"shift": "DAY",
+"type": "other",
+"label": "Isuzu hands off"
+}
+],
+"2026-06-26": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "3ヶ月点検 Booking"
+}
+],
+"2026-07-16": [
+{
+"shift": "DAY",
+"type": "calibration",
+"label": "Calibration"
+}
+],
+"2026-07-06": [
+{
+"shift": "NIGHT",
+"type": "mission",
+"label": "ISUZU OPERATOR TRAINING HD18- Mission Takahashi/Suzuki T P-d"
+}
+]
+}
+}
