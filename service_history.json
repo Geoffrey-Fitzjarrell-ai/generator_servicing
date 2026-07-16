@@ -218,7 +218,7 @@
     {
       "date": "2026-07-13",
       "hours": 1550,
-      "technician": "Masakiyo",
+      "technician": "Masakiyo Kato",
       "tasks": [
         {
           "key": "airfilter_battery",
@@ -392,7 +392,7 @@
     {
       "date": "2026-07-02",
       "hours": 1489,
-      "technician": "Masakiyo",
+      "technician": "Masakiyo Kato",
       "tasks": [
         {
           "key": "airfilter_battery",
@@ -608,7 +608,7 @@
     {
       "date": "2026-07-07",
       "hours": 460,
-      "technician": "Masakiyo",
+      "technician": "Masakiyo Kato",
       "tasks": [
         {
           "key": "coolant_lines",
@@ -686,7 +686,7 @@
     {
       "date": "2026-07-03",
       "hours": 552,
-      "technician": "Masakiyo",
+      "technician": "Masakiyo Kato",
       "tasks": [
         {
           "key": "fuel_filter",
@@ -714,7 +714,7 @@
     {
       "date": "2026-07-15",
       "hours": 567,
-      "technician": "Masakiyo",
+      "technician": "Masakiyo Kato",
       "tasks": [
         {
           "key": "battery_box",
@@ -942,7 +942,7 @@
     {
       "date": "2026-07-02",
       "hours": 334,
-      "technician": "Masakiyo",
+      "technician": "Masakiyo Kato",
       "tasks": [
         {
           "key": "airfilter_battery",

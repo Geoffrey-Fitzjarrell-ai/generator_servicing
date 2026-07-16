@@ -1412,6 +1412,9 @@ const PH = React.createElement;
 
 // engineers seen historically + known Japan VOps field techs
 const KNOWN_ENGINEERS = ["Geoff Fitzjarrell","Masakiyo Kato","Jake Albano","Thapa Biliv","Reon Zeniya","Junichi Tamagawa","Andy"];
+// fold short/variant names into one canonical engineer
+const ENG_ALIASES = { "masakiyo":"Masakiyo Kato", "kato":"Masakiyo Kato", "jake":"Jake Albano", "geoff":"Geoff Fitzjarrell", "thapa":"Thapa Biliv", "reon":"Reon Zeniya", "junichi":"Junichi Tamagawa" };
+function canonEng(name){ if(!name) return name; return ENG_ALIASES[String(name).trim().toLowerCase()] || String(name).trim(); }
 const TYPE_META = {
   mission:      { c:"var(--blue)",  bg:"rgba(74,124,245,.16)",  lbl:"Mission" },
   calibration:  { c:"var(--amber)", bg:"rgba(240,165,0,.14)",   lbl:"Calibration" },
@@ -1471,7 +1474,7 @@ function PlanningView({ onOpenTruck }){
 
   const roster = React.useMemo(()=>{
     const set=new Set(KNOWN_ENGINEERS);
-    Object.values(history).forEach(arr=>(arr||[]).forEach(e=>e.technician&&set.add(e.technician)));
+    Object.values(history).forEach(arr=>(arr||[]).forEach(e=>e.technician&&set.add(canonEng(e.technician))));
     return ["Unassigned",...[...set].sort()];
   },[history]);
 
@@ -1488,7 +1491,7 @@ function PlanningView({ onOpenTruck }){
       const id=`${truck}|${e.date}|h${i}`;
       const lbl=(e.tasks||[]).map(t=>t.label).join(", ")||"Service";
       out.push({ id, truck, date:e.date, type:"maintenance", label:lbl, hours:e.hours,
-                 eng:ov[id]||e.technician||"Unassigned", historical:true });
+                 eng:ov[id]||canonEng(e.technician)||"Unassigned", historical:true });
     }));
     return out;
   },[sched,history,ov]);
