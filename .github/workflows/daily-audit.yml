@@ -207,8 +207,16 @@ jobs:
               issues.append(f"Dashboard DOWN: {PAGES} -> {e}")
 
           # ---- G. Data files parse -------------------------------------------------
+          # Auto-discover every *.json in repo root (excludes audit_status.json,
+          # which this job writes) so new data files are covered automatically.
+          try:
+              root = gh_api(f"/repos/{REPO}/contents")
+              json_files = [x["name"] for x in root
+                            if x["name"].endswith(".json") and x["name"] != "audit_status.json"]
+          except Exception:
+              json_files = DATA_FILES
           bad = []
-          for f in DATA_FILES:
+          for f in json_files:
               try:
                   raw = gh_api(f"/repos/{REPO}/contents/{f}")
                   json.loads(base64.b64decode(raw["content"]).decode())
@@ -217,7 +225,7 @@ jobs:
           if bad:
               issues.append("Unparseable data file(s): " + ", ".join(bad))
           else:
-              passed.append(f"all {len(DATA_FILES)} data files parse")
+              passed.append(f"all {len(json_files)} data files parse")
 
           # ---- Optional forced failure (alert-path test) ---------------------------
           if os.environ.get("FORCE_FAIL", "false") == "true":
