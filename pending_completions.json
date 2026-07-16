@@ -14,5 +14,21 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD16",
+    "tasks": [
+      "Battery Box check"
+    ],
+    "technician": "Masakiyo",
+    "postedBy": {
+      "id": "U0BEARESY3W",
+      "name": null
+    },
+    "loggedAt": "2026-07-16T09:06:23.991Z",
+    "hours": 437,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
