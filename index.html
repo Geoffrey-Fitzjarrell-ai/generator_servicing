@@ -1581,9 +1581,9 @@ function PlanningView({ onOpenTruck }){
           PH("span",{style:{width:10,height:10,borderRadius:2,background:m.c,display:"inline-block"}}),m.lbl))
     ),
     // ── grid ──
-    PH("div",{style:{border:"1px solid var(--border)",borderRadius:"var(--radius)",overflow:"auto",background:"var(--surface)"}},
+    PH("div",{style:{border:"1px solid var(--border)",borderRadius:"var(--radius)",overflow:"auto",background:"var(--surface)",width:"100%"}},
       // header
-      PH("div",{style:{display:"grid",gridTemplateColumns:`${LABELW}px repeat(${weeks},${COLW}px)`,
+      PH("div",{style:{display:"grid",gridTemplateColumns:`${LABELW}px repeat(${weeks},minmax(${COLW}px,1fr))`,
                        position:"sticky",top:0,zIndex:3,background:"var(--surface2)",borderBottom:"1px solid var(--border2)"}},
         cell(P.groupBy==="engineer"?"ENGINEER":"TRUCK",{fontSize:10,letterSpacing:".08em",color:"var(--text-faint)",
              padding:"10px 8px",position:"sticky",left:0,background:"var(--surface2)",zIndex:2}),
@@ -1596,7 +1596,7 @@ function PlanningView({ onOpenTruck }){
         const byWk = Array.from({length:weeks},()=>[]);
         g.items.forEach(it=>{ const w=wkOf(it.date); if(w>=0&&w<weeks) byWk[w].push(it); });
         byWk.forEach(a=>a.sort((x,y)=>x.date.localeCompare(y.date)));
-        return PH("div",{key:g.key,style:{display:"grid",gridTemplateColumns:`${LABELW}px repeat(${weeks},${COLW}px)`,
+        return PH("div",{key:g.key,style:{display:"grid",gridTemplateColumns:`${LABELW}px repeat(${weeks},minmax(${COLW}px,1fr))`,
                        borderBottom:"1px solid var(--border)",minHeight:54}},
           // row label
           PH("div",{onClick:()=>P.groupBy!=="engineer"&&onOpenTruck&&onOpenTruck(g.key),
