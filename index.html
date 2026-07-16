@@ -1420,6 +1420,7 @@ function App({ jump }) {
 
 // ══ Fleet planning view (week-calendar Gantt) ═══════════════════════════════
 const SCHEDULE_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/schedule.json";
+const INSPECTIONS_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/inspections.json";
 const PH = React.createElement;
 
 // engineers seen historically + known Japan VOps field techs
@@ -1433,14 +1434,17 @@ const TYPE_META = {
   maintenance:  { c:"var(--green)", bg:"rgba(61,168,112,.16)",  lbl:"Maintenance" },
   ticket:       { c:"var(--red)",   bg:"rgba(224,69,69,.14)",   lbl:"Open ticket" },
   planned:      { c:"#9880cc",      bg:"rgba(152,128,204,.16)", lbl:"Planned" },
+  shaken:       { c:"var(--red)",   bg:"rgba(224,69,69,.18)",   lbl:"車検・12ヶ月" },
+  inspection3m: { c:"#e08a3c",      bg:"rgba(224,138,60,.16)",  lbl:"3ヶ月点検" },
   other:        { c:"var(--text-dim)", bg:"rgba(120,140,170,.12)", lbl:"Other" }
 };
 // PRE-PACKAGED PRESETS — filter what shows on the plan
 const PRESETS = {
-  all:          { name:"All activity",      types:["mission","calibration","maintenance","planned","ticket","other"], groupBy:"truck" },
-  maint:        { name:"Maintenance only",  types:["maintenance","planned"], groupBy:"truck" },
+  all:          { name:"All activity",      types:["mission","calibration","maintenance","planned","ticket","shaken","inspection3m","other"], groupBy:"truck" },
+  maint:        { name:"Maintenance only",  types:["maintenance","planned","shaken","inspection3m"], groupBy:"truck" },
+  inspections:  { name:"Inspections (車検)", types:["shaken","inspection3m"], groupBy:"truck" },
   missions:     { name:"Missions & cal",    types:["mission","calibration"], groupBy:"truck" },
-  byeng:        { name:"By engineer",       types:["mission","calibration","maintenance","planned"], groupBy:"engineer" },
+  byeng:        { name:"By engineer",       types:["mission","calibration","maintenance","planned","shaken","inspection3m"], groupBy:"engineer" },
   tickets:      { name:"Open tickets",      types:["ticket","planned"], groupBy:"truck" }
 };
 
@@ -1462,6 +1466,7 @@ function saveTasks(a){ try{ localStorage.setItem("planner_tasks",JSON.stringify(
 
 function PlanningView({ onOpenTruck }){
   const [sched,setSched]     = useState(null);
+  const [inspections,setInspections] = useState({});
   const [history,setHistory] = useState({});
   const [tickets,setTickets] = useState({});
   const [data,setData]       = useState({});
@@ -1486,7 +1491,8 @@ function PlanningView({ onOpenTruck }){
       fetch(HISTORY_URL+bust).then(r=>r.ok?r.json():{}).catch(()=>({})),
       fetch(TICKETS_URL+bust).then(r=>r.ok?r.json():{}).catch(()=>({})),
       fetch(DATA_URL+bust).then(r=>r.ok?r.json():{}).catch(()=>({})),
-    ]).then(([s,h,t,d])=>{ setSched(s); setHistory(h||{}); setTickets(t||{}); setData(d||{}); })
+      fetch(INSPECTIONS_URL+bust).then(r=>r.ok?r.json():{}).catch(()=>({})),
+    ]).then(([s,h,t,d,ins])=>{ setSched(s); setHistory(h||{}); setTickets(t||{}); setData(d||{}); setInspections(ins||{}); })
       .catch(()=>setErr(true));
   },[]);
 
@@ -1512,8 +1518,15 @@ function PlanningView({ onOpenTruck }){
                  eng:ov[id]||canonEng(e.technician)||"Unassigned", historical:true });
     }));
     tasks.forEach(t=>{ if(t.truck&&t.date) out.push({ ...t, eng:ov[t.id]||t.eng||"Unassigned", planned:true }); });
+    Object.entries(inspections).forEach(([truck,rec])=>{
+      if(!rec||truck[0]==="_"||!rec.events) return;
+      rec.events.forEach((e,i)=>{
+        const id=`${truck}|${e.date}|i${i}`;
+        out.push({ id, truck, date:e.date, type:e.type, label:e.label, eng:ov[id]||"Unassigned", inspection:true, approx:!!e.approx });
+      });
+    });
     return out;
-  },[sched,history,ov,tasks]);
+  },[sched,history,ov,tasks,inspections]);
 
   if(err) return PH("div",{style:{padding:40,color:"var(--red)",fontFamily:"var(--mono)"}},"Plan data unavailable — check connection.");
   if(!sched) return PH("div",{style:{padding:40,color:"var(--text-dim)",fontFamily:"var(--mono)"}},"Loading plan…");
@@ -1650,7 +1663,7 @@ function PlanningView({ onOpenTruck }){
                 return PH("div",{key:it.id,title:`${it.truck} · ${it.date} · ${m.lbl}\n${it.label}`,
                   onClick:()=>{ if(editMode&&it.planned) return openEditTask(it); setEditing(editing===it.id?null:it.id); },
                   style:{position:"relative",cursor:"pointer",background:m.bg,
-                         border:(it.planned?`1px dashed ${m.c}`:`1px solid ${m.c}`),
+                         border:((it.planned||it.approx)?`1px dashed ${m.c}`:`1px solid ${m.c}`),
                          borderLeft:`3px solid ${m.c}`,borderRadius:4,padding:"5px 8px",opacity:it.historical?.9:1}},
                   PH("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:6,
                        marginBottom:show.label?3:0}},
