@@ -30,5 +30,21 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD9",
+    "tasks": [
+      "Battery Box check"
+    ],
+    "technician": "Masakiyo",
+    "postedBy": {
+      "id": "U09TT0S0UF8",
+      "name": null
+    },
+    "loggedAt": "2026-07-16T09:06:46.413Z",
+    "hours": 1565,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
