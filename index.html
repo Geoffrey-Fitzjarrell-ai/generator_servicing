@@ -1918,8 +1918,12 @@ const panel={background:"var(--surface)",border:"1px solid var(--border)",border
 const panelH={fontSize:10,letterSpacing:".08em",color:"var(--text-faint)",marginBottom:10,fontWeight:700};
 const fldL={fontSize:11,letterSpacing:".04em",color:"var(--text-dim)",textTransform:"uppercase",fontWeight:700};
 
-// ── Engineers: editable, engineer-centric work board (not truck-bound) ──
+// ── Engineers: shared, editable, engineer-centric work board (not truck-bound) ──
+// Persistence is server-side via the Cloudflare Worker (action "logWork"), so every
+// engineer edits one shared board. Reads come from the Worker's /work route (no-store,
+// bypasses the ~5-min raw CDN); a 20s poll pulls in edits made by others.
 const WORK_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/engineer_work.json";
+const WORK_GET = PROXY_URL + "work";
 const WORK_META = {
   build:       { c:"#9880cc",         bg:"rgba(152,128,204,.18)", lbl:"Build" },
   maintenance: { c:"var(--green)",    bg:"rgba(61,168,112,.16)",  lbl:"Maintenance" },
@@ -1930,33 +1934,59 @@ const WORK_META = {
 };
 const WORK_CATS   = Object.keys(WORK_META);
 const WORK_STATUS = ["planned","in-progress","done","blocked"];
-function loadWork(){ try{ const s=localStorage.getItem("eng_work"); return s?JSON.parse(s):null; }catch(e){ return null; } }
-function saveWork(a){ try{ localStorage.setItem("eng_work",JSON.stringify(a)); }catch(e){} }
-function clearWork(){ try{ localStorage.removeItem("eng_work"); }catch(e){} }
+
+async function fetchWork(){
+  try{ const r=await fetch(WORK_GET+"?t="+Date.now(),{cache:"no-store"}); if(r.ok){ const j=await r.json(); return (j&&j.items)||[]; } }catch(e){}
+  try{ const r=await fetch(WORK_URL+"?t="+Date.now(),{cache:"no-store"}); if(r.ok){ const j=await r.json(); return (j&&j.items)||[]; } }catch(e){}
+  return null;
+}
+async function postWork(body){
+  const r=await fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},body:JSON.stringify(Object.assign({action:"logWork"},body))});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.ok) throw new Error(j.error||("HTTP "+r.status));
+  return j.items||[];
+}
 
 function EngineersView(){
-  const [base,setBase]   = useState(null);
   const [items,setItems] = useState(null);
-  const [dirty,setDirty] = useState(false);
-  const [err,setErr]     = useState(false);
+  const [loadErr,setLoadErr] = useState(false);
+  const [saving,setSaving]   = useState(false);
+  const [netErr,setNetErr]   = useState("");
+  const [synced,setSynced]   = useState(null);
   const [weekStart,setWeekStart] = useState(()=> addDays(mondayOf(new Date()), -7));
   const [weeks,setWeeks] = useState(4);
   const [q,setQ]         = useState("");
   const [form,setForm]   = useState(null);
   const [io,setIo]       = useState(null);
+  const busyRef = useRef(false);
+  busyRef.current = !!form || !!io || saving;   // don't let a poll clobber an in-progress edit
 
   useEffect(()=>{
-    fetch(WORK_URL+"?t="+Date.now()).then(r=>r.ok?r.json():{items:[]}).catch(()=>({items:[]}))
-      .then(j=>{ const b=(j&&j.items)||[]; setBase(b);
-        const local=loadWork(); if(local){ setItems(local); setDirty(true); } else setItems(b); })
-      .catch(()=>setErr(true));
+    let alive=true;
+    const pull=async(initial)=>{ const arr=await fetchWork();
+      if(!alive) return;
+      if(arr===null){ if(initial) setLoadErr(true); return; }
+      if(!busyRef.current || initial){ setItems(arr); setSynced(Date.now()); } };
+    pull(true);
+    const t=setInterval(()=>pull(false),20000);
+    return ()=>{ alive=false; clearInterval(t); };
   },[]);
 
-  if(err)   return PH("div",{style:{padding:40,color:"var(--red)",fontFamily:"var(--mono)"}},"Work data unavailable — check connection.");
-  if(!items) return PH("div",{style:{padding:40,color:"var(--text-dim)",fontFamily:"var(--mono)"}},"Loading engineer work…");
+  if(loadErr) return PH("div",{style:{padding:40,color:"var(--red)",fontFamily:"var(--mono)"}},"Work board unavailable — check connection.");
+  if(!items)  return PH("div",{style:{padding:40,color:"var(--text-dim)",fontFamily:"var(--mono)"}},"Loading engineer work…");
 
-  function commit(next){ setItems(next); saveWork(next); setDirty(true); }
-  function resetLocal(){ clearWork(); setItems(base||[]); setDirty(false); setForm(null); setIo(null); }
+  async function upsert(item){ setSaving(true); setNetErr("");
+    try{ const next=await postWork({op:"upsert",item}); setItems(next); setSynced(Date.now()); return true; }
+    catch(e){ setNetErr("Save failed: "+e.message); return false; }
+    finally{ setSaving(false); } }
+  async function removeItem(id){ setSaving(true); setNetErr("");
+    try{ const next=await postWork({op:"delete",id}); setItems(next); setSynced(Date.now()); return true; }
+    catch(e){ setNetErr("Delete failed: "+e.message); return false; }
+    finally{ setSaving(false); } }
+  async function replaceAll(arr){ setSaving(true); setNetErr("");
+    try{ const next=await postWork({op:"replace",items:arr}); setItems(next); setSynced(Date.now()); return true; }
+    catch(e){ setNetErr("Import failed: "+e.message); return false; }
+    finally{ setSaving(false); } }
 
   const roster = (()=>{ const set=new Set(KNOWN_ENGINEERS);
     items.forEach(it=>it.engineer&&set.add(canonEng(it.engineer)));
@@ -1988,22 +2018,20 @@ function EngineersView(){
     return out;
   }
 
-  // ── form helpers ──
   function openNew(pref){ setIo(null); setForm({ id:"w_"+Date.now(), title:"", engineer:(pref&&pref.engineer)||"Geoff Fitzjarrell",
     asset:"", category:"build", status:"planned", start:(pref&&pref.start)||isoLocal(new Date()), end:"", allDay:true, notes:"", jiraKey:"", jiraUrl:"" }); }
   function openEdit(it){ setIo(null); setForm({ ...it, end:it.end||"", allDay:it.allDay!==false, notes:it.notes||"", jiraKey:it.jiraKey||"", jiraUrl:it.jiraUrl||"" }); }
-  function saveForm(){ if(!form.title.trim()||!form.start){ setForm({...form,_err:"Title and start date are required."}); return; }
+  async function saveForm(){ if(!form.title.trim()||!form.start){ setForm({...form,_err:"Title and start date are required."}); return; }
     const c={...form}; delete c._err; if(!c.end) c.end=c.start;
     if(c.end<c.start){ setForm({...form,_err:"End date can't be before start."}); return; }
     if(c.jiraKey && !c.jiraUrl) c.jiraUrl="https://appliedintuition.atlassian.net/browse/"+c.jiraKey.trim().toUpperCase();
-    commit([...items.filter(x=>x.id!==c.id),c]); setForm(null); }
-  function deleteItem(id){ commit(items.filter(x=>x.id!==id)); setForm(null); }
+    const ok=await upsert(c); if(ok) setForm(null); else setForm({...form,_err:"Server rejected the save — see status above."}); }
+  async function deleteItem(id){ const ok=await removeItem(id); if(ok) setForm(null); }
 
   const fld = (label,node)=>PH("div",{style:{display:"flex",flexDirection:"column",gap:4}},
     PH("label",{style:fldL},label), node);
   const inp = (k,extra)=>PH("input",Object.assign({value:form[k]||"",onChange:e=>setForm({...form,[k]:e.target.value}),style:{...sel,width:"100%"}},extra||{}));
 
-  // ── day header ──
   const dayHeader = PH("div",{style:{display:"flex",position:"sticky",top:0,zIndex:3,background:"var(--surface2)",borderBottom:"1px solid var(--border2)"}},
     PH("div",{style:{width:LABELW,flexShrink:0,position:"sticky",left:0,zIndex:2,background:"var(--surface2)",
       padding:"8px",fontSize:10,letterSpacing:".08em",color:"var(--text-faint)",display:"flex",alignItems:"center"}},"ENGINEER"),
@@ -2054,7 +2082,6 @@ function EngineersView(){
   const grid = PH("div",{style:{border:"1px solid var(--border)",borderRadius:"var(--radius)",overflow:"auto",background:"var(--surface)",width:"100%"}},
     PH("div",{style:{minWidth:LABELW+totalDays*DAYW}}, dayHeader, ...rows));
 
-  // ── editable list (everything, incl. out-of-window) ──
   const sorted=[...items].sort((a,b)=>String(a.start).localeCompare(b.start));
   const listShown = sorted.filter(matchQ);
   const list = PH("div",{style:{...panel,marginTop:16}},
@@ -2074,9 +2101,8 @@ function EngineersView(){
     }):PH("div",{style:{padding:"12px 6px",color:"var(--text-faint)",fontSize:12}},"No work items yet — click “+ Add work”.")
   );
 
-  // ── add/edit form ──
   const formEl = form?PH("div",{style:{...panel,marginTop:16,borderColor:"var(--blue)"}},
-    PH("div",{style:panelH}, form.id&&items.some(x=>x.id===form.id)?"EDIT WORK ITEM":"NEW WORK ITEM"),
+    PH("div",{style:panelH}, items.some(x=>x.id===form.id)?"EDIT WORK ITEM":"NEW WORK ITEM"),
     PH("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:12}},
       fld("Title", inp("title",{placeholder:"e.g. D-Max truck build"})),
       fld("Engineer", PH("input",{value:form.engineer||"",list:"eng-roster",onChange:e=>setForm({...form,engineer:e.target.value}),style:{...sel,width:"100%"},placeholder:"name"})),
@@ -2095,24 +2121,28 @@ function EngineersView(){
       PH("textarea",{value:form.notes||"",onChange:e=>setForm({...form,notes:e.target.value}),rows:2,style:{...sel,width:"100%",resize:"vertical",fontFamily:"var(--sans)"}}))),
     form._err?PH("div",{style:{color:"var(--red)",fontSize:12,marginTop:8}},form._err):null,
     PH("div",{style:{display:"flex",gap:8,marginTop:14}},
-      PH("button",{onClick:saveForm,style:{...navBtn,background:"var(--blue)",borderColor:"var(--blue)",color:"#fff"}},"Save"),
+      PH("button",{onClick:saveForm,disabled:saving,style:{...navBtn,background:"var(--blue)",borderColor:"var(--blue)",color:"#fff",opacity:saving?.6:1}},saving?"Saving…":"Save"),
       PH("button",{onClick:()=>setForm(null),style:navBtn},"Cancel"),
-      items.some(x=>x.id===form.id)?PH("button",{onClick:()=>deleteItem(form.id),
+      items.some(x=>x.id===form.id)?PH("button",{onClick:()=>deleteItem(form.id),disabled:saving,
         style:{...navBtn,marginLeft:"auto",background:"var(--red-dim)",borderColor:"var(--red)",color:"var(--red)"}},"Delete"):null)
   ):null;
 
-  // ── export / import ──
   const ioEl = io?PH("div",{style:{...panel,marginTop:16,borderColor:"var(--amber)"}},
-    PH("div",{style:panelH}, io.mode==="export"?"EXPORT — copy into engineer_work.json and commit":"IMPORT — paste engineer_work.json contents"),
+    PH("div",{style:panelH}, io.mode==="export"?"EXPORT — JSON backup of the shared board":"IMPORT — replace the shared board with pasted JSON"),
     PH("textarea",{value:io.text,readOnly:io.mode==="export",onChange:e=>setIo({...io,text:e.target.value}),
       rows:10,style:{...sel,width:"100%",fontFamily:"var(--mono)",fontSize:11,resize:"vertical"}}),
     PH("div",{style:{display:"flex",gap:8,marginTop:10}},
-      io.mode==="import"?PH("button",{onClick:()=>{ try{ const j=JSON.parse(io.text); const arr=(j&&j.items)||(Array.isArray(j)?j:null);
-        if(!arr) throw 0; commit(arr); setIo(null); }catch(e){ setIo({...io,err:"Invalid JSON — expected { \"items\": [...] }"}); } },
-        style:{...navBtn,background:"var(--blue)",borderColor:"var(--blue)",color:"#fff"}},"Load"):null,
+      io.mode==="import"?PH("button",{disabled:saving,onClick:async()=>{ try{ const j=JSON.parse(io.text); const arr=(j&&j.items)||(Array.isArray(j)?j:null);
+        if(!arr) throw 0; const ok=await replaceAll(arr); if(ok) setIo(null); }catch(e){ setIo({...io,err:"Invalid JSON — expected { \"items\": [...] }"}); } },
+        style:{...navBtn,background:"var(--blue)",borderColor:"var(--blue)",color:"#fff"}},saving?"Loading…":"Load (overwrite shared)"):null,
       PH("button",{onClick:()=>setIo(null),style:navBtn},"Close")),
     io.err?PH("div",{style:{color:"var(--red)",fontSize:12,marginTop:8}},io.err):null
   ):null;
+
+  const statusEl = netErr
+    ? PH("span",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--red)"}},netErr)
+    : saving ? PH("span",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--amber)"}},"saving…")
+    : PH("span",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--green)"}},"● shared"+(synced?" · synced":""));
 
   return PH("div",{style:{padding:"14px 18px 40px",fontFamily:"var(--sans)"}},
     PH("datalist",{id:"eng-roster"}, KNOWN_ENGINEERS.map(n=>PH("option",{key:n,value:n}))),
@@ -2126,12 +2156,11 @@ function EngineersView(){
         PH("span",{style:{position:"absolute",left:8,fontSize:12,color:"var(--text-faint)"}},"⌕"),
         q?PH("button",{onClick:()=>setQ(""),style:{...navBtn,padding:"3px 7px",marginLeft:4}},"×"):null),
       PH("select",{value:weeks,onChange:e=>setWeeks(+e.target.value),style:sel},[2,4,6,8,12].map(n=>PH("option",{key:n,value:n},n+" weeks"))),
-      PH("button",{onClick:()=>openNew(),style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"+ Add work"),
+      PH("button",{onClick:()=>openNew(),disabled:saving,style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"+ Add work"),
       PH("div",{style:{marginLeft:"auto",display:"flex",gap:6,alignItems:"center"}},
-        dirty?PH("span",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--amber)"}},"local edits ●"):null,
+        statusEl,
         PH("button",{onClick:()=>setIo({mode:"export",text:JSON.stringify({items},null,2)}),style:navBtn},"Export"),
-        PH("button",{onClick:()=>setIo({mode:"import",text:""}),style:navBtn},"Import"),
-        dirty?PH("button",{onClick:resetLocal,title:"discard local edits, reload published file",style:{...navBtn,color:"var(--text-dim)"}},"Reset"):null)
+        PH("button",{onClick:()=>setIo({mode:"import",text:""}),style:navBtn},"Import"))
     ),
     PH("div",{style:{display:"flex",flexWrap:"wrap",gap:12,marginBottom:10,fontSize:10,color:"var(--text-dim)"}},
       WORK_CATS.map(c=>PH("span",{key:c,style:{display:"flex",gap:5,alignItems:"center"}},

@@ -38,7 +38,7 @@ function tasksForTruck(id) {
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, X-Auth-Key",
   "Content-Type": "application/json",
 };
@@ -88,6 +88,48 @@ async function ghPut(path, token, contentObj, sha, message, retriesLeft = 2) {
     return ghPut(path, token, contentObj, fresh.sha, message, retriesLeft - 1);
   }
   throw new Error("GitHub PUT " + path + " failed: " + r.status + " " + (await r.text()));
+}
+
+// Read-modify-write for the shared engineer work board. Unlike ghPut's blind
+// 409 retry (which re-sends the stale content it was handed), this refetches
+// and RE-APPLIES the mutation against fresh content, so two people editing
+// different items at the same time don't clobber each other.
+async function mutateWork(env, mutate, message) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    let file = null;
+    try { file = await ghGet("engineer_work.json", env.GITHUB_PAT); } catch (e) { file = null; }
+    const doc = file ? JSON.parse(decodeURIComponent(escape(atob(file.content)))) : { items: [] };
+    if (!Array.isArray(doc.items)) doc.items = [];
+    mutate(doc);
+    doc._meta = Object.assign({}, doc._meta, { updated: new Date().toISOString().slice(0, 10) });
+    try {
+      await ghPut("engineer_work.json", env.GITHUB_PAT, doc, file ? file.sha : undefined, message, 0);
+      return doc;
+    } catch (e) {
+      if (String(e).indexOf(" 409") !== -1 && attempt < 2) continue; // conflict → refetch + reapply
+      throw e;
+    }
+  }
+}
+
+// Whitelist + length-cap an incoming work item so a bad client can't bloat the repo.
+function cleanWorkItem(it) {
+  const s = (v, n) => String(v == null ? "" : v).slice(0, n);
+  const date = (v) => /^\d{4}-\d{2}-\d{2}$/.test(String(v || "")) ? v : "";
+  return {
+    id: s(it.id, 40) || ("w_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6)),
+    title: s(it.title, 200),
+    engineer: s(it.engineer, 80),
+    asset: s(it.asset, 60),
+    category: s(it.category, 24),
+    status: s(it.status, 24),
+    start: date(it.start),
+    end: date(it.end),
+    allDay: it.allDay !== false,
+    notes: s(it.notes, 600),
+    jiraKey: s(it.jiraKey, 40),
+    jiraUrl: s(it.jiraUrl, 200),
+  };
 }
 
 async function verifySlackSignature(request, rawBody, signingSecret) {
@@ -746,6 +788,20 @@ export default {
     if (request.method === "GET" && new URL(request.url).pathname === "/version") {
       return json({ build: env.BUILD_SHA || "unknown", repo: `${OWNER}/${REPO}` });
     }
+    // Real-time read of the shared engineer work board. Bypasses the raw CDN
+    // (which lags ~5 min) by reading through the GitHub API with no-store, so
+    // edits from one engineer show up on everyone else's board on next poll.
+    if (request.method === "GET" && new URL(request.url).pathname === "/work") {
+      let doc = { items: [] };
+      try {
+        const file = await ghGet("engineer_work.json", env.GITHUB_PAT);
+        doc = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+      } catch (e) { /* file missing / transient — serve empty board */ }
+      return new Response(JSON.stringify(doc), {
+        status: 200,
+        headers: Object.assign({}, CORS, { "Cache-Control": "no-store" }),
+      });
+    }
     if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
     if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
@@ -918,6 +974,32 @@ export default {
         existing.push(entry);
         await ghPut("pending_completions.json", env.GITHUB_PAT, existing, sha, "Log: " + entry.truck);
         return json({ ok: true, notified: entry.notified });
+      }
+
+      // ── Shared engineer work board: upsert / delete / replace an item ──
+      if (action === "logWork") {
+        const op = payload.op || "upsert";
+        let doc;
+        if (op === "delete") {
+          const id = String(payload.id || "");
+          if (!id) return json({ error: "Missing id" }, 400);
+          doc = await mutateWork(env, d => { d.items = d.items.filter(x => x.id !== id); },
+            "Engineer work: delete " + id);
+        } else if (op === "replace") {
+          const arr = Array.isArray(payload.items) ? payload.items : null;
+          if (!arr) return json({ error: "Missing items" }, 400);
+          if (arr.length > 500) return json({ error: "Too many items (max 500)" }, 400);
+          const cleaned = arr.map(cleanWorkItem).filter(x => x.title && x.start);
+          doc = await mutateWork(env, d => { d.items = cleaned; },
+            "Engineer work: replace (" + cleaned.length + " items)");
+        } else {
+          const it = cleanWorkItem(payload.item || {});
+          if (!it.title || !it.start) return json({ error: "Missing title/start" }, 400);
+          if (!it.end) it.end = it.start;
+          doc = await mutateWork(env, d => { d.items = [...d.items.filter(x => x.id !== it.id), it]; },
+            "Engineer work: upsert " + it.id);
+        }
+        return json({ ok: true, items: doc.items });
       }
 
       return json({ error: "Unknown action" }, 400);

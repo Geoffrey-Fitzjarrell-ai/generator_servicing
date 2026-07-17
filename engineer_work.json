@@ -17,6 +17,34 @@
       "notes": "Full D-Max build. All-day tasks across two weeks. Split into per-day items as the build breaks down.",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_hd9_trans_oil",
+      "title": "Transmission oil change",
+      "engineer": "Isuzu (dealer)",
+      "asset": "HD9",
+      "category": "maintenance",
+      "status": "done",
+      "start": "2026-07-17",
+      "end": "2026-07-17",
+      "allDay": true,
+      "notes": "Done at Isuzu dealer. CONFIRM actual service date — placeholder set to today.",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_hd9_diff_oil",
+      "title": "Differential oil change",
+      "engineer": "Isuzu (dealer)",
+      "asset": "HD9",
+      "category": "maintenance",
+      "status": "done",
+      "start": "2026-07-17",
+      "end": "2026-07-17",
+      "allDay": true,
+      "notes": "Done at Isuzu alongside the transmission oil — was near its due date so they did it early. CONFIRM actual service date.",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ]
 }
