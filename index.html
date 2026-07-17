@@ -1918,6 +1918,229 @@ const panel={background:"var(--surface)",border:"1px solid var(--border)",border
 const panelH={fontSize:10,letterSpacing:".08em",color:"var(--text-faint)",marginBottom:10,fontWeight:700};
 const fldL={fontSize:11,letterSpacing:".04em",color:"var(--text-dim)",textTransform:"uppercase",fontWeight:700};
 
+// ── Engineers: editable, engineer-centric work board (not truck-bound) ──
+const WORK_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/engineer_work.json";
+const WORK_META = {
+  build:       { c:"#9880cc",         bg:"rgba(152,128,204,.18)", lbl:"Build" },
+  maintenance: { c:"var(--green)",    bg:"rgba(61,168,112,.16)",  lbl:"Maintenance" },
+  repair:      { c:"var(--amber)",    bg:"rgba(240,165,0,.16)",   lbl:"Repair" },
+  diagnostics: { c:"var(--blue)",     bg:"rgba(74,124,245,.16)",  lbl:"Diagnostics" },
+  admin:       { c:"var(--text-dim)", bg:"rgba(120,140,170,.14)", lbl:"Admin" },
+  other:       { c:"var(--text-dim)", bg:"rgba(120,140,170,.12)", lbl:"Other" }
+};
+const WORK_CATS   = Object.keys(WORK_META);
+const WORK_STATUS = ["planned","in-progress","done","blocked"];
+function loadWork(){ try{ const s=localStorage.getItem("eng_work"); return s?JSON.parse(s):null; }catch(e){ return null; } }
+function saveWork(a){ try{ localStorage.setItem("eng_work",JSON.stringify(a)); }catch(e){} }
+function clearWork(){ try{ localStorage.removeItem("eng_work"); }catch(e){} }
+
+function EngineersView(){
+  const [base,setBase]   = useState(null);
+  const [items,setItems] = useState(null);
+  const [dirty,setDirty] = useState(false);
+  const [err,setErr]     = useState(false);
+  const [weekStart,setWeekStart] = useState(()=> addDays(mondayOf(new Date()), -7));
+  const [weeks,setWeeks] = useState(4);
+  const [q,setQ]         = useState("");
+  const [form,setForm]   = useState(null);
+  const [io,setIo]       = useState(null);
+
+  useEffect(()=>{
+    fetch(WORK_URL+"?t="+Date.now()).then(r=>r.ok?r.json():{items:[]}).catch(()=>({items:[]}))
+      .then(j=>{ const b=(j&&j.items)||[]; setBase(b);
+        const local=loadWork(); if(local){ setItems(local); setDirty(true); } else setItems(b); })
+      .catch(()=>setErr(true));
+  },[]);
+
+  if(err)   return PH("div",{style:{padding:40,color:"var(--red)",fontFamily:"var(--mono)"}},"Work data unavailable — check connection.");
+  if(!items) return PH("div",{style:{padding:40,color:"var(--text-dim)",fontFamily:"var(--mono)"}},"Loading engineer work…");
+
+  function commit(next){ setItems(next); saveWork(next); setDirty(true); }
+  function resetLocal(){ clearWork(); setItems(base||[]); setDirty(false); setForm(null); setIo(null); }
+
+  const roster = (()=>{ const set=new Set(KNOWN_ENGINEERS);
+    items.forEach(it=>it.engineer&&set.add(canonEng(it.engineer)));
+    return ["Unassigned",...[...set].sort()]; })();
+
+  const ql=q.trim().toLowerCase();
+  const matchQ = it => !ql || [it.title,it.engineer,it.asset,it.category,it.status,it.notes].some(v=>String(v||"").toLowerCase().includes(ql));
+
+  const DAYW=30, BARH=20, GAP=3, LABELW=150;
+  const totalDays=weeks*7;
+  const dayDates=Array.from({length:totalDays},(_,i)=>addDays(weekStart,i));
+  const dayIndex=ds=>Math.round((parseISO(ds)-weekStart)/864e5);
+  const rangeStart=isoLocal(weekStart), rangeEnd=isoLocal(addDays(weekStart,totalDays-1));
+  const todayIdx=dayIndex(isoLocal(new Date()));
+
+  const inRange = it => { const s=it.start, e=it.end||it.start; return e>=rangeStart && s<=rangeEnd; };
+  const visible = it => inRange(it) && matchQ(it);
+
+  const byE={}; items.filter(visible).forEach(it=>{ const k=canonEng(it.engineer)||"Unassigned"; (byE[k]=byE[k]||[]).push(it); });
+  let groups = roster.filter(e=>byE[e]).map(e=>({key:e,label:e,color:engColor(e),items:byE[e]}));
+  if(!groups.length) groups=[{key:"Unassigned",label:"Unassigned",color:engColor("Unassigned"),items:[]}];
+
+  const spanOf = it => { const s=dayIndex(it.start), e=dayIndex(it.end||it.start); return {s,e:Math.max(s,e)}; };
+  function packLanes(list){
+    const ws=list.map(it=>({it,...spanOf(it)})).sort((a,b)=>a.s-b.s||a.e-b.e);
+    const laneEnd=[]; const out=[];
+    ws.forEach(o=>{ if(o.e<0||o.s>=totalDays) return; let lane=laneEnd.findIndex(le=>le<o.s);
+      if(lane<0){ lane=laneEnd.length; laneEnd.push(o.e); } else laneEnd[lane]=o.e; out.push({...o,lane}); });
+    return out;
+  }
+
+  // ── form helpers ──
+  function openNew(pref){ setIo(null); setForm({ id:"w_"+Date.now(), title:"", engineer:(pref&&pref.engineer)||"Geoff Fitzjarrell",
+    asset:"", category:"build", status:"planned", start:(pref&&pref.start)||isoLocal(new Date()), end:"", allDay:true, notes:"", jiraKey:"", jiraUrl:"" }); }
+  function openEdit(it){ setIo(null); setForm({ ...it, end:it.end||"", allDay:it.allDay!==false, notes:it.notes||"", jiraKey:it.jiraKey||"", jiraUrl:it.jiraUrl||"" }); }
+  function saveForm(){ if(!form.title.trim()||!form.start){ setForm({...form,_err:"Title and start date are required."}); return; }
+    const c={...form}; delete c._err; if(!c.end) c.end=c.start;
+    if(c.end<c.start){ setForm({...form,_err:"End date can't be before start."}); return; }
+    if(c.jiraKey && !c.jiraUrl) c.jiraUrl="https://appliedintuition.atlassian.net/browse/"+c.jiraKey.trim().toUpperCase();
+    commit([...items.filter(x=>x.id!==c.id),c]); setForm(null); }
+  function deleteItem(id){ commit(items.filter(x=>x.id!==id)); setForm(null); }
+
+  const fld = (label,node)=>PH("div",{style:{display:"flex",flexDirection:"column",gap:4}},
+    PH("label",{style:fldL},label), node);
+  const inp = (k,extra)=>PH("input",Object.assign({value:form[k]||"",onChange:e=>setForm({...form,[k]:e.target.value}),style:{...sel,width:"100%"}},extra||{}));
+
+  // ── day header ──
+  const dayHeader = PH("div",{style:{display:"flex",position:"sticky",top:0,zIndex:3,background:"var(--surface2)",borderBottom:"1px solid var(--border2)"}},
+    PH("div",{style:{width:LABELW,flexShrink:0,position:"sticky",left:0,zIndex:2,background:"var(--surface2)",
+      padding:"8px",fontSize:10,letterSpacing:".08em",color:"var(--text-faint)",display:"flex",alignItems:"center"}},"ENGINEER"),
+    dayDates.map((d,i)=>{ const wd=d.getDay(), wknd=wd===0||wd===6, isToday=i===todayIdx;
+      return PH("div",{key:i,style:{width:DAYW,flexShrink:0,textAlign:"center",padding:"4px 0",boxSizing:"border-box",
+        borderLeft:(i%7===0?"1px solid var(--border2)":"1px solid var(--border)"),
+        background:isToday?"rgba(225,6,0,.14)":(wknd?"rgba(120,140,170,.05)":"transparent")}},
+        PH("div",{style:{fontSize:8,fontFamily:"var(--mono)",color:isToday?"var(--f1red)":"var(--text-faint)"}},"MTWTFSS"[(wd+6)%7]),
+        PH("div",{style:{fontSize:10,fontFamily:"var(--mono)",color:isToday?"var(--f1red)":"var(--text-dim)"}},d.getDate()));
+    })
+  );
+
+  const rows = groups.map(g=>{
+    const packed=packLanes(g.items);
+    const lanes=packed.reduce((mx,o)=>Math.max(mx,o.lane),-1)+1;
+    const rowH=Math.max(48, lanes*(BARH+GAP)+10);
+    return PH("div",{key:g.key,style:{display:"flex",borderBottom:"1px solid var(--border)"}},
+      PH("div",{style:{width:LABELW,flexShrink:0,position:"sticky",left:0,zIndex:1,background:"var(--surface)",
+        borderRight:"1px solid var(--border2)",padding:"8px",display:"flex",gap:6,alignItems:"center"}},
+        PH("span",{style:{width:8,height:8,borderRadius:"50%",background:g.color,flexShrink:0}}),
+        PH("span",{style:{fontWeight:700,fontSize:13,fontFamily:"var(--mono)",color:"var(--text)"}},g.label)),
+      PH("div",{style:{position:"relative",width:totalDays*DAYW,height:rowH,flexShrink:0,
+        backgroundImage:`repeating-linear-gradient(90deg, var(--border) 0 1px, transparent 1px ${DAYW}px)`}},
+        (todayIdx>=0&&todayIdx<totalDays)?PH("div",{style:{position:"absolute",top:0,bottom:0,left:todayIdx*DAYW,width:2,background:"rgba(225,6,0,.55)",zIndex:0}}):null,
+        packed.map(({it,s,e,lane})=>{
+          const m=WORK_META[it.category]||WORK_META.other;
+          const cs=Math.max(0,s), ce=Math.min(totalDays-1,e);
+          const left=cs*DAYW+1, width=(ce-cs+1)*DAYW-2;
+          const planned=it.status==="planned", done=it.status==="done", blocked=it.status==="blocked";
+          const bord = blocked?"var(--red)":m.c;
+          const days=(e-s+1);
+          return PH("div",{key:it.id,
+            title:`${it.title}\n${it.engineer||"Unassigned"} · ${(WORK_META[it.category]||WORK_META.other).lbl} · ${it.status}\n${it.start} → ${it.end||it.start}${it.asset?"\nAsset: "+it.asset:""}${it.notes?"\n"+it.notes:""}`,
+            onClick:()=>openEdit(it),
+            style:{position:"absolute",left,width,top:lane*(BARH+GAP)+5,height:BARH,zIndex:2,
+              background:m.bg,border:(planned?`1px dashed ${bord}`:`1px solid ${bord}`),borderLeft:`3px solid ${bord}`,
+              borderRadius:3,display:"flex",alignItems:"center",gap:4,padding:"0 5px",cursor:"pointer",
+              overflow:"hidden",boxSizing:"border-box",opacity:done?.6:1}},
+            width>44?PH("span",{style:{fontSize:9,color:"var(--text)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",fontWeight:600}},it.title):null,
+            (it.asset&&width>90)?PH("span",{style:{marginLeft:"auto",fontSize:8,color:"var(--text-dim)",fontFamily:"var(--mono)",flexShrink:0}},it.asset):null,
+            (it.allDay!==false&&days>=1&&width>120)?PH("span",{style:{fontSize:8,color:"var(--text-faint)",flexShrink:0}},"all-day"):null
+          );
+        })
+      )
+    );
+  });
+
+  const grid = PH("div",{style:{border:"1px solid var(--border)",borderRadius:"var(--radius)",overflow:"auto",background:"var(--surface)",width:"100%"}},
+    PH("div",{style:{minWidth:LABELW+totalDays*DAYW}}, dayHeader, ...rows));
+
+  // ── editable list (everything, incl. out-of-window) ──
+  const sorted=[...items].sort((a,b)=>String(a.start).localeCompare(b.start));
+  const listShown = sorted.filter(matchQ);
+  const list = PH("div",{style:{...panel,marginTop:16}},
+    PH("div",{style:{...panelH,display:"flex",justifyContent:"space-between"}},
+      PH("span",null,"ALL WORK ITEMS ("+listShown.length+")"),
+      PH("span",{style:{color:"var(--text-faint)",fontWeight:400}},"click a row to edit")),
+    listShown.length?listShown.map(it=>{ const m=WORK_META[it.category]||WORK_META.other;
+      return PH("div",{key:it.id,onClick:()=>openEdit(it),
+        style:{display:"flex",gap:10,alignItems:"center",padding:"7px 6px",borderTop:"1px solid var(--border)",cursor:"pointer"}},
+        PH("span",{style:{width:9,height:9,borderRadius:2,background:m.c,flexShrink:0}}),
+        PH("span",{style:{fontSize:13,color:"var(--text)",fontWeight:600,minWidth:160,flex:"1 1 200px"}},it.title),
+        PH("span",{style:{fontSize:11,color:"var(--text-dim)",width:130,flexShrink:0}},canonEng(it.engineer)||"Unassigned"),
+        it.asset?PH("span",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--text-dim)",background:"var(--surface3)",borderRadius:3,padding:"1px 5px",flexShrink:0}},it.asset):null,
+        PH("span",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--text-faint)",width:170,flexShrink:0}},it.start+(it.end&&it.end!==it.start?" → "+it.end:"")),
+        PH("span",{style:{fontSize:9,letterSpacing:".04em",textTransform:"uppercase",color:it.status==="blocked"?"var(--red)":it.status==="done"?"var(--green)":"var(--text-dim)",flexShrink:0}},it.status)
+      );
+    }):PH("div",{style:{padding:"12px 6px",color:"var(--text-faint)",fontSize:12}},"No work items yet — click “+ Add work”.")
+  );
+
+  // ── add/edit form ──
+  const formEl = form?PH("div",{style:{...panel,marginTop:16,borderColor:"var(--blue)"}},
+    PH("div",{style:panelH}, form.id&&items.some(x=>x.id===form.id)?"EDIT WORK ITEM":"NEW WORK ITEM"),
+    PH("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:12}},
+      fld("Title", inp("title",{placeholder:"e.g. D-Max truck build"})),
+      fld("Engineer", PH("input",{value:form.engineer||"",list:"eng-roster",onChange:e=>setForm({...form,engineer:e.target.value}),style:{...sel,width:"100%"},placeholder:"name"})),
+      fld("Asset / vehicle (optional)", inp("asset",{placeholder:"D-Max, HD7, shop…"})),
+      fld("Category", PH("select",{value:form.category,onChange:e=>setForm({...form,category:e.target.value}),style:{...sel,width:"100%"}},
+        WORK_CATS.map(c=>PH("option",{key:c,value:c},WORK_META[c].lbl)))),
+      fld("Status", PH("select",{value:form.status,onChange:e=>setForm({...form,status:e.target.value}),style:{...sel,width:"100%"}},
+        WORK_STATUS.map(s=>PH("option",{key:s,value:s},s)))),
+      fld("Start", PH("input",{type:"date",value:form.start||"",onChange:e=>setForm({...form,start:e.target.value}),style:{...sel,width:"100%"}})),
+      fld("End (optional)", PH("input",{type:"date",value:form.end||"",onChange:e=>setForm({...form,end:e.target.value}),style:{...sel,width:"100%"}})),
+      fld("Jira key (optional)", inp("jiraKey",{placeholder:"VBUILD-123"}))
+    ),
+    PH("label",{style:{display:"flex",gap:8,alignItems:"center",marginTop:12,fontSize:12,color:"var(--text-dim)",cursor:"pointer"}},
+      PH("input",{type:"checkbox",checked:form.allDay!==false,onChange:e=>setForm({...form,allDay:e.target.checked})}),"All-day task(s)"),
+    PH("div",{style:{marginTop:12}}, fld("Notes",
+      PH("textarea",{value:form.notes||"",onChange:e=>setForm({...form,notes:e.target.value}),rows:2,style:{...sel,width:"100%",resize:"vertical",fontFamily:"var(--sans)"}}))),
+    form._err?PH("div",{style:{color:"var(--red)",fontSize:12,marginTop:8}},form._err):null,
+    PH("div",{style:{display:"flex",gap:8,marginTop:14}},
+      PH("button",{onClick:saveForm,style:{...navBtn,background:"var(--blue)",borderColor:"var(--blue)",color:"#fff"}},"Save"),
+      PH("button",{onClick:()=>setForm(null),style:navBtn},"Cancel"),
+      items.some(x=>x.id===form.id)?PH("button",{onClick:()=>deleteItem(form.id),
+        style:{...navBtn,marginLeft:"auto",background:"var(--red-dim)",borderColor:"var(--red)",color:"var(--red)"}},"Delete"):null)
+  ):null;
+
+  // ── export / import ──
+  const ioEl = io?PH("div",{style:{...panel,marginTop:16,borderColor:"var(--amber)"}},
+    PH("div",{style:panelH}, io.mode==="export"?"EXPORT — copy into engineer_work.json and commit":"IMPORT — paste engineer_work.json contents"),
+    PH("textarea",{value:io.text,readOnly:io.mode==="export",onChange:e=>setIo({...io,text:e.target.value}),
+      rows:10,style:{...sel,width:"100%",fontFamily:"var(--mono)",fontSize:11,resize:"vertical"}}),
+    PH("div",{style:{display:"flex",gap:8,marginTop:10}},
+      io.mode==="import"?PH("button",{onClick:()=>{ try{ const j=JSON.parse(io.text); const arr=(j&&j.items)||(Array.isArray(j)?j:null);
+        if(!arr) throw 0; commit(arr); setIo(null); }catch(e){ setIo({...io,err:"Invalid JSON — expected { \"items\": [...] }"}); } },
+        style:{...navBtn,background:"var(--blue)",borderColor:"var(--blue)",color:"#fff"}},"Load"):null,
+      PH("button",{onClick:()=>setIo(null),style:navBtn},"Close")),
+    io.err?PH("div",{style:{color:"var(--red)",fontSize:12,marginTop:8}},io.err):null
+  ):null;
+
+  return PH("div",{style:{padding:"14px 18px 40px",fontFamily:"var(--sans)"}},
+    PH("datalist",{id:"eng-roster"}, KNOWN_ENGINEERS.map(n=>PH("option",{key:n,value:n}))),
+    PH("div",{style:{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}},
+      PH("div",{style:{display:"flex",gap:2,alignItems:"center"}},
+        PH("button",{onClick:()=>setWeekStart(addDays(weekStart,-weeks*7)),style:navBtn},"‹"),
+        PH("button",{onClick:()=>setWeekStart(addDays(mondayOf(new Date()),-7)),style:navBtn},"Today"),
+        PH("button",{onClick:()=>setWeekStart(addDays(weekStart,weeks*7)),style:navBtn},"›")),
+      PH("div",{style:{position:"relative",display:"flex",alignItems:"center"}},
+        PH("input",{value:q,onChange:e=>setQ(e.target.value),placeholder:"Search work, engineer, asset…",style:{...sel,width:220,paddingLeft:26}}),
+        PH("span",{style:{position:"absolute",left:8,fontSize:12,color:"var(--text-faint)"}},"⌕"),
+        q?PH("button",{onClick:()=>setQ(""),style:{...navBtn,padding:"3px 7px",marginLeft:4}},"×"):null),
+      PH("select",{value:weeks,onChange:e=>setWeeks(+e.target.value),style:sel},[2,4,6,8,12].map(n=>PH("option",{key:n,value:n},n+" weeks"))),
+      PH("button",{onClick:()=>openNew(),style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"+ Add work"),
+      PH("div",{style:{marginLeft:"auto",display:"flex",gap:6,alignItems:"center"}},
+        dirty?PH("span",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--amber)"}},"local edits ●"):null,
+        PH("button",{onClick:()=>setIo({mode:"export",text:JSON.stringify({items},null,2)}),style:navBtn},"Export"),
+        PH("button",{onClick:()=>setIo({mode:"import",text:""}),style:navBtn},"Import"),
+        dirty?PH("button",{onClick:resetLocal,title:"discard local edits, reload published file",style:{...navBtn,color:"var(--text-dim)"}},"Reset"):null)
+    ),
+    PH("div",{style:{display:"flex",flexWrap:"wrap",gap:12,marginBottom:10,fontSize:10,color:"var(--text-dim)"}},
+      WORK_CATS.map(c=>PH("span",{key:c,style:{display:"flex",gap:5,alignItems:"center"}},
+        PH("span",{style:{width:10,height:10,borderRadius:2,background:WORK_META[c].c}}),WORK_META[c].lbl)),
+      PH("span",{style:{display:"flex",gap:5,alignItems:"center"}},PH("span",{style:{width:14,height:10,borderRadius:2,border:"1px dashed var(--text-dim)"}}),"planned")),
+    grid, formEl, ioEl, list
+  );
+}
+
 function Root(){
   const params = new URLSearchParams(window.location.search);
   const [tab,setTab] = useState(params.get("truck") ? "detail" : "plan");
@@ -1927,7 +2150,8 @@ function Root(){
     React.createElement("div",{className:"app-tabs"},
       React.createElement("button",{className:"app-tab"+(tab==="plan"?" active":""),onClick:()=>setTab("plan")},"Fleet"),
       React.createElement("button",{className:"app-tab"+(tab==="fleet"?" active":""),onClick:()=>setTab("fleet")},"Pit Wall"),
-      React.createElement("button",{className:"app-tab"+(tab==="detail"?" active":""),onClick:()=>setTab("detail")},"Truck Detail")
+      React.createElement("button",{className:"app-tab"+(tab==="detail"?" active":""),onClick:()=>setTab("detail")},"Truck Detail"),
+      React.createElement("button",{className:"app-tab"+(tab==="eng"?" active":""),onClick:()=>setTab("eng")},"Engineers")
     ),
     React.createElement("div",{className:"app-view"+(tab==="plan"?" show":"")},
       React.createElement(PlanningView,{onOpenTruck:openTruck})
@@ -1937,6 +2161,9 @@ function Root(){
     ),
     React.createElement("div",{className:"app-view"+(tab==="detail"?" show":"")},
       React.createElement(App,{jump})
+    ),
+    React.createElement("div",{className:"app-view"+(tab==="eng"?" show":"")},
+      React.createElement(EngineersView,null)
     )
   );
 }

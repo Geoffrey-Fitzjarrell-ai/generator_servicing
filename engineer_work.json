@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
+    "updated": "2026-07-17"
+  },
+  "items": [
+    {
+      "id": "w_dmax_build",
+      "title": "D-Max truck build",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "D-Max",
+      "category": "build",
+      "status": "in-progress",
+      "start": "2026-07-17",
+      "end": "2026-07-30",
+      "allDay": true,
+      "notes": "Full D-Max build. All-day tasks across two weeks. Split into per-day items as the build breaks down.",
+      "jiraKey": "",
+      "jiraUrl": ""
+    }
+  ]
+}
