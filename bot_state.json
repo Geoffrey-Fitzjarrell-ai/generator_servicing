@@ -27,38 +27,5 @@
     "1784250617.036209": "accepted",
     "1784251233.009819": "accepted"
   },
-  "pending": [
-    {
-      "truck": "HD11",
-      "tasks": [
-        "Oil / filter change"
-      ],
-      "technician": "Geoff Fitzjarrell",
-      "postedBy": {
-        "id": "U0BEARESY3W",
-        "name": null
-      },
-      "loggedAt": "2026-07-17T00:50:08.411Z",
-      "hours": 1397,
-      "notes": [],
-      "alreadyLogged": true,
-      "notified": true
-    },
-    {
-      "truck": "HD17",
-      "tasks": [
-        "Oil / filter change"
-      ],
-      "technician": "Geoff Fitzjarrell",
-      "postedBy": {
-        "id": "U0BF5BSKQLQ",
-        "name": null
-      },
-      "loggedAt": "2026-07-17T00:50:18.430Z",
-      "hours": 374,
-      "notes": [],
-      "alreadyLogged": true,
-      "notified": true
-    }
-  ]
+  "pending": []
 }
