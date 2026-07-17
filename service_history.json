@@ -516,6 +516,18 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-17",
+      "hours": 1397,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD12": [
