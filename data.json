@@ -87,13 +87,13 @@
     }
   },
   "HD14": {
-    "hours": 600,
+    "hours": 609,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Kazuya Oiwa",
-    "lastUpdated": "2026-07-18T11:04:34Z",
+    "lastUpdated": "2026-07-20T00:40:31Z",
     "postedBy": {
-      "id": "U0AFM5Z1GUA",
+      "id": "U09JA843SRF",
       "name": null
     }
   },
