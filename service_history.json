@@ -858,6 +858,18 @@
       "notes": [
         "Please continue to observe GND bus bar towards rear of battery box for symptoms of loose nut"
       ]
+    },
+    {
+      "date": "2026-07-21",
+      "hours": 641,
+      "technician": "masakiyo",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD16": [
