@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "truck": "HD15",
+    "tasks": [
+      "Oil / filter change"
+    ],
+    "technician": "masakiyo",
+    "postedBy": {
+      "id": "U0ABG6DFW03",
+      "name": null
+    },
+    "loggedAt": "2026-07-21T01:57:34.595Z",
+    "hours": 641,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
