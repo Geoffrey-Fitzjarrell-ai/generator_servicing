@@ -594,6 +594,22 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-22",
+      "hours": 773,
+      "technician": "Masakiyo",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD13": [
