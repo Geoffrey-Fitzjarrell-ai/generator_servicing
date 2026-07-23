@@ -378,7 +378,11 @@ jobs:
                               handled[rts] = "rejected"; state_dirty = True
                               continue
 
-                          if stored is not None and last_dt is not None:
+                          # Elapsed-time guard: HD5 only (see worker.js). JP trucks
+                          # post in bursts hours after the meter reading, so the gap
+                          # understates runtime; they rely on the floor + MAX_ABS_JUMP
+                          # ceiling instead. Skip this check for them entirely.
+                          if is_english(truck_id) and stored is not None and last_dt is not None:
                               elapsed_hours = (NOW - last_dt).total_seconds() / 3600
                               delta = hours - stored
                               if delta > elapsed_hours + BUFFER_HOURS:

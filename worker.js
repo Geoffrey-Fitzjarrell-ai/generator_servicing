@@ -571,7 +571,12 @@ async function handleSlackMessageEvent(event, env) {
     return;
   }
 
-  if (stored !== null && !isNaN(lastDtMs)) {
+  // Elapsed-time guard: HD5 (en) ONLY. JP trucks post readings in bursts, often
+  // hours after the meter was physically read, so the gap between posts understates
+  // real runtime and this check throws false rejections. JP trucks are already
+  // protected by the monotonic floor + the MAX_ABS_JUMP ceiling above, which makes
+  // this guard redundant and harmful for them — so skip it entirely.
+  if (en && stored !== null && !isNaN(lastDtMs)) {
     const elapsedH = (Date.now() - lastDtMs) / 3600e3;
     const delta = hours - stored;
     if (delta > elapsedH + BUFFER_HOURS) {
