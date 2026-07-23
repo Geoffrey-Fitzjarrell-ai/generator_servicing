@@ -23,24 +23,8 @@
     "1784719491.765129": "accepted",
     "1784761103.871919": "accepted",
     "1784765310.299439": "accepted",
-    "1784765605.059449": "accepted"
+    "1784765605.059449": "accepted",
+    "1784718574.823049": "accepted"
   },
-  "pending": [
-    {
-      "truck": "HD16",
-      "tasks": [
-        "Air filter / Battery check"
-      ],
-      "technician": "Masakiyo",
-      "postedBy": {
-        "id": "U0BGR7100UD",
-        "name": null
-      },
-      "loggedAt": "2026-07-22T00:32:21.788Z",
-      "hours": 462,
-      "notes": [],
-      "alreadyLogged": true,
-      "notified": true
-    }
-  ]
+  "pending": {}
 }
