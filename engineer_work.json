@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-07-17"
+    "updated": "2026-07-23"
   },
   "items": [
     {
@@ -43,6 +43,20 @@
       "end": "2026-07-17",
       "allDay": true,
       "notes": "Done at Isuzu alongside the transmission oil — was near its due date so they did it early. CONFIRM actual service date.",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1784772740216",
+      "title": "Decal installation ",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD8-HD18",
+      "category": "other",
+      "status": "planned",
+      "start": "2026-07-23",
+      "end": "2026-07-24",
+      "allDay": true,
+      "notes": "Install Applied Logos on Air deflector\n",
       "jiraKey": "",
       "jiraUrl": ""
     }
