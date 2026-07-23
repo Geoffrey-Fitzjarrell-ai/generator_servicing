@@ -1,13 +1,13 @@
 {
   "HD6": {
-    "hours": 1803,
+    "hours": 1812,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Thapa Biliv",
-    "lastUpdated": "2026-07-23T07:09:11Z",
+    "lastUpdated": "2026-07-23T23:37:35Z",
     "postedBy": {
-      "id": "U09TT0S0UF8",
-      "name": "daichi.hayakawa"
+      "id": "U07RU3LH24F",
+      "name": null
     }
   },
   "HD7": {
