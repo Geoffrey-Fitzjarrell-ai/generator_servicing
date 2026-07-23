@@ -34,27 +34,51 @@ jobs:
               with urllib.request.urlopen(req) as r:
                   return json.loads(r.read())
 
-          # 1. Find Daichi's HD6 1803 post (thread parent) in recent history.
+          # Daichi posts hours as a REPLY inside a per-truck thread, so it won't be
+          # in conversations.history (parents only). Walk each parent's replies and
+          # look for the 1803 post (or the bot's own rejection referencing it).
+          def replies(parent_ts):
+              out, cursor = [], None
+              for _ in range(6):  # paginate to reach the newest replies
+                  p = {"channel": CHANNEL, "ts": parent_ts, "limit": 200}
+                  if cursor:
+                      p["cursor"] = cursor
+                  r = slack("conversations.replies", p)
+                  out.extend(r.get("messages", []))
+                  cursor = (r.get("response_metadata") or {}).get("next_cursor")
+                  if not r.get("has_more") or not cursor:
+                      break
+              return out
+
           hist = slack("conversations.history", {"channel": CHANNEL, "limit": 100})
+          parents = hist.get("messages", [])
+          # Scan HD6-looking threads first, then any thread with replies.
+          def key(m):
+              return (0 if "HD6" in (m.get("text") or "").upper() else 1)
           thread_ts = None
           found_text = None
-          for m in hist.get("messages", []):
-              txt = m.get("text", "")
-              if "1803" in txt and m.get("user") == DAICHI:
-                  thread_ts = m.get("thread_ts") or m.get("ts")
-                  found_text = txt
-                  break
-          # Fallback: any recent message mentioning 1803 (e.g. the bot's own rejection)
-          if not thread_ts:
-              for m in hist.get("messages", []):
-                  txt = m.get("text", "")
-                  if "1803" in txt:
-                      thread_ts = m.get("thread_ts") or m.get("ts")
+          scanned = 0
+          for m in sorted([x for x in parents if x.get("reply_count", 0) > 0], key=key):
+              scanned += 1
+              for rm in replies(m["ts"]):
+                  txt = rm.get("text", "")
+                  if "1803" in txt and (rm.get("user") == DAICHI or rm.get("bot_id") or rm.get("subtype") == "bot_message"):
+                      thread_ts = m["ts"]
                       found_text = txt
+                      break
+              if thread_ts:
+                  break
+          # Last resort: any top-level message mentioning 1803.
+          if not thread_ts:
+              for m in parents:
+                  if "1803" in (m.get("text") or ""):
+                      thread_ts = m.get("thread_ts") or m.get("ts")
+                      found_text = m.get("text")
                       break
 
           result = {"ok": False, "hist_ok": hist.get("ok"), "hist_error": hist.get("error"),
-                    "thread_ts": thread_ts, "matched": (found_text or "")[:120]}
+                    "threads_scanned": scanned, "thread_ts": thread_ts,
+                    "matched": (found_text or "")[:120]}
 
           if thread_ts:
               msg = (
