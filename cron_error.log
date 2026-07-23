@@ -1,3 +1,0 @@
-Traceback (most recent call last):
-  File "<stdin>", line 264, in <module>
-AttributeError: 'list' object has no attribute 'items'
