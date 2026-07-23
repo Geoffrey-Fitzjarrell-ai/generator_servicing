@@ -15,7 +15,7 @@ jobs:
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          python3 - <<'EOF'
+          python3 - <<'EOF' 2>/tmp/parser_err.txt
           import os, json, re, base64, urllib.request, urllib.parse
           # --- resilient urlopen: retry transient 5xx/429/network blips ---
           import time as _t, urllib.error as _ue
@@ -682,6 +682,37 @@ jobs:
               print(f"Ledger saved: {len(handled)} handled ts, {len(pending)} pending")
 
           EOF
+
+      - name: Capture traceback on failure (temporary debug)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          echo '--- parser stderr (tail) ---'
+          tail -80 /tmp/parser_err.txt 2>/dev/null || echo '(no stderr file)'
+          python3 - <<'DBG'
+          import os, base64, json, urllib.request
+          tok = os.environ.get("GH_TOKEN", "")
+          repo = "Geoffrey-Fitzjarrell-ai/generator_servicing"
+          try:
+              body = open("/tmp/parser_err.txt").read()
+          except Exception:
+              body = "(no stderr captured)"
+          body = (body or "(empty)")[-9000:]
+          url = f"https://api.github.com/repos/{repo}/contents/cron_error.log"
+          sha = None
+          try:
+              req = urllib.request.Request(url, headers={"Authorization": f"Bearer {tok}", "Accept": "application/vnd.github+json"})
+              sha = json.loads(urllib.request.urlopen(req).read())["sha"]
+          except Exception:
+              pass
+          payload = {"message": "debug: capture parser traceback", "content": base64.b64encode(body.encode()).decode()}
+          if sha:
+              payload["sha"] = sha
+          req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={"Authorization": f"Bearer {tok}", "Accept": "application/vnd.github+json", "Content-Type": "application/json"}, method="PUT")
+          urllib.request.urlopen(req).read()
+          print("committed cron_error.log")
+          DBG
 
       - name: Reconcile hours ledger (self-heal impossible jumps)
         env:
