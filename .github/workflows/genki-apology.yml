@@ -1,0 +1,92 @@
+name: Genki apology (one-shot)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  post-apology:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post apology in HD6 thread
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          python3 - <<'EOF'
+          import os, json, base64, urllib.request, urllib.parse
+          SLACK = os.environ["SLACK_TOKEN"]
+          GH = os.environ["GH_TOKEN"]
+          CHANNEL = "C08L1TWLU14"
+          DAICHI = "U09TT0S0UF8"
+          REPO = "Geoffrey-Fitzjarrell-ai/generator_servicing"
+
+          def slack(method, params=None, post=False):
+              url = f"https://slack.com/api/{method}"
+              if post:
+                  data = json.dumps(params).encode()
+                  req = urllib.request.Request(url, data=data, headers={
+                      "Authorization": f"Bearer {SLACK}",
+                      "Content-Type": "application/json; charset=utf-8"}, method="POST")
+              else:
+                  if params:
+                      url += "?" + urllib.parse.urlencode(params)
+                  req = urllib.request.Request(url, headers={"Authorization": f"Bearer {SLACK}"})
+              with urllib.request.urlopen(req) as r:
+                  return json.loads(r.read())
+
+          # 1. Find Daichi's HD6 1803 post (thread parent) in recent history.
+          hist = slack("conversations.history", {"channel": CHANNEL, "limit": 100})
+          thread_ts = None
+          found_text = None
+          for m in hist.get("messages", []):
+              txt = m.get("text", "")
+              if "1803" in txt and m.get("user") == DAICHI:
+                  thread_ts = m.get("thread_ts") or m.get("ts")
+                  found_text = txt
+                  break
+          # Fallback: any recent message mentioning 1803 (e.g. the bot's own rejection)
+          if not thread_ts:
+              for m in hist.get("messages", []):
+                  txt = m.get("text", "")
+                  if "1803" in txt:
+                      thread_ts = m.get("thread_ts") or m.get("ts")
+                      found_text = txt
+                      break
+
+          result = {"ok": False, "hist_ok": hist.get("ok"), "hist_error": hist.get("error"),
+                    "thread_ts": thread_ts, "matched": (found_text or "")[:120]}
+
+          if thread_ts:
+              msg = (
+                  "げんきくんです！<@%s> さん、先ほどは *HD6* の *1803h* の投稿を"
+                  "誤って差し戻してしまい、大変申し訳ありませんでした🙇‍♂️\n"
+                  "昨夜の稼働分として正しい値であることを確認し、記録に反映しました"
+                  "（1794h → *1803h*）。\n"
+                  "こちらの確認ミスでお手数をおかけしました。ご報告ありがとうございます！✨" % DAICHI
+              )
+              post = slack("chat.postMessage",
+                           {"channel": CHANNEL, "thread_ts": thread_ts, "text": msg}, post=True)
+              result["ok"] = post.get("ok")
+              result["post_error"] = post.get("error")
+              result["posted_ts"] = post.get("ts")
+
+          # 2. Commit result so it can be verified without Actions log access.
+          body = json.dumps(result, ensure_ascii=False, indent=2)
+          url = f"https://api.github.com/repos/{REPO}/contents/genki_apology_result.json"
+          sha = None
+          try:
+              req = urllib.request.Request(url, headers={"Authorization": f"Bearer {GH}", "Accept": "application/vnd.github+json"})
+              sha = json.loads(urllib.request.urlopen(req).read())["sha"]
+          except Exception:
+              pass
+          payload = {"message": "chore: genki apology result", "content": base64.b64encode(body.encode()).decode()}
+          if sha:
+              payload["sha"] = sha
+          req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={
+              "Authorization": f"Bearer {GH}", "Accept": "application/vnd.github+json",
+              "Content-Type": "application/json"}, method="PUT")
+          urllib.request.urlopen(req).read()
+          print(body)
+          if not result["ok"]:
+              raise SystemExit("apology not posted")
+          EOF
