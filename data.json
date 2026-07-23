@@ -36,11 +36,12 @@
     "intervalStart": 0,
     "overdue": false,
     "technician": "Kaede Fujiwara",
-    "lastUpdated": "2026-07-16T01:21:46Z",
+    "lastUpdated": "2026-07-23T02:15:51Z",
     "postedBy": {
       "id": "U09TT0S0UF8",
       "name": null
-    }
+    },
+    "grounded": false
   },
   "HD10": {
     "hours": 1641,
