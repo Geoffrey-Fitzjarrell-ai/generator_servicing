@@ -90,14 +90,14 @@
     }
   },
   "HD14": {
-    "hours": 653,
+    "hours": 662,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Kazuya Oiwa",
-    "lastUpdated": "2026-07-23T00:46:12Z",
+    "lastUpdated": "2026-07-24T08:40:54Z",
     "postedBy": {
       "id": "U0AT1RYRS1Z",
-      "name": null
+      "name": "U0AT1RYRS1Z"
     }
   },
   "HD15": {
@@ -134,14 +134,14 @@
     }
   },
   "HD18": {
-    "hours": 264,
+    "hours": 272,
     "intervalStart": 0,
     "overdue": false,
     "technician": "",
-    "lastUpdated": "2026-07-23T02:24:41Z",
+    "lastUpdated": "2026-07-24T08:40:54Z",
     "postedBy": {
-      "id": "U09Q0DS9NTS",
-      "name": null
+      "id": "U0BC2F1B49L",
+      "name": "U0BC2F1B49L"
     }
   },
   "HD5": {
