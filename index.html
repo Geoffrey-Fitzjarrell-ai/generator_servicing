@@ -1995,7 +1995,8 @@ function EngineersView(){
   const ql=q.trim().toLowerCase();
   const matchQ = it => !ql || [it.title,it.engineer,it.asset,it.category,it.status,it.notes].some(v=>String(v||"").toLowerCase().includes(ql));
 
-  const DAYW=30, BARH=20, GAP=3, LABELW=150;
+  const BARH=20, GAP=3, LABELW=150;
+  const DAYW = weeks<=1 ? 66 : weeks<=2 ? 46 : 30;   // enlarge day cells when zoomed in
   const totalDays=weeks*7;
   const dayDates=Array.from({length:totalDays},(_,i)=>addDays(weekStart,i));
   const dayIndex=ds=>Math.round((parseISO(ds)-weekStart)/864e5);
@@ -2006,8 +2007,12 @@ function EngineersView(){
   const visible = it => inRange(it) && matchQ(it);
 
   const byE={}; items.filter(visible).forEach(it=>{ const k=canonEng(it.engineer)||"Unassigned"; (byE[k]=byE[k]||[]).push(it); });
-  let groups = roster.filter(e=>byE[e]).map(e=>({key:e,label:e,color:engColor(e),items:byE[e]}));
-  if(!groups.length) groups=[{key:"Unassigned",label:"Unassigned",color:engColor("Unassigned"),items:[]}];
+  // Always show the core team as lanes (even with no items in range) so the full
+  // roster is visible; add any extra engineers who have work, Unassigned only if used.
+  const core = KNOWN_ENGINEERS.map(canonEng);
+  const laneNames = [...new Set([...core, ...Object.keys(byE).filter(k=>k!=="Unassigned")])].sort();
+  if(byE["Unassigned"]) laneNames.push("Unassigned");
+  let groups = laneNames.map(e=>({key:e,label:e,color:engColor(e),items:byE[e]||[]}));
 
   const spanOf = it => { const s=dayIndex(it.start), e=dayIndex(it.end||it.start); return {s,e:Math.max(s,e)}; };
   function packLanes(list){
@@ -2039,8 +2044,8 @@ function EngineersView(){
       return PH("div",{key:i,style:{width:DAYW,flexShrink:0,textAlign:"center",padding:"4px 0",boxSizing:"border-box",
         borderLeft:(i%7===0?"1px solid var(--border2)":"1px solid var(--border)"),
         background:isToday?"rgba(225,6,0,.14)":(wknd?"rgba(120,140,170,.05)":"transparent")}},
-        PH("div",{style:{fontSize:8,fontFamily:"var(--mono)",color:isToday?"var(--f1red)":"var(--text-faint)"}},"MTWTFSS"[(wd+6)%7]),
-        PH("div",{style:{fontSize:10,fontFamily:"var(--mono)",color:isToday?"var(--f1red)":"var(--text-dim)"}},d.getDate()));
+        PH("div",{style:{fontSize:weeks<=2?10:8,fontFamily:"var(--mono)",color:isToday?"var(--f1red)":"var(--text-faint)"}},"MTWTFSS"[(wd+6)%7]),
+        PH("div",{style:{fontSize:weeks<=2?13:10,fontFamily:"var(--mono)",color:isToday?"var(--f1red)":"var(--text-dim)"}},d.getDate()));
     })
   );
 
@@ -2070,7 +2075,7 @@ function EngineersView(){
               background:m.bg,border:(planned?`1px dashed ${bord}`:`1px solid ${bord}`),borderLeft:`3px solid ${bord}`,
               borderRadius:3,display:"flex",alignItems:"center",gap:4,padding:"0 5px",cursor:"pointer",
               overflow:"hidden",boxSizing:"border-box",opacity:done?.6:1}},
-            width>44?PH("span",{style:{fontSize:9,color:"var(--text)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",fontWeight:600}},it.title):null,
+            width>44?PH("span",{style:{fontSize:weeks<=2?11:9,color:"var(--text)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",fontWeight:600}},it.title):null,
             (it.asset&&width>90)?PH("span",{style:{marginLeft:"auto",fontSize:8,color:"var(--text-dim)",fontFamily:"var(--mono)",flexShrink:0}},it.asset):null,
             (it.allDay!==false&&days>=1&&width>120)?PH("span",{style:{fontSize:8,color:"var(--text-faint)",flexShrink:0}},"all-day"):null
           );
@@ -2155,7 +2160,7 @@ function EngineersView(){
         PH("input",{value:q,onChange:e=>setQ(e.target.value),placeholder:"Search work, engineer, asset…",style:{...sel,width:220,paddingLeft:26}}),
         PH("span",{style:{position:"absolute",left:8,fontSize:12,color:"var(--text-faint)"}},"⌕"),
         q?PH("button",{onClick:()=>setQ(""),style:{...navBtn,padding:"3px 7px",marginLeft:4}},"×"):null),
-      PH("select",{value:weeks,onChange:e=>setWeeks(+e.target.value),style:sel},[2,4,6,8,12].map(n=>PH("option",{key:n,value:n},n+" weeks"))),
+      PH("select",{value:weeks,onChange:e=>setWeeks(+e.target.value),style:sel},[1,2,4,6,8,12].map(n=>PH("option",{key:n,value:n},n+(n===1?" week":" weeks")))),
       PH("button",{onClick:()=>openNew(),disabled:saving,style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"+ Add work"),
       PH("div",{style:{marginLeft:"auto",display:"flex",gap:6,alignItems:"center"}},
         statusEl,
