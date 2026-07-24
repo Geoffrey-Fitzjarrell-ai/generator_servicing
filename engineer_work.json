@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-07-23"
+    "updated": "2026-07-24"
   },
   "items": [
     {
@@ -57,6 +57,20 @@
       "end": "2026-07-24",
       "allDay": true,
       "notes": "Install Applied Logos on Air deflector\n",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1784857694138",
+      "title": "D-Max truck build",
+      "engineer": "Masakiyo Kato",
+      "asset": "D-Max",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-07-17",
+      "end": "2026-07-28",
+      "allDay": true,
+      "notes": "Building D-Max with Andy and Geoff as a data collection vehicle",
       "jiraKey": "",
       "jiraUrl": ""
     }
