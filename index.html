@@ -2013,16 +2013,19 @@ function EngineersView(){
   // Measure the grid container so day cells can fill its width (hooks must run
   // before the early returns below — never place them inside the render body).
   const gridRef = useRef(null);
+  const formRef = useRef(null);
   const [gridW,setGridW] = useState(0);
   const [availH,setAvailH] = useState(0);
-  useEffect(()=>{ const el=gridRef.current; if(!el) return;
-    const measure=()=>{ setGridW(el.clientWidth); const r=el.getBoundingClientRect(); setAvailH(Math.max(280, window.innerHeight - r.top - 24)); };
+  useEffect(()=>{
+    const measure=()=>{ const el=gridRef.current; if(!el) return;
+      const w=el.clientWidth; const top=el.getBoundingClientRect().top;
+      setGridW(p=>p===w?p:w);
+      setAvailH(p=>{ const h=Math.max(300, window.innerHeight - top - 24); return Math.abs(p-h)<2?p:h; }); };
     measure();
-    let ro; if(window.ResizeObserver){ ro=new ResizeObserver(()=>setGridW(el.clientWidth)); ro.observe(el); }
+    const t1=setTimeout(measure,120), t2=setTimeout(measure,450);
     window.addEventListener("resize",measure);
-    const t=setTimeout(measure,300);   // re-measure after layout settles
-    return ()=>{ if(ro) ro.disconnect(); window.removeEventListener("resize",measure); clearTimeout(t); };
-  },[items===null]);
+    return ()=>{ window.removeEventListener("resize",measure); clearTimeout(t1); clearTimeout(t2); };
+  },[items===null, weeks]);
 
   useEffect(()=>{
     let alive=true;
@@ -2092,9 +2095,10 @@ function EngineersView(){
     return out;
   }
 
+  const revealForm=()=>{ setTimeout(()=>{ try{ formRef.current&&formRef.current.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){} },60); };
   function openNew(pref){ setIo(null); setForm({ id:"w_"+Date.now(), title:"", engineer:(pref&&pref.engineer)||"Geoff Fitzjarrell",
-    asset:"", category:"build", status:"planned", start:(pref&&pref.start)||isoLocal(new Date()), end:"", allDay:true, notes:"", jiraKey:"", jiraUrl:"" }); }
-  function openEdit(it){ setIo(null); setForm({ ...it, end:it.end||"", allDay:it.allDay!==false, notes:it.notes||"", jiraKey:it.jiraKey||"", jiraUrl:it.jiraUrl||"" }); }
+    asset:"", category:"build", status:"planned", start:(pref&&pref.start)||isoLocal(new Date()), end:"", allDay:true, notes:"", jiraKey:"", jiraUrl:"" }); revealForm(); }
+  function openEdit(it){ setIo(null); setForm({ ...it, end:it.end||"", allDay:it.allDay!==false, notes:it.notes||"", jiraKey:it.jiraKey||"", jiraUrl:it.jiraUrl||"" }); revealForm(); }
   async function saveForm(){ if(!form.title.trim()||!form.start){ setForm({...form,_err:"Title and start date are required."}); return; }
     const c={...form}; delete c._err; if(!c.end) c.end=c.start;
     if(c.end<c.start){ setForm({...form,_err:"End date can't be before start."}); return; }
@@ -2187,7 +2191,7 @@ function EngineersView(){
     }):PH("div",{style:{padding:"12px 6px",color:"var(--text-faint)",fontSize:12}},"No work items yet — click “+ Add work”.")
   );
 
-  const formEl = form?PH("div",{style:{...panel,marginTop:16,borderColor:"var(--blue)"}},
+  const formEl = form?PH("div",{ref:formRef,style:{...panel,marginTop:16,borderColor:"var(--blue)"}},
     PH("div",{style:panelH}, items.some(x=>x.id===form.id)?"EDIT WORK ITEM":"NEW WORK ITEM"),
     PH("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:12}},
       fld("Title", inp("title",{placeholder:"e.g. D-Max truck build"})),
