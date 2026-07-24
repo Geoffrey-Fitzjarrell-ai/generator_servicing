@@ -73,6 +73,20 @@
       "notes": "Building D-Max with Andy and Geoff as a data collection vehicle",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1784868768047",
+      "title": "Decal",
+      "engineer": "Masakiyo Kato",
+      "asset": "HD8-HD18",
+      "category": "admin",
+      "status": "planned",
+      "start": "2026-07-24",
+      "end": "2026-07-24",
+      "allDay": true,
+      "notes": "Install Applied Logos on Air deflector\n",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ]
 }
