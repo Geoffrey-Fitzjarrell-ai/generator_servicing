@@ -2010,6 +2010,18 @@ function EngineersView(){
   const busyRef = useRef(false);
   busyRef.current = !!form || !!io || saving;   // don't let a poll clobber an in-progress edit
 
+  // Measure the grid container so day cells can fill its width (hooks must run
+  // before the early returns below — never place them inside the render body).
+  const gridRef = useRef(null);
+  const [gridW,setGridW] = useState(0);
+  useEffect(()=>{ const el=gridRef.current; if(!el) return;
+    const measure=()=>setGridW(el.clientWidth);
+    measure();
+    let ro; if(window.ResizeObserver){ ro=new ResizeObserver(measure); ro.observe(el); }
+    window.addEventListener("resize",measure);
+    return ()=>{ if(ro) ro.disconnect(); window.removeEventListener("resize",measure); };
+  },[]);
+
   useEffect(()=>{
     let alive=true;
     const pull=async(initial)=>{ const arr=await fetchWork();
@@ -2048,15 +2060,6 @@ function EngineersView(){
   const totalDays=weeks*7;
   // Day cells stretch to fill the container so there's no dead space off the end
   // when the range is short; a readable floor keeps long ranges scrollable.
-  const gridRef = useRef(null);
-  const [gridW,setGridW] = useState(0);
-  useEffect(()=>{ const el=gridRef.current; if(!el) return;
-    const measure=()=>setGridW(el.clientWidth);
-    measure();
-    let ro; if(window.ResizeObserver){ ro=new ResizeObserver(measure); ro.observe(el); }
-    window.addEventListener("resize",measure);
-    return ()=>{ if(ro) ro.disconnect(); window.removeEventListener("resize",measure); };
-  },[]);
   const DAYW = Math.max(30, gridW ? Math.floor((gridW - LABELW)/totalDays) : 34);
   const dayDates=Array.from({length:totalDays},(_,i)=>addDays(weekStart,i));
   const dayIndex=ds=>Math.round((parseISO(ds)-weekStart)/864e5);
