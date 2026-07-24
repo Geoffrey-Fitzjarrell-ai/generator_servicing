@@ -1996,8 +1996,19 @@ function EngineersView(){
   const matchQ = it => !ql || [it.title,it.engineer,it.asset,it.category,it.status,it.notes].some(v=>String(v||"").toLowerCase().includes(ql));
 
   const BARH=20, GAP=3, LABELW=150;
-  const DAYW = weeks<=1 ? 66 : weeks<=2 ? 46 : 30;   // enlarge day cells when zoomed in
   const totalDays=weeks*7;
+  // Day cells stretch to fill the container so there's no dead space off the end
+  // when the range is short; a readable floor keeps long ranges scrollable.
+  const gridRef = useRef(null);
+  const [gridW,setGridW] = useState(0);
+  useEffect(()=>{ const el=gridRef.current; if(!el) return;
+    const measure=()=>setGridW(el.clientWidth);
+    measure();
+    let ro; if(window.ResizeObserver){ ro=new ResizeObserver(measure); ro.observe(el); }
+    window.addEventListener("resize",measure);
+    return ()=>{ if(ro) ro.disconnect(); window.removeEventListener("resize",measure); };
+  },[]);
+  const DAYW = Math.max(30, gridW ? Math.floor((gridW - LABELW)/totalDays) : 34);
   const dayDates=Array.from({length:totalDays},(_,i)=>addDays(weekStart,i));
   const dayIndex=ds=>Math.round((parseISO(ds)-weekStart)/864e5);
   const rangeStart=isoLocal(weekStart), rangeEnd=isoLocal(addDays(weekStart,totalDays-1));
@@ -2006,11 +2017,12 @@ function EngineersView(){
   const inRange = it => { const s=it.start, e=it.end||it.start; return e>=rangeStart && s<=rangeEnd; };
   const visible = it => inRange(it) && matchQ(it);
 
+  const ENGINEERS = ["Geoff Fitzjarrell","Masakiyo Kato","Isuzu (dealer)"];
   const byE={}; items.filter(visible).forEach(it=>{ const k=canonEng(it.engineer)||"Unassigned"; (byE[k]=byE[k]||[]).push(it); });
-  // Always show the core team as lanes (even with no items in range) so the full
-  // roster is visible; add any extra engineers who have work, Unassigned only if used.
-  const core = KNOWN_ENGINEERS.map(canonEng);
-  const laneNames = [...new Set([...core, ...Object.keys(byE).filter(k=>k!=="Unassigned")])].sort();
+  // Fixed roster shown as lanes always; append any other engineer that has work
+  // in range so nothing is hidden, and Unassigned only when it's actually used.
+  const extras = Object.keys(byE).filter(k=>k!=="Unassigned"&&!ENGINEERS.includes(k)).sort();
+  const laneNames = [...ENGINEERS, ...extras];
   if(byE["Unassigned"]) laneNames.push("Unassigned");
   let groups = laneNames.map(e=>({key:e,label:e,color:engColor(e),items:byE[e]||[]}));
 
@@ -2084,7 +2096,7 @@ function EngineersView(){
     );
   });
 
-  const grid = PH("div",{style:{border:"1px solid var(--border)",borderRadius:"var(--radius)",overflow:"auto",background:"var(--surface)",width:"100%"}},
+  const grid = PH("div",{ref:gridRef,style:{border:"1px solid var(--border)",borderRadius:"var(--radius)",overflow:"auto",background:"var(--surface)",width:"100%"}},
     PH("div",{style:{minWidth:LABELW+totalDays*DAYW}}, dayHeader, ...rows));
 
   const sorted=[...items].sort((a,b)=>String(a.start).localeCompare(b.start));
@@ -2110,7 +2122,8 @@ function EngineersView(){
     PH("div",{style:panelH}, items.some(x=>x.id===form.id)?"EDIT WORK ITEM":"NEW WORK ITEM"),
     PH("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:12}},
       fld("Title", inp("title",{placeholder:"e.g. D-Max truck build"})),
-      fld("Engineer", PH("input",{value:form.engineer||"",list:"eng-roster",onChange:e=>setForm({...form,engineer:e.target.value}),style:{...sel,width:"100%"},placeholder:"name"})),
+      fld("Engineer", PH("select",{value:form.engineer||ENGINEERS[0],onChange:e=>setForm({...form,engineer:e.target.value}),style:{...sel,width:"100%"}},
+        (form.engineer&&!ENGINEERS.includes(form.engineer)?[form.engineer,...ENGINEERS]:ENGINEERS).map(n=>PH("option",{key:n,value:n},n)))),
       fld("Asset / vehicle (optional)", inp("asset",{placeholder:"D-Max, HD7, shop…"})),
       fld("Category", PH("select",{value:form.category,onChange:e=>setForm({...form,category:e.target.value}),style:{...sel,width:"100%"}},
         WORK_CATS.map(c=>PH("option",{key:c,value:c},WORK_META[c].lbl)))),
