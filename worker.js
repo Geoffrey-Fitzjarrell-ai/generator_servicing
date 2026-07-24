@@ -132,6 +132,36 @@ function cleanWorkItem(it) {
   };
 }
 
+// Per-truck freeform memos (not tied to a service event). Same read-modify-write
+// + 409-refetch pattern as the work board.
+async function mutateNotes(env, mutate, message) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    let file = null;
+    try { file = await ghGet("notes.json", env.GITHUB_PAT); } catch (e) { file = null; }
+    const doc = file ? JSON.parse(decodeURIComponent(escape(atob(file.content)))) : { items: [] };
+    if (!Array.isArray(doc.items)) doc.items = [];
+    mutate(doc);
+    doc._meta = Object.assign({}, doc._meta, { updated: new Date().toISOString().slice(0, 10) });
+    try {
+      await ghPut("notes.json", env.GITHUB_PAT, doc, file ? file.sha : undefined, message, 0);
+      return doc;
+    } catch (e) {
+      if (String(e).indexOf(" 409") !== -1 && attempt < 2) continue;
+      throw e;
+    }
+  }
+}
+function cleanNote(n) {
+  const s = (v, k) => String(v == null ? "" : v).slice(0, k);
+  return {
+    id: s(n.id, 40) || ("n_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6)),
+    truck: s(n.truck, 12),
+    text: s(n.text, 1000),
+    author: s(n.author, 80),
+    ts: s(n.ts, 30) || new Date().toISOString(),
+  };
+}
+
 async function verifySlackSignature(request, rawBody, signingSecret) {
   const timestamp = request.headers.get("X-Slack-Request-Timestamp");
   const signature = request.headers.get("X-Slack-Signature");
@@ -807,6 +837,18 @@ export default {
         headers: Object.assign({}, CORS, { "Cache-Control": "no-store" }),
       });
     }
+    // Real-time read of per-truck memos.
+    if (request.method === "GET" && new URL(request.url).pathname === "/notes") {
+      let doc = { items: [] };
+      try {
+        const file = await ghGet("notes.json", env.GITHUB_PAT);
+        doc = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+      } catch (e) { /* file missing / transient — serve empty */ }
+      return new Response(JSON.stringify(doc), {
+        status: 200,
+        headers: Object.assign({}, CORS, { "Cache-Control": "no-store" }),
+      });
+    }
     if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
     if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
@@ -1003,6 +1045,24 @@ export default {
           if (!it.end) it.end = it.start;
           doc = await mutateWork(env, d => { d.items = [...d.items.filter(x => x.id !== it.id), it]; },
             "Engineer work: upsert " + it.id);
+        }
+        return json({ ok: true, items: doc.items });
+      }
+
+      // ── Per-truck memos: upsert / delete ──
+      if (action === "logNote") {
+        const op = payload.op || "upsert";
+        let doc;
+        if (op === "delete") {
+          const id = String(payload.id || "");
+          if (!id) return json({ error: "Missing id" }, 400);
+          doc = await mutateNotes(env, d => { d.items = d.items.filter(x => x.id !== id); },
+            "Notes: delete " + id);
+        } else {
+          const n = cleanNote(payload.note || {});
+          if (!n.text || !n.truck) return json({ error: "Missing truck/text" }, 400);
+          doc = await mutateNotes(env, d => { d.items = [...d.items.filter(x => x.id !== n.id), n]; },
+            "Notes: " + n.truck + " " + n.id);
         }
         return json({ ok: true, items: doc.items });
       }

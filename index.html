@@ -795,6 +795,9 @@ function App({ jump }) {
   const [displayKey, setDisplayKey] = useState(0);
   const [countedHours,setCountedHours]=useState(null);
   const [svcLookup, setSvcLookup] = useState("");
+  const [notes,       setNotes]       = useState([]);
+  const [noteDraft,   setNoteDraft]   = useState("");
+  const [noteBusy,    setNoteBusy]    = useState(false);
   const prevHoursRef = useRef(null);
 
   async function loadAll() {
@@ -818,6 +821,7 @@ function App({ jump }) {
       }
       setSvcLogs(logs);
       setSyncedAt(new Date());
+      fetchNotes().then(n=>{ if(n!==null) setNotes(n); });
     } catch(e){setError("Fleet data unavailable.");}
     setLoaded(true);
   }
@@ -1012,6 +1016,16 @@ function App({ jump }) {
   const warnTasks=taskStatus.filter(t=>t.status==="warn");
   const dueTasks=taskStatus.filter(t=>t.status==="due");
   const histEntries=(svcHistory[selected]||[]).filter(e=>e.date||e.hours).slice().reverse();
+
+  const truckNotes=notes.filter(n=>n.truck===selected).slice().sort((a,b)=>String(b.ts).localeCompare(String(a.ts)));
+  async function addNote(){ const text=noteDraft.trim(); if(!text||noteBusy) return; setNoteBusy(true);
+    try{ const items=await postNote({op:"upsert",note:{truck:selected,text,author:(techName||"").trim()||"—",ts:new Date().toISOString()}}); setNotes(items); setNoteDraft(""); }
+    catch(e){ setSaveError("Note save failed: "+e.message); }
+    finally{ setNoteBusy(false); } }
+  async function deleteNote(id){ if(noteBusy) return; setNoteBusy(true);
+    try{ const items=await postNote({op:"delete",id}); setNotes(items); }
+    catch(e){ setSaveError("Note delete failed: "+e.message); }
+    finally{ setNoteBusy(false); } }
 
   // Newest lastUpdated across the fleet = how fresh the *data* is (distinct
   // from syncedAt, which is only when this page last fetched). This is the
@@ -1377,6 +1391,29 @@ function App({ jump }) {
           )
         ),
         saveError?React.createElement("div",{className:"save-error-banner"},"⚠ "+saveError):null,
+        React.createElement("div",{style:{marginTop:4}},
+          React.createElement("div",{className:"section-title"},selected+" — Notes / Memo"),
+          React.createElement("div",{style:{display:"flex",gap:8,alignItems:"flex-start",marginBottom:10}},
+            React.createElement("textarea",{
+              value:noteDraft,onChange:e=>setNoteDraft(e.target.value),
+              placeholder:"Add a memo for this truck — not tied to a service (observations, reminders, follow-ups)…",
+              rows:2,maxLength:1000,
+              style:{flex:1,minWidth:220,padding:"8px 10px",background:"var(--surface2)",border:"1px solid var(--border2)",borderRadius:"var(--radius)",color:"var(--text)",fontFamily:"var(--sans)",fontSize:12,resize:"vertical"}
+            }),
+            React.createElement("button",{className:"btn-primary",onClick:addNote,disabled:noteBusy||!noteDraft.trim()},noteBusy?"Saving…":"Add Note")
+          ),
+          truckNotes.length
+            ?React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:6}},
+              truckNotes.map(n=>React.createElement("div",{key:n.id,style:{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 12px",background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:"var(--radius)"}},
+                React.createElement("div",{style:{flex:1}},
+                  React.createElement("div",{style:{fontSize:12,color:"var(--text)",whiteSpace:"pre-wrap",lineHeight:1.45}},n.text),
+                  React.createElement("div",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--text-faint)",marginTop:4}},(n.author||"—")+" · "+String(n.ts||"").slice(0,10))
+                ),
+                React.createElement("button",{className:"btn-ghost",title:"Delete note",disabled:noteBusy,onClick:()=>deleteNote(n.id),style:{flexShrink:0}},"✕")
+              ))
+            )
+            :React.createElement("div",{className:"empty-msg"},"No notes yet — add a memo above.")
+        ),
         React.createElement("div",null,
           React.createElement("div",{className:"section-title"},selected+" — Open Jira Tickets"),
           tickets[selected]&&tickets[selected].length>0
@@ -1942,6 +1979,18 @@ async function fetchWork(){
 }
 async function postWork(body){
   const r=await fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},body:JSON.stringify(Object.assign({action:"logWork"},body))});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.ok) throw new Error(j.error||("HTTP "+r.status));
+  return j.items||[];
+}
+
+const NOTES_GET = PROXY_URL + "notes";
+async function fetchNotes(){
+  try{ const r=await fetch(NOTES_GET+"?t="+Date.now(),{cache:"no-store"}); if(r.ok){ const j=await r.json(); return (j&&j.items)||[]; } }catch(e){}
+  return null;
+}
+async function postNote(body){
+  const r=await fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},body:JSON.stringify(Object.assign({action:"logNote"},body))});
   const j=await r.json().catch(()=>({}));
   if(!r.ok||!j.ok) throw new Error(j.error||("HTTP "+r.status));
   return j.items||[];
