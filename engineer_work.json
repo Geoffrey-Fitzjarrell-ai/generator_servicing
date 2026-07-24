@@ -101,6 +101,20 @@
       "notes": "Insert in the camera swapped - calibration pending",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1784887673766",
+      "title": "XTR-201 Camera adjust ",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "Xtr-201",
+      "category": "repair",
+      "status": "planned",
+      "start": "2026-07-24",
+      "end": "2026-07-24",
+      "allDay": true,
+      "notes": "Insert for cameras replaced - calibration pending",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ]
 }
