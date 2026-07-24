@@ -29,7 +29,9 @@
     "postedBy": {
       "id": "U0AT2E00R5G",
       "name": null
-    }
+    },
+    "grounded": true,
+    "groundedNote": "Generator has fuel leak"
   },
   "HD9": {
     "hours": 1565,
