@@ -87,6 +87,20 @@
       "notes": "Install Applied Logos on Air deflector\n",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1784887606875",
+      "title": "XTR-201 Camera adjustment",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "XTR-201",
+      "category": "repair",
+      "status": "planned",
+      "start": "2026-07-24",
+      "end": "2026-07-24",
+      "allDay": true,
+      "notes": "Insert in the camera swapped - calibration pending",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ]
 }
