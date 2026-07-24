@@ -2062,7 +2062,10 @@ function EngineersView(){
   const totalDays=weeks*7;
   // Day cells stretch to fill the container so there's no dead space off the end
   // when the range is short; a readable floor keeps long ranges scrollable.
-  const DAYW = Math.max(30, gridW ? Math.floor((gridW - LABELW)/totalDays) : 34);
+  const fill = gridW ? Math.floor((gridW - LABELW)/totalDays) : 40;
+  // Short ranges (1–2 wks) get roomy cells ~2× the fill width (horizontal scroll if
+  // needed); longer ranges fill the container so there's no dead space off the end.
+  const DAYW = weeks<=2 ? Math.max(72, Math.min(fill*2, 180)) : Math.max(30, fill);
   const dayDates=Array.from({length:totalDays},(_,i)=>addDays(weekStart,i));
   const dayIndex=ds=>Math.round((parseISO(ds)-weekStart)/864e5);
   const rangeStart=isoLocal(weekStart), rangeEnd=isoLocal(addDays(weekStart,totalDays-1));
@@ -2119,7 +2122,7 @@ function EngineersView(){
   const rows = groups.map(g=>{
     const packed=packLanes(g.items);
     const lanes=packed.reduce((mx,o)=>Math.max(mx,o.lane),-1)+1;
-    const rowH=Math.max(96, lanes*(BARH+GAP)+PADV, fillLaneH);
+    const rowH=Math.max(weeks<=2?150:96, lanes*(BARH+GAP)+PADV, fillLaneH);
     const cellBg=(i,isToday,wknd)=>isToday?"rgba(225,6,0,.06)":(wknd?"rgba(120,140,170,.045)":"transparent");
     return PH("div",{key:g.key,style:{display:"flex",borderBottom:"1px solid var(--border2)"}},
       PH("div",{style:{width:LABELW,flexShrink:0,position:"sticky",left:0,zIndex:1,background:"var(--surface)",
