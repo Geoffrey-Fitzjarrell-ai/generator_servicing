@@ -776,6 +776,36 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-24",
+      "hours": 653,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        },
+        {
+          "key": "drive_belt",
+          "label": "Check drive belt & tension"
+        }
+      ],
+      "notes": [
+        "Check air filter on next check - possible change"
+      ]
     }
   ],
   "HD15": [
