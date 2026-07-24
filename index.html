@@ -2022,7 +2022,7 @@ function EngineersView(){
     window.addEventListener("resize",measure);
     const t=setTimeout(measure,300);   // re-measure after layout settles
     return ()=>{ if(ro) ro.disconnect(); window.removeEventListener("resize",measure); clearTimeout(t); };
-  },[]);
+  },[items===null]);
 
   useEffect(()=>{
     let alive=true;
@@ -2062,10 +2062,10 @@ function EngineersView(){
   const totalDays=weeks*7;
   // Day cells stretch to fill the container so there's no dead space off the end
   // when the range is short; a readable floor keeps long ranges scrollable.
-  const fill = gridW ? Math.floor((gridW - LABELW)/totalDays) : 40;
-  // Short ranges (1–2 wks) get roomy cells ~2× the fill width (horizontal scroll if
-  // needed); longer ranges fill the container so there's no dead space off the end.
-  const DAYW = weeks<=2 ? Math.max(72, Math.min(fill*2, 180)) : Math.max(30, fill);
+  const fill = gridW ? Math.floor((gridW - LABELW)/totalDays) : 120;
+  // Days fill the full container width (no dead space off the end); short ranges
+  // (1–2 wks) also enforce a comfortable minimum, scrolling if the window is narrow.
+  const DAYW = weeks<=2 ? Math.max(fill, weeks<=1?110:80) : Math.max(30, fill);
   const dayDates=Array.from({length:totalDays},(_,i)=>addDays(weekStart,i));
   const dayIndex=ds=>Math.round((parseISO(ds)-weekStart)/864e5);
   const rangeStart=isoLocal(weekStart), rangeEnd=isoLocal(addDays(weekStart,totalDays-1));
