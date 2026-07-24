@@ -2014,12 +2014,14 @@ function EngineersView(){
   // before the early returns below — never place them inside the render body).
   const gridRef = useRef(null);
   const [gridW,setGridW] = useState(0);
+  const [availH,setAvailH] = useState(0);
   useEffect(()=>{ const el=gridRef.current; if(!el) return;
-    const measure=()=>setGridW(el.clientWidth);
+    const measure=()=>{ setGridW(el.clientWidth); const r=el.getBoundingClientRect(); setAvailH(Math.max(280, window.innerHeight - r.top - 24)); };
     measure();
-    let ro; if(window.ResizeObserver){ ro=new ResizeObserver(measure); ro.observe(el); }
+    let ro; if(window.ResizeObserver){ ro=new ResizeObserver(()=>setGridW(el.clientWidth)); ro.observe(el); }
     window.addEventListener("resize",measure);
-    return ()=>{ if(ro) ro.disconnect(); window.removeEventListener("resize",measure); };
+    const t=setTimeout(measure,300);   // re-measure after layout settles
+    return ()=>{ if(ro) ro.disconnect(); window.removeEventListener("resize",measure); clearTimeout(t); };
   },[]);
 
   useEffect(()=>{
@@ -2056,7 +2058,7 @@ function EngineersView(){
   const ql=q.trim().toLowerCase();
   const matchQ = it => !ql || [it.title,it.engineer,it.asset,it.category,it.status,it.notes].some(v=>String(v||"").toLowerCase().includes(ql));
 
-  const BARH=20, GAP=3, LABELW=150;
+  const BARH=26, GAP=5, LABELW=150, HEADERH=34, PADV=18;
   const totalDays=weeks*7;
   // Day cells stretch to fill the container so there's no dead space off the end
   // when the range is short; a readable floor keeps long ranges scrollable.
@@ -2108,40 +2110,52 @@ function EngineersView(){
       return PH("div",{key:i,style:{width:DAYW,flexShrink:0,textAlign:"center",padding:"4px 0",boxSizing:"border-box",
         borderLeft:(i%7===0?"1px solid var(--border2)":"1px solid var(--border)"),
         background:isToday?"rgba(225,6,0,.14)":(wknd?"rgba(120,140,170,.05)":"transparent")}},
-        PH("div",{style:{fontSize:weeks<=2?10:8,fontFamily:"var(--mono)",color:isToday?"var(--f1red)":"var(--text-faint)"}},"MTWTFSS"[(wd+6)%7]),
-        PH("div",{style:{fontSize:weeks<=2?13:10,fontFamily:"var(--mono)",color:isToday?"var(--f1red)":"var(--text-dim)"}},d.getDate()));
+        PH("div",{style:{fontSize:DAYW>=38?10:8,fontFamily:"var(--mono)",color:isToday?"var(--f1red)":"var(--text-faint)"}},"MTWTFSS"[(wd+6)%7]),
+        PH("div",{style:{fontSize:DAYW>=38?14:11,fontWeight:DAYW>=38?600:400,fontFamily:"var(--mono)",color:isToday?"var(--f1red)":"var(--text-dim)"}},d.getDate()));
     })
   );
 
+  const fillLaneH = groups.length ? Math.floor((availH - HEADERH) / groups.length) : 96;
   const rows = groups.map(g=>{
     const packed=packLanes(g.items);
     const lanes=packed.reduce((mx,o)=>Math.max(mx,o.lane),-1)+1;
-    const rowH=Math.max(48, lanes*(BARH+GAP)+10);
-    return PH("div",{key:g.key,style:{display:"flex",borderBottom:"1px solid var(--border)"}},
+    const rowH=Math.max(96, lanes*(BARH+GAP)+PADV, fillLaneH);
+    const cellBg=(i,isToday,wknd)=>isToday?"rgba(225,6,0,.06)":(wknd?"rgba(120,140,170,.045)":"transparent");
+    return PH("div",{key:g.key,style:{display:"flex",borderBottom:"1px solid var(--border2)"}},
       PH("div",{style:{width:LABELW,flexShrink:0,position:"sticky",left:0,zIndex:1,background:"var(--surface)",
-        borderRight:"1px solid var(--border2)",padding:"8px",display:"flex",gap:6,alignItems:"center"}},
-        PH("span",{style:{width:8,height:8,borderRadius:"50%",background:g.color,flexShrink:0}}),
+        borderRight:"1px solid var(--border2)",padding:"10px",display:"flex",gap:7,alignItems:"center"}},
+        PH("span",{style:{width:9,height:9,borderRadius:"50%",background:g.color,flexShrink:0}}),
         PH("span",{style:{fontWeight:700,fontSize:13,fontFamily:"var(--mono)",color:"var(--text)"}},g.label)),
-      PH("div",{style:{position:"relative",width:totalDays*DAYW,height:rowH,flexShrink:0,
-        backgroundImage:`repeating-linear-gradient(90deg, var(--border) 0 1px, transparent 1px ${DAYW}px)`}},
-        (todayIdx>=0&&todayIdx<totalDays)?PH("div",{style:{position:"absolute",top:0,bottom:0,left:todayIdx*DAYW,width:2,background:"rgba(225,6,0,.55)",zIndex:0}}):null,
+      PH("div",{style:{position:"relative",width:totalDays*DAYW,height:rowH,flexShrink:0}},
+        // clickable day slots (Google-calendar style: click an empty cell to add work here)
+        PH("div",{style:{position:"absolute",inset:0,display:"flex"}},
+          dayDates.map((d,i)=>{ const wd=d.getDay(), wknd=wd===0||wd===6, isToday=i===todayIdx, ds=isoLocal(d);
+            return PH("div",{key:i,onClick:()=>openNew({engineer:g.key,start:ds}),
+              title:"+ Add work — "+g.label+" · "+ds,
+              onMouseEnter:e=>{e.currentTarget.style.background="rgba(120,160,230,.13)";},
+              onMouseLeave:e=>{e.currentTarget.style.background=cellBg(i,isToday,wknd);},
+              style:{width:DAYW,flexShrink:0,boxSizing:"border-box",cursor:"pointer",
+                borderLeft:(i%7===0?"1px solid var(--border2)":"1px solid var(--border)"),
+                background:cellBg(i,isToday,wknd)}});
+          })),
+        (todayIdx>=0&&todayIdx<totalDays)?PH("div",{style:{position:"absolute",top:0,bottom:0,left:todayIdx*DAYW,width:2,background:"rgba(225,6,0,.55)",zIndex:1,pointerEvents:"none"}}):null,
         packed.map(({it,s,e,lane})=>{
           const m=WORK_META[it.category]||WORK_META.other;
           const cs=Math.max(0,s), ce=Math.min(totalDays-1,e);
-          const left=cs*DAYW+1, width=(ce-cs+1)*DAYW-2;
+          const left=cs*DAYW+2, width=(ce-cs+1)*DAYW-4;
           const planned=it.status==="planned", done=it.status==="done", blocked=it.status==="blocked";
           const bord = blocked?"var(--red)":m.c;
           const days=(e-s+1);
           return PH("div",{key:it.id,
             title:`${it.title}\n${it.engineer||"Unassigned"} · ${(WORK_META[it.category]||WORK_META.other).lbl} · ${it.status}\n${it.start} → ${it.end||it.start}${it.asset?"\nAsset: "+it.asset:""}${it.notes?"\n"+it.notes:""}`,
-            onClick:()=>openEdit(it),
-            style:{position:"absolute",left,width,top:lane*(BARH+GAP)+5,height:BARH,zIndex:2,
+            onClick:e=>{ e.stopPropagation(); openEdit(it); },
+            style:{position:"absolute",left,width,top:lane*(BARH+GAP)+8,height:BARH,zIndex:2,
               background:m.bg,border:(planned?`1px dashed ${bord}`:`1px solid ${bord}`),borderLeft:`3px solid ${bord}`,
-              borderRadius:3,display:"flex",alignItems:"center",gap:4,padding:"0 5px",cursor:"pointer",
-              overflow:"hidden",boxSizing:"border-box",opacity:done?.6:1}},
-            width>44?PH("span",{style:{fontSize:weeks<=2?11:9,color:"var(--text)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",fontWeight:600}},it.title):null,
-            (it.asset&&width>90)?PH("span",{style:{marginLeft:"auto",fontSize:8,color:"var(--text-dim)",fontFamily:"var(--mono)",flexShrink:0}},it.asset):null,
-            (it.allDay!==false&&days>=1&&width>120)?PH("span",{style:{fontSize:8,color:"var(--text-faint)",flexShrink:0}},"all-day"):null
+              borderRadius:4,display:"flex",alignItems:"center",gap:5,padding:"0 7px",cursor:"pointer",
+              overflow:"hidden",boxSizing:"border-box",opacity:done?.62:1}},
+            width>36?PH("span",{style:{fontSize:12,color:"var(--text)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",fontWeight:600}},it.title):null,
+            (it.asset&&width>110)?PH("span",{style:{marginLeft:"auto",fontSize:9,color:"var(--text-dim)",fontFamily:"var(--mono)",flexShrink:0}},it.asset):null,
+            (it.allDay!==false&&days>=1&&width>150)?PH("span",{style:{fontSize:9,color:"var(--text-faint)",flexShrink:0}},"all-day"):null
           );
         })
       )
