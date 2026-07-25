@@ -333,6 +333,14 @@ async function writeHours(env, truck, hours, userId, userName, commitMsg, force)
 // Mirror the cron's daily-runtime bookkeeping (dashboard bar chart + the
 // trailing averages behind predicted due dates). Same schema and UTC-date
 // convention; refetch-merge on conflict.
+//
+// A generator physically cannot log more than 24h in one calendar day, so every
+// per-day value is clamped to 24 at the point of assignment. Any value that would
+// exceed 24 is a writer artifact (a duplicate/typo reading, or a same-day
+// accumulation piling on top of a gap-spread), not real runtime — clamping stops
+// the nightly consistency check from ever catching a self-inflicted >24h day.
+// daily_hours is a display/plausibility series only; data.json cumulative stays
+// authoritative and untouched.
 async function bumpDailyHours(env, truck, delta) {
   if (!delta || delta <= 0) return;
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -350,24 +358,27 @@ async function bumpDailyHours(env, truck, delta) {
       const last = entries.length ? entries[entries.length - 1].date : null;
       const gapDays = last ? Math.round((Date.parse(today) - Date.parse(last)) / 86400000) : 0;
       if (entries.length && last === today) {
-        entries[entries.length - 1].hours = Math.round((entries[entries.length - 1].hours + delta) * 10) / 10;
+        const summed = entries[entries.length - 1].hours + delta;
+        if (summed > 24) console.warn(`bumpDailyHours: ${truck} ${today} clamped ${summed.toFixed(1)}->24`);
+        entries[entries.length - 1].hours = Math.round(Math.min(24, summed) * 10) / 10;
       } else if (gapDays > 1) {
         // Reading arrived after a multi-day gap: the delta accumulated over the
         // whole gap, not today. Spread it at the true daily average so no single
         // bar shows an impossible >24h day (HD15 2026-07-10 incident: +32h over a
         // 3-day gap was booked on one date and tripped the nightly check).
-        const per = delta / gapDays;
+        const per = Math.min(24, delta / gapDays);
         const n = Math.min(gapDays, 14);            // window keeps 14 entries anyway
         const total = Math.round(per * n * 10) / 10;
         let acc = 0;
         for (let i = n - 1; i >= 0; i--) {
           const d = new Date(Date.parse(today) - i * 86400000).toISOString().slice(0, 10);
-          const h = i === 0 ? Math.round((total - acc) * 10) / 10 : Math.round(per * 10) / 10;
+          const raw = i === 0 ? (total - acc) : per;
+          const h = Math.round(Math.min(24, raw) * 10) / 10;
           entries.push({ date: d, hours: h });
           acc = Math.round((acc + h) * 10) / 10;
         }
       } else {
-        entries.push({ date: today, hours: Math.round(delta * 10) / 10 });
+        entries.push({ date: today, hours: Math.round(Math.min(24, delta) * 10) / 10 });
       }
       daily[truck] = entries.slice(-14);
       await ghPut("daily_hours.json", env.GITHUB_PAT, daily, sha,
@@ -1065,6 +1076,45 @@ export default {
             "Notes: " + n.truck + " " + n.id);
         }
         return json({ ok: true, items: doc.items });
+      }
+
+      // ── Correct a single day's runtime in daily_hours.json ──
+      // Self-service fix for a missed/implausible daily value — no hand-editing
+      // JSON, no PAT on the client. Validates 0–24 (a generator can't run more
+      // than 24h in a calendar day) and uses the same 409-refetch pattern as the
+      // rest. The authoritative cumulative (data.json) is untouched; this only
+      // fixes the per-day display/plausibility series the nightly check reads.
+      // Payload: { action:"correctDaily", truck:"HD6", date:"2026-07-23", hours:18 }
+      if (action === "correctDaily") {
+        const truck = String(payload.truck || "").toUpperCase();
+        const date  = String(payload.date || "");
+        const hours = Number(payload.hours);
+        if (!/^HD\d+$/.test(truck))            return json({ error: "Bad truck" }, 400);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return json({ error: "Bad date (YYYY-MM-DD)" }, 400);
+        if (!Number.isFinite(hours) || hours < 0 || hours > 24)
+          return json({ error: "Hours must be between 0 and 24" }, 400);
+        const rounded = Math.round(hours * 10) / 10;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          let daily = {}, sha;
+          try {
+            const f = await ghGet("daily_hours.json", env.GITHUB_PAT);
+            daily = b64json(f); sha = f.sha;
+          } catch (e) { return json({ error: "daily_hours.json unreadable" }, 502); }
+          const arr = daily[truck] || (daily[truck] = []);
+          const row = arr.find(e => e.date === date);
+          if (row) {
+            row.hours = rounded;
+          } else {
+            arr.push({ date, hours: rounded });
+            arr.sort((a, b) => (a.date < b.date ? -1 : 1));
+          }
+          try {
+            await ghPut("daily_hours.json", env.GITHUB_PAT, daily, sha,
+                        `fix: daily correction ${truck} ${date} -> ${rounded}h`, 0);
+            return json({ ok: true, truck, date, hours: rounded });
+          } catch (e) { /* 409 → refetch + reapply */ }
+        }
+        return json({ error: "write conflict after retries" }, 502);
       }
 
       return json({ error: "Unknown action" }, 400);
