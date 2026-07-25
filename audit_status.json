@@ -1,19 +1,18 @@
 {
-  "ok": false,
-  "checked_at": "2026-07-24T22:39:48Z",
+  "ok": true,
+  "checked_at": "2026-07-25T22:33:16Z",
   "passed": [
     "worker alive",
-    "worker up to date (build c7ab35fb)",
+    "worker up to date (build 34f3b695)",
     "worker auth enforced (401 on bad key)",
     "slack token ok (generator_service_bot)",
     "generator-hours.yml healthy",
+    "consistency-check.yml healthy",
     "daily-digest.yml healthy",
     "weekly-summary.yml healthy",
     "pages-build-deployment healthy",
     "dashboard serving",
     "all 12 data files parse"
   ],
-  "issues": [
-    "Workflow consistency-check.yml: latest completed run #22 -> failure (https://github.com/Geoffrey-Fitzjarrell-ai/generator_servicing/actions/runs/30116762837)"
-  ]
+  "issues": []
 }
