@@ -20,5 +20,28 @@
     ],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD13",
+    "tasks": [
+      "Check coolant lines",
+      "Oil / filter change",
+      "Check drive belt & tension",
+      "Battery Box check",
+      "Air filter / Battery check",
+      "Clean radiator"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0A68NRL962",
+      "name": null
+    },
+    "loggedAt": "2026-07-27T03:46:25.670Z",
+    "hours": 606,
+    "notes": [
+      "Bolts on oil change door loose, other generator bolts are good. paint marker applied"
+    ],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
