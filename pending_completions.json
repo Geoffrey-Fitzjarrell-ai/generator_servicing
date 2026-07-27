@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "truck": "HD15",
+    "tasks": [
+      "Air filter / Battery check",
+      "Battery Box check",
+      "Check coolant lines",
+      "Fuel filter change",
+      "Change air filter"
+    ],
+    "technician": "Masakiyo",
+    "postedBy": {
+      "id": "U0BEARESY3W",
+      "name": null
+    },
+    "loggedAt": "2026-07-27T01:59:25.523Z",
+    "hours": 691,
+    "notes": [
+      "Confirmed that the terminal inside the battery box, which had been loose previously, is no longer loose."
+    ],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
