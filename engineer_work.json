@@ -129,6 +129,20 @@
       "notes": "Majority of servicing is due, or coming soon for Hd-15",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1785111692395",
+      "title": "HD-13 oil change",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD-13",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-07-27",
+      "end": "2026-07-27",
+      "allDay": true,
+      "notes": "HD-13 requires oil change prior to leaving for the week for training",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ]
 }
