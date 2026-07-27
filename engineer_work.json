@@ -143,6 +143,20 @@
       "notes": "HD-13 requires oil change prior to leaving for the week for training",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1785113378359",
+      "title": "HD10 Servicing",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD10",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-07-30",
+      "end": "2026-07-30",
+      "allDay": true,
+      "notes": "HD10 is out of the office until this day but is behind on maintenance for fule filter, and coming soon for oil change",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ]
 }
