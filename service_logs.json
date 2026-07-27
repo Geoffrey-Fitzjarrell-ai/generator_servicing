@@ -84,12 +84,12 @@
     "clean_radiator": 552
   },
   "HD15": {
-    "airfilter_battery": 527,
-    "battery_box": 590,
+    "airfilter_battery": 691,
+    "battery_box": 691,
     "oil_filter": 641,
-    "airfilter_500": 201,
-    "coolant_lines": 447,
-    "fuel_filter": 447,
+    "airfilter_500": 691,
+    "coolant_lines": 691,
+    "fuel_filter": 691,
     "drive_belt": 527,
     "clean_radiator": 527
   },
