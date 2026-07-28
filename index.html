@@ -418,18 +418,28 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
   // the plaintext). NOTE: this gates the UI as a shared-password deterrent; it is
   // not real data security (repo + JSON endpoints are public). Rotate: change HASH
   // and bump VER (bumping VER forces everyone to re-enter).
-  var HASH = "3752e23452e983a6592f37cd66da9aa781b7141e33a1dc064b7c7d71569d4d40";
-  var VER  = "v1";
+  var HASH_DAILY  = "3752e23452e983a6592f37cd66da9aa781b7141e33a1dc064b7c7d71569d4d40"; // shared pw — access resets each day
+  var HASH_MASTER = "d0da3acaaa229cf871a380a0219fd568c10f82493add8cf698091365c4f2cd6f"; // master pw — never expires
+  var VER  = "v2";
   var KEY  = "fleet_gate_" + VER;
-  function authed(){ try { return localStorage.getItem(KEY) === "1"; } catch(e){ return false; } }
+  function today(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  function authed(){
+    try {
+      var o = JSON.parse(localStorage.getItem(KEY) || "null");
+      if (!o) return false;
+      if (o.tier === "master") return true;               // master: persists indefinitely
+      if (o.tier === "day" && o.date === today()) return true;  // daily: valid only for the day it was entered
+      return false;
+    } catch(e){ return false; }
+  }
   async function sha(s){
     var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
     return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,"0"); }).join("");
   }
   window.__fleetAuthed = authed();
-  function unlock(){
+  function unlock(tier){
     window.__fleetAuthed = true;
-    try { localStorage.setItem(KEY, "1"); } catch(e){}
+    try { localStorage.setItem(KEY, JSON.stringify(tier === "master" ? {tier:"master"} : {tier:"day", date:today()})); } catch(e){}
     var g = document.getElementById("gate"); if (g) g.remove();
     if (typeof window.__unlockApp === "function") window.__unlockApp();
   }
@@ -442,7 +452,8 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
     async function tryit(){
       err.textContent = "";
       var h = await sha(pw.value || "");
-      if (h === HASH){ unlock(); }
+      if (h === HASH_MASTER){ unlock("master"); }
+      else if (h === HASH_DAILY){ unlock("day"); }
       else { err.textContent = "Incorrect password"; pw.value = ""; pw.focus(); }
     }
     btn.addEventListener("click", tryit);
