@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "truck": "HD8",
+    "tasks": [
+      "Air filter / Battery check",
+      "Battery Box check",
+      "Fuel filter change",
+      "Change air filter"
+    ],
+    "technician": "Masakiyo",
+    "postedBy": {
+      "id": "U0BE3QDSBEZ",
+      "name": null
+    },
+    "loggedAt": "2026-07-28T09:50:35.567Z",
+    "hours": 1661,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
