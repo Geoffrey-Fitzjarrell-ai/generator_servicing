@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-07-27"
+    "updated": "2026-07-28"
   },
   "items": [
     {
@@ -155,6 +155,20 @@
       "end": "2026-07-30",
       "allDay": true,
       "notes": "HD10 is out of the office until this day but is behind on maintenance for fule filter, and coming soon for oil change",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1785203049544",
+      "title": "HD16",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD16",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-07-28",
+      "end": "2026-07-28",
+      "allDay": true,
+      "notes": "Check Air filter and battery",
       "jiraKey": "",
       "jiraUrl": ""
     }
