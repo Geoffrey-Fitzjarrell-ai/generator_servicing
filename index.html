@@ -400,6 +400,58 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 </head>
 <body>
 <div id="root"></div>
+<div id="gate" style="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#080b12;">
+  <div style="width:340px;max-width:88vw;text-align:center;font-family:'JetBrains Mono',monospace;color:#dde4f0;">
+    <div style="font-size:12px;letter-spacing:.18em;color:#38465a;margin-bottom:6px;">HD&nbsp;GEN2</div>
+    <div style="font-size:22px;font-weight:700;margin-bottom:4px;">Fleet Status</div>
+    <div style="font-size:12px;color:#6e7f99;margin-bottom:22px;">Restricted access — enter password</div>
+    <input id="gatePw" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Password"
+      style="width:100%;padding:11px 13px;background:#131925;border:1px solid #28364f;border-radius:6px;color:#dde4f0;font-family:inherit;font-size:14px;outline:none;" />
+    <div id="gateErr" style="height:16px;color:#e04545;font-size:11px;margin:8px 0 10px;"></div>
+    <button id="gateBtn" type="button"
+      style="width:100%;padding:11px;background:#f0a500;border:none;border-radius:6px;color:#080b12;font-family:inherit;font-weight:700;font-size:13px;letter-spacing:.1em;cursor:pointer;">ENTER</button>
+  </div>
+</div>
+<script>
+(function(){
+  // Client-side access gate. Only a SHA-256 hash of the password lives here (never
+  // the plaintext). NOTE: this gates the UI as a shared-password deterrent; it is
+  // not real data security (repo + JSON endpoints are public). Rotate: change HASH
+  // and bump VER (bumping VER forces everyone to re-enter).
+  var HASH = "3752e23452e983a6592f37cd66da9aa781b7141e33a1dc064b7c7d71569d4d40";
+  var VER  = "v1";
+  var KEY  = "fleet_gate_" + VER;
+  function authed(){ try { return localStorage.getItem(KEY) === "1"; } catch(e){ return false; } }
+  async function sha(s){
+    var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,"0"); }).join("");
+  }
+  window.__fleetAuthed = authed();
+  function unlock(){
+    window.__fleetAuthed = true;
+    try { localStorage.setItem(KEY, "1"); } catch(e){}
+    var g = document.getElementById("gate"); if (g) g.remove();
+    if (typeof window.__unlockApp === "function") window.__unlockApp();
+  }
+  function boot(){
+    var g = document.getElementById("gate");
+    if (window.__fleetAuthed){ if (g) g.remove(); return; }
+    var pw = document.getElementById("gatePw"),
+        btn = document.getElementById("gateBtn"),
+        err = document.getElementById("gateErr");
+    async function tryit(){
+      err.textContent = "";
+      var h = await sha(pw.value || "");
+      if (h === HASH){ unlock(); }
+      else { err.textContent = "Incorrect password"; pw.value = ""; pw.focus(); }
+    }
+    btn.addEventListener("click", tryit);
+    pw.addEventListener("keydown", function(e){ if (e.key === "Enter") tryit(); });
+    setTimeout(function(){ pw.focus(); }, 50);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script>
@@ -2288,7 +2340,8 @@ function Root(){
   );
 }
 
-ReactDOM.render(React.createElement(Root),document.getElementById("root"));
+window.__unlockApp = function(){ ReactDOM.render(React.createElement(Root),document.getElementById("root")); };
+if (window.__fleetAuthed) window.__unlockApp();   // mount now if already unlocked; otherwise the gate calls this on success
 </script>
 </body>
 </html>
