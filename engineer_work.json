@@ -171,6 +171,20 @@
       "notes": "Check Air filter and battery",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1785203073229",
+      "title": "HD17 check",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD17",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-07-28",
+      "end": "2026-07-28",
+      "allDay": true,
+      "notes": "Check Air filter, battery, and battery box",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ]
 }
