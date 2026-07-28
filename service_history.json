@@ -232,6 +232,30 @@
       "notes": [
         "There was oil residue around the oil filter, so it was cleaned; it will be necessary to check for leaks during the next service."
       ]
+    },
+    {
+      "date": "2026-07-28",
+      "hours": 1661,
+      "technician": "Masakiyo",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        },
+        {
+          "key": "fuel_filter",
+          "label": "Fuel filter change"
+        },
+        {
+          "key": "airfilter_500",
+          "label": "Change air filter"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD9": [
