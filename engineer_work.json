@@ -159,20 +159,6 @@
       "jiraUrl": ""
     },
     {
-      "id": "w_1785203049544",
-      "title": "HD16",
-      "engineer": "Geoff Fitzjarrell",
-      "asset": "HD16",
-      "category": "maintenance",
-      "status": "planned",
-      "start": "2026-07-28",
-      "end": "2026-07-28",
-      "allDay": true,
-      "notes": "Check Air filter and battery",
-      "jiraKey": "",
-      "jiraUrl": ""
-    },
-    {
       "id": "w_1785203073229",
       "title": "HD17 check",
       "engineer": "Geoff Fitzjarrell",
@@ -183,6 +169,20 @@
       "end": "2026-07-28",
       "allDay": true,
       "notes": "Check Air filter, battery, and battery box",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1785203049544",
+      "title": "HD16",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD16",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-07-28",
+      "end": "2026-07-28",
+      "allDay": true,
+      "notes": "Check battery box",
       "jiraKey": "",
       "jiraUrl": ""
     }
