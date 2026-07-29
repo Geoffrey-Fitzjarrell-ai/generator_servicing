@@ -199,6 +199,20 @@
       "notes": "Need to replace the Matenet cable between sw1 & sw2. https://appliedint-frontier.atlassian.net/browse/ROOT-1728",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1785368816827",
+      "title": "VCO ",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD6, HD10",
+      "category": "admin",
+      "status": "planned",
+      "start": "2026-07-30",
+      "end": "2026-07-30",
+      "allDay": true,
+      "notes": "HD6 and HD10 can have the FW on their TE-2006's updated",
+      "jiraKey": "VCO-3688",
+      "jiraUrl": "https://appliedintuition.atlassian.net/browse/VCO-3688"
     }
   ]
 }
