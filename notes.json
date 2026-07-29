@@ -13,9 +13,16 @@
       "text": "R 8,7,27 1664H\nThere was a leak from the fuel pump, so we replaced the fuel pump parts at the service center.",
       "author": "Geoff Fitzjarrell",
       "ts": "2026-07-28T10:01:00.945Z"
+    },
+    {
+      "id": "n_1785285202021_k6iw",
+      "truck": "HD14",
+      "text": "Oil appears low, and needs to be looked at next time it is in the garage; オイル量が少ないようなので、次回整備工場に入庫した際に点検してもらう必要があります。",
+      "author": "Geoff Fitzjarrell",
+      "ts": "2026-07-29T00:33:21.801Z"
     }
   ],
   "_meta": {
-    "updated": "2026-07-28"
+    "updated": "2026-07-29"
   }
 }
