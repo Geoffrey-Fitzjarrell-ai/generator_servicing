@@ -863,6 +863,7 @@ function App({ jump }) {
   const [noteBusy,    setNoteBusy]    = useState(false);
   const [svcEdit,     setSvcEdit]     = useState(null);   // active service-log edit form
   const [svcBusy,     setSvcBusy]     = useState(false);
+  const [correcting,  setCorrecting]  = useState(false);  // "Correct Logged Work" mode
   const prevHoursRef = useRef(null);
 
   async function loadAll() {
@@ -1471,7 +1472,14 @@ function App({ jump }) {
           )
         ),
         React.createElement("div",{className:"btn-row"},
-          !logMode?React.createElement("button",{className:"btn-primary",onClick:()=>setLogMode(true),disabled:!hours},"Log Service Performed"):
+          !logMode?React.createElement(React.Fragment,null,
+            React.createElement("button",{className:"btn-primary",onClick:()=>setLogMode(true),disabled:!hours},"Log Service Performed"),
+            React.createElement("button",{className:correcting?"btn-primary":"btn-cancel",
+              title:"Edit or undo a service that was logged by mistake",
+              onClick:()=>{setCorrecting(c=>!c);setSvcEdit(null);}},
+              correcting?"Done Correcting":"Correct Logged Work"),
+            correcting?React.createElement("span",{className:"save-hint"},"Pick a service below to edit or revert"):null
+          ):
           React.createElement(React.Fragment,null,
             React.createElement("input",{
               type:"text", value:techName,
@@ -1537,7 +1545,7 @@ function App({ jump }) {
             React.createElement("thead",null,React.createElement("tr",null,
               React.createElement("th",null,"Date"),React.createElement("th",null,"Hours"),
               React.createElement("th",null,"Technician"),React.createElement("th",null,"Work Performed"),
-              React.createElement("th",{style:{textAlign:"right"}},"")
+              correcting?React.createElement("th",{style:{textAlign:"right"}},"Correct"):null
             )),
             React.createElement("tbody",null,histEntries.map((e,i)=>
               React.createElement("tr",{key:i},
@@ -1548,12 +1556,12 @@ function App({ jump }) {
                   ...(e.tasks||[]).map(t=>React.createElement("span",{key:t.key,className:"h-task-tag"},t.label)),
                   ...(e.notes||[]).map((n,ni)=>React.createElement("span",{key:"n"+ni,className:"h-note-tag"},n))
                 )),
-                React.createElement("td",{style:{textAlign:"right",whiteSpace:"nowrap"}},
+                correcting?React.createElement("td",{style:{textAlign:"right",whiteSpace:"nowrap"}},
                   React.createElement("button",{className:"btn-ghost",title:"Edit this service record",disabled:svcBusy,
                     onClick:()=>openSvcEdit(e),style:{marginRight:4}},"✎ Edit"),
                   React.createElement("button",{className:"btn-ghost",title:"Revert (delete) this service record",disabled:svcBusy,
                     onClick:()=>revertService(e),style:{color:"var(--red)"}},"↩ Revert")
-                )
+                ):null
               )
             ))
           ),
