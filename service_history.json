@@ -115,6 +115,34 @@
       "notes": [
         "Need to follow up on air filter next time its due for service"
       ]
+    },
+    {
+      "date": "2026-07-29",
+      "hours": 1897,
+      "technician": "Masakiyo",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        },
+        {
+          "key": "fuel_filter",
+          "label": "Fuel filter change"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD7": [],
