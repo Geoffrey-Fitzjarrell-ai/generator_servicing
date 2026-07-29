@@ -861,6 +861,8 @@ function App({ jump }) {
   const [notes,       setNotes]       = useState([]);
   const [noteDraft,   setNoteDraft]   = useState("");
   const [noteBusy,    setNoteBusy]    = useState(false);
+  const [svcEdit,     setSvcEdit]     = useState(null);   // active service-log edit form
+  const [svcBusy,     setSvcBusy]     = useState(false);
   const prevHoursRef = useRef(null);
 
   async function loadAll() {
@@ -1079,6 +1081,42 @@ function App({ jump }) {
   const warnTasks=taskStatus.filter(t=>t.status==="warn");
   const dueTasks=taskStatus.filter(t=>t.status==="due");
   const histEntries=(svcHistory[selected]||[]).filter(e=>e.date||e.hours).slice().reverse();
+
+  async function revertService(e){
+    if(svcBusy) return;
+    const tasksTxt=(e.tasks||[]).map(t=>t.label).join(", ")||"(no tasks)";
+    if(!window.confirm("Revert this logged service?\n\n"+(e.date||"—")+" · "+(e.hours!=null?e.hours+"h":"—")+"\n"+tasksTxt+
+       "\n\nThis removes the record and rolls the affected task(s) back to the previous service. Cannot be undone.")) return;
+    setSvcBusy(true); setSaveError&&setSaveError("");
+    try{
+      const idx=(svcHistory[selected]||[]).indexOf(e);
+      const sig={date:e.date,hours:e.hours,keys:(e.tasks||[]).map(t=>t.key)};
+      const res=await postService({action:"revertService",truck:selected,index:idx,sig});
+      setSvcHistory(h=>Object.assign({},h,{[selected]:res.hist}));
+      setSvcLogs(l=>Object.assign({},l,{[selected]:res.logs}));
+    }catch(err){ setSaveError("Revert failed: "+err.message); }
+    finally{ setSvcBusy(false); }
+  }
+  function openSvcEdit(e){
+    const idx=(svcHistory[selected]||[]).indexOf(e);
+    setSvcEdit({ index:idx, sig:{date:e.date,hours:e.hours,keys:(e.tasks||[]).map(t=>t.key)},
+      date:e.date||"", hours:e.hours!=null?String(e.hours):"", technician:e.technician||"",
+      keys:(e.tasks||[]).map(t=>t.key), notes:(e.notes||[]).join("\n") });
+  }
+  async function saveSvcEdit(){
+    const fm=svcEdit; if(!fm||svcBusy) return;
+    setSvcBusy(true); setSaveError&&setSaveError("");
+    try{
+      const tasks=TASKS.filter(t=>fm.keys.indexOf(t.key)>=0).map(t=>({key:t.key,label:t.name}));
+      const entry={date:fm.date,hours:Number(fm.hours)||0,technician:fm.technician,tasks,
+        notes:fm.notes.split("\n").map(s=>s.trim()).filter(Boolean)};
+      const res=await postService({action:"editService",truck:selected,index:fm.index,sig:fm.sig,entry});
+      setSvcHistory(h=>Object.assign({},h,{[selected]:res.hist}));
+      setSvcLogs(l=>Object.assign({},l,{[selected]:res.logs}));
+      setSvcEdit(null);
+    }catch(err){ setSaveError("Edit failed: "+err.message); }
+    finally{ setSvcBusy(false); }
+  }
 
   const truckNotes=notes.filter(n=>n.truck===selected).slice().sort((a,b)=>String(b.ts).localeCompare(String(a.ts)));
   async function addNote(){ const text=noteDraft.trim(); if(!text||noteBusy) return; setNoteBusy(true);
@@ -1498,7 +1536,8 @@ function App({ jump }) {
           React.createElement("table",{className:"history-table"},
             React.createElement("thead",null,React.createElement("tr",null,
               React.createElement("th",null,"Date"),React.createElement("th",null,"Hours"),
-              React.createElement("th",null,"Technician"),React.createElement("th",null,"Work Performed")
+              React.createElement("th",null,"Technician"),React.createElement("th",null,"Work Performed"),
+              React.createElement("th",{style:{textAlign:"right"}},"")
             )),
             React.createElement("tbody",null,histEntries.map((e,i)=>
               React.createElement("tr",{key:i},
@@ -1508,10 +1547,41 @@ function App({ jump }) {
                 React.createElement("td",null,React.createElement("div",{className:"h-tasks"},
                   ...(e.tasks||[]).map(t=>React.createElement("span",{key:t.key,className:"h-task-tag"},t.label)),
                   ...(e.notes||[]).map((n,ni)=>React.createElement("span",{key:"n"+ni,className:"h-note-tag"},n))
-                ))
+                )),
+                React.createElement("td",{style:{textAlign:"right",whiteSpace:"nowrap"}},
+                  React.createElement("button",{className:"btn-ghost",title:"Edit this service record",disabled:svcBusy,
+                    onClick:()=>openSvcEdit(e),style:{marginRight:4}},"✎ Edit"),
+                  React.createElement("button",{className:"btn-ghost",title:"Revert (delete) this service record",disabled:svcBusy,
+                    onClick:()=>revertService(e),style:{color:"var(--red)"}},"↩ Revert")
+                )
               )
             ))
-          )
+          ),
+          svcEdit?React.createElement("div",{style:{marginTop:12,padding:14,background:"var(--surface2)",border:"1px solid var(--blue)",borderRadius:"var(--radius)"}},
+            React.createElement("div",{style:{fontWeight:700,fontSize:13,color:"var(--blue)",marginBottom:10}},"Edit service record — "+selected),
+            React.createElement("div",{style:{display:"flex",gap:12,flexWrap:"wrap",marginBottom:10}},
+              React.createElement("label",{style:{display:"flex",flexDirection:"column",gap:3,fontSize:11,color:"var(--text-dim)"}},"Date",
+                React.createElement("input",{type:"date",value:svcEdit.date,onChange:ev=>setSvcEdit(Object.assign({},svcEdit,{date:ev.target.value})),style:{...sel}})),
+              React.createElement("label",{style:{display:"flex",flexDirection:"column",gap:3,fontSize:11,color:"var(--text-dim)"}},"Hours",
+                React.createElement("input",{type:"number",value:svcEdit.hours,onChange:ev=>setSvcEdit(Object.assign({},svcEdit,{hours:ev.target.value})),style:{...sel,width:100}})),
+              React.createElement("label",{style:{display:"flex",flexDirection:"column",gap:3,fontSize:11,color:"var(--text-dim)",flex:1,minWidth:160}},"Technician",
+                React.createElement("input",{type:"text",value:svcEdit.technician,onChange:ev=>setSvcEdit(Object.assign({},svcEdit,{technician:ev.target.value})),style:{...sel,width:"100%"}}))
+            ),
+            React.createElement("div",{style:{fontSize:11,color:"var(--text-dim)",marginBottom:5}},"Work performed"),
+            React.createElement("div",{style:{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}},
+              TASKS.map(t=>{const on=svcEdit.keys.indexOf(t.key)>=0; return React.createElement("button",{key:t.key,type:"button",
+                onClick:()=>{const ks=on?svcEdit.keys.filter(k=>k!==t.key):svcEdit.keys.concat([t.key]); setSvcEdit(Object.assign({},svcEdit,{keys:ks}));},
+                style:{padding:"4px 9px",borderRadius:4,fontSize:11,cursor:"pointer",border:"1px solid "+(on?"var(--green)":"var(--border2)"),
+                  background:on?"var(--green-dim)":"transparent",color:on?"var(--green)":"var(--text-dim)"}}, (on?"✓ ":"")+t.name);})
+            ),
+            React.createElement("label",{style:{display:"flex",flexDirection:"column",gap:3,fontSize:11,color:"var(--text-dim)",marginBottom:10}},"Notes (one per line)",
+              React.createElement("textarea",{value:svcEdit.notes,rows:2,onChange:ev=>setSvcEdit(Object.assign({},svcEdit,{notes:ev.target.value})),
+                style:{...sel,width:"100%",fontFamily:"var(--sans)",resize:"vertical"}})),
+            React.createElement("div",{style:{display:"flex",gap:8,justifyContent:"flex-end"}},
+              React.createElement("button",{className:"btn-ghost",disabled:svcBusy,onClick:()=>setSvcEdit(null)},"Cancel"),
+              React.createElement("button",{className:"btn-primary",disabled:svcBusy||!svcEdit.hours||!svcEdit.keys.length,onClick:saveSvcEdit},svcBusy?"Saving…":"Save changes")
+            )
+          ):null
         )
       )
     )
@@ -2057,6 +2127,12 @@ async function postNote(body){
   const j=await r.json().catch(()=>({}));
   if(!r.ok||!j.ok) throw new Error(j.error||("HTTP "+r.status));
   return j.items||[];
+}
+async function postService(body){
+  const r=await fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.ok) throw new Error(j.error||("HTTP "+r.status));
+  return j;   // { ok, hist:[...], logs:{...} }
 }
 
 function EngineersView(){

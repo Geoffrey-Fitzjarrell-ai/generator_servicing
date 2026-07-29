@@ -162,6 +162,48 @@ function cleanNote(n) {
   };
 }
 
+// ── Edit / revert a logged service ───────────────────────────────────────────
+// Reverting can't just delete: service_logs holds each task's "last done at Xh"
+// (drives the gauges), so after removing/editing a history entry we roll every
+// affected task back to the newest REMAINING history entry that still contains it.
+function recomputeLast(histTruck, key) {
+  let best = null;
+  for (const e of (histTruck || [])) {
+    if ((e.tasks || []).some(t => t.key === key)) best = best === null ? e.hours : Math.max(best, e.hours);
+  }
+  return best;
+}
+function findServiceEntry(arr, index, sig) {
+  const keysOf = e => JSON.stringify((e.tasks || []).map(t => t.key).sort());
+  const sigKeys = JSON.stringify((sig && sig.keys ? sig.keys.slice() : []).sort());
+  const match = e => e && e.date === sig.date && Number(e.hours) === Number(sig.hours) && keysOf(e) === sigKeys;
+  if (Number.isInteger(index) && index >= 0 && index < arr.length && match(arr[index])) return index;
+  for (let i = 0; i < arr.length; i++) if (match(arr[i])) return i;
+  return -1;
+}
+async function mutateServices(env, truck, keys, apply, message) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const hf = await ghGet("service_history.json", env.GITHUB_PAT);
+    const lf = await ghGet("service_logs.json", env.GITHUB_PAT);
+    const hist = JSON.parse(decodeURIComponent(escape(atob(hf.content))));
+    const logs = JSON.parse(decodeURIComponent(escape(atob(lf.content))));
+    apply(hist, logs);
+    if (!logs[truck]) logs[truck] = {};
+    for (const k of keys) {
+      const v = recomputeLast(hist[truck], k);
+      if (v === null) delete logs[truck][k]; else logs[truck][k] = v;
+    }
+    try {
+      await ghPut("service_history.json", env.GITHUB_PAT, hist, hf.sha, message + " (history)");
+      await ghPut("service_logs.json", env.GITHUB_PAT, logs, lf.sha, message + " (logs)");
+      return { hist: hist[truck] || [], logs: logs[truck] || {} };
+    } catch (e) {
+      if (String(e).indexOf(" 409") !== -1 && attempt < 2) continue;
+      throw e;
+    }
+  }
+}
+
 async function verifySlackSignature(request, rawBody, signingSecret) {
   const timestamp = request.headers.get("X-Slack-Request-Timestamp");
   const signature = request.headers.get("X-Slack-Signature");
@@ -1115,6 +1157,44 @@ export default {
           } catch (e) { /* 409 → refetch + reapply */ }
         }
         return json({ error: "write conflict after retries" }, 502);
+      }
+
+      // ── Edit / revert a logged service ──
+      if (action === "revertService") {
+        const { truck, index, sig } = payload;
+        if (!truck || !sig) return json({ error: "Missing truck/sig" }, 400);
+        const keys = Array.isArray(sig.keys) ? sig.keys : [];
+        const res = await mutateServices(env, truck, keys, (hist) => {
+          const arr = hist[truck] || [];
+          const idx = findServiceEntry(arr, index, sig);
+          if (idx >= 0) arr.splice(idx, 1);
+          hist[truck] = arr;
+        }, truck + ": revert service " + (sig.date || "") + " " + (sig.hours || "") + "h");
+        return json({ ok: true, hist: res.hist, logs: res.logs });
+      }
+
+      if (action === "editService") {
+        const { truck, index, sig, entry } = payload;
+        if (!truck || !entry) return json({ error: "Missing truck/entry" }, 400);
+        const clean = {
+          date: String(entry.date || "").slice(0, 10),
+          hours: Number(entry.hours) || 0,
+          technician: String(entry.technician || "").slice(0, 80),
+          tasks: (Array.isArray(entry.tasks) ? entry.tasks : []).slice(0, 20)
+            .map(t => ({ key: String(t.key || "").slice(0, 40), label: String(t.label || "").slice(0, 80) }))
+            .filter(t => t.key),
+          notes: (Array.isArray(entry.notes) ? entry.notes : []).map(n => String(n).slice(0, 300)).filter(Boolean).slice(0, 5),
+        };
+        const oldKeys = (sig && sig.keys) ? sig.keys : [];
+        const newKeys = clean.tasks.map(t => t.key);
+        const keys = Array.from(new Set([...oldKeys, ...newKeys]));
+        const res = await mutateServices(env, truck, keys, (hist) => {
+          const arr = hist[truck] || [];
+          const idx = findServiceEntry(arr, index, sig);
+          if (idx >= 0) arr[idx] = clean; else arr.push(clean);
+          hist[truck] = arr;
+        }, truck + ": edit service " + clean.date + " " + clean.hours + "h");
+        return json({ ok: true, hist: res.hist, logs: res.logs });
       }
 
       return json({ error: "Unknown action" }, 400);
