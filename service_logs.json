@@ -5,12 +5,12 @@
     "drive_belt": 655
   },
   "HD6": {
-    "oil_filter": 1680,
-    "airfilter_battery": 1680,
-    "battery_box": 1680,
+    "oil_filter": 1897,
+    "airfilter_battery": 1897,
+    "battery_box": 1897,
     "airfilter_500": 1465,
-    "fuel_filter": 1578,
-    "coolant_lines": 1578,
+    "fuel_filter": 1897,
+    "coolant_lines": 1897,
     "drive_belt": 1680,
     "clean_radiator": 1578
   },
