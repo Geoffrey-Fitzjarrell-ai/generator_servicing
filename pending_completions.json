@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "truck": "HD6",
+    "tasks": [
+      "Air filter / Battery check",
+      "Battery Box check",
+      "Oil / filter change",
+      "Check coolant lines",
+      "Fuel filter change"
+    ],
+    "technician": "Masakiyo",
+    "postedBy": {
+      "id": "U0ABK5GDYGM",
+      "name": null
+    },
+    "loggedAt": "2026-07-29T12:35:42.438Z",
+    "hours": 1897,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
