@@ -1164,6 +1164,7 @@ function App({ jump }) {
     const rows=[["truck","date","hours","technician","tasks","notes"]];
     Object.keys(svcHistory).sort((a,b)=>parseInt(a.slice(2))-parseInt(b.slice(2))).forEach(tr=>{
       (svcHistory[tr]||[]).forEach(e=>{
+        if(e.audit) return;   // correction/audit markers show on the page only, not in the CSV
         rows.push([tr, e.date||"", e.hours!=null?e.hours:"", e.technician||"",
           (e.tasks||[]).map(t=>t.label).join("; "), (e.notes||[]).join("; ")]);
       });
@@ -1548,6 +1549,16 @@ function App({ jump }) {
               correcting?React.createElement("th",{style:{textAlign:"right"}},"Correct"):null
             )),
             React.createElement("tbody",null,histEntries.map((e,i)=>
+              e.audit?
+              React.createElement("tr",{key:i,style:{background:"var(--surface2)"}},
+                React.createElement("td",{className:"h-date"},e.date||"—"),
+                React.createElement("td",{className:"h-hours",style:{color:"var(--text-faint)"}},"—"),
+                React.createElement("td",null,React.createElement("span",{style:{fontSize:10,fontFamily:"var(--mono)",letterSpacing:".05em",padding:"2px 7px",borderRadius:3,
+                  background:e.action==="reverted"?"rgba(225,60,60,.15)":"rgba(120,160,230,.15)",color:e.action==="reverted"?"var(--red)":"var(--blue)"}},
+                  e.action==="reverted"?"↩ REVERTED":"✎ EDITED")),
+                React.createElement("td",{style:{fontStyle:"italic",color:"var(--text-dim)",fontSize:12}},e.summary||"Service correction"),
+                correcting?React.createElement("td",null):null
+              ):
               React.createElement("tr",{key:i},
                 React.createElement("td",{className:"h-date"},e.date||"—"),
                 React.createElement("td",{className:"h-hours"},e.hours!=null?e.hours+"h":"—"),

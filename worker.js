@@ -1167,7 +1167,15 @@ export default {
         const res = await mutateServices(env, truck, keys, (hist) => {
           const arr = hist[truck] || [];
           const idx = findServiceEntry(arr, index, sig);
-          if (idx >= 0) arr.splice(idx, 1);
+          let removed = null;
+          if (idx >= 0) { removed = arr[idx]; arr.splice(idx, 1); }
+          const labels = removed ? (removed.tasks || []).map(t => t.label || t.key).join(", ")
+                                 : (Array.isArray(sig.keys) ? sig.keys.join(", ") : "");
+          const d = (sig.date || (removed && removed.date) || "?");
+          const h = (sig.hours != null ? sig.hours : (removed && removed.hours));
+          arr.push({ audit: true, action: "reverted", date: new Date().toISOString().slice(0, 10),
+            ts: new Date().toISOString(), hours: null, technician: "", tasks: [], notes: [],
+            summary: "Reverted service \u2014 " + d + " \u00b7 " + (h != null ? h + "h" : "?") + " \u00b7 " + (labels || "(no tasks)") });
           hist[truck] = arr;
         }, truck + ": revert service " + (sig.date || "") + " " + (sig.hours || "") + "h");
         return json({ ok: true, hist: res.hist, logs: res.logs });
@@ -1191,7 +1199,12 @@ export default {
         const res = await mutateServices(env, truck, keys, (hist) => {
           const arr = hist[truck] || [];
           const idx = findServiceEntry(arr, index, sig);
-          if (idx >= 0) arr[idx] = clean; else arr.push(clean);
+          let old = null;
+          if (idx >= 0) { old = arr[idx]; arr[idx] = clean; } else arr.push(clean);
+          arr.push({ audit: true, action: "edited", date: new Date().toISOString().slice(0, 10),
+            ts: new Date().toISOString(), hours: null, technician: "", tasks: [], notes: [],
+            summary: "Edited service \u2014 now " + clean.date + " \u00b7 " + clean.hours + "h"
+              + (old ? (" (was " + old.date + " \u00b7 " + old.hours + "h)") : "") });
           hist[truck] = arr;
         }, truck + ": edit service " + clean.date + " " + clean.hours + "h");
         return json({ ok: true, hist: res.hist, logs: res.logs });
