@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-07-28"
+    "updated": "2026-07-29"
   },
   "items": [
     {
@@ -183,6 +183,20 @@
       "end": "2026-07-28",
       "allDay": true,
       "notes": "Check battery box",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1785283939510",
+      "title": "Replacing 1x Matenet for HD6",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD6",
+      "category": "repair",
+      "status": "in-progress",
+      "start": "2026-07-29",
+      "end": "2026-07-29",
+      "allDay": true,
+      "notes": "Need to replace the Matenet cable between sw1 & sw2. https://appliedint-frontier.atlassian.net/browse/ROOT-1728",
       "jiraKey": "",
       "jiraUrl": ""
     }
