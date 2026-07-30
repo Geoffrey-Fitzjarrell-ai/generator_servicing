@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-07-29"
+    "updated": "2026-07-30"
   },
   "items": [
     {
@@ -213,6 +213,20 @@
       "notes": "HD6 and HD10 can have the FW on their TE-2006's updated",
       "jiraKey": "VCO-3688",
       "jiraUrl": "https://appliedintuition.atlassian.net/browse/VCO-3688"
+    },
+    {
+      "id": "w_1785397555148",
+      "title": "MCE modifications",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "MCE-206",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-07-31",
+      "end": "2026-07-31",
+      "allDay": true,
+      "notes": "Modify back kit to comply with states",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ]
 }
