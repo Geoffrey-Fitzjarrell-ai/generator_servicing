@@ -494,6 +494,40 @@
       "notes": [
         "Oil check is done, air filter and battery check were not done due to the urgency of getting the truck out on the route.  Air filter's have consistently been ok up until their replacement time.  Battery check ok"
       ]
+    },
+    {
+      "date": "2026-07-30",
+      "hours": 1738,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        },
+        {
+          "key": "fuel_filter",
+          "label": "Fuel filter change"
+        },
+        {
+          "key": "airfilter_500",
+          "label": "Change air filter"
+        }
+      ],
+      "notes": [
+        "Nuts on the ground bus bar loose, zip ties reapplied to under cover hoses for bottom of generator, generator mount bolts torque checked. air filter was also changed due to condition"
+      ]
     }
   ],
   "HD11": [
