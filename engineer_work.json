@@ -145,20 +145,6 @@
       "jiraUrl": ""
     },
     {
-      "id": "w_1785113378359",
-      "title": "HD10 Servicing",
-      "engineer": "Geoff Fitzjarrell",
-      "asset": "HD10",
-      "category": "maintenance",
-      "status": "planned",
-      "start": "2026-07-30",
-      "end": "2026-07-30",
-      "allDay": true,
-      "notes": "HD10 is out of the office until this day but is behind on maintenance for fule filter, and coming soon for oil change",
-      "jiraKey": "",
-      "jiraUrl": ""
-    },
-    {
       "id": "w_1785203073229",
       "title": "HD17 check",
       "engineer": "Geoff Fitzjarrell",
@@ -225,6 +211,20 @@
       "end": "2026-07-31",
       "allDay": true,
       "notes": "Modify back kit to comply with states",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1785113378359",
+      "title": "HD10 Servicing",
+      "engineer": "Masakiyo Kato",
+      "asset": "HD10",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-07-30",
+      "end": "2026-07-30",
+      "allDay": true,
+      "notes": "HD10 is out of the office until this day but is behind on maintenance for fule filter, and coming soon for oil change",
       "jiraKey": "",
       "jiraUrl": ""
     }
