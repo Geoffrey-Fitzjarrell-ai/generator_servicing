@@ -938,6 +938,18 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-07-31",
+      "hours": 752,
+      "technician": "geoff",
+      "tasks": [
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD15": [
