@@ -14,5 +14,21 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD14",
+    "tasks": [
+      "Battery Box check"
+    ],
+    "technician": "geoff",
+    "postedBy": {
+      "id": "U0AV3PG35JM",
+      "name": null
+    },
+    "loggedAt": "2026-07-31T06:14:17.580Z",
+    "hours": 752,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
