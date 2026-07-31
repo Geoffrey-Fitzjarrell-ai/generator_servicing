@@ -255,6 +255,20 @@
       "notes": "Oil filter  \nAir filter  \nFuel filter  \nBattery \nBattery box \nCoolant check",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1785461874133",
+      "title": "Debug panel check",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD Fleet",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-07-31",
+      "end": "2026-07-31",
+      "allDay": true,
+      "notes": "Check trucks at TRC for central debug panel, and ensure all port adapters are installed and cables are connected",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ]
 }
