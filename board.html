@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>HD GEN2 — Fleet Board</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  :root{
+    --bg:#080b12; --surface:#0d1117; --surface2:#131925; --surface3:#1a2235;
+    --border:#1e2840; --border2:#28364f;
+    --amber:#f0a500; --amber-dim:#3d2900;
+    --red:#e04545; --red-dim:#3a1010;
+    --green:#3da870; --green-dim:#0f2e1e;
+    --blue:#4a7cf5; --blue-dim:#101e40;
+    --purple:#9880cc; --purple-dim:#1a1228;
+    --text:#dde4f0; --text-dim:#6e7f99; --text-faint:#38465a;
+    --mono:'JetBrains Mono',monospace; --sans:'Inter',sans-serif; --radius:10px;
+  }
+  html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);
+    background-image:url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23ffffff06'/%3E%3C/svg%3E");
+    -webkit-font-smoothing:antialiased; overscroll-behavior:none;}
+  body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
+
+  /* ── Header ── */
+  .hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;
+    background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;}
+  .hdr::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--blue) 40%,var(--amber) 60%,transparent);opacity:.35;}
+  .hdr-l{display:flex;align-items:center;gap:12px;}
+  .badge{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.16em;color:var(--bg);
+    background:var(--amber);padding:5px 10px;border-radius:5px;}
+  .hdr-title{font-size:15px;font-weight:600;letter-spacing:.02em;}
+  .hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text-faint);letter-spacing:.08em;}
+  .hdr-r{display:flex;align-items:center;gap:14px;}
+  .age{font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:5px 11px;border-radius:5px;text-transform:uppercase;
+    background:var(--green-dim);color:var(--green);}
+  .age.warn{background:var(--amber-dim);color:var(--amber);} .age.stale{background:var(--red-dim);color:var(--red);}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);
+    display:inline-block;margin-right:7px;animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .refresh{font-family:var(--mono);font-size:12px;letter-spacing:.06em;min-height:44px;min-width:44px;padding:10px 16px;
+    background:transparent;color:var(--text-dim);border:1px solid var(--border2);border-radius:8px;cursor:pointer;}
+  .refresh:active{border-color:var(--blue);color:var(--blue);}
+
+  /* ── Summary pills ── */
+  .summary{display:flex;flex-wrap:wrap;gap:12px;padding:16px 20px 4px;}
+  .pill{flex:1 1 150px;min-height:78px;border-radius:var(--radius);border:1px solid var(--border);
+    background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;justify-content:center;gap:2px;
+    position:relative;overflow:hidden;cursor:pointer;transition:transform .08s;}
+  .pill:active{transform:scale(.98);}
+  .pill::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;}
+  .pill .n{font-family:var(--mono);font-size:34px;font-weight:700;line-height:1;}
+  .pill .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);}
+  .pill.sel{border-color:currentColor;box-shadow:0 0 0 1px currentColor inset;}
+  .pill.ok{color:var(--green)}       .pill.ok::before{background:var(--green)}
+  .pill.due{color:var(--blue)}       .pill.due::before{background:var(--blue)}
+  .pill.warn{color:var(--amber)}     .pill.warn::before{background:var(--amber)}
+  .pill.overdue{color:var(--red)}    .pill.overdue::before{background:var(--red)}
+  .pill.grounded{color:var(--purple)}.pill.grounded::before{background:var(--purple)}
+
+  /* ── Fleet grid ── */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;padding:14px 20px 40px;}
+  .card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:16px 16px 14px;cursor:pointer;overflow:hidden;transition:transform .08s,border-color .15s;min-height:172px;
+    display:flex;flex-direction:column;}
+  .card:active{transform:scale(.985);}
+  .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;}
+  .card.ok::before{background:var(--green)} .card.due::before{background:var(--blue)}
+  .card.warn::before{background:var(--amber)} .card.overdue::before{background:var(--red)}
+  .card.grounded::before{background:var(--purple)} .card.none::before{background:var(--text-faint)}
+  .card.overdue{border-color:rgba(224,69,69,.5);animation:alarm 2.8s ease-in-out infinite;}
+  @keyframes alarm{0%,100%{box-shadow:none}50%{box-shadow:0 0 24px rgba(224,69,69,.18) inset}}
+  .card.grounded{background:#120d1c;border-color:#3a2b55;}
+  .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+  .card-name{font-family:var(--mono);font-size:30px;font-weight:700;letter-spacing:.02em;line-height:1;}
+  .card.ok .card-name{color:var(--text)} .card.due .card-name{color:var(--blue)}
+  .card.warn .card-name{color:var(--amber)} .card.overdue .card-name{color:var(--red)}
+  .card.grounded .card-name{color:var(--purple)} .card.none .card-name{color:var(--text-dim)}
+  .card-status{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.09em;padding:4px 8px;border-radius:5px;white-space:nowrap;}
+  .st-ok{background:var(--green-dim);color:var(--green)} .st-due{background:var(--blue-dim);color:var(--blue)}
+  .st-warn{background:var(--amber-dim);color:var(--amber)} .st-overdue{background:var(--red-dim);color:var(--red)}
+  .st-grounded{background:var(--purple-dim);color:var(--purple)} .st-none{background:var(--surface2);color:var(--text-dim)}
+  .card-hours{margin-top:12px;display:flex;align-items:baseline;gap:6px;}
+  .card-hours .hn{font-family:var(--mono);font-size:38px;font-weight:700;line-height:1;color:var(--text);}
+  .card-hours .hu{font-family:var(--mono);font-size:13px;color:var(--text-faint);}
+  .card-head{margin-top:10px;font-size:13px;font-weight:600;line-height:1.35;}
+  .card-headsub{font-size:11px;color:var(--text-dim);margin-top:1px;}
+  .card-bar{margin-top:auto;padding-top:12px;}
+  .track{height:10px;border-radius:5px;background:#1a2235;border:1px solid var(--border2);overflow:hidden;}
+  .fill{height:100%;border-radius:4px;transition:width .5s ease;}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:9px;gap:8px;}
+  .tech{font-size:11px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tech b{color:var(--text);font-weight:600;}
+  .fresh{font-family:var(--mono);font-size:9px;color:var(--text-faint);letter-spacing:.05em;flex-shrink:0;}
+
+  /* ── Detail sheet ── */
+  .sheet-bg{position:fixed;inset:0;z-index:60;background:rgba(4,6,10,.72);backdrop-filter:blur(3px);
+    display:none;align-items:flex-end;justify-content:center;}
+  .sheet-bg.show{display:flex;}
+  .sheet{width:100%;max-width:760px;max-height:92vh;background:var(--surface);border:1px solid var(--border2);
+    border-radius:18px 18px 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slideup .22s ease;}
+  @media(min-width:820px){.sheet-bg{align-items:center;}.sheet{border-radius:18px;max-height:88vh;}}
+  @keyframes slideup{from{transform:translateY(30px);opacity:.4}to{transform:translateY(0);opacity:1}}
+  .sheet-hdr{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--border);
+    padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:2;}
+  .sheet-hdr::before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;}
+  .sheet-hdr.ok::before{background:var(--green)} .sheet-hdr.due::before{background:var(--blue)}
+  .sheet-hdr.warn::before{background:var(--amber)} .sheet-hdr.overdue::before{background:var(--red)}
+  .sheet-hdr.grounded::before{background:var(--purple)} .sheet-hdr.none::before{background:var(--text-faint)}
+  .sheet-title{display:flex;align-items:center;gap:14px;}
+  .sheet-title .nm{font-family:var(--mono);font-size:30px;font-weight:700;}
+  .close{min-width:48px;min-height:48px;border-radius:10px;border:1px solid var(--border2);background:var(--surface2);
+    color:var(--text-dim);font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .close:active{border-color:var(--red);color:var(--red);}
+  .sheet-body{padding:18px 20px 30px;}
+  .kv{display:flex;flex-wrap:wrap;gap:8px 22px;margin-bottom:20px;}
+  .kv div{display:flex;flex-direction:column;gap:2px;}
+  .kv .k{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);}
+  .kv .v{font-size:15px;font-weight:600;font-family:var(--mono);}
+  .sec{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);
+    margin:20px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+  .trow{padding:11px 0;border-bottom:1px solid var(--border);}
+  .trow:last-child{border-bottom:none;}
+  .trow-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:7px;}
+  .trow-nm{font-size:14px;font-weight:600;}
+  .trow-meta{font-family:var(--mono);font-size:12px;color:var(--text-dim);white-space:nowrap;}
+  .trow-meta.overdue{color:var(--red)} .trow-meta.due{color:var(--blue)}
+  .trow-meta.warn{color:var(--amber)} .trow-meta.ok{color:var(--green)}
+  .insp{display:flex;flex-wrap:wrap;gap:12px;}
+  .insp .box{flex:1 1 190px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;}
+  .insp .box .k{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px;}
+  .insp .box .d{font-family:var(--mono);font-size:17px;font-weight:700;}
+  .insp .box .sub{font-size:11px;color:var(--text-dim);margin-top:3px;}
+  .hist{padding:11px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:12px;}
+  .hist:last-child{border-bottom:none;}
+  .hist .hl{font-size:13px;}
+  .hist .hl b{font-family:var(--mono);}
+  .hist .hr{font-family:var(--mono);font-size:12px;color:var(--text-dim);white-space:nowrap;text-align:right;}
+  .empty{color:var(--text-faint);font-size:13px;padding:8px 0;}
+
+  .fullmsg{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:24px;}
+  .fullmsg .m{font-family:var(--mono);font-size:13px;color:var(--text-dim);letter-spacing:.06em;}
+
+  /* ── Gate (shared with main page) ── */
+  #gate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#080b12;}
+  #gate .box{width:340px;max-width:88vw;text-align:center;font-family:var(--mono);color:#dde4f0;}
+  #gate input{width:100%;padding:14px 15px;background:#131925;border:1px solid #28364f;border-radius:8px;color:#dde4f0;font-family:inherit;font-size:16px;outline:none;}
+  #gate button{width:100%;padding:14px;background:#f0a500;border:none;border-radius:8px;color:#080b12;font-family:inherit;font-weight:700;font-size:14px;letter-spacing:.1em;cursor:pointer;margin-top:2px;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="box">
+    <div style="font-size:12px;letter-spacing:.18em;color:#38465a;margin-bottom:6px;">HD&nbsp;GEN2</div>
+    <div style="font-size:22px;font-weight:700;margin-bottom:4px;">Fleet Board</div>
+    <div style="font-size:12px;color:#6e7f99;margin-bottom:22px;">Enter password</div>
+    <input id="gatePw" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Password" />
+    <div id="gateErr" style="height:16px;color:#e04545;font-size:11px;margin:8px 0 10px;"></div>
+    <button id="gateBtn" type="button">ENTER</button>
+  </div>
+</div>
+
+<div id="app" hidden></div>
+
+<script>
+/* ── Access gate — identical hashes + storage key to the main page, so the same
+   passwords work and a login on either page unlocks both on this device. ── */
+(function(){
+  var HASH_DAILY  = "3752e23452e983a6592f37cd66da9aa781b7141e33a1dc064b7c7d71569d4d40";
+  var HASH_MASTER = "fb5c665d28440f700a4494e67fda34c137b32c2ca749338d297bc7b6b7a46e76";
+  var HASH_NAMES = {
+    "b62a515711ba7940195a292d672bc17856466616d890d9e02fe753c8592ee252": "Masakiyo",
+    "77fe232d22d574610d05e1d5e37bae79528f4f862914b43cf55e1e3befb0a7dc": "Geoff"
+  };
+  var VER="v2", KEY="fleet_gate_"+VER;
+  function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+  function authed(){try{var o=JSON.parse(localStorage.getItem(KEY)||"null");if(!o)return false;
+    if(o.tier==="master")return true;if(o.tier==="day"&&o.date===today())return true;return false;}catch(e){return false;}}
+  async function sha(s){var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join("");}
+  function unlock(tier){try{localStorage.setItem(KEY,JSON.stringify(tier==="master"?{tier:"master"}:{tier:"day",date:today()}));}catch(e){}
+    var g=document.getElementById("gate");if(g)g.remove();
+    if(typeof window.__startBoard==="function")window.__startBoard();}
+  function boot(){
+    var g=document.getElementById("gate");
+    if(authed()){if(g)g.remove();if(typeof window.__startBoard==="function")window.__startBoard();return;}
+    var pw=document.getElementById("gatePw"),btn=document.getElementById("gateBtn"),err=document.getElementById("gateErr");
+    async function tryit(){err.textContent="";var raw=pw.value||"";var h=await sha(raw);var hn=await sha(raw.trim().toLowerCase());
+      if(h===HASH_MASTER){unlock("master");}
+      else if(HASH_NAMES[hn]){unlock("master");}
+      else if(h===HASH_DAILY){unlock("day");}
+      else{err.textContent="Incorrect password";pw.value="";pw.focus();}}
+    btn.addEventListener("click",tryit);
+    pw.addEventListener("keydown",function(e){if(e.key==="Enter")tryit();});
+    setTimeout(function(){pw.focus();},50);
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
+})();
+</script>
+
+<script>
+/* ── Fleet board app ── */
+(function(){
+  var RAW = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/";
+  var SRC = {
+    fleet: RAW+"data.json",
+    logs:  RAW+"service_logs.json",
+    insp:  RAW+"inspections.json",
+    hist:  RAW+"service_history.json"
+  };
+
+  // Service task catalog — mirrors the main page (single source of truth for status).
+  var TASKS = [
+    {key:"airfilter_battery", name:"Air filter / Battery check", interval:50,  type:"service"},
+    {key:"battery_box",       name:"Battery Box check",         interval:50,  type:"service"},
+    {key:"oil_filter",        name:"Oil / filter change",       interval:150, type:"replace"},
+    {key:"airfilter_clean",   name:"Air filter cleaning",       interval:250, type:"service"},
+    {key:"coolant_lines",     name:"Check coolant lines",       interval:250, type:"service"},
+    {key:"fuel_filter",       name:"Fuel filter change",        interval:250, type:"replace"},
+    {key:"drive_belt",        name:"Check drive belt & tension",interval:500, type:"service"},
+    {key:"clean_radiator",    name:"Clean radiator",            interval:500, type:"service"},
+    {key:"airfilter_500",     name:"Change air filter",         interval:500, type:"replace"}
+  ];
+  function tasksFor(id){ return TASKS.filter(function(t){ return t.key!=="airfilter_clean" || id==="HD5"; }); }
+
+  var STY = {
+    overdue:{label:"OVERDUE", color:"var(--red)"},
+    warn:   {label:"DUE SOON",color:"var(--amber)"},
+    due:    {label:"CHECK DUE",color:"var(--blue)"},
+    ok:     {label:"OPERATIONAL",color:"var(--green)"},
+    grounded:{label:"GROUNDED",color:"var(--purple)"},
+    none:   {label:"NO HOURS",color:"var(--text-dim)"}
+  };
+  var RANK = {overdue:3, warn:2, due:1, ok:0, no_record:0, unknown:0};
+
+  // Per-task state for one truck (mirrors the main page's taskStatus logic exactly).
+  function taskStates(id, hours, logs){
+    var L = logs[id] || {};
+    return tasksFor(id).map(function(t){
+      var last = (L[t.key]!=null) ? L[t.key] : null;
+      var since=null, pct=0, status="unknown", remaining=null, over=null;
+      if(hours==null){ status="unknown"; }
+      else if(last==null){
+        if(t.key==="airfilter_clean" || hours < t.interval){ status="no_record"; pct=Math.min(hours/t.interval,1); remaining=t.interval-hours; }
+        else { status = t.type==="replace"?"overdue":"due"; pct=1; over=hours-t.interval; }
+      } else {
+        since = hours-last; var r=since/t.interval; pct=Math.min(r,1); remaining=t.interval-since;
+        if(r>=1) status = t.type==="replace"?"overdue":"due";
+        else if(t.type==="replace" && r>=0.9) status="warn";
+        else status="ok";
+        if(status==="overdue"||status==="due") over = since - t.interval;
+      }
+      return {key:t.key,name:t.name,interval:t.interval,type:t.type,last:last,since:since,pct:pct,status:status,remaining:remaining,over:over};
+    });
+  }
+  function overallStatus(id, truck, logs){
+    if(truck.grounded) return "grounded";
+    if(truck.hours==null) return "none";
+    var s = taskStates(id, truck.hours, logs).map(function(x){return x.status;});
+    if(s.indexOf("overdue")>=0) return "overdue";
+    if(s.indexOf("warn")>=0) return "warn";
+    if(s.indexOf("due")>=0) return "due";
+    return "ok";
+  }
+  // The single most urgent (or nearest-due) task — drives the card headline + bar.
+  function criticalTask(states){
+    var best=null;
+    states.forEach(function(t){
+      if(t.status==="unknown"||t.status==="no_record" && t.over==null && best) return;
+      if(!best){ best=t; return; }
+      var rb=RANK[best.status]||0, rt=RANK[t.status]||0;
+      if(rt>rb){ best=t; }
+      else if(rt===rb){
+        var kb=(best.over!=null?best.over:best.pct), kt=(t.over!=null?t.over:t.pct);
+        if(kt>kb) best=t;
+      }
+    });
+    return best;
+  }
+
+  function fmtAge(iso){
+    if(!iso) return {txt:"no data", cls:"stale"};
+    var d=new Date(iso), diff=(Date.now()-d.getTime())/1000;
+    var cls = diff<60*60*30 ? "" : diff<60*60*54 ? "warn" : "stale";  // ~fresh <30h, warn, stale
+    var m=Math.floor(diff/60), h=Math.floor(m/60), dy=Math.floor(h/24);
+    var txt = dy>=1 ? dy+"d ago" : h>=1 ? h+"h ago" : m>=1 ? m+"m ago" : "just now";
+    return {txt:txt, cls:cls};
+  }
+  function fillColor(status, pct){
+    if(status==="overdue") return "var(--red)";
+    if(status==="due")     return "var(--blue)";
+    if(status==="warn")    return "var(--amber)";
+    if(pct>0.85)           return "var(--amber)";
+    return "var(--green)";
+  }
+  function truckNum(id){ var n=parseInt(String(id).replace(/\D/g,""),10); return isNaN(n)?999:n; }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+  var state = { fleet:{}, logs:{}, insp:{}, hist:{}, filter:null, lastFetch:null, err:false };
+
+  async function pull(){
+    try{
+      var bust = "?t="+Date.now();
+      var res = await Promise.all([
+        fetch(SRC.fleet+bust,{cache:"no-store"}),
+        fetch(SRC.logs+bust,{cache:"no-store"}),
+        fetch(SRC.insp+bust,{cache:"no-store"}),
+        fetch(SRC.hist+bust,{cache:"no-store"})
+      ]);
+      for(var i=0;i<res.length;i++){ if(!res[i].ok) throw new Error("HTTP "+res[i].status); }
+      var j = await Promise.all(res.map(function(r){return r.json();}));
+      state.fleet=j[0]||{}; state.logs=j[1]||{}; state.insp=j[2]||{}; state.hist=j[3]||{};
+      state.lastFetch=Date.now(); state.err=false;
+      render();
+    }catch(e){
+      console.error("fleet pull failed", e);
+      if(!state.lastFetch){ state.err=true; render(); }
+    }
+  }
+
+  function counts(){
+    var c={ok:0,due:0,warn:0,overdue:0,grounded:0,none:0};
+    Object.keys(state.fleet).forEach(function(id){
+      c[ overallStatus(id, state.fleet[id], state.logs) ]++;
+    });
+    return c;
+  }
+
+  function render(){
+    var app=document.getElementById("app"); if(app.hidden) return;
+    var prevScroll = (openId && document.getElementById("sheet")) ? document.getElementById("sheet").scrollTop : 0;
+    if(state.err){
+      app.innerHTML='<div class="fullmsg"><div class="m">FLEET DATA UNAVAILABLE — CHECK CONNECTION</div>'
+        +'<button class="refresh" onclick="__board_refresh()">RETRY</button></div>';
+      return;
+    }
+    var ids = Object.keys(state.fleet).sort(function(a,b){return truckNum(a)-truckNum(b);});
+    var c = counts();
+    var age = fmtAge(state.lastFetch ? new Date(state.lastFetch).toISOString() : null);
+
+    var pills = [
+      {k:"overdue",n:c.overdue}, {k:"due",n:c.due}, {k:"ok",n:c.ok}
+    ];
+    if(c.warn)     pills.splice(1,0,{k:"warn",n:c.warn});   // slot between overdue and due
+    if(c.grounded) pills.push({k:"grounded",n:c.grounded});
+    if(c.none)     pills.push({k:"none",n:c.none});
+    var pillHtml = pills.map(function(p){
+      var cls = p.k==="none" ? "grounded" : p.k;
+      var sel = state.filter===p.k ? " sel" : "";
+      var lbl = p.k==="none" ? "No hours" : STY[p.k].label;
+      return '<div class="pill '+cls+sel+'" data-filter="'+p.k+'"><div class="n">'+p.n+'</div><div class="l">'+lbl+'</div></div>';
+    }).join("");
+
+    var cards = ids.filter(function(id){
+      if(!state.filter) return true;
+      return overallStatus(id, state.fleet[id], state.logs)===state.filter;
+    }).map(function(id){ return cardHtml(id); }).join("");
+
+    app.innerHTML =
+      '<div class="hdr">'
+      +  '<div class="hdr-l"><span class="badge">HD GEN2</span>'
+      +    '<div><div class="hdr-title">Fleet Status Board</div><div class="hdr-sub">JAPAN VOPS · '+ids.length+' TRUCKS</div></div></div>'
+      +  '<div class="hdr-r"><span class="age '+age.cls+'"><span class="dot"></span>SYNCED '+age.txt+'</span>'
+      +    '<button class="refresh" onclick="__board_refresh()">↻ Refresh</button></div>'
+      +'</div>'
+      +'<div class="summary">'+pillHtml+'</div>'
+      +'<div class="grid">'+(cards||'<div class="empty" style="padding:24px">No trucks in this state.</div>')+'</div>'
+      +'<div class="sheet-bg" id="sheetBg"><div class="sheet" id="sheet"></div></div>';
+
+    // wire pills (tap to filter / untoggle)
+    app.querySelectorAll(".pill").forEach(function(el){
+      el.addEventListener("click",function(){
+        var f=el.getAttribute("data-filter");
+        state.filter = (state.filter===f) ? null : f;
+        render();
+      });
+    });
+    // wire cards
+    app.querySelectorAll(".card").forEach(function(el){
+      el.addEventListener("click",function(){ openSheet(el.getAttribute("data-id")); });
+    });
+    // keep sheet open across refresh, preserving scroll position
+    if(openId){ openSheet(openId, true); var sh=document.getElementById("sheet"); if(sh) sh.scrollTop=prevScroll; }
+  }
+
+  function cardHtml(id){
+    var t=state.fleet[id]; var status=overallStatus(id,t,state.logs);
+    var states=taskStates(id, t.hours, state.logs);
+    var crit=criticalTask(states);
+    var age=fmtAge(t.lastUpdated);
+    var tech = t.technician ? '<span class="tech">Tech: <b>'+esc(t.technician)+'</b></span>' : '<span class="tech" style="color:var(--text-faint)">Tech: —</span>';
+
+    var head="", sub="", barPct=0, barColor="var(--text-faint)";
+    if(status==="grounded"){ head='GROUNDED'; sub=esc(t.groundedNote||"Under repair"); }
+    else if(status==="none"){ head='No hours logged yet'; sub='Waiting on first reading'; }
+    else if(crit){
+      barPct=Math.round((crit.pct||0)*100); barColor=fillColor(crit.status, crit.pct);
+      if(crit.status==="overdue"){ head=esc(crit.name); sub='OVERDUE'+(crit.over>0?' · +'+crit.over+'h past':''); }
+      else if(crit.status==="warn"){ head=esc(crit.name); sub='Due soon · '+Math.max(0,crit.remaining)+'h left'; }
+      else if(crit.status==="due"){ head=esc(crit.name); sub='Check due'+(crit.over>0?' · +'+crit.over+'h':''); }
+      else { head='Next: '+esc(crit.name); sub=(crit.remaining!=null?Math.max(0,crit.remaining)+'h left':'on track'); }
+    }
+
+    var hoursHtml = (t.hours!=null)
+      ? '<div class="card-hours"><span class="hn">'+t.hours+'</span><span class="hu">hrs</span></div>'
+      : '<div class="card-hours"><span class="hn" style="color:var(--text-faint)">—</span><span class="hu">hrs</span></div>';
+
+    return '<div class="card '+status+'" data-id="'+id+'">'
+      +'<div class="card-top"><span class="card-name">'+id+'</span>'
+      +  '<span class="card-status st-'+status+'">'+STY[status].label+'</span></div>'
+      + hoursHtml
+      +'<div class="card-head">'+head+'</div>'
+      +(sub?'<div class="card-headsub">'+sub+'</div>':'')
+      +'<div class="card-bar"><div class="track"><div class="fill" style="width:'+barPct+'%;background:'+barColor+'"></div></div>'
+      +  '<div class="card-foot">'+tech+'<span class="fresh">'+age.txt+'</span></div></div>'
+      +'</div>';
+  }
+
+  var openId=null;
+  function openSheet(id, keep){
+    openId=id;
+    var t=state.fleet[id]; if(!t) return;
+    var status=overallStatus(id,t,state.logs);
+    var states=taskStates(id, t.hours, state.logs).slice().sort(function(a,b){
+      var r=(RANK[b.status]||0)-(RANK[a.status]||0); if(r) return r; return (b.pct||0)-(a.pct||0);
+    });
+    var ins=state.insp[id]||{};
+    var age=fmtAge(t.lastUpdated);
+
+    // task rows
+    var taskRows = states.map(function(s){
+      var barColor=fillColor(s.status, s.pct), pct=Math.round((s.pct||0)*100);
+      var meta, mcls="";
+      if(s.status==="overdue"){ meta='OVERDUE'+(s.over>0?' +'+s.over+'h':''); mcls="overdue"; }
+      else if(s.status==="due"){ meta='DUE'+(s.over>0?' +'+s.over+'h':''); mcls="due"; }
+      else if(s.status==="warn"){ meta=Math.max(0,s.remaining)+'h left'; mcls="warn"; }
+      else if(s.status==="no_record"){ meta='no record'; }
+      else if(s.status==="unknown"){ meta='—'; }
+      else { meta=Math.max(0,s.remaining)+'h left'; mcls="ok"; }
+      var detail = (s.last!=null)
+        ? ('last @ '+s.last+'h · every '+s.interval+'h')
+        : ('interval '+s.interval+'h');
+      return '<div class="trow"><div class="trow-top"><span class="trow-nm">'+esc(s.name)+'</span>'
+        +'<span class="trow-meta '+mcls+'">'+meta+'</span></div>'
+        +'<div class="track"><div class="fill" style="width:'+pct+'%;background:'+barColor+'"></div></div>'
+        +'<div style="font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:5px;">'+detail+'</div></div>';
+    }).join("");
+
+    // inspections
+    var today=new Date().toISOString().slice(0,10);
+    var nextInsp=null;
+    (ins.events||[]).forEach(function(ev){
+      if(ev.type==="inspection3m" && ev.date>=today && (!nextInsp||ev.date<nextInsp.date)) nextInsp=ev;
+    });
+    var inspBoxes=""
+      + '<div class="box"><div class="k">Next 3-month insp.</div><div class="d">'+(nextInsp?esc(nextInsp.date):'—')+'</div>'
+      +   (nextInsp&&nextInsp.approx?'<div class="sub">approx (2nd Sat)</div>':'')+'</div>'
+      + '<div class="box"><div class="k">車検 Shaken expiry</div><div class="d">'+(ins.shakenExpiry?esc(ins.shakenExpiry):'—')+'</div>'
+      +   (ins.plate?'<div class="sub">'+esc(ins.plate)+'</div>':'')+'</div>';
+
+    // recent service history
+    var h=(state.hist[id]||[]).slice().reverse().slice(0,4);
+    var histHtml = h.length ? h.map(function(e){
+      var labels=(e.tasks||[]).map(function(x){return esc(x.label||x.key);}).join(", ");
+      return '<div class="hist"><div class="hl"><b>'+esc(e.date||"—")+'</b> · '+(labels||'service')+'</div>'
+        +'<div class="hr">'+(e.hours!=null?e.hours+'h':'')+(e.technician?'<br>'+esc(e.technician):'')+'</div></div>';
+    }).join("") : '<div class="empty">No service history recorded.</div>';
+
+    var groundedBanner = status==="grounded"
+      ? '<div style="background:var(--purple-dim);border:1px solid #3a2b55;border-radius:10px;padding:13px 15px;margin-bottom:16px;">'
+        +'<div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--purple);letter-spacing:.1em;">⚠ GROUNDED</div>'
+        +'<div style="font-size:12px;color:#8a7ab0;margin-top:4px;">'+esc(t.groundedNote||"Under repair")+'</div></div>'
+      : "";
+
+    var sheet=document.getElementById("sheet");
+    sheet.innerHTML =
+      '<div class="sheet-hdr '+status+'">'
+      +  '<div class="sheet-title"><span class="nm">'+id+'</span>'
+      +    '<span class="card-status st-'+status+'">'+STY[status].label+'</span></div>'
+      +  '<button class="close" id="sheetClose">✕</button>'
+      +'</div>'
+      +'<div class="sheet-body">'
+      +  groundedBanner
+      +  '<div class="kv">'
+      +    '<div><span class="k">Hours</span><span class="v">'+(t.hours!=null?t.hours+'h':'—')+'</span></div>'
+      +    '<div><span class="k">Technician</span><span class="v" style="font-family:var(--sans)">'+(t.technician?esc(t.technician):'—')+'</span></div>'
+      +    '<div><span class="k">Updated</span><span class="v">'+age.txt+'</span></div>'
+      +  '</div>'
+      +  '<div class="sec">Service status</div>'+taskRows
+      +  '<div class="sec">Inspections</div><div class="insp">'+inspBoxes+'</div>'
+      +  '<div class="sec">Recent service</div>'+histHtml
+      +'</div>';
+
+    var bg=document.getElementById("sheetBg");
+    bg.classList.add("show");
+    if(!keep){
+      document.getElementById("sheetClose").addEventListener("click",closeSheet);
+      bg.addEventListener("click",function(e){ if(e.target===bg) closeSheet(); });
+    } else {
+      document.getElementById("sheetClose").addEventListener("click",closeSheet);
+      bg.addEventListener("click",function(e){ if(e.target===bg) closeSheet(); });
+    }
+  }
+  function closeSheet(){ openId=null; var bg=document.getElementById("sheetBg"); if(bg) bg.classList.remove("show"); }
+
+  window.__board_refresh=function(){ pull(); };
+  window.__startBoard=function(){
+    var app=document.getElementById("app"); app.hidden=false;
+    pull();
+    setInterval(pull, 60000);           // auto-refresh every 60s
+    document.addEventListener("visibilitychange",function(){ if(!document.hidden) pull(); });
+  };
+})();
+</script>
+</body>
+</html>
