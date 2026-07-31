@@ -201,22 +201,6 @@
       "jiraUrl": "https://appliedintuition.atlassian.net/browse/VCO-3688"
     },
     {
-      "id": "w_1785461874133",
-      "title": "Debug panel check",
-      "engineer": "Geoff Fitzjarrell",
-      "asset": "HD Fleet",
-      "category": "build",
-      "status": "planned",
-      "start": "2026-07-31",
-      "end": "2026-07-31",
-      "allDay": false,
-      "startTime": "08:00",
-      "endTime": "12:00",
-      "notes": "Check trucks at TRC for central debug panel, and ensure all port adapters are installed and cables are connected",
-      "jiraKey": "",
-      "jiraUrl": ""
-    },
-    {
       "id": "w_1785461544007",
       "title": "Fan harness checks",
       "engineer": "Geoff Fitzjarrell",
@@ -373,6 +357,22 @@
       "startTime": "13:00",
       "endTime": "17:00",
       "notes": "HD14's ethernet port was pushed all the way out of the shore ethernet slot, fixed now",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1785461874133",
+      "title": "Debug panel check",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD Fleet",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-07-31",
+      "end": "2026-07-31",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "18:00",
+      "notes": "Check trucks at TRC for central debug panel, and ensure all port adapters are installed and cables are connected",
       "jiraKey": "",
       "jiraUrl": ""
     }
