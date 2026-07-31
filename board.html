@@ -95,7 +95,7 @@
   .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:9px;gap:8px;}
   .tech{font-size:11px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .tech b{color:var(--text);font-weight:600;}
-  .fresh{font-family:var(--mono);font-size:9px;color:var(--text-faint);letter-spacing:.05em;flex-shrink:0;}
+  .fresh{font-family:var(--mono);font-size:10px;color:var(--text-faint);letter-spacing:.05em;flex-shrink:0;}
 
   /* ── Detail sheet ── */
   .sheet-bg{position:fixed;inset:0;z-index:60;background:rgba(4,6,10,.72);backdrop-filter:blur(3px);
@@ -334,6 +334,7 @@
   function render(){
     var app=document.getElementById("app"); if(app.hidden) return;
     var prevScroll = (openId && document.getElementById("sheet")) ? document.getElementById("sheet").scrollTop : 0;
+    var prevWin = window.scrollY;   // preserve page scroll across the 60s refresh
     if(state.err){
       app.innerHTML='<div class="fullmsg"><div class="m">FLEET DATA UNAVAILABLE — CHECK CONNECTION</div>'
         +'<button class="refresh" onclick="__board_refresh()">RETRY</button></div>';
@@ -386,6 +387,7 @@
     });
     // keep sheet open across refresh, preserving scroll position
     if(openId){ openSheet(openId, true); var sh=document.getElementById("sheet"); if(sh) sh.scrollTop=prevScroll; }
+    if(prevWin) window.scrollTo(0, prevWin);
   }
 
   function cardHtml(id){
