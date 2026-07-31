@@ -88,10 +88,10 @@
   #welcome.en .wc-k{color:var(--wred);text-shadow:0 0 14px rgba(255,42,58,.7);}
   #welcome.ja .wc-k{color:var(--wcyan);text-shadow:0 0 14px rgba(95,233,255,.7);font-family:var(--wsans);font-weight:700;}
   /* EN: tech wordmark (neon 'GF' removed — the 3D matrix + emblem is the hero) */
-  #welcome .wc-word{position:relative;font-family:'Zen Dots',sans-serif;font-size:clamp(40px,10vw,104px);letter-spacing:.14em;
-    color:#fff;margin-top:10px;opacity:0;
+  #welcome .wc-word{position:relative;font-family:'Zen Dots',sans-serif;font-size:clamp(44px,11vw,116px);letter-spacing:.14em;
+    color:#fff;margin-top:10px;opacity:0;will-change:transform,filter;
     text-shadow:0 0 4px #fff,0 0 12px var(--wpink),0 0 26px var(--wred),0 0 60px var(--wcrim);
-    animation:wcWord 1.2s linear .5s both, wcWordFx 5s steps(1) 1.9s infinite;}
+    animation:wcWord 1.15s cubic-bezier(.16,1,.3,1) .55s both, wcWordFx 5s steps(1) 2.2s infinite;}
   /* JA: katakana → katana slice → kanji reveal */
   #welcome .wc-holowrap{position:relative;margin-top:8px;filter:drop-shadow(0 0 14px rgba(95,233,255,.6)) drop-shadow(0 0 34px rgba(255,90,200,.45));}
   #welcome .wc-holo,#welcome .wc-kata{font-family:'Noto Sans JP',sans-serif;font-weight:900;font-size:clamp(56px,15vw,140px);letter-spacing:.05em;
@@ -140,7 +140,7 @@
   @keyframes wcFlick{0%,88%,100%{opacity:1}89%{opacity:.25}90%{opacity:1}91%{opacity:.4}92.5%{opacity:1}94%{opacity:.6}95%{opacity:1}}
   @keyframes wcHolo{to{background-position:280% 0;}}
   @keyframes wcHoloIn{0%{opacity:0;filter:blur(16px)}8%{opacity:1;filter:blur(0)}12%{opacity:.35}16%{opacity:1}20%{opacity:.6}24%{opacity:1}100%{opacity:1;filter:blur(0)}}
-  @keyframes wcWord{0%{opacity:0;letter-spacing:.55em;filter:blur(10px)}30%{opacity:1;filter:blur(0)}100%{opacity:1;letter-spacing:.14em;filter:blur(0)}}
+  @keyframes wcWord{0%{opacity:0;transform:scale(.32);filter:blur(22px) brightness(2.2)}40%{opacity:1;filter:blur(3px) brightness(1.6)}70%{transform:scale(1.1);filter:blur(0) brightness(1.3)}84%{transform:scale(.98)}100%{opacity:1;transform:scale(1);filter:blur(0) brightness(1)}}
   @keyframes wcWordFx{0%,90%,100%{transform:translate(0)}91%{transform:translate(-3px,1px)}92%{transform:translate(3px,-1px)}93%{transform:translate(0)}96%{transform:translate(2px,0)}97%{transform:translate(0)}}
   @keyframes wcSlash{0%{opacity:0;transform:rotate(-9deg) translateX(-130%)}12%{opacity:1}55%{opacity:1}100%{opacity:0;transform:rotate(-9deg) translateX(130%)}}
   @keyframes wcCutTop{0%{opacity:1;transform:translate(0,0)}28%{opacity:1}100%{opacity:0;transform:translate(16px,-46px) rotate(-3deg)}}
@@ -322,7 +322,7 @@
   var wcStop=null;
   // ── EN backdrop: red matrix rain + glitch wave + occasional tear ──
   function matrixEngine(cv){
-    var bx=cv.getContext("2d"),DPR=Math.min(2,window.devicePixelRatio||1),W,H,cx,cy,raf,run=true,frame=0,tear={f:0};
+    var bx=cv.getContext("2d"),DPR=Math.min(2,window.devicePixelRatio||1),W,H,cx,cy,raf,run=true,frame=0,tt=0,tear={f:0},shards=[],ripFired=false;
     var GLY="ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾅﾆﾇﾉﾊﾋﾌﾍﾎ0123456789#%&/<>*+=".split(""),F=560,streams=[],CW=20,TRAIL=13;
     function build(){ cx=W/2;cy=H/2;streams=[];var n=Math.ceil(W/CW)+2;
       for(var i=0;i<n;i++){ var tx=i*CW+(Math.random()*CW-CW/2), z=Math.pow(Math.random(),1.3)*1400, sc=F/(F+z);
@@ -342,9 +342,31 @@
       for(var k=0;k<12;k++){ var th=k/12*6.283, a=proj(rot([Math.cos(th)*R,Math.sin(th)*R,0],ax,ay),ez), b=proj(rot([Math.cos(th)*R*1.12,Math.sin(th)*R*1.12,0],ax,ay),ez);
         bx.beginPath();bx.moveTo(a[0],a[1]);bx.lineTo(b[0],b[1]);bx.strokeStyle="#ff8a3d";bx.globalAlpha=.5;bx.lineWidth=1.4;bx.stroke();bx.globalAlpha=1; }
       bx.restore(); }
+    // ── name rips through the matrix ──
+    function drawTorn(x0,x1,y,dir,rp,seed){ bx.save();
+      var seg=Math.max(7,Math.floor((x1-x0)/24)); bx.beginPath();
+      for(var i=0;i<=seg;i++){ var xx=x0+(x1-x0)*i/seg, j=(Math.sin(i*2.3+seed)+Math.sin(i*0.9+seed*1.7))*0.5, yy=y+j*11*dir; i?bx.lineTo(xx,yy):bx.moveTo(xx,yy); }
+      bx.strokeStyle="rgba(255,60,80,"+(0.95*rp).toFixed(2)+")";bx.lineWidth=2.6;bx.shadowColor="#ff2a3a";bx.shadowBlur=18;bx.stroke();
+      bx.strokeStyle="rgba(255,240,244,"+(0.85*rp).toFixed(2)+")";bx.lineWidth=1;bx.shadowBlur=6;bx.stroke(); bx.restore(); }
+    function drawRip(rect,rp){ if(!rect||rp<=0)return;
+      var padX=Math.min(90,rect.width*0.14+18), padY=rect.height*0.16+8;
+      var x0=Math.max(-10,rect.left-padX), x1=Math.min(W+10,rect.right+padX);
+      var gcx=(rect.left+rect.right)/2, gcy=(rect.top+rect.bottom)/2, halfH=(rect.height/2+padY)*rp, y0=gcy-halfH, y1=gcy+halfH;
+      bx.clearRect(x0-6,y0,(x1-x0)+12,(y1-y0));                 // reveal dark gap so the name reads clean
+      drawTorn(x0,x1,y0,-1,rp,tt*0.002); drawTorn(x0,x1,y1,1,rp,tt*0.002+3.1);
+      bx.save();bx.strokeStyle="rgba(255,90,110,"+(0.5*rp).toFixed(2)+")";bx.lineWidth=1.6;bx.shadowColor="#ff2a3a";bx.shadowBlur=12;
+      bx.beginPath();bx.moveTo(x0,y0);bx.lineTo(x0,y1);bx.moveTo(x1,y0);bx.lineTo(x1,y1);bx.stroke();bx.restore();
+      if(!ripFired){ ripFired=true;
+        for(var i=0;i<50;i++){var a=Math.random()*6.283,sp=3+Math.random()*10;shards.push({x:gcx,y:gcy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2.5,life:1,fs:10+Math.random()*16,c:Math.random()<0.5?"#ffffff":"#ff5a72"});}
+        bx.save();bx.globalAlpha=0.55;bx.fillStyle="#fff";bx.fillRect(x0-30,y0-22,(x1-x0)+60,(y1-y0)+44);bx.restore(); } }
+    function drawShards(){ if(!shards.length)return; bx.save();bx.textBaseline="middle";
+      for(var i=shards.length-1;i>=0;i--){var s=shards[i];s.x+=s.vx;s.y+=s.vy;s.vy+=0.35;s.vx*=0.99;s.life-=0.02;
+        if(s.life<=0){shards.splice(i,1);continue;} bx.globalAlpha=Math.max(0,s.life);bx.fillStyle=s.c;bx.font=s.fs+"px monospace";
+        bx.fillText(GLY[(Math.random()*GLY.length)|0],s.x,s.y);}
+      bx.globalAlpha=1;bx.restore(); }
     function size(){W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;bx.setTransform(DPR,0,0,DPR,0,0);build();}
     size();addEventListener("resize",size);
-    function step(){ if(!run)return; frame++; bx.clearRect(0,0,W,H); emblem(frame*16); bx.textBaseline="top";
+    function step(){ if(!run)return; frame++; tt+=16; bx.clearRect(0,0,W,H); emblem(frame*16); bx.textBaseline="top";
       for(var i=0;i<streams.length;i++){ var s=streams[i]; s.y+=s.sp; if(s.y>H+s.fs*TRAIL) s.y=-s.fs*(2+Math.random()*10);
         bx.font=s.fs+"px monospace";
         for(var j=0;j<TRAIL;j++){ var yy=s.y-j*s.fs; if(yy<-s.fs||yy>H)continue; var r=Math.random();
@@ -353,6 +375,9 @@
           bx.fillText(GLY[(Math.random()*GLY.length)|0], s.tx, yy); } }
       if(tear.f<=0&&frame%120===0)tear={f:5,y:(Math.random()*H*0.8)|0,h:20+(Math.random()*70|0),dx:(Math.random()*40-20)|0};
       if(tear.f>0){try{var im=bx.getImageData(0,tear.y*DPR,cv.width,tear.h*DPR);bx.putImageData(im,tear.dx*DPR,tear.y*DPR);}catch(e){}tear.f--;}
+      var el=document.querySelector("#welcome .wc-word"), rect=el?el.getBoundingClientRect():null;
+      var rp=Math.max(0,Math.min(1,(tt-1150)/450)); rp=rp<1?(1-Math.pow(1-rp,3)):1;
+      drawRip(rect,rp); drawShards();
       raf=requestAnimationFrame(step); }
     raf=requestAnimationFrame(step);
     return function(){run=false;cancelAnimationFrame(raf);removeEventListener("resize",size);};
