@@ -206,8 +206,8 @@
   .ql-panel{margin-top:8px;border:1px solid var(--green);border-radius:14px;padding:16px;background:rgba(46,194,126,.05);}
   .ql-row{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
   .ql-row label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);}
-  .ql-row input{width:100%;min-height:48px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:16px;outline:none;}
-  .ql-row input:focus{border-color:var(--green);}
+  .ql-row input,.ql-row select{width:100%;min-height:48px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:16px;outline:none;}
+  .ql-row input:focus,.ql-row select:focus{border-color:var(--green);}
   .ql-tasks{display:flex;flex-direction:column;gap:8px;}
   .ql-task{display:flex;align-items:center;gap:12px;min-height:52px;padding:10px 14px;border:1px solid var(--border2);border-radius:10px;background:var(--surface);cursor:pointer;user-select:none;}
   .ql-task.on{border-color:var(--green);background:rgba(46,194,126,.1);}
@@ -531,12 +531,25 @@
     if(prevWin) window.scrollTo(0, prevWin);
   }
 
+  // Maintenance technicians = the four engineers only (safety operators who report
+  // generator hours are NOT technicians and must never appear as one).
+  var TECHS=["Geoff Fitzjarrell","Masakiyo Kato","Andy Bui","John Pham"];
+  function canonTech(n){ if(!n) return ""; var s=String(n).trim().toLowerCase();
+    if(s.indexOf("geoff")>=0) return "Geoff Fitzjarrell";
+    if(s.indexOf("masakiyo")>=0) return "Masakiyo Kato";
+    if(s.indexOf("andy")>=0) return "Andy Bui";
+    if(s.indexOf("john")>=0) return "John Pham";
+    return String(n).trim(); }
+  function lastServiceTech(id){ var a=state.hist[id]||[];
+    for(var i=a.length-1;i>=0;i--){ if(a[i]&&a[i].technician){ var c=canonTech(a[i].technician); if(TECHS.indexOf(c)>=0) return c; } }
+    return ""; }
   function cardHtml(id){
     var t=state.fleet[id]; var status=overallStatus(id,t,state.logs);
     var states=taskStates(id, t.hours, state.logs);
     var crit=criticalTask(states);
     var age=fmtAge(t.lastUpdated);
-    var tech = t.technician ? '<span class="tech">'+T("tech")+' <b>'+esc(t.technician)+'</b></span>' : '<span class="tech" style="color:var(--text-faint)">'+T("tech")+' —</span>';
+    var _lt=lastServiceTech(id);
+    var tech = _lt ? '<span class="tech">'+T("tech")+' <b>'+esc(_lt)+'</b></span>' : '<span class="tech" style="color:var(--text-faint)">'+T("tech")+' —</span>';
 
     var head="", sub="", barPct=0, barColor="var(--text-faint)";
     if(status==="grounded"){ head=T("st_grounded"); sub=esc(t.groundedNote||"Under repair"); }
@@ -629,7 +642,7 @@
       +  groundedBanner
       +  '<div class="kv">'
       +    '<div><span class="k">'+T("k_hours")+'</span><span class="v">'+(t.hours!=null?t.hours+'h':'—')+'</span></div>'
-      +    '<div><span class="k">'+T("k_tech")+'</span><span class="v" style="font-family:var(--sans)">'+(t.technician?esc(t.technician):'—')+'</span></div>'
+      +    '<div><span class="k">'+T("k_tech")+'</span><span class="v" style="font-family:var(--sans)">'+esc(lastServiceTech(id)||'—')+'</span></div>'
       +    '<div><span class="k">'+T("k_updated")+'</span><span class="v">'+age.txt+'</span></div>'
       +  '</div>'
       +  ((window.__fleetTier==="master")
@@ -672,7 +685,12 @@
     }).join("");
     host.innerHTML =
       '<div class="ql-panel">'
-      +'<div class="ql-row"><label>'+T("ql_tech")+'</label><input id="qlTech" type="text" value="'+esc(t.technician||"")+'" placeholder="'+(LANG==="ja"?"氏名":"Name")+'" /></div>'
+      +'<div class="ql-row"><label>'+T("ql_tech")+'</label><select id="qlTech">'
+      +  (function(){ var me=canonTech(localStorage.getItem("fleet_user")||""), pre=lastServiceTech(id);
+           var def=TECHS.indexOf(me)>=0?me:(TECHS.indexOf(pre)>=0?pre:"");
+           return ['<option value="">'+(LANG==="ja"?"— 選択 —":"— select —")+'</option>']
+             .concat(TECHS.map(function(n){return '<option value="'+esc(n)+'"'+(n===def?' selected':'')+'>'+esc(n)+'</option>';})).join(""); })()
+      +'</select></div>'
       +'<div class="ql-row"><label>'+T("ql_hours")+'</label><input id="qlHours" type="number" inputmode="numeric" value="'+(t.hours!=null?t.hours:"")+'" placeholder="'+(LANG==="ja"?"稼働時間":"engine hours")+'" /></div>'
       +'<div class="ql-row"><label>'+T("ql_tasks")+'</label><div class="ql-tasks">'+taskRows+'</div></div>'
       +'<div class="ql-row"><label>'+T("ql_note")+'</label><input id="qlNote" type="text" placeholder="'+(LANG==="ja"?"記録しておきたいこと":"anything worth recording")+'" /></div>'
@@ -762,7 +780,7 @@
     }
     var hrs=(t.hours!=null)?('<span class="hn">'+t.hours+'</span><span class="hu">'+T("hrs")+'</span>')
       :('<span class="hn" style="color:var(--text-faint)">—</span><span class="hu">'+T("hrs")+'</span>');
-    var tech=t.technician?(T("tech")+' <b>'+esc(t.technician)+'</b>'):(T("tech")+' —');
+    var _wlt=lastServiceTech(id); var tech=_wlt?(T("tech")+' <b>'+esc(_wlt)+'</b>'):(T("tech")+' —');
     return '<div class="spot '+status+'">'
       +'<div class="spot-top"><span class="spot-nm">'+id+'</span><span class="spot-badge st-'+status+'">'+T("st_"+status)+'</span></div>'
       +'<div class="spot-hours">'+hrs+'</div>'

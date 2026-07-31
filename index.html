@@ -1655,9 +1655,9 @@ const INSPECTIONS_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-
 const PH = React.createElement;
 
 // engineers seen historically + known Japan VOps field techs
-const KNOWN_ENGINEERS = ["Geoff Fitzjarrell","Masakiyo Kato","Jake Albano","Thapa Biliv","Reon Zeniya","Junichi Tamagawa","Andy"];
-// fold short/variant names into one canonical engineer
-const ENG_ALIASES = { "masakiyo":"Masakiyo Kato", "kato":"Masakiyo Kato", "jake":"Jake Albano", "geoff":"Geoff Fitzjarrell", "thapa":"Thapa Biliv", "reon":"Reon Zeniya", "junichi":"Junichi Tamagawa" };
+const KNOWN_ENGINEERS = ["Geoff Fitzjarrell","Masakiyo Kato","Andy Bui","John Pham"];
+// fold short/variant names into one canonical engineer (the four maintenance techs)
+const ENG_ALIASES = { "masakiyo":"Masakiyo Kato", "masakiyo kato":"Masakiyo Kato", "kato":"Masakiyo Kato", "geoff":"Geoff Fitzjarrell", "geoff fitzjarrell":"Geoff Fitzjarrell", "andy":"Andy Bui", "andy bui":"Andy Bui", "john":"John Pham", "john pham":"John Pham" };
 function canonEng(name){ if(!name) return name; return ENG_ALIASES[String(name).trim().toLowerCase()] || String(name).trim(); }
 const TYPE_META = {
   mission:      { c:"var(--blue)",  bg:"rgba(74,124,245,.16)",  lbl:"Mission" },
