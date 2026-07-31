@@ -327,6 +327,22 @@
       "notes": "HD14 Air filter, battery and battery box check",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1785479514706",
+      "title": "HD15 ethernet port",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD15",
+      "category": "repair",
+      "status": "planned",
+      "start": "2026-07-31",
+      "end": "2026-07-31",
+      "allDay": false,
+      "startTime": "13:00",
+      "endTime": "17:00",
+      "notes": "HD15's shore ethernet had an issue of the port being pushed in, fixed this and no longer an issue",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
