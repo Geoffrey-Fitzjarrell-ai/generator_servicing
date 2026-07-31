@@ -737,25 +737,8 @@
   async function buildWelcome(name){
     var lang=(localStorage.getItem("fleet_lang")==="ja")?"ja":"en";
     document.documentElement.lang=lang;
-    // ── Geoff cinematic video intro (Kling — Tokyo Night Run) ──
-    if(name==="Geoff" && lang!=="ja"){
-      var gv=document.getElementById("welcome"); gv.className="en";
-      gv.innerHTML =
-        '<video id="geoffVid" playsinline muted autoplay preload="auto" '
-        +'style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;background:#000;">'
-        +'<source src="geoff_intro.mp4" type="video/mp4"></video>'
-        +'<div class="wc-cd"></div><div class="wc-scan"></div><div class="wc-vig"></div>'
-        +'<div class="wc-scene" style="justify-content:flex-end;padding-bottom:9vh;">'
-        +'<div class="wc-k">ACCESS GRANTED</div>'
-        +'<button class="wc-go" id="wcGo">'+LTXT[lang].go+' ▸</button>'
-        +'</div>';
-      var gvv=document.getElementById("geoffVid");
-      if(gvv){
-        gvv.addEventListener("ended",function(){ var g=document.getElementById("wcGo"); if(g) g.click(); });
-        var pr=gvv.play&&gvv.play(); if(pr&&pr.catch) pr.catch(function(){});
-      }
-      return;
-    }
+    // Geoff (EN) plays the Kling video as the welcome backdrop instead of the canvas engine.
+    var geoffVid = (name==="Geoff" && lang!=="ja");
     var t=LTXT[lang], today=new Date().toISOString().slice(0,10);
     var fleet={},logs={},work={items:[]};
     try{ var b="?t="+Date.now();
@@ -778,6 +761,8 @@
         nameHtml='<div class="wc-holowrap"><div class="wc-holo">'+esc(big)+'</div></div>';
       }
       romajiHtml='<div class="wc-romaji">'+esc(name).toUpperCase()+'</div>';
+    } else if(geoffVid){
+      nameHtml='';
     } else {
       nameHtml='<div class="wc-decal"><canvas class="wc-cyber"></canvas></div>';
     }
@@ -797,8 +782,11 @@
 
     var w=document.getElementById("welcome");
     w.className=lang;
+    var bg = geoffVid
+      ? '<video id="geoffVid" playsinline muted autoplay loop preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;background:#000;"><source src="geoff_intro.mp4" type="video/mp4"></video>'
+      : '<canvas id="wcCanvas"></canvas>';
     w.innerHTML =
-      '<canvas id="wcCanvas"></canvas><div class="wc-cd"></div><div class="wc-scan"></div><div class="wc-vig"></div>'
+      bg + '<div class="wc-cd"></div><div class="wc-scan"></div><div class="wc-vig"></div>'
       +'<div class="wc-scene">'
       +'<div class="wc-k">'+kicker+'</div>'
       + nameHtml + romajiHtml
@@ -808,8 +796,13 @@
       +'<div class="wc-list l2"><div class="wc-lh">'+t.overdueH+'</div>'+odHtml+'</div>'
       +'<button class="wc-go" id="wcGo">'+t.go+' ▸</button>'
       +'</div>';
-    startEngine(lang);
-    if(lang!=="ja"){ try{ wcStop2=startCyber(String(name||"GEOFF").toUpperCase()); }catch(e){ wcStop2=null; } }
+    if(geoffVid){
+      var gvv=document.getElementById("geoffVid");
+      if(gvv){ var pr=gvv.play&&gvv.play(); if(pr&&pr.catch) pr.catch(function(){}); }
+    } else {
+      startEngine(lang);
+      if(lang!=="ja"){ try{ wcStop2=startCyber(String(name||"GEOFF").toUpperCase()); }catch(e){ wcStop2=null; } }
+    }
   }
   function showWelcome(name){
     document.getElementById("welcome").style.display="block";
