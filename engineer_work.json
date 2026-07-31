@@ -187,20 +187,6 @@
       "jiraUrl": ""
     },
     {
-      "id": "w_1785113378359",
-      "title": "HD10 Servicing",
-      "engineer": "Geoff Fitzjarrell",
-      "asset": "HD10",
-      "category": "maintenance",
-      "status": "planned",
-      "start": "2026-07-31",
-      "end": "2026-07-31",
-      "allDay": false,
-      "notes": "HD10 is out of the office until this day but is behind on maintenance for fule filter, and coming soon for oil change",
-      "jiraKey": "",
-      "jiraUrl": ""
-    },
-    {
       "id": "w_1785368816827",
       "title": "VCO ",
       "engineer": "Geoff Fitzjarrell",
@@ -275,6 +261,22 @@
       "startTime": "13:00",
       "endTime": "17:00",
       "notes": "Modify back kit to comply with states",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1785113378359",
+      "title": "HD10 Servicing",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD10",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-07-31",
+      "end": "2026-07-31",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "HD10 is out of the office until this day but is behind on maintenance for fule filter, and coming soon for oil change",
       "jiraKey": "",
       "jiraUrl": ""
     }
