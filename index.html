@@ -455,6 +455,12 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
     var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
     return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,"0"); }).join("");
   }
+  // Verify the master/admin password on demand (used by the change-request inbox).
+  window.__fleetVerifyMaster = async function(raw){
+    if (raw == null) return false;
+    if ((await sha(String(raw))) === HASH_MASTER) return true;
+    return !!HASH_NAMES[await sha(String(raw).trim().toLowerCase())];
+  };
   window.__fleetAuthed = authed();
   try { var __go = JSON.parse(localStorage.getItem(KEY) || "null"); window.__fleetTier = __go ? __go.tier : null; } catch(e){ window.__fleetTier = null; }
   function unlock(tier){
@@ -2202,6 +2208,24 @@ async function postService(body){
   return j;   // { ok, hist:[...], logs:{...} }
 }
 
+// ── Change-request inbox: view-only asks land here (not Slack) for admin approval ──
+const REQ_GET = PROXY_URL + "requests";
+async function fetchRequests(){
+  try{ const r=await fetch(REQ_GET+"?t="+Date.now(),{cache:"no-store"}); if(r.ok){ const j=await r.json(); return (j&&j.items)||[]; } }catch(e){}
+  return null;
+}
+async function resolveRequestApi(id, resolution){
+  const by = (localStorage.getItem("fleet_user")||"admin");
+  const r=await fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},
+    body:JSON.stringify({action:"resolveRequest",id,resolution,by})});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.ok) throw new Error(j.error||("HTTP "+r.status));
+  return j.items||[];
+}
+function fmtAgo(iso){ try{ var s=Math.max(0,(Date.now()-new Date(iso).getTime())/1000);
+  if(s<60) return "just now"; if(s<3600) return Math.floor(s/60)+"m ago";
+  if(s<86400) return Math.floor(s/3600)+"h ago"; return Math.floor(s/86400)+"d ago"; }catch(e){ return ""; } }
+
 function EngineersView(){
   const [items,setItems] = useState(null);
   const [engineers,setEngineers] = useState([]);
@@ -2210,6 +2234,9 @@ function EngineersView(){
   const [saving,setSaving]   = useState(false);
   const [netErr,setNetErr]   = useState("");
   const [synced,setSynced]   = useState(null);
+  const [requests,setRequests] = useState([]);   // change-request inbox (admin only)
+  const [showReq,setShowReq] = useState(false);
+  const [reqBusy,setReqBusy] = useState(false);
   const [weekStart,setWeekStart] = useState(()=> addDays(mondayOf(new Date()), -7));
   const [weeks,setWeeks] = useState(4);
   const [q,setQ]         = useState("");
@@ -2253,9 +2280,31 @@ function EngineersView(){
     return ()=>{ alive=false; clearInterval(t); };
   },[]);
 
+  // Change-request inbox — only the fleet admin polls/sees it.
+  useEffect(()=>{
+    if(isViewOnly()) return;
+    let alive=true;
+    const pullReq=async()=>{ const rq=await fetchRequests(); if(alive && rq!==null) setRequests(rq); };
+    pullReq();
+    const t=setInterval(pullReq,20000);
+    return ()=>{ alive=false; clearInterval(t); };
+  },[]);
+
   if(loadErr) return PH("div",{style:{padding:40,color:"var(--red)",fontFamily:"var(--mono)"}},"Work board unavailable — check connection.");
   if(!items)  return PH("div",{style:{padding:40,color:"var(--text-dim)",fontFamily:"var(--mono)"}},"Loading engineer work…");
 
+  async function actOnRequest(id, resolution){
+    var pw = window.prompt(resolution==="approve"
+      ? "Enter your admin password to approve this request:"
+      : "Enter your admin password to dismiss this request:");
+    if(pw==null) return;
+    var ok=false; try{ ok = await window.__fleetVerifyMaster(pw); }catch(e){}
+    if(!ok){ alert("Incorrect password — nothing changed."); return; }
+    setReqBusy(true);
+    try{ const items=await resolveRequestApi(id,resolution); setRequests(items); if(!items.length) setShowReq(false); }
+    catch(e){ alert("Couldn't update the request: "+e.message); }
+    finally{ setReqBusy(false); }
+  }
   async function upsert(item){ setSaving(true); setNetErr("");
     try{ const res=await postWork({op:"upsert",item}); setItems(res.items); setEngineers(res.engineers); setSynced(Date.now()); return true; }
     catch(e){ setNetErr("Save failed: "+e.message); return false; }
@@ -2543,8 +2592,23 @@ function EngineersView(){
           PH("button",{onClick:()=>setEngForm(null),style:navBtn},"Cancel"))
   ):null;
 
+  const reqPanel = (!isViewOnly() && showReq && requests.length) ? PH("div",{style:{border:"1px solid var(--red)",borderRadius:8,background:"var(--surface2)",padding:"12px 14px",marginBottom:14}},
+    PH("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:6}},
+      PH("span",{style:{fontWeight:800,color:"var(--red)",letterSpacing:".04em"}},"⚑ CHANGE REQUESTS INBOUND"),
+      PH("span",{style:{fontSize:11,color:"var(--text-dim)"}},requests.length+" pending · approve behind your admin password"),
+      PH("button",{onClick:()=>setShowReq(false),style:{...navBtn,marginLeft:"auto",padding:"2px 9px"}},"×")),
+    requests.map(rq=>PH("div",{key:rq.id,style:{display:"flex",gap:12,alignItems:"flex-start",padding:"9px 0",borderTop:"1px solid var(--border2)"}},
+      PH("div",{style:{flex:1,minWidth:0}},
+        PH("div",{style:{fontSize:11,color:"var(--text-dim)",marginBottom:2}},"From "+(rq.who||"someone")+(rq.context?" · "+rq.context:"")+" · "+fmtAgo(rq.ts)),
+        PH("div",{style:{fontSize:14,color:"var(--text)",whiteSpace:"pre-wrap",wordBreak:"break-word"}},rq.text)),
+      PH("div",{style:{display:"flex",gap:6,flexShrink:0}},
+        PH("button",{disabled:reqBusy,onClick:()=>actOnRequest(rq.id,"approve"),style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"Approve"),
+        PH("button",{disabled:reqBusy,onClick:()=>actOnRequest(rq.id,"dismiss"),style:{...navBtn,borderColor:"var(--text-dim)",color:"var(--text-dim)"}},"Dismiss")))))
+  : null;
+
   return PH("div",{style:{padding:"14px 18px 40px",fontFamily:"var(--sans)"}},
     engEl,
+    reqPanel,
     PH("datalist",{id:"eng-roster"}, KNOWN_ENGINEERS.map(n=>PH("option",{key:n,value:n}))),
     PH("div",{style:{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}},
       PH("div",{style:{display:"flex",gap:2,alignItems:"center"}},
@@ -2559,6 +2623,7 @@ function EngineersView(){
       (!isViewOnly())?PH("button",{onClick:()=>openNew(),disabled:saving,style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"+ Add work"):null,
       (!isViewOnly())?PH("button",{onClick:()=>setEngForm({name:"",added:null}),disabled:saving,style:{...navBtn,borderColor:"var(--purple)",color:"var(--purple)",fontWeight:700}},"+ Add engineer"):null,
       (isViewOnly())?PH("button",{onClick:()=>requestChange("Engineers board"),style:{...navBtn,borderColor:"var(--amber)",color:"var(--amber)",fontWeight:700}},"✎ Request change"):null,
+      (!isViewOnly()&&requests.length)?PH("button",{onClick:()=>setShowReq(s=>!s),style:{...navBtn,background:"var(--red)",borderColor:"var(--red)",color:"#fff",fontWeight:700}},"⚑ Request inbound ("+requests.length+")"):null,
       PH("div",{style:{marginLeft:"auto",display:"flex",gap:6,alignItems:"center"}},
         statusEl,
         PH("button",{onClick:()=>setIo({mode:"export",text:JSON.stringify({items},null,2)}),style:navBtn},"Export"),

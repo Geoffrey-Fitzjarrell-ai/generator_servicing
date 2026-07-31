@@ -154,6 +154,26 @@ async function mutateNotes(env, mutate, message) {
     }
   }
 }
+// ── Change-request inbox persistence (change_requests.json) ──
+// Same 409-refetch/last-write-wins pattern as notes. { items:[pending], resolved:[history] }
+async function mutateRequests(env, mutate, message) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    let file = null;
+    try { file = await ghGet("change_requests.json", env.GITHUB_PAT); } catch (e) { file = null; }
+    const doc = file ? JSON.parse(decodeURIComponent(escape(atob(file.content)))) : { items: [], resolved: [] };
+    if (!Array.isArray(doc.items)) doc.items = [];
+    if (!Array.isArray(doc.resolved)) doc.resolved = [];
+    mutate(doc);
+    doc._meta = Object.assign({}, doc._meta, { updated: new Date().toISOString().slice(0, 10) });
+    try {
+      await ghPut("change_requests.json", env.GITHUB_PAT, doc, file ? file.sha : undefined, message, 0);
+      return doc;
+    } catch (e) {
+      if (String(e).indexOf(" 409") !== -1 && attempt < 2) continue;
+      throw e;
+    }
+  }
+}
 function cleanNote(n) {
   const s = (v, k) => String(v == null ? "" : v).slice(0, k);
   return {
@@ -905,6 +925,18 @@ export default {
         headers: Object.assign({}, CORS, { "Cache-Control": "no-store" }),
       });
     }
+    // Real-time read of the change-request inbox (fleet-admin approval queue).
+    if (request.method === "GET" && new URL(request.url).pathname === "/requests") {
+      let doc = { items: [], resolved: [] };
+      try {
+        const file = await ghGet("change_requests.json", env.GITHUB_PAT);
+        doc = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+      } catch (e) { /* file missing / transient — serve empty inbox */ }
+      return new Response(JSON.stringify(doc), {
+        status: 200,
+        headers: Object.assign({}, CORS, { "Cache-Control": "no-store" }),
+      });
+    }
     // ── iCalendar feed of the Engineers board (subscribe from Google Calendar) ──
     //   GET /calendar.ics                → every engineer's items
     //   GET /calendar.ics?engineer=Masakiyo  → just that person's items
@@ -1191,15 +1223,44 @@ export default {
       }
 
       // ── Per-truck memos: upsert / delete ──
+      // ── View-only change requests → in-app admin approval inbox ──
+      // These are engineer-calendar asks (someone wants engineers to work on
+      // something). They must NEVER post to #japan-vops-driver-support — that
+      // channel is for generator-specific driver traffic only. They land in
+      // change_requests.json and surface as a "Request inbound" inbox on the
+      // Engineers tab, approved behind the fleet admin's master password.
       if (action === "requestChange") {
         const text = String(payload.text || "").slice(0, 800).trim();
         const who = String(payload.who || "someone").slice(0, 80);
         const ctx = String(payload.context || "").slice(0, 200);
         if (!text) return json({ error: "Missing text" }, 400);
-        const msg = "📝 *Change request* (view-only user)\n• From: " + (who || "unknown")
-          + (ctx ? "\n• Context: " + ctx : "") + "\n• Request: " + text;
-        const res = await slackPostMessage(env, msg);
-        return json({ ok: !!res.ok, notified: !!res.ok });
+        const item = {
+          id: "cr_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+          who, context: ctx, text, ts: new Date().toISOString(), status: "pending",
+        };
+        const doc = await mutateRequests(env, d => {
+          d.items.push(item);
+          if (d.items.length > 200) d.items = d.items.slice(-200);
+        }, "Change request from " + who);
+        return json({ ok: true, queued: true, pending: doc.items.length });
+      }
+      // Fleet admin approves/dismisses a queued request (gated client-side by the
+      // master password, same trust model as every other mutation here).
+      if (action === "resolveRequest") {
+        const id = String(payload.id || "");
+        const resolution = payload.resolution === "approve" ? "approve" : "dismiss";
+        const by = String(payload.by || "admin").slice(0, 80);
+        if (!id) return json({ error: "Missing id" }, 400);
+        const doc = await mutateRequests(env, d => {
+          const hit = d.items.find(x => x.id === id);
+          d.items = d.items.filter(x => x.id !== id);
+          if (hit) {
+            if (!Array.isArray(d.resolved)) d.resolved = [];
+            d.resolved.unshift(Object.assign({}, hit, { status: resolution, by, resolvedTs: new Date().toISOString() }));
+            if (d.resolved.length > 50) d.resolved = d.resolved.slice(0, 50);
+          }
+        }, "Change request " + resolution + ": " + id + " by " + by);
+        return json({ ok: true, items: doc.items });
       }
 
       if (action === "logNote") {
