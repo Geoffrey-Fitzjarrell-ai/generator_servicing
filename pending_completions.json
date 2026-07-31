@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "truck": "HD14",
+    "tasks": [
+      "Air filter / Battery check"
+    ],
+    "technician": "Masakiyo",
+    "postedBy": {
+      "id": "U0AV3PG35JM",
+      "name": null
+    },
+    "loggedAt": "2026-07-31T06:13:34.840Z",
+    "hours": 752,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
