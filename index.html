@@ -403,6 +403,9 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 <button id="fleetSignOut" onclick="window.__fleetLogout&&window.__fleetLogout()"
   style="position:fixed;left:12px;bottom:12px;z-index:60;font:600 11px/1 'JetBrains Mono',monospace;letter-spacing:.06em;
   color:#6e7f99;background:#131925;border:1px solid #28364f;border-radius:8px;padding:8px 12px;cursor:pointer;opacity:.65;">⎋ Sign out</button>
+<button id="fleetReq" onclick="window.__fleetRequestChange&&window.__fleetRequestChange('')"
+  style="display:none;position:fixed;left:118px;bottom:12px;z-index:60;font:600 11px/1 'JetBrains Mono',monospace;letter-spacing:.06em;
+  color:#f0a500;background:#131925;border:1px solid #5a4a1e;border-radius:8px;padding:8px 12px;cursor:pointer;opacity:.85;">✎ Request change</button>
 <script>window.__fleetLogout=function(){try{["fleet_gate_v2","fleet_user","fleet_lang","fleet_welcome","fleet_device"].forEach(function(k){localStorage.removeItem(k);});}catch(e){}window.location.href="home.html";};</script>
 <div id="gate" style="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#080b12;">
   <div style="width:340px;max-width:88vw;text-align:center;font-family:'JetBrains Mono',monospace;color:#dde4f0;">
@@ -440,8 +443,8 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
     try {
       var o = JSON.parse(localStorage.getItem(KEY) || "null");
       if (!o) return false;
-      if (o.tier === "master") return true;               // master: persists indefinitely
-      if (o.tier === "day" && o.date === today()) return true;  // daily: valid only for the day it was entered
+      if (o.tier === "master") return true;               // master (GTR): persists indefinitely
+      if ((o.tier === "view" || o.tier === "day") && o.date === today()) return true;  // view-only: valid for the day
       return false;
     } catch(e){ return false; }
   }
@@ -450,9 +453,10 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
     return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,"0"); }).join("");
   }
   window.__fleetAuthed = authed();
+  try { var __go = JSON.parse(localStorage.getItem(KEY) || "null"); window.__fleetTier = __go ? __go.tier : null; } catch(e){ window.__fleetTier = null; }
   function unlock(tier){
-    window.__fleetAuthed = true;
-    try { localStorage.setItem(KEY, JSON.stringify(tier === "master" ? {tier:"master"} : {tier:"day", date:today()})); } catch(e){}
+    window.__fleetAuthed = true; window.__fleetTier = tier;
+    try { localStorage.setItem(KEY, JSON.stringify(tier === "master" ? {tier:"master"} : {tier:"view", date:today()})); } catch(e){}
     var g = document.getElementById("gate"); if (g) g.remove();
     if (typeof window.__unlockApp === "function") window.__unlockApp();
   }
@@ -467,12 +471,14 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
       var raw = pw.value || "";
       var h = await sha(raw);
       var hName = await sha(raw.trim().toLowerCase());   // name logins are case-insensitive
-      if (h === HASH_MASTER){ unlock("master"); }
+      if (h === HASH_MASTER){                              // GTR — full master, permanent
+        try { localStorage.setItem("fleet_user","Geoff"); localStorage.setItem("fleet_lang","en"); localStorage.setItem("fleet_welcome","Geoff"); } catch(e){}
+        unlock("master"); }
       else if (HASH_NAMES[hName]){ var nm = HASH_NAMES[hName];
         try { localStorage.setItem("fleet_user", nm);
               localStorage.setItem("fleet_lang", nm === "Masakiyo" ? "ja" : "en"); } catch(e){}
-        unlock("day"); }                                   // name login — expires at day rollover
-      else if (h === HASH_DAILY){ unlock("day"); }
+        unlock("view"); }                                  // name login — view-only
+      else if (h === HASH_DAILY){ unlock("view"); }        // shared team password — view-only
       else { err.textContent = "Incorrect password"; pw.value = ""; pw.focus(); }
     }
     btn.addEventListener("click", tryit);
@@ -586,10 +592,24 @@ const TASK_INFO = {
 const PROXY_URL    = "https://ai.generator-fleet-proxy.workers.dev/";
 const PROXY_SECRET = "poopooface69";
 
+// ── Access level: master (GTR) can edit; everything else is view-only ──
+function isViewOnly(){ return (window.__fleetTier||"") !== "master"; }
+function requestChange(context){
+  var note = window.prompt("View-only access — describe the change you'd like the fleet admin to make:", context?("Re: "+context):"");
+  if(note==null) return; note=String(note).trim(); if(!note) return;
+  fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},
+    body:JSON.stringify({action:"requestChange",text:note,context:context||"",who:(localStorage.getItem("fleet_user")||"someone")})})
+    .then(function(r){return r.json();})
+    .then(function(j){ alert(j&&j.ok ? "Sent to the fleet admin ✓" : "Couldn't send — please try again."); })
+    .catch(function(){ alert("Couldn't send the request — check your connection."); });
+}
+window.__fleetRequestChange = requestChange;
+
 function b64e(s){ return btoa(unescape(encodeURIComponent(s))); }
 function b64d(s){ return decodeURIComponent(escape(atob(s))); }
 
 async function writePending(entry) {
+  if(isViewOnly()) return false;
   try {
     const res = await fetch(PROXY_URL, {
       method: "POST",
@@ -601,6 +621,7 @@ async function writePending(entry) {
 }
 
 async function writeGrounded(truck, grounded, note) {
+  if(isViewOnly()) return false;
   try {
     const res = await fetch(PROXY_URL, {
       method: "POST",
@@ -612,6 +633,7 @@ async function writeGrounded(truck, grounded, note) {
 }
 
 async function writeServiceLogToRepo(truck, log, entry) {
+  if(isViewOnly()) return false;
   try {
     const res = await fetch(PROXY_URL, {
       method: "POST",
@@ -1927,7 +1949,7 @@ function PlanningView({ onOpenTruck }){
       PH("button",{onClick:()=>{ setEditMode(!editMode); setForm(null); },
         style:{...navBtn, background:editMode?"var(--f1red)":"var(--surface3)", borderColor:editMode?"var(--f1red)":"var(--border2)",
                color:editMode?"#fff":"var(--text)"}}, editMode?"✓ Editing":"✎ Edit"),
-      editMode?PH("button",{onClick:()=>openNew(),style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"+ New task"):null,
+      (editMode&&!isViewOnly())?PH("button",{onClick:()=>openNew(),style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"+ New task"):null,
       PH("div",{style:{display:"flex",gap:12,marginLeft:"auto",fontSize:12,color:"var(--text-dim)"}},
         ["label","eng","shift"].map(k=>PH("label",{key:k,style:{display:"flex",gap:4,cursor:"pointer",textTransform:"capitalize"}},
           PH("input",{type:"checkbox",checked:show[k],onChange:()=>setShow({...show,[k]:!show[k]})}),
@@ -2149,6 +2171,7 @@ async function fetchWork(){
   return null;
 }
 async function postWork(body){
+  if(isViewOnly()) throw new Error("view-only");
   const r=await fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},body:JSON.stringify(Object.assign({action:"logWork"},body))});
   const j=await r.json().catch(()=>({}));
   if(!r.ok||!j.ok) throw new Error(j.error||("HTTP "+r.status));
@@ -2161,12 +2184,14 @@ async function fetchNotes(){
   return null;
 }
 async function postNote(body){
+  if(isViewOnly()) throw new Error("view-only");
   const r=await fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},body:JSON.stringify(Object.assign({action:"logNote"},body))});
   const j=await r.json().catch(()=>({}));
   if(!r.ok||!j.ok) throw new Error(j.error||("HTTP "+r.status));
   return j.items||[];
 }
 async function postService(body){
+  if(isViewOnly()) throw new Error("view-only");
   const r=await fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));
   if(!r.ok||!j.ok) throw new Error(j.error||("HTTP "+r.status));
@@ -2305,6 +2330,7 @@ function EngineersView(){
   // a release under threshold is treated as a click → open the editor.
   const DRAG_THRESH = 6;
   const onBarPointerDown = it => e => {
+    if(isViewOnly()) return;   // view-only: no drag-to-reschedule/reassign
     e.stopPropagation();
     const r = e.currentTarget.getBoundingClientRect();
     dragRef.current = { it, startX:e.clientX, startY:e.clientY,
@@ -2526,8 +2552,9 @@ function EngineersView(){
         PH("span",{style:{position:"absolute",left:8,fontSize:12,color:"var(--text-faint)"}},"⌕"),
         q?PH("button",{onClick:()=>setQ(""),style:{...navBtn,padding:"3px 7px",marginLeft:4}},"×"):null),
       PH("select",{value:weeks,onChange:e=>setWeeks(+e.target.value),style:sel},[1,2,4,6,8,12].map(n=>PH("option",{key:n,value:n},n+(n===1?" week":" weeks")))),
-      PH("button",{onClick:()=>openNew(),disabled:saving,style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"+ Add work"),
-      PH("button",{onClick:()=>setEngForm({name:"",added:null}),disabled:saving,style:{...navBtn,borderColor:"var(--purple)",color:"var(--purple)",fontWeight:700}},"+ Add engineer"),
+      (!isViewOnly())?PH("button",{onClick:()=>openNew(),disabled:saving,style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"+ Add work"):null,
+      (!isViewOnly())?PH("button",{onClick:()=>setEngForm({name:"",added:null}),disabled:saving,style:{...navBtn,borderColor:"var(--purple)",color:"var(--purple)",fontWeight:700}},"+ Add engineer"):null,
+      (isViewOnly())?PH("button",{onClick:()=>requestChange("Engineers board"),style:{...navBtn,borderColor:"var(--amber)",color:"var(--amber)",fontWeight:700}},"✎ Request change"):null,
       PH("div",{style:{marginLeft:"auto",display:"flex",gap:6,alignItems:"center"}},
         statusEl,
         PH("button",{onClick:()=>setIo({mode:"export",text:JSON.stringify({items},null,2)}),style:navBtn},"Export"),
@@ -2573,7 +2600,8 @@ function Root(){
   );
 }
 
-window.__unlockApp = function(){ ReactDOM.render(React.createElement(Root),document.getElementById("root")); };
+window.__unlockApp = function(){ ReactDOM.render(React.createElement(Root),document.getElementById("root"));
+  try{ if((window.__fleetTier||"")!=="master"){ var rb=document.getElementById("fleetReq"); if(rb) rb.style.display="block"; } }catch(e){} };
 if (window.__fleetAuthed) window.__unlockApp();   // mount now if already unlocked; otherwise the gate calls this on success
 </script>
 </body>

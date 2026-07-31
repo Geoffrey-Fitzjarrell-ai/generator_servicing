@@ -258,10 +258,11 @@
   var VER="v2", KEY="fleet_gate_"+VER;
   function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
   function authed(){try{var o=JSON.parse(localStorage.getItem(KEY)||"null");if(!o)return false;
-    if(o.tier==="master")return true;if(o.tier==="day"&&o.date===today())return true;return false;}catch(e){return false;}}
+    if(o.tier==="master")return true;if((o.tier==="view"||o.tier==="day")&&o.date===today())return true;return false;}catch(e){return false;}}
   async function sha(s){var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));
     return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join("");}
-  function unlock(tier){try{localStorage.setItem(KEY,JSON.stringify(tier==="master"?{tier:"master"}:{tier:"day",date:today()}));}catch(e){}
+  try{var __bo=JSON.parse(localStorage.getItem(KEY)||"null");window.__fleetTier=__bo?__bo.tier:null;}catch(e){window.__fleetTier=null;}
+  function unlock(tier){window.__fleetTier=tier;try{localStorage.setItem(KEY,JSON.stringify(tier==="master"?{tier:"master"}:{tier:"view",date:today()}));}catch(e){}
     var g=document.getElementById("gate");if(g)g.remove();
     if(typeof window.__startBoard==="function")window.__startBoard();}
   function boot(){
@@ -269,13 +270,13 @@
     if(authed()){if(g)g.remove();if(typeof window.__startBoard==="function")window.__startBoard();return;}
     var pw=document.getElementById("gatePw"),btn=document.getElementById("gateBtn"),err=document.getElementById("gateErr");
     async function tryit(){err.textContent="";var raw=pw.value||"";var h=await sha(raw);var hn=await sha(raw.trim().toLowerCase());
-      if(h===HASH_MASTER){unlock("master");}
+      if(h===HASH_MASTER){ try{localStorage.setItem("fleet_user","Geoff");localStorage.setItem("fleet_lang","en");localStorage.setItem("fleet_welcome","Geoff");}catch(e){} unlock("master");}
       else if(HASH_NAMES[hn]){ var nm=HASH_NAMES[hn];
         try{ localStorage.setItem("fleet_user",nm);
              localStorage.setItem("fleet_lang", nm==="Masakiyo"?"ja":"en");
              localStorage.setItem("fleet_welcome",nm); }catch(e){}
-        unlock("day"); }   // name logins expire at day rollover; master password stays persistent
-      else if(h===HASH_DAILY){unlock("day");}
+        unlock("view"); }   // name login — view-only
+      else if(h===HASH_DAILY){unlock("view");}
       else{err.textContent="Incorrect password";pw.value="";pw.focus();}}
     btn.addEventListener("click",tryit);
     pw.addEventListener("keydown",function(e){if(e.key==="Enter")tryit();});
@@ -336,7 +337,7 @@
       ql_need_task:"タスクを1つ以上選択してください。",ql_need_hours:"稼働時間を入力してください。",
       ql_fail:"保存に失敗しました。接続を確認して再試行してください。",
       wall_title:"車両ステータス",wall_exit:"⛶ 終了",no_data:"データなし",age_no:"データなし",
-      no_trucks_state:"該当する車両はありません。",signout:"⎋ ログアウト"
+      no_trucks_state:"該当する車両はありません。",signout:"⎋ ログアウト",request:"✎ 変更を依頼",reqPrompt:"閲覧のみ — 管理者に依頼したい変更内容を入力してください:",reqOk:"管理者に送信しました ✓",reqErr:"送信できませんでした。接続を確認してください。"
     }
   };
   var I18N_EN={st_overdue:"OVERDUE",st_warn:"DUE SOON",st_due:"CHECK DUE",st_ok:"OPERATIONAL",st_grounded:"GROUNDED",st_none:"NO HOURS",
@@ -353,7 +354,7 @@
     ql_need_task:"Select at least one task.",ql_need_hours:"Enter the engine hours.",
     ql_fail:"Save failed — check connection and retry.",
     wall_title:"Fleet Status",wall_exit:"⛶ Exit",no_data:"NO DATA",age_no:"no data",
-    no_trucks_state:"No trucks in this state.",signout:"⎋ Sign out"};
+    no_trucks_state:"No trucks in this state.",signout:"⎋ Sign out",request:"✎ Request change",reqPrompt:"View-only — describe the change you'd like the fleet admin to make:",reqOk:"Sent to the fleet admin ✓",reqErr:"Couldn't send — check your connection."};
   I18N.en=I18N_EN;
   function T(k){ var d=I18N[LANG]||I18N.en; return (d[k]!=null)?d[k]:(I18N.en[k]!=null?I18N.en[k]:k); }
   function phLeft(h){ return LANG==="ja"?("残り"+h+"h"):(h+"h left"); }
@@ -631,7 +632,9 @@
       +    '<div><span class="k">'+T("k_tech")+'</span><span class="v" style="font-family:var(--sans)">'+(t.technician?esc(t.technician):'—')+'</span></div>'
       +    '<div><span class="k">'+T("k_updated")+'</span><span class="v">'+age.txt+'</span></div>'
       +  '</div>'
-      +  '<button class="ql-btn" id="qlOpenBtn">'+T("log_btn")+'</button>'
+      +  ((window.__fleetTier==="master")
+           ? '<button class="ql-btn" id="qlOpenBtn">'+T("log_btn")+'</button>'
+           : '<button class="ql-btn" id="qlReqBtn" style="background:var(--amber);color:#1a1200;">'+T("request")+'</button>')
       +  '<div id="qlHost"></div>'
       +  '<div class="sec">'+T("sec_status")+'</div>'+taskRows
       +  '<div class="sec">'+T("sec_insp")+'</div><div class="insp">'+inspBoxes+'</div>'
@@ -644,6 +647,15 @@
     bg.addEventListener("click",function(e){ if(e.target===bg) closeSheet(); });
     var qb=document.getElementById("qlOpenBtn");
     if(qb) qb.addEventListener("click",function(){ openQuickLog(id); });
+    var qrb=document.getElementById("qlReqBtn");
+    if(qrb) qrb.addEventListener("click",function(){ boardRequestChange(id); });
+  }
+  function boardRequestChange(id){
+    var note=window.prompt(T("reqPrompt"), id?("Re: "+id):"");
+    if(note==null) return; note=String(note).trim(); if(!note) return;
+    fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},
+      body:JSON.stringify({action:"requestChange",text:note,context:id||"",who:(localStorage.getItem("fleet_user")||"someone")})})
+      .then(function(r){return r.json();}).then(function(j){ alert(j&&j.ok?T("reqOk"):T("reqErr")); }).catch(function(){ alert(T("reqErr")); });
   }
   function closeSheet(){ if(qlActive) return; openId=null; var bg=document.getElementById("sheetBg"); if(bg) bg.classList.remove("show"); }
 

@@ -1191,6 +1191,17 @@ export default {
       }
 
       // ── Per-truck memos: upsert / delete ──
+      if (action === "requestChange") {
+        const text = String(payload.text || "").slice(0, 800).trim();
+        const who = String(payload.who || "someone").slice(0, 80);
+        const ctx = String(payload.context || "").slice(0, 200);
+        if (!text) return json({ error: "Missing text" }, 400);
+        const msg = "📝 *Change request* (view-only user)\n• From: " + (who || "unknown")
+          + (ctx ? "\n• Context: " + ctx : "") + "\n• Request: " + text;
+        const res = await slackPostMessage(env, msg);
+        return json({ ok: !!res.ok, notified: !!res.ok });
+      }
+
       if (action === "logNote") {
         const op = payload.op || "upsert";
         let doc;
