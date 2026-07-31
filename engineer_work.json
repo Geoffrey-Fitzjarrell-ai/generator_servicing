@@ -279,6 +279,22 @@
       "notes": "HD10 is out of the office until this day but is behind on maintenance for fule filter, and coming soon for oil change",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1785473309209",
+      "title": "I will arrive at office after 9:30",
+      "engineer": "Masakiyo Kato",
+      "asset": "",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-08-13",
+      "end": "2026-08-13",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
