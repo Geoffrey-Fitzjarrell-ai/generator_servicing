@@ -322,7 +322,7 @@
   var wcStop=null;
   // ── EN backdrop: red matrix rain + glitch wave + occasional tear ──
   function matrixEngine(cv){
-    var bx=cv.getContext("2d"),DPR=Math.min(2,window.devicePixelRatio||1),W,H,cx,cy,raf,run=true,frame=0,tt=0,tear={f:0},shards=[],ripFired=false,bolts=[],flash=0,nextBolt=1600;
+    var bx=cv.getContext("2d"),DPR=Math.min(2,window.devicePixelRatio||1),W,H,cx,cy,raf,run=true,frame=0,tt=0,tear={f:0},shards=[],chunks=[],ripEdge=null,ripFired=false,bolts=[],flash=0,nextBolt=1600;
     var GLY="ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾅﾆﾇﾉﾊﾋﾌﾍﾎ0123456789#%&/<>*+=".split(""),F=560,streams=[],CW=20,TRAIL=13;
     function build(){ cx=W/2;cy=H/2;streams=[];var n=Math.ceil(W/CW)+2;
       for(var i=0;i<n;i++){ var tx=i*CW+(Math.random()*CW-CW/2), z=Math.pow(Math.random(),1.15)*1150, sc=F/(F+z);
@@ -364,23 +364,61 @@
         b.life-=0.11; if(b.life<=0)bolts.splice(i,1); }
       if(flash>0){bx.globalAlpha=Math.min(0.55,flash*0.5);bx.fillStyle="#cfe4ff";bx.fillRect(0,0,W,H);bx.globalAlpha=1;flash-=0.13;}
       bx.restore(); } }
-    function drawTorn(x0,x1,y,dir,rp,seed){ bx.save();
-      var seg=Math.max(7,Math.floor((x1-x0)/24)); bx.beginPath();
-      for(var i=0;i<=seg;i++){ var xx=x0+(x1-x0)*i/seg, j=(Math.sin(i*2.3+seed)+Math.sin(i*0.9+seed*1.7))*0.5, yy=y+j*11*dir; i?bx.lineTo(xx,yy):bx.moveTo(xx,yy); }
-      bx.strokeStyle="rgba(255,60,80,"+(0.95*rp).toFixed(2)+")";bx.lineWidth=2.6;bx.shadowColor="#ff2a3a";bx.shadowBlur=18;bx.stroke();
-      bx.strokeStyle="rgba(255,240,244,"+(0.85*rp).toFixed(2)+")";bx.lineWidth=1;bx.shadowBlur=6;bx.stroke(); bx.restore(); }
+    // ── realistic torn edge: fractal midpoint-displacement rip (jagged teeth + fine fibers), not a sine wave ──
+    function fractalEdge(n,amp){ var a=new Array(n+1); a[0]=(Math.random()-.5)*amp*.35; a[n]=(Math.random()-.5)*amp*.35;
+      (function md(lo,hi,d){ if(hi-lo<2)return; var m=(lo+hi)>>1; a[m]=(a[lo]+a[hi])/2+(Math.random()-.5)*d; md(lo,m,d*.55); md(m,hi,d*.55); })(0,n,amp);
+      for(var i=0;i<=n;i++) a[i]+=(Math.random()-.5)*amp*.22; return a; }
+    function makeRipEdge(x0,x1){ var seg=Math.max(12,Math.min(150,Math.round((x1-x0)/9)));
+      var ft=[],fb=[]; for(var i=0;i<=seg;i++){ if(Math.random()<.30) ft.push({i:i,l:4+Math.random()*14,a:(Math.random()-.5)*.8});
+        if(Math.random()<.30) fb.push({i:i,l:4+Math.random()*14,a:(Math.random()-.5)*.8}); }
+      return {seg:seg,top:fractalEdge(seg,22),bot:fractalEdge(seg,22),ft:ft,fb:fb,x0:x0,x1:x1}; }
+    function edgePath(x0,x1,baseY,prof,seg){ var p=[]; for(var i=0;i<=seg;i++) p.push([x0+(x1-x0)*i/seg, baseY+prof[i]]); return p; }
+    function strokeEdge(p,dir,fib,rp){
+      function trace(){ bx.beginPath();bx.moveTo(p[0][0],p[0][1]); for(var i=1;i<p.length;i++)bx.lineTo(p[i][0],p[i][1]); }
+      bx.save();bx.lineJoin="round";bx.lineCap="round";bx.shadowColor="#ff2a3a";
+      bx.shadowBlur=20;trace();bx.strokeStyle="rgba(255,55,80,"+(0.9*rp).toFixed(2)+")";bx.lineWidth=3.2;bx.stroke();
+      bx.shadowBlur=9;trace();bx.strokeStyle="rgba(255,150,170,"+(0.85*rp).toFixed(2)+")";bx.lineWidth=1.6;bx.stroke();
+      bx.shadowBlur=4;trace();bx.strokeStyle="rgba(255,245,248,"+(0.95*rp).toFixed(2)+")";bx.lineWidth=0.8;bx.stroke();
+      bx.shadowBlur=6;bx.strokeStyle="rgba(255,120,140,"+(0.75*rp).toFixed(2)+")";bx.lineWidth=1;   // frayed fibers into the gap
+      for(var k=0;k<fib.length;k++){ var f=fib[k],pt=p[f.i]; if(!pt)continue; bx.beginPath();bx.moveTo(pt[0],pt[1]);
+        bx.lineTo(pt[0]+Math.sin(f.a)*f.l, pt[1]+dir*f.l*(0.7+Math.abs(Math.cos(f.a))));bx.stroke(); }
+      bx.restore(); }
     function drawRip(rect,rp){ if(!rect||rp<=0)return;
-      var padX=Math.min(90,rect.width*0.14+18), padY=rect.height*0.16+8;
-      var x0=Math.max(-10,rect.left-padX), x1=Math.min(W+10,rect.right+padX);
-      var gcx=(rect.left+rect.right)/2, gcy=(rect.top+rect.bottom)/2, halfH=(rect.height/2+padY)*rp, y0=gcy-halfH, y1=gcy+halfH;
-      bx.clearRect(x0-6,y0,(x1-x0)+12,(y1-y0));                 // reveal dark gap so the name reads clean
-      drawTorn(x0,x1,y0,-1,rp,tt*0.002); drawTorn(x0,x1,y1,1,rp,tt*0.002+3.1);
-      bx.save();bx.strokeStyle="rgba(255,90,110,"+(0.5*rp).toFixed(2)+")";bx.lineWidth=1.6;bx.shadowColor="#ff2a3a";bx.shadowBlur=12;
-      bx.beginPath();bx.moveTo(x0,y0);bx.lineTo(x0,y1);bx.moveTo(x1,y0);bx.lineTo(x1,y1);bx.stroke();bx.restore();
-      if(rp>0.55 && Math.random()<0.22){ var xr=x0+Math.random()*(x1-x0); fireBolt(xr,y0,xr+(Math.random()-0.5)*70,y1,0); }
+      var padX=Math.min(90,rect.width*0.14+18), padY=rect.height*0.22+14;
+      var x0=Math.max(-14,rect.left-padX), x1=Math.min(W+14,rect.right+padX);
+      var gcx=(rect.left+rect.right)/2, gcy=(rect.top+rect.bottom)/2, halfH=(rect.height/2+padY)*rp;
+      if(!ripEdge||Math.abs((ripEdge.x1-ripEdge.x0)-(x1-x0))>40) ripEdge=makeRipEdge(x0,x1);
+      var seg=ripEdge.seg, top=edgePath(x0,x1,gcy-halfH,ripEdge.top,seg), bot=edgePath(x0,x1,gcy+halfH,ripEdge.bot,seg);
+      // punch an irregular torn hole (not a rectangle) so the name reads clean, with singed inner glow
+      bx.save();bx.beginPath();bx.moveTo(top[0][0],top[0][1]);
+      for(var i=1;i<=seg;i++)bx.lineTo(top[i][0],top[i][1]);
+      for(var j=seg;j>=0;j--)bx.lineTo(bot[j][0],bot[j][1]);bx.closePath();
+      bx.fillStyle="#050002";bx.fill();bx.clip();
+      var g=bx.createLinearGradient(0,gcy-halfH,0,gcy+halfH);
+      g.addColorStop(0,"rgba(255,60,80,"+(0.30*rp).toFixed(2)+")");g.addColorStop(.5,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(255,60,80,"+(0.30*rp).toFixed(2)+")");
+      bx.fillStyle=g;bx.fillRect(x0,gcy-halfH,x1-x0,halfH*2);bx.restore();
+      strokeEdge(top,1,ripEdge.ft,rp); strokeEdge(bot,-1,ripEdge.fb,rp);
+      if(rp>0.5 && Math.random()<0.25){ spawnChunk(x0+Math.random()*(x1-x0), gcy+(Math.random()-0.5)*halfH); }   // code keeps sloughing off
+      if(rp>0.55 && Math.random()<0.20){ var xb=x0+Math.random()*(x1-x0); fireBolt(xb,gcy-halfH,xb+(Math.random()-0.5)*70,gcy+halfH,0); }
       if(!ripFired){ ripFired=true;
-        for(var i=0;i<50;i++){var a=Math.random()*6.283,sp=3+Math.random()*10;shards.push({x:gcx,y:gcy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2.5,life:1,fs:10+Math.random()*16,c:Math.random()<0.5?"#ffffff":"#ff5a72"});}
+        for(var s=0;s<18;s++) spawnChunk(x0+(x1-x0)*(s+Math.random())/18, gcy+(Math.random()-0.5)*halfH*0.8);
+        for(var q=0;q<44;q++){var a=Math.random()*6.283,sp=4+Math.random()*11;shards.push({x:gcx,y:gcy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2,life:1,fs:9+Math.random()*15,c:Math.random()<0.5?"#ffffff":"#ff5a72"});}
         for(var lb=0;lb<6;lb++){var la=Math.random()*6.283,ll=Math.min(W,H)*(0.32+Math.random()*0.45);fireBolt(gcx,gcy,gcx+Math.cos(la)*ll,gcy+Math.sin(la)*ll,0.95);} } }
+    // ── detached code that breaks off the tear and falls ──
+    function spawnChunk(x,y){ if(chunks.length>90)return; var len=3+((Math.random()*7)|0),gl=[];
+      for(var k=0;k<len;k++)gl.push(GLY[(Math.random()*GLY.length)|0]);
+      chunks.push({x:x,y:y,vx:(Math.random()-0.5)*1.8,vy:-1-Math.random()*1.5,rot:(Math.random()-0.5)*0.4,rv:(Math.random()-0.5)*0.06,fs:12+Math.random()*13,gl:gl}); }
+    function drawChunks(){ if(!chunks.length)return; bx.save();bx.textBaseline="middle";bx.textAlign="center";
+      for(var i=chunks.length-1;i>=0;i--){ var c=chunks[i]; c.vy+=0.22;c.x+=c.vx;c.y+=c.vy;c.rot+=c.rv;c.vx*=0.995;
+        if(c.y>H+90||c.x<-90||c.x>W+90){chunks.splice(i,1);continue;}
+        if(Math.random()<0.06)c.gl[(Math.random()*c.gl.length)|0]=GLY[(Math.random()*GLY.length)|0];   // still-live code flicker
+        var fade=c.y>H*0.72?Math.max(0,1-(c.y-H*0.72)/(H*0.28)):1;
+        bx.save();bx.translate(c.x,c.y);bx.rotate(c.rot);bx.font=c.fs+"px monospace";
+        for(var g2=0;g2<c.gl.length;g2++){ var yy=(g2-(c.gl.length-1)/2)*c.fs*0.98;
+          if(g2===0)bx.fillStyle="rgba(255,255,255,"+fade.toFixed(2)+")";
+          else{var al=(1-g2/c.gl.length)*fade;bx.fillStyle=(g2===1?"rgba(255,150,60,":"rgba(255,70,95,")+al.toFixed(2)+")";}
+          bx.fillText(c.gl[g2],0,yy); } bx.restore(); }
+      bx.restore(); }
     function drawShards(){ if(!shards.length)return; bx.save();bx.textBaseline="middle";
       for(var i=shards.length-1;i>=0;i--){var s=shards[i];s.x+=s.vx;s.y+=s.vy;s.vy+=0.35;s.vx*=0.99;s.life-=0.02;
         if(s.life<=0){shards.splice(i,1);continue;} bx.globalAlpha=Math.max(0,s.life);bx.fillStyle=s.c;bx.font=s.fs+"px monospace";
@@ -400,7 +438,7 @@
       if(tt>nextBolt){ nextBolt=tt+1500+Math.random()*2600; var sbx=Math.random()*W; fireBolt(sbx,-20,sbx+(Math.random()-0.5)*W*0.45,H*(0.28+Math.random()*0.5),0.5); }
       var el=document.querySelector("#welcome .wc-word"), rect=el?el.getBoundingClientRect():null;
       var rp=Math.max(0,Math.min(1,(tt-1150)/450)); rp=rp<1?(1-Math.pow(1-rp,3)):1;
-      drawRip(rect,rp); drawShards(); drawBolts();
+      drawRip(rect,rp); drawChunks(); drawShards(); drawBolts();
       raf=requestAnimationFrame(step); }
     raf=requestAnimationFrame(step);
     return function(){run=false;cancelAnimationFrame(raf);removeEventListener("resize",size);};
