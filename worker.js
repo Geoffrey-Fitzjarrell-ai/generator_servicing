@@ -116,6 +116,7 @@ async function mutateWork(env, mutate, message) {
 function cleanWorkItem(it) {
   const s = (v, n) => String(v == null ? "" : v).slice(0, n);
   const date = (v) => /^\d{4}-\d{2}-\d{2}$/.test(String(v || "")) ? v : "";
+  const time = (v) => /^\d{2}:\d{2}$/.test(String(v || "")) ? v : "";
   return {
     id: s(it.id, 40) || ("w_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6)),
     title: s(it.title, 200),
@@ -126,6 +127,8 @@ function cleanWorkItem(it) {
     start: date(it.start),
     end: date(it.end),
     allDay: it.allDay !== false,
+    startTime: time(it.startTime),
+    endTime: time(it.endTime),
     notes: s(it.notes, 600),
     jiraKey: s(it.jiraKey, 40),
     jiraUrl: s(it.jiraUrl, 200),
@@ -946,11 +949,14 @@ export default {
         if (i.category) descParts.push("Category: " + i.category);
         if (i.notes) descParts.push("\n" + i.notes);
         if (i.jiraUrl) descParts.push("\n" + i.jiraUrl);
-        // allDay checkbox off → a timed block on the day(s) it's attached to.
-        // The Engineers tab stores dates only (no clock time), so default to an
-        // 08:00–18:00 JST working-day block. allDay on → all-day event.
+        // allDay checkbox off → a timed block on the day(s) it's attached to,
+        // using the task's own start/end time when set, else an 08:00–18:00 JST
+        // default. allDay on → all-day event.
+        const st = /^\d{2}:\d{2}$/.test(i.startTime || "") ? i.startTime : "08:00";
+        const et = /^\d{2}:\d{2}$/.test(i.endTime || "") ? i.endTime : "18:00";
         const timeLines = (i.allDay === false)
-          ? ["DTSTART:" + jst(i.start, 8, 0), "DTEND:" + jst(end, 18, 0)]
+          ? ["DTSTART:" + jst(i.start, +st.slice(0, 2), +st.slice(3, 5)),
+             "DTEND:" + jst(end, +et.slice(0, 2), +et.slice(3, 5))]
           : ["DTSTART;VALUE=DATE:" + compact(i.start), "DTEND;VALUE=DATE:" + plusDay(end)];
         lines.push(
           "BEGIN:VEVENT",

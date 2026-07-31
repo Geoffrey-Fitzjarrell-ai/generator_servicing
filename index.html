@@ -2281,8 +2281,8 @@ function EngineersView(){
 
   const revealForm=()=>{ setTimeout(()=>{ try{ formRef.current&&formRef.current.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){} },60); };
   function openNew(pref){ setIo(null); setForm({ id:"w_"+Date.now(), title:"", engineer:(pref&&pref.engineer)||"Geoff Fitzjarrell",
-    asset:"", category:"build", status:"planned", start:(pref&&pref.start)||isoLocal(new Date()), end:"", allDay:true, notes:"", jiraKey:"", jiraUrl:"" }); revealForm(); }
-  function openEdit(it){ setIo(null); setForm({ ...it, end:it.end||"", allDay:it.allDay!==false, notes:it.notes||"", jiraKey:it.jiraKey||"", jiraUrl:it.jiraUrl||"" }); revealForm(); }
+    asset:"", category:"build", status:"planned", start:(pref&&pref.start)||isoLocal(new Date()), end:"", allDay:true, startTime:"", endTime:"", notes:"", jiraKey:"", jiraUrl:"" }); revealForm(); }
+  function openEdit(it){ setIo(null); setForm({ ...it, end:it.end||"", allDay:it.allDay!==false, startTime:it.startTime||"", endTime:it.endTime||"", notes:it.notes||"", jiraKey:it.jiraKey||"", jiraUrl:it.jiraUrl||"" }); revealForm(); }
   async function saveForm(){ if(!form.title.trim()||!form.start){ setForm({...form,_err:"Title and start date are required."}); return; }
     const c={...form}; delete c._err; if(!c.end) c.end=c.start;
     if(c.end<c.start){ setForm({...form,_err:"End date can't be before start."}); return; }
@@ -2393,7 +2393,8 @@ function EngineersView(){
               overflow:"hidden",boxSizing:"border-box",opacity:isDragSrc?.35:(done?.62:1)}},
             width>36?PH("span",{style:{fontSize:12,color:"var(--text)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",fontWeight:600}},it.title):null,
             (it.asset&&width>110)?PH("span",{style:{marginLeft:"auto",fontSize:9,color:"var(--text-dim)",fontFamily:"var(--mono)",flexShrink:0}},it.asset):null,
-            (it.allDay!==false&&days>=1&&width>150)?PH("span",{style:{fontSize:9,color:"var(--text-faint)",flexShrink:0}},"all-day"):null
+            (it.allDay!==false&&days>=1&&width>150)?PH("span",{style:{fontSize:9,color:"var(--text-faint)",flexShrink:0}},"all-day")
+              :(it.allDay===false&&it.startTime&&width>150)?PH("span",{style:{fontSize:9,color:"var(--text-faint)",flexShrink:0,fontFamily:"var(--mono)"}},it.startTime+"–"+(it.endTime||"")):null
           );
         })
       )
@@ -2438,7 +2439,24 @@ function EngineersView(){
       fld("Jira key (optional)", inp("jiraKey",{placeholder:"VBUILD-123"}))
     ),
     PH("label",{style:{display:"flex",gap:8,alignItems:"center",marginTop:12,fontSize:12,color:"var(--text-dim)",cursor:"pointer"}},
-      PH("input",{type:"checkbox",checked:form.allDay!==false,onChange:e=>setForm({...form,allDay:e.target.checked})}),"All-day task(s)"),
+      PH("input",{type:"checkbox",checked:form.allDay!==false,onChange:e=>{ const ad=e.target.checked;
+        setForm(Object.assign({},form,{allDay:ad}, (!ad && !form.startTime)?{startTime:"08:00",endTime:"18:00"}:{})); }}),"All-day task(s)"),
+    (form.allDay===false)?PH("div",{style:{marginTop:10}},
+      PH("label",{style:fldL},"Time block — tap one"),
+      PH("div",{style:{display:"flex",gap:6,flexWrap:"wrap",marginTop:4}},
+        [["Morning","08:00","12:00"],["Afternoon","13:00","17:00"],["Evening","17:00","20:00"],["Full day","08:00","18:00"]].map(b=>{
+          const on=form.startTime===b[1]&&form.endTime===b[2];
+          return PH("button",{key:b[0],type:"button",onClick:()=>setForm({...form,startTime:b[1],endTime:b[2]}),
+            style:{fontFamily:"var(--mono)",fontSize:11,padding:"7px 11px",borderRadius:8,cursor:"pointer",
+              border:"1px solid "+(on?"var(--blue)":"var(--border2)"),
+              background:on?"var(--blue)":"var(--surface2)",color:on?"#fff":"var(--text-dim)"}},
+            b[0]+" · "+b[1]+"–"+b[2]); })),
+      PH("div",{style:{display:"flex",gap:8,alignItems:"center",marginTop:8}},
+        PH("span",{style:{fontSize:11,color:"var(--text-faint)"}},"or exact"),
+        PH("input",{type:"time",value:form.startTime||"",onChange:e=>setForm({...form,startTime:e.target.value}),style:{...sel,width:120}}),
+        PH("span",{style:{color:"var(--text-faint)"}},"–"),
+        PH("input",{type:"time",value:form.endTime||"",onChange:e=>setForm({...form,endTime:e.target.value}),style:{...sel,width:120}}))
+    ):null,
     PH("div",{style:{marginTop:12}}, fld("Notes",
       PH("textarea",{value:form.notes||"",onChange:e=>setForm({...form,notes:e.target.value}),rows:2,style:{...sel,width:"100%",resize:"vertical",fontFamily:"var(--sans)"}}))),
     form._err?PH("div",{style:{color:"var(--red)",fontSize:12,marginTop:8}},form._err):null,
