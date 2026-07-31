@@ -201,20 +201,6 @@
       "jiraUrl": ""
     },
     {
-      "id": "w_1785397555148",
-      "title": "MCE modifications",
-      "engineer": "Geoff Fitzjarrell",
-      "asset": "MCE-206",
-      "category": "maintenance",
-      "status": "planned",
-      "start": "2026-07-31",
-      "end": "2026-07-31",
-      "allDay": false,
-      "notes": "Modify back kit to comply with states",
-      "jiraKey": "",
-      "jiraUrl": ""
-    },
-    {
       "id": "w_1785368816827",
       "title": "VCO ",
       "engineer": "Geoff Fitzjarrell",
@@ -273,6 +259,22 @@
       "startTime": "08:00",
       "endTime": "12:00",
       "notes": "Oil filter  \nAir filter  \nFuel filter  \nBattery \nBattery box \nCoolant check",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1785397555148",
+      "title": "MCE modifications",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "MCE-206",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-07-31",
+      "end": "2026-07-31",
+      "allDay": false,
+      "startTime": "13:00",
+      "endTime": "17:00",
+      "notes": "Modify back kit to comply with states",
       "jiraKey": "",
       "jiraUrl": ""
     }
