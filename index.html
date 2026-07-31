@@ -2168,6 +2168,13 @@ function EngineersView(){
   const busyRef = useRef(false);
   busyRef.current = !!form || !!io || saving;   // don't let a poll clobber an in-progress edit
 
+  // ── Drag-to-reassign: hold a work bar and drop it on another engineer's lane ──
+  // Pointer-events based so it works with mouse AND touch ("hold & move"). The live
+  // session is kept in a ref (no stale closures); `drag` state only drives the ghost.
+  const dragRef = useRef(null);            // {it,startX,startY,grabDayOffset,moved,pointerId,hoverEng,hoverDay}
+  const suppressClickRef = useRef(false);  // swallow the click a drag synthesizes on release
+  const [drag,setDrag] = useState(null);   // {x,y,id,title,color,hoverEng}
+
   // Measure the grid container so day cells can fill its width (hooks must run
   // before the early returns below — never place them inside the render body).
   const gridRef = useRef(null);
@@ -2268,6 +2275,48 @@ function EngineersView(){
     PH("label",{style:fldL},label), node);
   const inp = (k,extra)=>PH("input",Object.assign({value:form[k]||"",onChange:e=>setForm({...form,[k]:e.target.value}),style:{...sel,width:"100%"}},extra||{}));
 
+  // Drag handlers (curried on the item). A move past threshold becomes a drag;
+  // a release under threshold is treated as a click → open the editor.
+  const DRAG_THRESH = 6;
+  const onBarPointerDown = it => e => {
+    e.stopPropagation();
+    const r = e.currentTarget.getBoundingClientRect();
+    dragRef.current = { it, startX:e.clientX, startY:e.clientY,
+      grabDayOffset: Math.max(0, Math.floor((e.clientX - r.left)/DAYW)),
+      moved:false, pointerId:e.pointerId, hoverEng:null, hoverDay:null };
+    try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){}
+  };
+  const onBarPointerMove = e => {
+    const d = dragRef.current; if(!d) return;
+    if(!d.moved && Math.hypot(e.clientX-d.startX, e.clientY-d.startY) < DRAG_THRESH) return;
+    d.moved = true; suppressClickRef.current = true;
+    const cell = (document.elementFromPoint(e.clientX,e.clientY)||{}).closest
+      ? document.elementFromPoint(e.clientX,e.clientY).closest("[data-eng]") : null;
+    d.hoverEng = cell ? cell.getAttribute("data-eng") : null;
+    d.hoverDay = cell ? Number(cell.getAttribute("data-day")) : null;
+    setDrag({ x:e.clientX, y:e.clientY, id:d.it.id, title:d.it.title,
+      color:(WORK_META[d.it.category]||WORK_META.other).c, hoverEng:d.hoverEng });
+  };
+  const onBarPointerUp = e => {
+    const d = dragRef.current; dragRef.current = null;
+    try{ e.currentTarget.releasePointerCapture(e.pointerId); }catch(_){}
+    if(!d) return;
+    if(!d.moved){ setDrag(null); suppressClickRef.current=false; openEdit(d.it); return; }
+    setDrag(null);
+    setTimeout(()=>{ suppressClickRef.current=false; },0);   // clear after the synthesized click
+    if(d.hoverEng==null || d.hoverDay==null) return;         // dropped off the grid → no-op
+    const it = d.it;
+    const durDays  = Math.max(0, dayIndex(it.end||it.start) - dayIndex(it.start));
+    const startIdx = d.hoverDay - d.grabDayOffset;
+    const newStart = isoLocal(addDays(weekStart, startIdx));
+    const newEnd   = isoLocal(addDays(weekStart, startIdx + durDays));
+    const newEng   = d.hoverEng === "Unassigned" ? "" : d.hoverEng;
+    const engChanged  = (canonEng(it.engineer)||"Unassigned") !== d.hoverEng;
+    const dateChanged = it.start !== newStart || (it.end||it.start) !== newEnd;
+    if(!engChanged && !dateChanged) return;                  // nothing actually moved
+    upsert({ ...it, engineer:newEng, start:newStart, end:newEnd });
+  };
+
   const dayHeader = PH("div",{style:{display:"flex",position:"sticky",top:0,zIndex:3,background:"var(--surface2)",borderBottom:"1px solid var(--border2)"}},
     PH("div",{style:{width:LABELW,flexShrink:0,position:"sticky",left:0,zIndex:2,background:"var(--surface2)",
       padding:"8px",fontSize:10,letterSpacing:".08em",color:"var(--text-faint)",display:"flex",alignItems:"center"}},"ENGINEER"),
@@ -2291,11 +2340,14 @@ function EngineersView(){
         borderRight:"1px solid var(--border2)",padding:"10px",display:"flex",gap:7,alignItems:"center"}},
         PH("span",{style:{width:9,height:9,borderRadius:"50%",background:g.color,flexShrink:0}}),
         PH("span",{style:{fontWeight:700,fontSize:13,fontFamily:"var(--mono)",color:"var(--text)"}},g.label)),
-      PH("div",{style:{position:"relative",width:totalDays*DAYW,height:rowH,flexShrink:0}},
+      PH("div",{style:{position:"relative",width:totalDays*DAYW,height:rowH,flexShrink:0,
+        outline:(drag&&drag.hoverEng===g.key)?"2px solid var(--blue)":"none",outlineOffset:"-2px",
+        background:(drag&&drag.hoverEng===g.key)?"rgba(120,160,230,.06)":"transparent"}},
         // clickable day slots (Google-calendar style: click an empty cell to add work here)
         PH("div",{style:{position:"absolute",inset:0,display:"flex"}},
           dayDates.map((d,i)=>{ const wd=d.getDay(), wknd=wd===0||wd===6, isToday=i===todayIdx, ds=isoLocal(d);
-            return PH("div",{key:i,onClick:()=>openNew({engineer:g.key,start:ds}),
+            return PH("div",{key:i,"data-eng":g.key,"data-day":i,
+              onClick:()=>{ if(suppressClickRef.current){ suppressClickRef.current=false; return; } openNew({engineer:g.key,start:ds}); },
               title:"+ Add work — "+g.label+" · "+ds,
               onMouseEnter:e=>{e.currentTarget.style.background="rgba(120,160,230,.13)";},
               onMouseLeave:e=>{e.currentTarget.style.background=cellBg(i,isToday,wknd);},
@@ -2311,13 +2363,15 @@ function EngineersView(){
           const planned=it.status==="planned", done=it.status==="done", blocked=it.status==="blocked";
           const bord = blocked?"var(--red)":m.c;
           const days=(e-s+1);
+          const isDragSrc = drag && drag.id===it.id;
           return PH("div",{key:it.id,
-            title:`${it.title}\n${it.engineer||"Unassigned"} · ${(WORK_META[it.category]||WORK_META.other).lbl} · ${it.status}\n${it.start} → ${it.end||it.start}${it.asset?"\nAsset: "+it.asset:""}${it.notes?"\n"+it.notes:""}`,
-            onClick:e=>{ e.stopPropagation(); openEdit(it); },
-            style:{position:"absolute",left,width,top:lane*(BARH+GAP)+8,height:BARH,zIndex:2,
+            title:`${it.title}\n${it.engineer||"Unassigned"} · ${(WORK_META[it.category]||WORK_META.other).lbl} · ${it.status}\n${it.start} → ${it.end||it.start}${it.asset?"\nAsset: "+it.asset:""}${it.notes?"\n"+it.notes:""}\n(hold & drag to another engineer to reassign)`,
+            onPointerDown:onBarPointerDown(it), onPointerMove:onBarPointerMove, onPointerUp:onBarPointerUp,
+            style:{position:"absolute",left,width,top:lane*(BARH+GAP)+8,height:BARH,zIndex:isDragSrc?4:2,
               background:m.bg,border:(planned?`1px dashed ${bord}`:`1px solid ${bord}`),borderLeft:`3px solid ${bord}`,
-              borderRadius:4,display:"flex",alignItems:"center",gap:5,padding:"0 7px",cursor:"pointer",
-              overflow:"hidden",boxSizing:"border-box",opacity:done?.62:1}},
+              borderRadius:4,display:"flex",alignItems:"center",gap:5,padding:"0 7px",cursor:"grab",
+              touchAction:"none",userSelect:"none",WebkitUserSelect:"none",
+              overflow:"hidden",boxSizing:"border-box",opacity:isDragSrc?.35:(done?.62:1)}},
             width>36?PH("span",{style:{fontSize:12,color:"var(--text)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",fontWeight:600}},it.title):null,
             (it.asset&&width>110)?PH("span",{style:{marginLeft:"auto",fontSize:9,color:"var(--text-dim)",fontFamily:"var(--mono)",flexShrink:0}},it.asset):null,
             (it.allDay!==false&&days>=1&&width>150)?PH("span",{style:{fontSize:9,color:"var(--text-faint)",flexShrink:0}},"all-day"):null
@@ -2415,7 +2469,12 @@ function EngineersView(){
       WORK_CATS.map(c=>PH("span",{key:c,style:{display:"flex",gap:5,alignItems:"center"}},
         PH("span",{style:{width:10,height:10,borderRadius:2,background:WORK_META[c].c}}),WORK_META[c].lbl)),
       PH("span",{style:{display:"flex",gap:5,alignItems:"center"}},PH("span",{style:{width:14,height:10,borderRadius:2,border:"1px dashed var(--text-dim)"}}),"planned")),
-    grid, formEl, ioEl, list
+    grid, formEl, ioEl, list,
+    drag?PH("div",{style:{position:"fixed",left:drag.x+12,top:drag.y+12,zIndex:9999,pointerEvents:"none",
+      background:"var(--surface2)",border:`1px solid ${drag.color}`,borderLeft:`3px solid ${drag.color}`,
+      borderRadius:4,padding:"3px 9px",fontSize:12,fontWeight:600,color:"var(--text)",maxWidth:240,
+      whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",boxShadow:"0 4px 14px rgba(0,0,0,.4)"}},
+      drag.title + (drag.hoverEng?"  →  "+drag.hoverEng:"")):null
   );
 }
 
