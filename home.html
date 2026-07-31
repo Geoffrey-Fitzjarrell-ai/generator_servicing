@@ -69,6 +69,45 @@
   @keyframes spin{to{transform:rotate(360deg)}}
   #redir .cancel{font-family:var(--mono);font-size:12px;color:var(--text-dim);background:none;border:1px solid var(--border2);border-radius:8px;padding:11px 18px;cursor:pointer;min-height:44px;}
   #redir .cancel:hover{border-color:var(--blue);color:var(--blue);}
+
+  /* ── Personalized welcome ── */
+  #welcome{display:none;position:fixed;inset:0;z-index:200;background:radial-gradient(120% 120% at 50% 0%,#0e1626 0%,#080b12 60%);
+    overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  #welcome .wc{max-width:640px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;justify-content:center;
+    padding:calc(env(safe-area-inset-top) + 40px) 24px calc(env(safe-area-inset-bottom) + 40px);text-align:center;}
+  .wc-badge{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--text-faint);opacity:0;
+    animation:wcFade .5s ease .1s forwards;}
+  .wc-hi{font-size:15px;color:var(--text-dim);margin-top:14px;opacity:0;animation:wcFade .6s ease .35s forwards;}
+  .wc-name{font-size:64px;font-weight:800;line-height:1.05;margin-top:4px;letter-spacing:-.01em;
+    background:linear-gradient(100deg,var(--amber),#ffd873 55%,var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent;
+    opacity:0;transform:scale(.82) translateY(10px);animation:wcPop .8s cubic-bezier(.2,.9,.25,1) .45s forwards;
+    text-shadow:0 0 40px rgba(240,165,0,.18);}
+  @media(max-width:520px){.wc-name{font-size:46px;}}
+  .wc-sub{font-size:15px;color:var(--text-dim);line-height:1.5;margin-top:18px;opacity:0;animation:wcFade .6s ease .95s forwards;}
+  .wc-block{margin-top:22px;text-align:left;opacity:0;transform:translateY(14px);animation:wcRise .6s ease forwards;}
+  .wc-block.b1{animation-delay:1.15s;} .wc-block.b2{animation-delay:1.45s;}
+  .wc-h{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);
+    margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .wc-h .ic{font-size:13px;}
+  .wc-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:11px;background:var(--surface);
+    border:1px solid var(--border);margin-bottom:8px;}
+  .wc-item .tag{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.06em;padding:3px 7px;border-radius:20px;flex-shrink:0;
+    background:var(--green-dim);color:var(--green);}
+  .wc-item .tag.today{background:var(--blue-dim);color:var(--blue);}
+  .wc-item .tx{font-size:14px;font-weight:600;flex:1;}
+  .wc-item .mt{font-family:var(--mono);font-size:11px;color:var(--text-dim);flex-shrink:0;}
+  .wc-item.od{border-color:rgba(245,51,58,.4);}
+  .wc-item.od .tag{background:var(--red-dim);color:var(--red);}
+  .wc-item.od .nm{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--red);flex-shrink:0;width:60px;}
+  .wc-empty{font-size:13px;color:var(--text-faint);padding:10px 2px;}
+  .wc-go{margin-top:28px;min-height:56px;background:var(--amber);border:none;border-radius:13px;color:var(--bg);
+    font-family:var(--sans);font-weight:700;font-size:17px;letter-spacing:.02em;cursor:pointer;opacity:0;
+    animation:wcFade .5s ease 1.7s forwards;}
+  .wc-go:active{opacity:.85;}
+  .wc-lang{margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--text-faint);opacity:0;animation:wcFade .5s ease 1.9s forwards;}
+  @keyframes wcFade{to{opacity:1}}
+  @keyframes wcPop{to{opacity:1;transform:scale(1) translateY(0)}}
+  @keyframes wcRise{to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
@@ -123,6 +162,9 @@
   </div>
 </div>
 
+<!-- Personalized welcome (full-screen; shown once right after a name login) -->
+<div id="welcome"><div class="wc" id="wcInner"></div></div>
+
 <script>
 /* ── Access gate — same hashes + storage key as index.html / board.html, so the
    password entered here also unlocks the destination page (no second prompt). ── */
@@ -147,7 +189,11 @@
     var pw=document.getElementById("gatePw"),btn=document.getElementById("gateBtn"),err=document.getElementById("gateErr");
     async function tryit(){err.textContent="";var raw=pw.value||"";var h=await sha(raw);var hn=await sha(raw.trim().toLowerCase());
       if(h===HASH_MASTER){unlock("master");}
-      else if(HASH_NAMES[hn]){unlock("master");}
+      else if(HASH_NAMES[hn]){ var nm=HASH_NAMES[hn];
+        try{ localStorage.setItem("fleet_user",nm);
+             localStorage.setItem("fleet_lang", nm==="Masakiyo"?"ja":"en");
+             localStorage.setItem("fleet_welcome",nm); }catch(e){}
+        unlock("master"); }
       else if(h===HASH_DAILY){unlock("day");}
       else{err.textContent="Incorrect password";pw.value="";pw.focus();}}
     btn.addEventListener("click",tryit);
@@ -190,7 +236,91 @@
     if(badge) badge.hidden=false;
   }
 
-  window.__afterAuth=function(){
+  // ── Personalized welcome: pulls the person's Engineers-board tasks + overdue
+  //    trucks, greets them (Japanese for Masakiyo), then continues to routing. ──
+  var RAW="https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/";
+  var REPLACE_TASKS=[
+    {key:"oil_filter",   name:"Oil / filter change", interval:150},
+    {key:"fuel_filter",  name:"Fuel filter change",  interval:250},
+    {key:"airfilter_500",name:"Change air filter",   interval:500}
+  ];
+  var TJA={oil_filter:"オイル/オイルフィルター交換",fuel_filter:"燃料フィルター交換",airfilter_500:"エアフィルター交換",
+    airfilter_battery:"エアフィルター/バッテリー点検",battery_box:"バッテリーボックス点検",airfilter_clean:"エアフィルター清掃",
+    coolant_lines:"冷却水ライン点検",drive_belt:"ドライブベルト点検",clean_radiator:"ラジエーター清掃"};
+  var LTXT={
+    en:{hi:"Welcome",sub:"Here are your daily tasks from the Engineers board.",tasksH:"Assigned tasks",
+        overdueH:"Trucks overdue for service",today:"TODAY",noTasks:"No open tasks assigned to you.",
+        noOverdue:"No trucks overdue — all clear.",go:"Continue",over:function(h){return "+"+h+"h";},langNote:""},
+    ja:{hi:"ようこそ",sub:"エンジニアタブからの本日のタスクです。",tasksH:"担当タスク",
+        overdueH:"整備期限を過ぎた車両",today:"本日",noTasks:"割り当てられたタスクはありません。",
+        noOverdue:"整備期限超過の車両はありません。",go:"続ける",over:function(h){return h+"時間超過";},langNote:"表示言語：日本語"}
+  };
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  function tnum(id){var n=parseInt(String(id).replace(/\D/g,""),10);return isNaN(n)?999:n;}
+  function overdueList(fleet,logs){
+    var out=[];
+    Object.keys(fleet).sort(function(a,b){return tnum(a)-tnum(b);}).forEach(function(id){
+      var t=fleet[id]; if(!t||t.grounded||t.hours==null) return;
+      var worst=null;
+      REPLACE_TASKS.forEach(function(tk){
+        var last=(logs[id]||{})[tk.key], over=null;
+        if(last==null){ if(t.hours>=tk.interval) over=t.hours-tk.interval; }
+        else { var since=t.hours-last; if(since>=tk.interval) over=since-tk.interval; }
+        if(over!=null && (!worst||over>worst.over)) worst={key:tk.key,name:tk.name,over:over};
+      });
+      if(worst) out.push({id:id,task:worst});
+    });
+    return out;
+  }
+  function myTasks(work,name){
+    var today=new Date().toISOString().slice(0,10);
+    var mine=((work&&work.items)||[]).filter(function(i){
+      return String(i.engineer||"").toLowerCase().indexOf(name.toLowerCase())>=0 && i.status!=="done"; });
+    mine.sort(function(a,b){
+      var at=(a.start<=today&&(a.end||a.start)>=today)?0:1, bt=(b.start<=today&&(b.end||b.start)>=today)?0:1;
+      if(at!==bt) return at-bt; return String(a.start).localeCompare(String(b.start)); });
+    return mine.slice(0,6);
+  }
+  async function buildWelcome(name){
+    var lang=(localStorage.getItem("fleet_lang")==="ja")?"ja":"en";
+    document.documentElement.lang=lang;
+    var t=LTXT[lang], today=new Date().toISOString().slice(0,10);
+    var fleet={},logs={},work={items:[]};
+    try{ var b="?t="+Date.now();
+      var r=await Promise.all([fetch(RAW+"data.json"+b,{cache:"no-store"}),fetch(RAW+"service_logs.json"+b,{cache:"no-store"}),fetch(RAW+"engineer_work.json"+b,{cache:"no-store"})]);
+      fleet=await r[0].json(); logs=await r[1].json(); work=await r[2].json();
+    }catch(e){}
+    var mine=myTasks(work,name), od=overdueList(fleet,logs);
+    var tasksHtml = mine.length ? mine.map(function(i){
+      var isToday=(i.start<=today&&(i.end||i.start)>=today);
+      return '<div class="wc-item"><span class="tag'+(isToday?" today":"")+'">'+(isToday?t.today:esc(String(i.start).slice(5)))+'</span>'
+        +'<span class="tx">'+esc(String(i.title||"").trim())+'</span>'+(i.asset?'<span class="mt">'+esc(i.asset)+'</span>':'')+'</div>';
+    }).join("") : '<div class="wc-empty">'+t.noTasks+'</div>';
+    var odHtml = od.length ? od.map(function(o){
+      var label = lang==="ja" ? (TJA[o.task.key]||o.task.name) : o.task.name;
+      return '<div class="wc-item od"><span class="nm">'+o.id+'</span><span class="tx">'+esc(label)+'</span>'
+        +'<span class="mt">'+t.over(o.task.over)+'</span></div>';
+    }).join("") : '<div class="wc-empty">'+t.noOverdue+'</div>';
+    document.getElementById("wcInner").innerHTML =
+      '<div class="wc-badge">HD GEN2 · JAPAN VOPS</div>'
+      +'<div class="wc-hi">'+t.hi+'</div>'
+      +'<div class="wc-name">'+esc(name)+(lang==="ja"?'<span style="font-size:.42em;font-weight:600;color:var(--text-dim);"> さん</span>':'')+'</div>'
+      +'<div class="wc-sub">'+t.sub+'</div>'
+      +'<div class="wc-block b1"><div class="wc-h"><span class="ic">📋</span>'+t.tasksH+'</div>'+tasksHtml+'</div>'
+      +'<div class="wc-block b2"><div class="wc-h"><span class="ic">🔧</span>'+t.overdueH+'</div>'+odHtml+'</div>'
+      +'<button class="wc-go" id="wcGo">'+t.go+' →</button>'
+      +(t.langNote?'<div class="wc-lang">'+t.langNote+'</div>':'');
+  }
+  function showWelcome(name){
+    document.getElementById("welcome").style.display="block";
+    buildWelcome(name).then(function(){
+      var done=function(){ var w=document.getElementById("welcome"); if(w) w.style.display="none"; document.documentElement.lang="en"; proceed(); };
+      var go=document.getElementById("wcGo"); if(go) go.addEventListener("click",done);
+      setTimeout(function(){ var w=document.getElementById("welcome"); if(w&&w.style.display!=="none") done(); }, 14000);
+    });
+  }
+
+  function proceed(){
     var remembered=null;
     try{ remembered=localStorage.getItem(DKEY); }catch(e){}
     if(remembered && DEST[remembered]){ startRedirect(remembered); return; }
@@ -206,9 +336,16 @@
       });
     });
     document.getElementById("resetBtn").addEventListener("click",function(){
-      try{ localStorage.removeItem(DKEY); localStorage.removeItem("fleet_gate_v2"); }catch(e){}
+      try{ localStorage.removeItem(DKEY); localStorage.removeItem("fleet_gate_v2");
+           localStorage.removeItem("fleet_user"); localStorage.removeItem("fleet_lang"); localStorage.removeItem("fleet_welcome"); }catch(e){}
       window.location.reload();
     });
+  }
+
+  window.__afterAuth=function(){
+    var pending=null; try{ pending=localStorage.getItem("fleet_welcome"); }catch(e){}
+    if(pending){ try{ localStorage.removeItem("fleet_welcome"); }catch(e){} showWelcome(pending); return; }
+    proceed();
   };
 })();
 </script>

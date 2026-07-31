@@ -18,7 +18,8 @@
     --blue:#3d78ff; --blue-dim:#101e40;
     --purple:#a577ea; --purple-dim:#1a1228;
     --text:#dde4f0; --text-dim:#6e7f99; --text-faint:#38465a;
-    --mono:'JetBrains Mono',monospace; --sans:'Inter',sans-serif; --radius:10px;
+    --mono:'JetBrains Mono','Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',monospace;
+    --sans:'Inter','Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif; --radius:10px;
   }
   html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);
     background-image:url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23ffffff06'/%3E%3C/svg%3E");
@@ -269,7 +270,11 @@
     var pw=document.getElementById("gatePw"),btn=document.getElementById("gateBtn"),err=document.getElementById("gateErr");
     async function tryit(){err.textContent="";var raw=pw.value||"";var h=await sha(raw);var hn=await sha(raw.trim().toLowerCase());
       if(h===HASH_MASTER){unlock("master");}
-      else if(HASH_NAMES[hn]){unlock("master");}
+      else if(HASH_NAMES[hn]){ var nm=HASH_NAMES[hn];
+        try{ localStorage.setItem("fleet_user",nm);
+             localStorage.setItem("fleet_lang", nm==="Masakiyo"?"ja":"en");
+             localStorage.setItem("fleet_welcome",nm); }catch(e){}
+        unlock("master"); }
       else if(h===HASH_DAILY){unlock("day");}
       else{err.textContent="Incorrect password";pw.value="";pw.focus();}}
     btn.addEventListener("click",tryit);
@@ -307,6 +312,55 @@
     {key:"airfilter_500",     name:"Change air filter",         interval:500, type:"replace"}
   ];
   function tasksFor(id){ return TASKS.filter(function(t){ return t.key!=="airfilter_clean" || id==="HD5"; }); }
+
+  // ── Language (set by the gate from the name password; Masakiyo → Japanese) ──
+  var LANG=(function(){ try{ return localStorage.getItem("fleet_lang")==="ja"?"ja":"en"; }catch(e){ return "en"; } })();
+  var TJA={oil_filter:"オイル/オイルフィルター交換",fuel_filter:"燃料フィルター交換",airfilter_500:"エアフィルター交換",
+    airfilter_battery:"エアフィルター/バッテリー点検",battery_box:"バッテリーボックス点検",airfilter_clean:"エアフィルター清掃",
+    coolant_lines:"冷却水ライン点検",drive_belt:"ドライブベルト点検",clean_radiator:"ラジエーター清掃"};
+  function tName(t){ return LANG==="ja"?(TJA[t.key]||t.name):t.name; }
+  var I18N={
+    en:{},
+    ja:{
+      st_overdue:"期限超過",st_warn:"まもなく",st_due:"点検期限",st_ok:"正常",st_grounded:"使用停止",st_none:"時間未登録",
+      pl_overdue:"期限超過",pl_warn:"要注意",pl_due:"点検",pl_ok:"正常",pl_grounded:"使用停止",pl_none:"時間未登録",
+      title:"車両ステータスボード",trucks:"台",synced:"同期",wall:"⛶ ウォール",refresh:"↻ 更新",
+      hrs:"時間",tech:"担当:",next:"次回:",due_soon:"まもなく期限",check_due:"点検期限",overdue_word:"期限超過",
+      no_hours_yet:"稼働時間 未登録",waiting:"初回入力待ち",
+      k_hours:"稼働時間",k_tech:"担当者",k_updated:"更新",log_btn:"✓ 整備を記録",
+      sec_status:"整備ステータス",sec_insp:"点検",sec_recent:"整備履歴",
+      insp_3m:"次回3ヶ月点検",insp_shaken:"車検 満了日",no_history:"整備履歴はありません。",
+      no_record:"記録なし",approx:"目安（第2土曜）",
+      ql_tech:"担当者",ql_hours:"整備時の稼働時間",ql_tasks:"完了したタスク（該当を全て選択）",ql_note:"メモ（任意）",
+      ql_cancel:"キャンセル",ql_submit:"記録する",ql_logging:"記録中…",ql_ok:"✓ 記録しました。ありがとうございます！",
+      ql_need_task:"タスクを1つ以上選択してください。",ql_need_hours:"稼働時間を入力してください。",
+      ql_fail:"保存に失敗しました。接続を確認して再試行してください。",
+      wall_title:"車両ステータス",wall_exit:"⛶ 終了",no_data:"データなし",age_no:"データなし",
+      no_trucks_state:"該当する車両はありません。"
+    }
+  };
+  var I18N_EN={st_overdue:"OVERDUE",st_warn:"DUE SOON",st_due:"CHECK DUE",st_ok:"OPERATIONAL",st_grounded:"GROUNDED",st_none:"NO HOURS",
+    pl_overdue:"Overdue",pl_warn:"Warn",pl_due:"Due",pl_ok:"OK",pl_grounded:"Grounded",pl_none:"No hours",
+    title:"Fleet Status Board",trucks:"TRUCKS",synced:"SYNCED",wall:"⛶ Wall",refresh:"↻ Refresh",
+    hrs:"hrs",tech:"Tech:",next:"Next:",due_soon:"Due soon",check_due:"Check due",overdue_word:"OVERDUE",
+    no_hours_yet:"No hours logged yet",waiting:"Waiting on first reading",
+    k_hours:"Hours",k_tech:"Technician",k_updated:"Updated",log_btn:"✓ Log service done",
+    sec_status:"Service status",sec_insp:"Inspections",sec_recent:"Recent service",
+    insp_3m:"Next 3-month insp.",insp_shaken:"車検 Shaken expiry",no_history:"No service history recorded.",
+    no_record:"no record",approx:"approx (2nd Sat)",
+    ql_tech:"Technician",ql_hours:"Hours at service",ql_tasks:"Tasks completed — tap all that apply",ql_note:"Note (optional)",
+    ql_cancel:"Cancel",ql_submit:"Log it",ql_logging:"Logging…",ql_ok:"✓ Logged — thanks!",
+    ql_need_task:"Select at least one task.",ql_need_hours:"Enter the engine hours.",
+    ql_fail:"Save failed — check connection and retry.",
+    wall_title:"Fleet Status",wall_exit:"⛶ Exit",no_data:"NO DATA",age_no:"no data",
+    no_trucks_state:"No trucks in this state."};
+  I18N.en=I18N_EN;
+  function T(k){ var d=I18N[LANG]||I18N.en; return (d[k]!=null)?d[k]:(I18N.en[k]!=null?I18N.en[k]:k); }
+  function phLeft(h){ return LANG==="ja"?("残り"+h+"h"):(h+"h left"); }
+  function phOverPast(h){ return LANG==="ja"?(h+"h超過"):("+"+h+"h past"); }
+  function phOver(h){ return LANG==="ja"?(h+"h超過"):("+"+h+"h"); }
+  function phLast(last,intv){ return LANG==="ja"?("前回 "+last+"h・"+intv+"h毎"):("last @ "+last+"h · every "+intv+"h"); }
+  function phInterval(intv){ return LANG==="ja"?("間隔 "+intv+"h"):("interval "+intv+"h"); }
 
   var STY = {
     overdue:{label:"OVERDUE", color:"var(--red)"},
@@ -364,11 +418,13 @@
   }
 
   function fmtAge(iso){
-    if(!iso) return {txt:"no data", cls:"stale"};
+    if(!iso) return {txt:T("age_no"), cls:"stale"};
     var d=new Date(iso), diff=(Date.now()-d.getTime())/1000;
     var cls = diff<60*60*30 ? "" : diff<60*60*54 ? "warn" : "stale";  // ~fresh <30h, warn, stale
     var m=Math.floor(diff/60), h=Math.floor(m/60), dy=Math.floor(h/24);
-    var txt = dy>=1 ? dy+"d ago" : h>=1 ? h+"h ago" : m>=1 ? m+"m ago" : "just now";
+    var txt = LANG==="ja"
+      ? (dy>=1 ? dy+"日前" : h>=1 ? h+"時間前" : m>=1 ? m+"分前" : "たった今")
+      : (dy>=1 ? dy+"d ago" : h>=1 ? h+"h ago" : m>=1 ? m+"m ago" : "just now");
     return {txt:txt, cls:cls};
   }
   function fillColor(status, pct){
@@ -435,7 +491,7 @@
     var pillHtml = pills.map(function(p){
       var cls = p.k==="none" ? "grounded" : p.k;
       var sel = state.filter===p.k ? " sel" : "";
-      var lbl = p.k==="none" ? "No hours" : STY[p.k].label;
+      var lbl = T("pl_"+p.k);
       return '<div class="pill '+cls+sel+'" data-filter="'+p.k+'"><div class="n">'+p.n+'</div><div class="l">'+lbl+'</div></div>';
     }).join("");
 
@@ -447,13 +503,13 @@
     app.innerHTML =
       '<div class="hdr">'
       +  '<div class="hdr-l"><span class="badge">HD GEN2</span>'
-      +    '<div><div class="hdr-title">Fleet Status Board</div><div class="hdr-sub">JAPAN VOPS · '+ids.length+' TRUCKS</div></div></div>'
-      +  '<div class="hdr-r"><span class="age '+age.cls+'"><span class="dot"></span>SYNCED '+age.txt+'</span>'
-      +    '<button class="refresh" onclick="__board_wall()">⛶ Wall</button>'
-      +    '<button class="refresh" onclick="__board_refresh()">↻ Refresh</button></div>'
+      +    '<div><div class="hdr-title">'+T("title")+'</div><div class="hdr-sub">JAPAN VOPS · '+ids.length+' '+T("trucks")+'</div></div></div>'
+      +  '<div class="hdr-r"><span class="age '+age.cls+'"><span class="dot"></span>'+T("synced")+' '+age.txt+'</span>'
+      +    '<button class="refresh" onclick="__board_wall()">'+T("wall")+'</button>'
+      +    '<button class="refresh" onclick="__board_refresh()">'+T("refresh")+'</button></div>'
       +'</div>'
       +'<div class="summary">'+pillHtml+'</div>'
-      +'<div class="grid">'+(cards||'<div class="empty" style="padding:24px">No trucks in this state.</div>')+'</div>'
+      +'<div class="grid">'+(cards||'<div class="empty" style="padding:24px">'+T("no_trucks_state")+'</div>')+'</div>'
       +'<div class="sheet-bg" id="sheetBg"><div class="sheet" id="sheet"></div></div>';
 
     // wire pills (tap to filter / untoggle)
@@ -478,26 +534,26 @@
     var states=taskStates(id, t.hours, state.logs);
     var crit=criticalTask(states);
     var age=fmtAge(t.lastUpdated);
-    var tech = t.technician ? '<span class="tech">Tech: <b>'+esc(t.technician)+'</b></span>' : '<span class="tech" style="color:var(--text-faint)">Tech: —</span>';
+    var tech = t.technician ? '<span class="tech">'+T("tech")+' <b>'+esc(t.technician)+'</b></span>' : '<span class="tech" style="color:var(--text-faint)">'+T("tech")+' —</span>';
 
     var head="", sub="", barPct=0, barColor="var(--text-faint)";
-    if(status==="grounded"){ head='GROUNDED'; sub=esc(t.groundedNote||"Under repair"); }
-    else if(status==="none"){ head='No hours logged yet'; sub='Waiting on first reading'; }
+    if(status==="grounded"){ head=T("st_grounded"); sub=esc(t.groundedNote||"Under repair"); }
+    else if(status==="none"){ head=T("no_hours_yet"); sub=T("waiting"); }
     else if(crit){
       barPct=Math.round((crit.pct||0)*100); barColor=fillColor(crit.status, crit.pct);
-      if(crit.status==="overdue"){ head=esc(crit.name); sub='OVERDUE'+(crit.over>0?' · +'+crit.over+'h past':''); }
-      else if(crit.status==="warn"){ head=esc(crit.name); sub='Due soon · '+Math.max(0,crit.remaining)+'h left'; }
-      else if(crit.status==="due"){ head=esc(crit.name); sub='Check due'+(crit.over>0?' · +'+crit.over+'h':''); }
-      else { head='Next: '+esc(crit.name); sub=(crit.remaining!=null?Math.max(0,crit.remaining)+'h left':'on track'); }
+      if(crit.status==="overdue"){ head=esc(tName(crit)); sub=T("overdue_word")+(crit.over>0?' · '+phOverPast(crit.over):''); }
+      else if(crit.status==="warn"){ head=esc(tName(crit)); sub=T("due_soon")+' · '+phLeft(Math.max(0,crit.remaining)); }
+      else if(crit.status==="due"){ head=esc(tName(crit)); sub=T("check_due")+(crit.over>0?' · '+phOver(crit.over):''); }
+      else { head=T("next")+' '+esc(tName(crit)); sub=(crit.remaining!=null?phLeft(Math.max(0,crit.remaining)):''); }
     }
 
     var hoursHtml = (t.hours!=null)
-      ? '<div class="card-hours"><span class="hn">'+t.hours+'</span><span class="hu">hrs</span></div>'
-      : '<div class="card-hours"><span class="hn" style="color:var(--text-faint)">—</span><span class="hu">hrs</span></div>';
+      ? '<div class="card-hours"><span class="hn">'+t.hours+'</span><span class="hu">'+T("hrs")+'</span></div>'
+      : '<div class="card-hours"><span class="hn" style="color:var(--text-faint)">—</span><span class="hu">'+T("hrs")+'</span></div>';
 
     return '<div class="card '+status+'" data-id="'+id+'">'
       +'<div class="card-top"><span class="card-name">'+id+'</span>'
-      +  '<span class="card-status st-'+status+'">'+STY[status].label+'</span></div>'
+      +  '<span class="card-status st-'+status+'">'+T("st_"+status)+'</span></div>'
       + hoursHtml
       +'<div class="card-head">'+head+'</div>'
       +(sub?'<div class="card-headsub">'+sub+'</div>':'')
@@ -521,16 +577,14 @@
     var taskRows = states.map(function(s){
       var barColor=fillColor(s.status, s.pct), pct=Math.round((s.pct||0)*100);
       var meta, mcls="";
-      if(s.status==="overdue"){ meta='OVERDUE'+(s.over>0?' +'+s.over+'h':''); mcls="overdue"; }
-      else if(s.status==="due"){ meta='DUE'+(s.over>0?' +'+s.over+'h':''); mcls="due"; }
-      else if(s.status==="warn"){ meta=Math.max(0,s.remaining)+'h left'; mcls="warn"; }
-      else if(s.status==="no_record"){ meta='no record'; }
+      if(s.status==="overdue"){ meta=T("st_overdue")+(s.over>0?' '+phOver(s.over):''); mcls="overdue"; }
+      else if(s.status==="due"){ meta=T("st_due")+(s.over>0?' '+phOver(s.over):''); mcls="due"; }
+      else if(s.status==="warn"){ meta=phLeft(Math.max(0,s.remaining)); mcls="warn"; }
+      else if(s.status==="no_record"){ meta=T("no_record"); }
       else if(s.status==="unknown"){ meta='—'; }
-      else { meta=Math.max(0,s.remaining)+'h left'; mcls="ok"; }
-      var detail = (s.last!=null)
-        ? ('last @ '+s.last+'h · every '+s.interval+'h')
-        : ('interval '+s.interval+'h');
-      return '<div class="trow"><div class="trow-top"><span class="trow-nm">'+esc(s.name)+'</span>'
+      else { meta=phLeft(Math.max(0,s.remaining)); mcls="ok"; }
+      var detail = (s.last!=null) ? phLast(s.last,s.interval) : phInterval(s.interval);
+      return '<div class="trow"><div class="trow-top"><span class="trow-nm">'+esc(tName(s))+'</span>'
         +'<span class="trow-meta '+mcls+'">'+meta+'</span></div>'
         +'<div class="track"><div class="fill" style="width:'+pct+'%;background:'+barColor+'"></div></div>'
         +'<div style="font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:5px;">'+detail+'</div></div>';
@@ -543,22 +597,22 @@
       if(ev.type==="inspection3m" && ev.date>=today && (!nextInsp||ev.date<nextInsp.date)) nextInsp=ev;
     });
     var inspBoxes=""
-      + '<div class="box"><div class="k">Next 3-month insp.</div><div class="d">'+(nextInsp?esc(nextInsp.date):'—')+'</div>'
-      +   (nextInsp&&nextInsp.approx?'<div class="sub">approx (2nd Sat)</div>':'')+'</div>'
-      + '<div class="box"><div class="k">車検 Shaken expiry</div><div class="d">'+(ins.shakenExpiry?esc(ins.shakenExpiry):'—')+'</div>'
+      + '<div class="box"><div class="k">'+T("insp_3m")+'</div><div class="d">'+(nextInsp?esc(nextInsp.date):'—')+'</div>'
+      +   (nextInsp&&nextInsp.approx?'<div class="sub">'+T("approx")+'</div>':'')+'</div>'
+      + '<div class="box"><div class="k">'+T("insp_shaken")+'</div><div class="d">'+(ins.shakenExpiry?esc(ins.shakenExpiry):'—')+'</div>'
       +   (ins.plate?'<div class="sub">'+esc(ins.plate)+'</div>':'')+'</div>';
 
     // recent service history
     var h=(state.hist[id]||[]).slice().reverse().slice(0,4);
     var histHtml = h.length ? h.map(function(e){
-      var labels=(e.tasks||[]).map(function(x){return esc(x.label||x.key);}).join(", ");
+      var labels=(e.tasks||[]).map(function(x){var tk=TASKS.find(function(z){return z.key===x.key;}); return esc(tk?tName(tk):(x.label||x.key));}).join(LANG==="ja"?"、":", ");
       return '<div class="hist"><div class="hl"><b>'+esc(e.date||"—")+'</b> · '+(labels||'service')+'</div>'
         +'<div class="hr">'+(e.hours!=null?e.hours+'h':'')+(e.technician?'<br>'+esc(e.technician):'')+'</div></div>';
-    }).join("") : '<div class="empty">No service history recorded.</div>';
+    }).join("") : '<div class="empty">'+T("no_history")+'</div>';
 
     var groundedBanner = status==="grounded"
       ? '<div style="background:var(--purple-dim);border:1px solid #3a2b55;border-radius:10px;padding:13px 15px;margin-bottom:16px;">'
-        +'<div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--purple);letter-spacing:.1em;">⚠ GROUNDED</div>'
+        +'<div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--purple);letter-spacing:.1em;">⚠ '+T("st_grounded")+'</div>'
         +'<div style="font-size:12px;color:#8a7ab0;margin-top:4px;">'+esc(t.groundedNote||"Under repair")+'</div></div>'
       : "";
 
@@ -566,21 +620,21 @@
     sheet.innerHTML =
       '<div class="sheet-hdr '+status+'">'
       +  '<div class="sheet-title"><span class="nm">'+id+'</span>'
-      +    '<span class="card-status st-'+status+'">'+STY[status].label+'</span></div>'
+      +    '<span class="card-status st-'+status+'">'+T("st_"+status)+'</span></div>'
       +  '<button class="close" id="sheetClose">✕</button>'
       +'</div>'
       +'<div class="sheet-body">'
       +  groundedBanner
       +  '<div class="kv">'
-      +    '<div><span class="k">Hours</span><span class="v">'+(t.hours!=null?t.hours+'h':'—')+'</span></div>'
-      +    '<div><span class="k">Technician</span><span class="v" style="font-family:var(--sans)">'+(t.technician?esc(t.technician):'—')+'</span></div>'
-      +    '<div><span class="k">Updated</span><span class="v">'+age.txt+'</span></div>'
+      +    '<div><span class="k">'+T("k_hours")+'</span><span class="v">'+(t.hours!=null?t.hours+'h':'—')+'</span></div>'
+      +    '<div><span class="k">'+T("k_tech")+'</span><span class="v" style="font-family:var(--sans)">'+(t.technician?esc(t.technician):'—')+'</span></div>'
+      +    '<div><span class="k">'+T("k_updated")+'</span><span class="v">'+age.txt+'</span></div>'
       +  '</div>'
-      +  '<button class="ql-btn" id="qlOpenBtn">✓ Log service done</button>'
+      +  '<button class="ql-btn" id="qlOpenBtn">'+T("log_btn")+'</button>'
       +  '<div id="qlHost"></div>'
-      +  '<div class="sec">Service status</div>'+taskRows
-      +  '<div class="sec">Inspections</div><div class="insp">'+inspBoxes+'</div>'
-      +  '<div class="sec">Recent service</div>'+histHtml
+      +  '<div class="sec">'+T("sec_status")+'</div>'+taskRows
+      +  '<div class="sec">'+T("sec_insp")+'</div><div class="insp">'+inspBoxes+'</div>'
+      +  '<div class="sec">'+T("sec_recent")+'</div>'+histHtml
       +'</div>';
 
     var bg=document.getElementById("sheetBg");
@@ -601,16 +655,16 @@
     var btn=document.getElementById("qlOpenBtn"); if(btn) btn.style.display="none";
     var taskRows = tasksFor(id).map(function(tk){
       return '<div class="ql-task" data-key="'+tk.key+'"><span class="cbx">✓</span>'
-        +'<span class="tn">'+esc(tk.name)+'</span><span class="ti">'+tk.interval+'h</span></div>';
+        +'<span class="tn">'+esc(tName(tk))+'</span><span class="ti">'+tk.interval+'h</span></div>';
     }).join("");
     host.innerHTML =
       '<div class="ql-panel">'
-      +'<div class="ql-row"><label>Technician</label><input id="qlTech" type="text" value="'+esc(t.technician||"")+'" placeholder="Name" /></div>'
-      +'<div class="ql-row"><label>Hours at service</label><input id="qlHours" type="number" inputmode="numeric" value="'+(t.hours!=null?t.hours:"")+'" placeholder="engine hours" /></div>'
-      +'<div class="ql-row"><label>Tasks completed — tap all that apply</label><div class="ql-tasks">'+taskRows+'</div></div>'
-      +'<div class="ql-row"><label>Note (optional)</label><input id="qlNote" type="text" placeholder="anything worth recording" /></div>'
-      +'<div class="ql-acts"><button class="ql-cancel" id="qlCancel">Cancel</button>'
-      +  '<button class="ql-submit" id="qlSubmit">Log it</button></div>'
+      +'<div class="ql-row"><label>'+T("ql_tech")+'</label><input id="qlTech" type="text" value="'+esc(t.technician||"")+'" placeholder="'+(LANG==="ja"?"氏名":"Name")+'" /></div>'
+      +'<div class="ql-row"><label>'+T("ql_hours")+'</label><input id="qlHours" type="number" inputmode="numeric" value="'+(t.hours!=null?t.hours:"")+'" placeholder="'+(LANG==="ja"?"稼働時間":"engine hours")+'" /></div>'
+      +'<div class="ql-row"><label>'+T("ql_tasks")+'</label><div class="ql-tasks">'+taskRows+'</div></div>'
+      +'<div class="ql-row"><label>'+T("ql_note")+'</label><input id="qlNote" type="text" placeholder="'+(LANG==="ja"?"記録しておきたいこと":"anything worth recording")+'" /></div>'
+      +'<div class="ql-acts"><button class="ql-cancel" id="qlCancel">'+T("ql_cancel")+'</button>'
+      +  '<button class="ql-submit" id="qlSubmit">'+T("ql_submit")+'</button></div>'
       +'<div class="ql-msg" id="qlMsg"></div>'
       +'</div>';
     host.querySelectorAll(".ql-task").forEach(function(el){
@@ -629,16 +683,16 @@
     var hoursRaw=document.getElementById("qlHours").value;
     var note=(document.getElementById("qlNote").value||"").trim();
     var msg=document.getElementById("qlMsg");
-    if(!keys.length){ msg.className="ql-msg err"; msg.textContent="Select at least one task."; return; }
+    if(!keys.length){ msg.className="ql-msg err"; msg.textContent=T("ql_need_task"); return; }
     var hours=parseInt(hoursRaw,10);
-    if(isNaN(hours)||hours<0){ msg.className="ql-msg err"; msg.textContent="Enter the engine hours."; return; }
+    if(isNaN(hours)||hours<0){ msg.className="ql-msg err"; msg.textContent=T("ql_need_hours"); return; }
 
     var doneTasks = tasksFor(id).filter(function(tk){return keys.indexOf(tk.key)>=0;})
       .map(function(tk){return {key:tk.key,label:tk.name};});
     var notes = note ? [note] : [];
 
     var submit=document.getElementById("qlSubmit"), cancel=document.getElementById("qlCancel");
-    submit.disabled=true; cancel.disabled=true; msg.className="ql-msg"; msg.textContent="Logging…";
+    submit.disabled=true; cancel.disabled=true; msg.className="ql-msg"; msg.textContent=T("ql_logging");
 
     // 1) authoritative write (service_logs + service_history) — same as the desktop.
     var ok=false;
@@ -655,14 +709,14 @@
           technician:tech,postedBy:(t.postedBy||null),loggedAt:new Date().toISOString(),hours:hours,notes:notes,alreadyLogged:ok}})});
     }catch(e){}
 
-    if(!ok){ msg.className="ql-msg err"; msg.textContent="Save failed — check connection and retry."; submit.disabled=false; cancel.disabled=false; return; }
+    if(!ok){ msg.className="ql-msg err"; msg.textContent=T("ql_fail"); submit.disabled=false; cancel.disabled=false; return; }
 
     // Optimistic: reflect the new "last done" locally so status updates immediately
     // (raw.githubusercontent CDN can lag a few minutes before the pull catches up).
     if(!state.logs[id]) state.logs[id]={};
     doneTasks.forEach(function(x){ state.logs[id][x.key]=hours; });
 
-    msg.className="ql-msg ok"; msg.textContent="✓ Logged — thanks!";
+    msg.className="ql-msg ok"; msg.textContent=T("ql_ok");
     qlActive=false;
     setTimeout(function(){ openSheet(id,true); pull(); }, 700);
   }
@@ -684,20 +738,20 @@
     var t=state.fleet[id]||{}, status=overallStatus(id,t,state.logs);
     var crit=criticalTask(taskStates(id,t.hours,state.logs));
     var head="",sub="",barPct=0,barColor="var(--text-faint)";
-    if(status==="grounded"){ head="GROUNDED"; sub=esc(t.groundedNote||"Under repair"); }
-    else if(status==="none"){ head="No hours logged yet"; sub="Awaiting first meter reading"; }
+    if(status==="grounded"){ head=T("st_grounded"); sub=esc(t.groundedNote||"Under repair"); }
+    else if(status==="none"){ head=T("no_hours_yet"); sub=T("waiting"); }
     else if(crit){
       barPct=Math.round((crit.pct||0)*100); barColor=fillColor(crit.status,crit.pct);
-      if(crit.status==="overdue"){ head=esc(crit.name); sub="OVERDUE"+(crit.over>0?" · +"+crit.over+"h past":""); }
-      else if(crit.status==="warn"){ head=esc(crit.name); sub="Due soon · "+Math.max(0,crit.remaining)+"h left"; }
-      else if(crit.status==="due"){ head=esc(crit.name); sub="Check due"+(crit.over>0?" · +"+crit.over+"h":""); }
-      else { head="Next: "+esc(crit.name); sub=(crit.remaining!=null?Math.max(0,crit.remaining)+"h left":"on track"); }
+      if(crit.status==="overdue"){ head=esc(tName(crit)); sub=T("overdue_word")+(crit.over>0?" · "+phOverPast(crit.over):""); }
+      else if(crit.status==="warn"){ head=esc(tName(crit)); sub=T("due_soon")+" · "+phLeft(Math.max(0,crit.remaining)); }
+      else if(crit.status==="due"){ head=esc(tName(crit)); sub=T("check_due")+(crit.over>0?" · "+phOver(crit.over):""); }
+      else { head=T("next")+" "+esc(tName(crit)); sub=(crit.remaining!=null?phLeft(Math.max(0,crit.remaining)):""); }
     }
-    var hrs=(t.hours!=null)?('<span class="hn">'+t.hours+'</span><span class="hu">hrs</span>')
-      :('<span class="hn" style="color:var(--text-faint)">—</span><span class="hu">hrs</span>');
-    var tech=t.technician?('Tech: <b>'+esc(t.technician)+'</b>'):'Tech: —';
+    var hrs=(t.hours!=null)?('<span class="hn">'+t.hours+'</span><span class="hu">'+T("hrs")+'</span>')
+      :('<span class="hn" style="color:var(--text-faint)">—</span><span class="hu">'+T("hrs")+'</span>');
+    var tech=t.technician?(T("tech")+' <b>'+esc(t.technician)+'</b>'):(T("tech")+' —');
     return '<div class="spot '+status+'">'
-      +'<div class="spot-top"><span class="spot-nm">'+id+'</span><span class="spot-badge st-'+status+'">'+STY[status].label+'</span></div>'
+      +'<div class="spot-top"><span class="spot-nm">'+id+'</span><span class="spot-badge st-'+status+'">'+T("st_"+status)+'</span></div>'
       +'<div class="spot-hours">'+hrs+'</div>'
       +'<div class="spot-task">'+head+'</div>'+(sub?'<div class="spot-sub">'+sub+'</div>':'')
       +'<div class="spot-track"><div class="spot-fill" style="width:'+barPct+'%;background:'+barColor+'"></div></div>'
@@ -706,13 +760,13 @@
   function renderWall(){
     var app=document.getElementById("app");
     var list=wallList();
-    if(!list.length){ app.innerHTML='<div class="wall"><div class="wall-stage"><div class="wall-allclear"><div class="big">NO DATA</div></div></div></div>'; return; }
+    if(!list.length){ app.innerHTML='<div class="wall"><div class="wall-stage"><div class="wall-allclear"><div class="big">'+T("no_data")+'</div></div></div></div>'; return; }
     if(state.wallIdx>=list.length) state.wallIdx=0;
     var id=list[state.wallIdx], status=overallStatus(id,state.fleet[id],state.logs);
     var c=counts();
-    var mini=[["overdue",c.overdue,"Overdue"],["due",c.due,"Due"],["ok",c.ok,"OK"]];
-    if(c.warn) mini.splice(1,0,["warn",c.warn,"Warn"]);
-    if(c.grounded) mini.push(["grounded",c.grounded,"Grounded"]);
+    var mini=[["overdue",c.overdue,T("pl_overdue")],["due",c.due,T("pl_due")],["ok",c.ok,T("pl_ok")]];
+    if(c.warn) mini.splice(1,0,["warn",c.warn,T("pl_warn")]);
+    if(c.grounded) mini.push(["grounded",c.grounded,T("pl_grounded")]);
     var miniHtml=mini.map(function(m){return '<div class="m '+m[0]+'"><span class="n">'+m[1]+'</span><span class="l">'+m[2]+'</span></div>';}).join("");
     var dots=list.map(function(d,i){var ds=overallStatus(d,state.fleet[d],state.logs);
       return '<i class="'+(i===state.wallIdx?("on "+ds):"")+'"></i>';}).join("");
@@ -720,9 +774,9 @@
     app.innerHTML=
       '<div class="wall">'
       +'<div class="wall-prog" style="color:'+progColor+'"><i></i></div>'
-      +'<div class="wall-top"><div class="brand"><span class="badge">HD GEN2</span><span class="tt">Fleet Status</span></div>'
+      +'<div class="wall-top"><div class="brand"><span class="badge">HD GEN2</span><span class="tt">'+T("wall_title")+'</span></div>'
       +  '<div class="wall-mini">'+miniHtml+'</div>'
-      +  '<button class="wall-exit" onclick="__board_exitwall()">⛶ Exit</button></div>'
+      +  '<button class="wall-exit" onclick="__board_exitwall()">'+T("wall_exit")+'</button></div>'
       +'<div class="wall-stage" id="wallStage">'+spotHtml(id)+'</div>'
       +'<div class="wall-dots">'+dots+'</div>'
       +'</div>';
@@ -752,6 +806,8 @@
   var wantWall = (function(){ try{ return new URLSearchParams(location.search).get("wall")==="1"; }catch(e){ return false; } })();
   window.__startBoard=function(){
     var app=document.getElementById("app"); app.hidden=false;
+    try{ LANG=(localStorage.getItem("fleet_lang")==="ja")?"ja":"en"; }catch(e){}  // re-read: gate may have just set it
+    try{ document.documentElement.lang=LANG; }catch(e){}
     pull();
     setInterval(pull, 60000);           // auto-refresh every 60s
     document.addEventListener("visibilitychange",function(){
