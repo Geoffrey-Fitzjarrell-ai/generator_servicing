@@ -201,20 +201,6 @@
       "jiraUrl": ""
     },
     {
-      "id": "w_1785461544007",
-      "title": "Fan harness checks",
-      "engineer": "Geoff Fitzjarrell",
-      "asset": "HD10 & HD12",
-      "category": "repair",
-      "status": "planned",
-      "start": "2026-07-31",
-      "end": "2026-07-31",
-      "allDay": false,
-      "notes": "Fans were not spinning on HD10 and HD12. HD12 already had harness installed. Investigate cause of non operating status. HD10 requires harness install",
-      "jiraKey": "",
-      "jiraUrl": ""
-    },
-    {
       "id": "w_1785461719011",
       "title": "Generator servicing",
       "engineer": "Geoff Fitzjarrell",
@@ -269,6 +255,22 @@
       "startTime": "08:00",
       "endTime": "12:00",
       "notes": "Check trucks at TRC for central debug panel, and ensure all port adapters are installed and cables are connected",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1785461544007",
+      "title": "Fan harness checks",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD10 & HD12",
+      "category": "repair",
+      "status": "planned",
+      "start": "2026-07-31",
+      "end": "2026-07-31",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "Fans were not spinning on HD10 and HD12. HD12 already had harness installed. Investigate cause of non operating status. HD10 requires harness install",
       "jiraKey": "",
       "jiraUrl": ""
     }
