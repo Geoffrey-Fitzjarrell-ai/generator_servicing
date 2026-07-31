@@ -137,6 +137,15 @@
   #welcome.ja .wc-go{border:1px solid var(--wcyan);color:var(--wcyan);font-family:var(--wsans);}
   #welcome.ja .wc-go:hover{background:var(--wcyan);color:#04121a;}
   #welcome .wc-go:active{transform:translateY(1px);}
+  /* ── video-backdrop mode (Geoff): scrim + boosted contrast so overlay reads over footage ── */
+  #welcome.vid .wc-cd{background:linear-gradient(180deg,rgba(4,2,8,.74) 0%,rgba(4,2,8,.44) 38%,rgba(4,2,8,.5) 62%,rgba(4,2,8,.82) 100%);}
+  #welcome.vid .wc-k{color:#ff5a68;text-shadow:0 0 16px rgba(255,42,58,.85),0 1px 10px #000;}
+  #welcome.vid .wc-read{color:#dbe3f0;text-shadow:0 1px 12px #000,0 0 5px #000;}
+  #welcome.vid .wc-read b{color:#fff;}
+  #welcome.vid .wc-lh{color:#b6c2d8;text-shadow:0 1px 8px #000;}
+  #welcome.vid .wc-it{background:rgba(6,7,14,.78);border-color:rgba(150,170,210,.32);backdrop-filter:blur(2px);}
+  #welcome.vid .wc-it .tx{color:#fff;}
+  #welcome.vid .wc-go{background:rgba(6,7,14,.55);text-shadow:0 1px 8px #000;}
   @keyframes wcF{to{opacity:1}}
   @keyframes wcDiv{to{width:min(320px,66vw);}}
   @keyframes wcRise{to{opacity:1;transform:translateY(0)}}
@@ -781,7 +790,7 @@
     var kicker = (lang==="ja") ? "ようこそ" : "ACCESS GRANTED";
 
     var w=document.getElementById("welcome");
-    w.className=lang;
+    w.className = geoffVid ? (lang+" vid") : lang;
     var bg = geoffVid
       ? '<video id="geoffVid" playsinline muted autoplay loop preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;background:#000;"><source src="geoff_intro.mp4" type="video/mp4"></video>'
       : '<canvas id="wcCanvas"></canvas>';
