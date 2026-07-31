@@ -902,6 +902,73 @@ export default {
         headers: Object.assign({}, CORS, { "Cache-Control": "no-store" }),
       });
     }
+    // ── iCalendar feed of the Engineers board (subscribe from Google Calendar) ──
+    //   GET /calendar.ics                → every engineer's items
+    //   GET /calendar.ics?engineer=Masakiyo  → just that person's items
+    //   GET /calendar.ics?hide_done=1    → drop completed items
+    if (request.method === "GET" && new URL(request.url).pathname === "/calendar.ics") {
+      const q = new URL(request.url).searchParams;
+      const who = (q.get("engineer") || "").trim().toLowerCase();
+      const hideDone = q.get("hide_done") === "1";
+      let items = [];
+      try {
+        const file = await ghGet("engineer_work.json", env.GITHUB_PAT);
+        const doc = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+        items = Array.isArray(doc.items) ? doc.items : [];
+      } catch (e) { /* transient — serve an empty but valid calendar */ }
+      if (who) items = items.filter(i => String(i.engineer || "").toLowerCase().indexOf(who) >= 0);
+      if (hideDone) items = items.filter(i => i.status !== "done");
+
+      const esc = s => String(s == null ? "" : s)
+        .replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+      const compact = d => String(d).replace(/-/g, "");
+      const plusDay = d => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + 1); return x.toISOString().slice(0, 10).replace(/-/g, ""); };
+      const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
+      const first = n => String(n || "").split(/[\s(]/)[0];
+
+      const lines = [
+        "BEGIN:VCALENDAR", "VERSION:2.0",
+        "PRODID:-//Applied Intuition//Japan VOPS Engineers//EN",
+        "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+        "X-WR-CALNAME:" + esc("Japan VOPS — Engineers" + (who ? " (" + (items[0] ? first(items[0].engineer) : q.get("engineer")) + ")" : "")),
+        "X-WR-TIMEZONE:Asia/Tokyo",
+        "REFRESH-INTERVAL;VALUE=DURATION:PT1H", "X-PUBLISHED-TTL:PT1H",
+      ];
+      for (const i of items) {
+        if (!i.start) continue;
+        const end = i.end || i.start;
+        const title = (who ? "" : "[" + first(i.engineer) + "] ") + (i.title || "Task") + (i.asset ? " — " + i.asset : "");
+        const descParts = [];
+        if (i.engineer) descParts.push("Engineer: " + i.engineer);
+        if (i.status) descParts.push("Status: " + i.status);
+        if (i.category) descParts.push("Category: " + i.category);
+        if (i.notes) descParts.push("\n" + i.notes);
+        if (i.jiraUrl) descParts.push("\n" + i.jiraUrl);
+        lines.push(
+          "BEGIN:VEVENT",
+          "UID:" + esc(i.id || (i.title + "-" + i.start)) + "@generator-fleet",
+          "DTSTAMP:" + stamp,
+          "DTSTART;VALUE=DATE:" + compact(i.start),
+          "DTEND;VALUE=DATE:" + plusDay(end),
+          "SUMMARY:" + esc(title),
+          "DESCRIPTION:" + esc(descParts.join("\n")),
+          "CATEGORIES:" + esc(i.engineer || ""),
+          "STATUS:" + (i.status === "planned" ? "TENTATIVE" : "CONFIRMED"),
+          "TRANSP:TRANSPARENT",
+          "END:VEVENT"
+        );
+      }
+      lines.push("END:VCALENDAR");
+      return new Response(lines.join("\r\n") + "\r\n", {
+        status: 200,
+        headers: {
+          "Content-Type": "text/calendar; charset=utf-8",
+          "Content-Disposition": 'inline; filename="japan-vops-engineers.ics"',
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "public, max-age=900",
+        },
+      });
+    }
     if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
     if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
 

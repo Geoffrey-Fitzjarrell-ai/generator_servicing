@@ -400,6 +400,10 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 </head>
 <body>
 <div id="root"></div>
+<button id="fleetSignOut" onclick="window.__fleetLogout&&window.__fleetLogout()"
+  style="position:fixed;left:12px;bottom:12px;z-index:60;font:600 11px/1 'JetBrains Mono',monospace;letter-spacing:.06em;
+  color:#6e7f99;background:#131925;border:1px solid #28364f;border-radius:8px;padding:8px 12px;cursor:pointer;opacity:.65;">⎋ Sign out</button>
+<script>window.__fleetLogout=function(){try{["fleet_gate_v2","fleet_user","fleet_lang","fleet_welcome","fleet_device"].forEach(function(k){localStorage.removeItem(k);});}catch(e){}window.location.href="home.html";};</script>
 <div id="gate" style="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#080b12;">
   <div style="width:340px;max-width:88vw;text-align:center;font-family:'JetBrains Mono',monospace;color:#dde4f0;">
     <div style="font-size:12px;letter-spacing:.18em;color:#38465a;margin-bottom:6px;">HD&nbsp;GEN2</div>
@@ -464,7 +468,10 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
       var h = await sha(raw);
       var hName = await sha(raw.trim().toLowerCase());   // name logins are case-insensitive
       if (h === HASH_MASTER){ unlock("master"); }
-      else if (HASH_NAMES[hName]){ unlock("master"); }   // team iPad login — persistent
+      else if (HASH_NAMES[hName]){ var nm = HASH_NAMES[hName];
+        try { localStorage.setItem("fleet_user", nm);
+              localStorage.setItem("fleet_lang", nm === "Masakiyo" ? "ja" : "en"); } catch(e){}
+        unlock("day"); }                                   // name login — expires at day rollover
       else if (h === HASH_DAILY){ unlock("day"); }
       else { err.textContent = "Incorrect password"; pw.value = ""; pw.focus(); }
     }

@@ -193,7 +193,7 @@
         try{ localStorage.setItem("fleet_user",nm);
              localStorage.setItem("fleet_lang", nm==="Masakiyo"?"ja":"en");
              localStorage.setItem("fleet_welcome",nm); }catch(e){}
-        unlock("master"); }
+        unlock("day"); }   // name logins expire at day rollover; master password stays persistent
       else if(h===HASH_DAILY){unlock("day");}
       else{err.textContent="Incorrect password";pw.value="";pw.focus();}}
     btn.addEventListener("click",tryit);

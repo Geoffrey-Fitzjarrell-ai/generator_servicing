@@ -274,7 +274,7 @@
         try{ localStorage.setItem("fleet_user",nm);
              localStorage.setItem("fleet_lang", nm==="Masakiyo"?"ja":"en");
              localStorage.setItem("fleet_welcome",nm); }catch(e){}
-        unlock("master"); }
+        unlock("day"); }   // name logins expire at day rollover; master password stays persistent
       else if(h===HASH_DAILY){unlock("day");}
       else{err.textContent="Incorrect password";pw.value="";pw.focus();}}
     btn.addEventListener("click",tryit);
@@ -336,7 +336,7 @@
       ql_need_task:"タスクを1つ以上選択してください。",ql_need_hours:"稼働時間を入力してください。",
       ql_fail:"保存に失敗しました。接続を確認して再試行してください。",
       wall_title:"車両ステータス",wall_exit:"⛶ 終了",no_data:"データなし",age_no:"データなし",
-      no_trucks_state:"該当する車両はありません。"
+      no_trucks_state:"該当する車両はありません。",signout:"⎋ ログアウト"
     }
   };
   var I18N_EN={st_overdue:"OVERDUE",st_warn:"DUE SOON",st_due:"CHECK DUE",st_ok:"OPERATIONAL",st_grounded:"GROUNDED",st_none:"NO HOURS",
@@ -353,7 +353,7 @@
     ql_need_task:"Select at least one task.",ql_need_hours:"Enter the engine hours.",
     ql_fail:"Save failed — check connection and retry.",
     wall_title:"Fleet Status",wall_exit:"⛶ Exit",no_data:"NO DATA",age_no:"no data",
-    no_trucks_state:"No trucks in this state."};
+    no_trucks_state:"No trucks in this state.",signout:"⎋ Sign out"};
   I18N.en=I18N_EN;
   function T(k){ var d=I18N[LANG]||I18N.en; return (d[k]!=null)?d[k]:(I18N.en[k]!=null?I18N.en[k]:k); }
   function phLeft(h){ return LANG==="ja"?("残り"+h+"h"):(h+"h left"); }
@@ -506,7 +506,8 @@
       +    '<div><div class="hdr-title">'+T("title")+'</div><div class="hdr-sub">JAPAN VOPS · '+ids.length+' '+T("trucks")+'</div></div></div>'
       +  '<div class="hdr-r"><span class="age '+age.cls+'"><span class="dot"></span>'+T("synced")+' '+age.txt+'</span>'
       +    '<button class="refresh" onclick="__board_wall()">'+T("wall")+'</button>'
-      +    '<button class="refresh" onclick="__board_refresh()">'+T("refresh")+'</button></div>'
+      +    '<button class="refresh" onclick="__board_refresh()">'+T("refresh")+'</button>'
+      +    '<button class="refresh" onclick="__board_logout()">'+T("signout")+'</button></div>'
       +'</div>'
       +'<div class="summary">'+pillHtml+'</div>'
       +'<div class="grid">'+(cards||'<div class="empty" style="padding:24px">'+T("no_trucks_state")+'</div>')+'</div>'
@@ -800,6 +801,10 @@
   function wallNext(){ state.wallIdx=state.wallIdx+1; renderWall(); wallLoop(); }
 
   window.__board_refresh=function(){ pull(); };
+  window.__board_logout=function(){
+    try{ ["fleet_gate_v2","fleet_user","fleet_lang","fleet_welcome","fleet_device"].forEach(function(k){ localStorage.removeItem(k); }); }catch(e){}
+    window.location.href="home.html";   // back to the arrival page → re-login shows the welcome
+  };
   window.__board_wall=function(){ enterWall(); };
   window.__board_exitwall=function(){ exitWall(); };
   window.__board_wallnext=function(){ wallNext(); };
