@@ -925,6 +925,8 @@ export default {
       const plusDay = d => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + 1); return x.toISOString().slice(0, 10).replace(/-/g, ""); };
       const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
       const first = n => String(n || "").split(/[\s(]/)[0];
+      const jst = (dateStr, hh, mm) => new Date(dateStr + "T" + String(hh).padStart(2, "0") + ":" + String(mm).padStart(2, "0") + ":00+09:00")
+        .toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
 
       const lines = [
         "BEGIN:VCALENDAR", "VERSION:2.0",
@@ -944,12 +946,17 @@ export default {
         if (i.category) descParts.push("Category: " + i.category);
         if (i.notes) descParts.push("\n" + i.notes);
         if (i.jiraUrl) descParts.push("\n" + i.jiraUrl);
+        // allDay checkbox off → a timed block on the day(s) it's attached to.
+        // The Engineers tab stores dates only (no clock time), so default to an
+        // 08:00–18:00 JST working-day block. allDay on → all-day event.
+        const timeLines = (i.allDay === false)
+          ? ["DTSTART:" + jst(i.start, 8, 0), "DTEND:" + jst(end, 18, 0)]
+          : ["DTSTART;VALUE=DATE:" + compact(i.start), "DTEND;VALUE=DATE:" + plusDay(end)];
         lines.push(
           "BEGIN:VEVENT",
           "UID:" + esc(i.id || (i.title + "-" + i.start)) + "@generator-fleet",
           "DTSTAMP:" + stamp,
-          "DTSTART;VALUE=DATE:" + compact(i.start),
-          "DTEND;VALUE=DATE:" + plusDay(end),
+          timeLines[0], timeLines[1],
           "SUMMARY:" + esc(title),
           "DESCRIPTION:" + esc(descParts.join("\n")),
           "CATEGORIES:" + esc(i.engineer || ""),
