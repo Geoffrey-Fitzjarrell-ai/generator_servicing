@@ -12,11 +12,11 @@
   :root{
     --bg:#080b12; --surface:#0d1117; --surface2:#131925; --surface3:#1a2235;
     --border:#1e2840; --border2:#28364f;
-    --amber:#f0a500; --amber-dim:#3d2900;
-    --red:#e04545; --red-dim:#3a1010;
-    --green:#3da870; --green-dim:#0f2e1e;
-    --blue:#4a7cf5; --blue-dim:#101e40;
-    --purple:#9880cc; --purple-dim:#1a1228;
+    --amber:#ffb000; --amber-dim:#3d2900;
+    --red:#f5333a; --red-dim:#3a1010;
+    --green:#2ec27e; --green-dim:#0f2e1e;
+    --blue:#3d78ff; --blue-dim:#101e40;
+    --purple:#a577ea; --purple-dim:#1a1228;
     --text:#dde4f0; --text-dim:#6e7f99; --text-faint:#38465a;
     --mono:'JetBrains Mono',monospace; --sans:'Inter',sans-serif; --radius:10px;
   }
@@ -145,6 +145,83 @@
   .fullmsg{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:24px;}
   .fullmsg .m{font-family:var(--mono);font-size:13px;color:var(--text-dim);letter-spacing:.06em;}
 
+  /* ── Wall mode (mounted display, no-touch rotation) ── */
+  .wall{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;padding:0;z-index:40;overflow:hidden;}
+  .wall-prog{height:5px;background:transparent;flex-shrink:0;}
+  .wall-prog i{display:block;height:100%;background:currentColor;width:0;border-radius:0 3px 3px 0;}
+  .wall-prog.run i{transition:width linear;}
+  .wall-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 30px;flex-shrink:0;}
+  .wall-top .brand{display:flex;align-items:center;gap:14px;}
+  .wall-top .badge{font-size:15px;padding:7px 13px;}
+  .wall-top .tt{font-size:20px;font-weight:700;}
+  .wall-mini{display:flex;gap:12px;}
+  .wall-mini .m{display:flex;align-items:baseline;gap:7px;padding:7px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--border);}
+  .wall-mini .m .n{font-family:var(--mono);font-size:24px;font-weight:700;}
+  .wall-mini .m .l{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);}
+  .wall-mini .m.overdue .n{color:var(--red)} .wall-mini .m.warn .n{color:var(--amber)}
+  .wall-mini .m.due .n{color:var(--blue)} .wall-mini .m.ok .n{color:var(--green)} .wall-mini .m.grounded .n{color:var(--purple)}
+  .wall-exit{font-family:var(--mono);font-size:12px;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border2);border-radius:9px;padding:11px 16px;min-height:44px;cursor:pointer;}
+  .wall-stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px 40px 20px;min-height:0;cursor:pointer;}
+  .spot{width:100%;max-width:1100px;border-radius:22px;border:2px solid var(--border2);background:var(--surface);
+    padding:44px 52px;position:relative;overflow:hidden;}
+  .spot::before{content:'';position:absolute;left:0;top:0;bottom:0;width:12px;}
+  .spot.ok::before{background:var(--green)} .spot.due::before{background:var(--blue)}
+  .spot.warn::before{background:var(--amber)} .spot.overdue::before{background:var(--red)}
+  .spot.grounded::before{background:var(--purple)} .spot.none::before{background:var(--text-faint)}
+  .spot.overdue{border-color:rgba(245,51,58,.5);animation:alarm 2.6s ease-in-out infinite;}
+  .spot.grounded{background:#120d1c;border-color:#3a2b55;}
+  .spot-top{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+  .spot-nm{font-family:var(--mono);font-size:92px;font-weight:700;line-height:.9;letter-spacing:.01em;}
+  .spot.ok .spot-nm{color:var(--text)} .spot.due .spot-nm{color:var(--blue)} .spot.warn .spot-nm{color:var(--amber)}
+  .spot.overdue .spot-nm{color:var(--red)} .spot.grounded .spot-nm{color:var(--purple)} .spot.none .spot-nm{color:var(--text-dim)}
+  .spot-badge{font-family:var(--mono);font-size:20px;font-weight:700;letter-spacing:.08em;padding:10px 20px;border-radius:12px;}
+  .spot-hours{margin-top:26px;display:flex;align-items:baseline;gap:12px;}
+  .spot-hours .hn{font-family:var(--mono);font-size:112px;font-weight:700;line-height:.85;color:var(--text);}
+  .spot-hours .hu{font-family:var(--mono);font-size:26px;color:var(--text-faint);}
+  .spot-task{margin-top:28px;font-size:34px;font-weight:600;}
+  .spot-sub{font-size:22px;color:var(--text-dim);margin-top:6px;}
+  .spot-track{margin-top:22px;height:26px;border-radius:13px;background:#1a2235;border:1px solid var(--border2);overflow:hidden;}
+  .spot-fill{height:100%;border-radius:12px;transition:width .6s ease;}
+  .spot-tech{margin-top:22px;font-size:20px;color:var(--text-dim);}
+  .spot-tech b{color:var(--text);}
+  .wall-dots{display:flex;gap:9px;justify-content:center;padding:6px 0 22px;flex-wrap:wrap;flex-shrink:0;}
+  .wall-dots i{width:11px;height:11px;border-radius:50%;background:var(--border2);transition:all .25s;}
+  .wall-dots i.on{width:30px;border-radius:6px;background:var(--text-dim);}
+  .wall-dots i.on.overdue{background:var(--red)} .wall-dots i.on.warn{background:var(--amber)}
+  .wall-dots i.on.due{background:var(--blue)} .wall-dots i.on.ok{background:var(--green)} .wall-dots i.on.grounded{background:var(--purple)}
+  .wall-allclear{text-align:center;}
+  .wall-allclear .big{font-family:var(--mono);font-size:64px;font-weight:700;color:var(--green);letter-spacing:.04em;}
+  .wall-allclear .s{font-size:22px;color:var(--text-dim);margin-top:12px;}
+  @media(max-width:820px){
+    .spot-nm{font-size:60px} .spot-hours .hn{font-size:72px} .spot-task{font-size:26px}
+    .spot-sub{font-size:18px} .wall-mini .m .n{font-size:19px} .wall-top{padding:14px 18px}
+    .wall-stage{padding:8px 16px 14px} .spot{padding:30px 28px}
+  }
+
+  /* ── Quick-log ── */
+  .ql-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;margin-top:6px;
+    background:var(--green);border:none;border-radius:12px;color:#06140c;font-family:var(--sans);font-weight:700;font-size:16px;cursor:pointer;}
+  .ql-btn:active{opacity:.88;}
+  .ql-panel{margin-top:8px;border:1px solid var(--green);border-radius:14px;padding:16px;background:rgba(46,194,126,.05);}
+  .ql-row{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+  .ql-row label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);}
+  .ql-row input{width:100%;min-height:48px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:16px;outline:none;}
+  .ql-row input:focus{border-color:var(--green);}
+  .ql-tasks{display:flex;flex-direction:column;gap:8px;}
+  .ql-task{display:flex;align-items:center;gap:12px;min-height:52px;padding:10px 14px;border:1px solid var(--border2);border-radius:10px;background:var(--surface);cursor:pointer;user-select:none;}
+  .ql-task.on{border-color:var(--green);background:rgba(46,194,126,.1);}
+  .ql-task .cbx{width:26px;height:26px;border-radius:7px;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;color:#06140c;}
+  .ql-task.on .cbx{background:var(--green);border-color:var(--green);}
+  .ql-task .tn{font-size:15px;font-weight:600;}
+  .ql-task .ti{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-faint);}
+  .ql-acts{display:flex;gap:10px;margin-top:16px;}
+  .ql-acts button{flex:1;min-height:52px;border-radius:11px;font-family:var(--sans);font-weight:700;font-size:15px;cursor:pointer;border:1px solid var(--border2);}
+  .ql-submit{background:var(--green);border-color:var(--green)!important;color:#06140c;}
+  .ql-submit:disabled{opacity:.5;}
+  .ql-cancel{background:var(--surface2);color:var(--text-dim);}
+  .ql-msg{margin-top:12px;font-size:13px;font-family:var(--mono);text-align:center;}
+  .ql-msg.ok{color:var(--green)} .ql-msg.err{color:var(--red)}
+
   /* ── Gate (shared with main page) ── */
   #gate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#080b12;}
   #gate .box{width:340px;max-width:88vw;text-align:center;font-family:var(--mono);color:#dde4f0;}
@@ -213,6 +290,9 @@
     insp:  RAW+"inspections.json",
     hist:  RAW+"service_history.json"
   };
+  // Worker proxy — used only for quick-log writes (logCompletion + logPending),
+  // mirroring the main dashboard's completion flow exactly.
+  var PROXY_URL="https://ai.generator-fleet-proxy.workers.dev/", PROXY_SECRET="poopooface69";
 
   // Service task catalog — mirrors the main page (single source of truth for status).
   var TASKS = [
@@ -301,7 +381,7 @@
   function truckNum(id){ var n=parseInt(String(id).replace(/\D/g,""),10); return isNaN(n)?999:n; }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
 
-  var state = { fleet:{}, logs:{}, insp:{}, hist:{}, filter:null, lastFetch:null, err:false };
+  var state = { fleet:{}, logs:{}, insp:{}, hist:{}, filter:null, lastFetch:null, err:false, wall:false, wallIdx:0 };
 
   async function pull(){
     try{
@@ -316,7 +396,8 @@
       var j = await Promise.all(res.map(function(r){return r.json();}));
       state.fleet=j[0]||{}; state.logs=j[1]||{}; state.insp=j[2]||{}; state.hist=j[3]||{};
       state.lastFetch=Date.now(); state.err=false;
-      render();
+      if(!qlActive) render();   // don't disturb an in-progress quick-log form
+      if(wantWall && !state.wall && !state.err){ wantWall=false; enterWall(); }  // ?wall=1 auto-start
     }catch(e){
       console.error("fleet pull failed", e);
       if(!state.lastFetch){ state.err=true; render(); }
@@ -333,6 +414,7 @@
 
   function render(){
     var app=document.getElementById("app"); if(app.hidden) return;
+    if(state.wall){ renderWall(); return; }
     var prevScroll = (openId && document.getElementById("sheet")) ? document.getElementById("sheet").scrollTop : 0;
     var prevWin = window.scrollY;   // preserve page scroll across the 60s refresh
     if(state.err){
@@ -367,6 +449,7 @@
       +  '<div class="hdr-l"><span class="badge">HD GEN2</span>'
       +    '<div><div class="hdr-title">Fleet Status Board</div><div class="hdr-sub">JAPAN VOPS · '+ids.length+' TRUCKS</div></div></div>'
       +  '<div class="hdr-r"><span class="age '+age.cls+'"><span class="dot"></span>SYNCED '+age.txt+'</span>'
+      +    '<button class="refresh" onclick="__board_wall()">⛶ Wall</button>'
       +    '<button class="refresh" onclick="__board_refresh()">↻ Refresh</button></div>'
       +'</div>'
       +'<div class="summary">'+pillHtml+'</div>'
@@ -386,7 +469,7 @@
       el.addEventListener("click",function(){ openSheet(el.getAttribute("data-id")); });
     });
     // keep sheet open across refresh, preserving scroll position
-    if(openId){ openSheet(openId, true); var sh=document.getElementById("sheet"); if(sh) sh.scrollTop=prevScroll; }
+    if(openId && !qlActive){ openSheet(openId, true); var sh=document.getElementById("sheet"); if(sh) sh.scrollTop=prevScroll; }
     if(prevWin) window.scrollTo(0, prevWin);
   }
 
@@ -493,6 +576,8 @@
       +    '<div><span class="k">Technician</span><span class="v" style="font-family:var(--sans)">'+(t.technician?esc(t.technician):'—')+'</span></div>'
       +    '<div><span class="k">Updated</span><span class="v">'+age.txt+'</span></div>'
       +  '</div>'
+      +  '<button class="ql-btn" id="qlOpenBtn">✓ Log service done</button>'
+      +  '<div id="qlHost"></div>'
       +  '<div class="sec">Service status</div>'+taskRows
       +  '<div class="sec">Inspections</div><div class="insp">'+inspBoxes+'</div>'
       +  '<div class="sec">Recent service</div>'+histHtml
@@ -500,22 +585,178 @@
 
     var bg=document.getElementById("sheetBg");
     bg.classList.add("show");
-    if(!keep){
-      document.getElementById("sheetClose").addEventListener("click",closeSheet);
-      bg.addEventListener("click",function(e){ if(e.target===bg) closeSheet(); });
-    } else {
-      document.getElementById("sheetClose").addEventListener("click",closeSheet);
-      bg.addEventListener("click",function(e){ if(e.target===bg) closeSheet(); });
-    }
+    document.getElementById("sheetClose").addEventListener("click",closeSheet);
+    bg.addEventListener("click",function(e){ if(e.target===bg) closeSheet(); });
+    var qb=document.getElementById("qlOpenBtn");
+    if(qb) qb.addEventListener("click",function(){ openQuickLog(id); });
   }
-  function closeSheet(){ openId=null; var bg=document.getElementById("sheetBg"); if(bg) bg.classList.remove("show"); }
+  function closeSheet(){ if(qlActive) return; openId=null; var bg=document.getElementById("sheetBg"); if(bg) bg.classList.remove("show"); }
+
+  /* ─────────────── Quick-log (tap truck → mark tasks done → post) ─────────────── */
+  var qlActive=false;
+  function openQuickLog(id){
+    qlActive=true;
+    var t=state.fleet[id]||{};
+    var host=document.getElementById("qlHost"); if(!host) return;
+    var btn=document.getElementById("qlOpenBtn"); if(btn) btn.style.display="none";
+    var taskRows = tasksFor(id).map(function(tk){
+      return '<div class="ql-task" data-key="'+tk.key+'"><span class="cbx">✓</span>'
+        +'<span class="tn">'+esc(tk.name)+'</span><span class="ti">'+tk.interval+'h</span></div>';
+    }).join("");
+    host.innerHTML =
+      '<div class="ql-panel">'
+      +'<div class="ql-row"><label>Technician</label><input id="qlTech" type="text" value="'+esc(t.technician||"")+'" placeholder="Name" /></div>'
+      +'<div class="ql-row"><label>Hours at service</label><input id="qlHours" type="number" inputmode="numeric" value="'+(t.hours!=null?t.hours:"")+'" placeholder="engine hours" /></div>'
+      +'<div class="ql-row"><label>Tasks completed — tap all that apply</label><div class="ql-tasks">'+taskRows+'</div></div>'
+      +'<div class="ql-row"><label>Note (optional)</label><input id="qlNote" type="text" placeholder="anything worth recording" /></div>'
+      +'<div class="ql-acts"><button class="ql-cancel" id="qlCancel">Cancel</button>'
+      +  '<button class="ql-submit" id="qlSubmit">Log it</button></div>'
+      +'<div class="ql-msg" id="qlMsg"></div>'
+      +'</div>';
+    host.querySelectorAll(".ql-task").forEach(function(el){
+      el.addEventListener("click",function(){ el.classList.toggle("on"); });
+    });
+    document.getElementById("qlCancel").addEventListener("click",function(){ closeQuickLog(id); });
+    document.getElementById("qlSubmit").addEventListener("click",function(){ submitQuickLog(id); });
+  }
+  function closeQuickLog(id){ qlActive=false; openSheet(id,true); }
+
+  async function submitQuickLog(id){
+    var t=state.fleet[id]||{};
+    var host=document.getElementById("qlHost");
+    var keys=[].slice.call(host.querySelectorAll(".ql-task.on")).map(function(el){return el.getAttribute("data-key");});
+    var tech=(document.getElementById("qlTech").value||"").trim();
+    var hoursRaw=document.getElementById("qlHours").value;
+    var note=(document.getElementById("qlNote").value||"").trim();
+    var msg=document.getElementById("qlMsg");
+    if(!keys.length){ msg.className="ql-msg err"; msg.textContent="Select at least one task."; return; }
+    var hours=parseInt(hoursRaw,10);
+    if(isNaN(hours)||hours<0){ msg.className="ql-msg err"; msg.textContent="Enter the engine hours."; return; }
+
+    var doneTasks = tasksFor(id).filter(function(tk){return keys.indexOf(tk.key)>=0;})
+      .map(function(tk){return {key:tk.key,label:tk.name};});
+    var notes = note ? [note] : [];
+
+    var submit=document.getElementById("qlSubmit"), cancel=document.getElementById("qlCancel");
+    submit.disabled=true; cancel.disabled=true; msg.className="ql-msg"; msg.textContent="Logging…";
+
+    // 1) authoritative write (service_logs + service_history) — same as the desktop.
+    var ok=false;
+    try{
+      var r1=await fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},
+        body:JSON.stringify({action:"logCompletion",truck:id,technician:tech,hours:hours,tasks:doneTasks,notes:notes})});
+      ok=r1.ok;
+    }catch(e){ ok=false; }
+
+    // 2) pending entry → drives the Slack "tasks completed" notice + cron safety net.
+    try{
+      await fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},
+        body:JSON.stringify({action:"logPending",entry:{truck:id,tasks:doneTasks.map(function(x){return x.label;}),
+          technician:tech,postedBy:(t.postedBy||null),loggedAt:new Date().toISOString(),hours:hours,notes:notes,alreadyLogged:ok}})});
+    }catch(e){}
+
+    if(!ok){ msg.className="ql-msg err"; msg.textContent="Save failed — check connection and retry."; submit.disabled=false; cancel.disabled=false; return; }
+
+    // Optimistic: reflect the new "last done" locally so status updates immediately
+    // (raw.githubusercontent CDN can lag a few minutes before the pull catches up).
+    if(!state.logs[id]) state.logs[id]={};
+    doneTasks.forEach(function(x){ state.logs[id][x.key]=hours; });
+
+    msg.className="ql-msg ok"; msg.textContent="✓ Logged — thanks!";
+    qlActive=false;
+    setTimeout(function(){ openSheet(id,true); pull(); }, 700);
+  }
+
+  /* ─────────────────────── Wall mode (mounted display) ─────────────────────── */
+  var wallTimer=null, wakeLock=null;
+  function dwellFor(status){ return status==="overdue"?10000:(status==="warn"||status==="due")?8000:6000; }
+  function wallList(){
+    var ids=Object.keys(state.fleet).sort(function(a,b){return truckNum(a)-truckNum(b);});
+    var att=ids.filter(function(id){var s=overallStatus(id,state.fleet[id],state.logs);
+      return s==="overdue"||s==="warn"||s==="due"||s==="grounded";});
+    att.sort(function(a,b){
+      var ra=RANK[overallStatus(a,state.fleet[a],state.logs)]||0, rb=RANK[overallStatus(b,state.fleet[b],state.logs)]||0;
+      return rb-ra || truckNum(a)-truckNum(b);
+    });
+    return att.length?att:ids;
+  }
+  function spotHtml(id){
+    var t=state.fleet[id]||{}, status=overallStatus(id,t,state.logs);
+    var crit=criticalTask(taskStates(id,t.hours,state.logs));
+    var head="",sub="",barPct=0,barColor="var(--text-faint)";
+    if(status==="grounded"){ head="GROUNDED"; sub=esc(t.groundedNote||"Under repair"); }
+    else if(status==="none"){ head="No hours logged yet"; sub="Awaiting first meter reading"; }
+    else if(crit){
+      barPct=Math.round((crit.pct||0)*100); barColor=fillColor(crit.status,crit.pct);
+      if(crit.status==="overdue"){ head=esc(crit.name); sub="OVERDUE"+(crit.over>0?" · +"+crit.over+"h past":""); }
+      else if(crit.status==="warn"){ head=esc(crit.name); sub="Due soon · "+Math.max(0,crit.remaining)+"h left"; }
+      else if(crit.status==="due"){ head=esc(crit.name); sub="Check due"+(crit.over>0?" · +"+crit.over+"h":""); }
+      else { head="Next: "+esc(crit.name); sub=(crit.remaining!=null?Math.max(0,crit.remaining)+"h left":"on track"); }
+    }
+    var hrs=(t.hours!=null)?('<span class="hn">'+t.hours+'</span><span class="hu">hrs</span>')
+      :('<span class="hn" style="color:var(--text-faint)">—</span><span class="hu">hrs</span>');
+    var tech=t.technician?('Tech: <b>'+esc(t.technician)+'</b>'):'Tech: —';
+    return '<div class="spot '+status+'">'
+      +'<div class="spot-top"><span class="spot-nm">'+id+'</span><span class="spot-badge st-'+status+'">'+STY[status].label+'</span></div>'
+      +'<div class="spot-hours">'+hrs+'</div>'
+      +'<div class="spot-task">'+head+'</div>'+(sub?'<div class="spot-sub">'+sub+'</div>':'')
+      +'<div class="spot-track"><div class="spot-fill" style="width:'+barPct+'%;background:'+barColor+'"></div></div>'
+      +'<div class="spot-tech">'+tech+'</div></div>';
+  }
+  function renderWall(){
+    var app=document.getElementById("app");
+    var list=wallList();
+    if(!list.length){ app.innerHTML='<div class="wall"><div class="wall-stage"><div class="wall-allclear"><div class="big">NO DATA</div></div></div></div>'; return; }
+    if(state.wallIdx>=list.length) state.wallIdx=0;
+    var id=list[state.wallIdx], status=overallStatus(id,state.fleet[id],state.logs);
+    var c=counts();
+    var mini=[["overdue",c.overdue,"Overdue"],["due",c.due,"Due"],["ok",c.ok,"OK"]];
+    if(c.warn) mini.splice(1,0,["warn",c.warn,"Warn"]);
+    if(c.grounded) mini.push(["grounded",c.grounded,"Grounded"]);
+    var miniHtml=mini.map(function(m){return '<div class="m '+m[0]+'"><span class="n">'+m[1]+'</span><span class="l">'+m[2]+'</span></div>';}).join("");
+    var dots=list.map(function(d,i){var ds=overallStatus(d,state.fleet[d],state.logs);
+      return '<i class="'+(i===state.wallIdx?("on "+ds):"")+'"></i>';}).join("");
+    var progColor=status==="overdue"?"var(--red)":status==="warn"?"var(--amber)":status==="due"?"var(--blue)":status==="grounded"?"var(--purple)":"var(--green)";
+    app.innerHTML=
+      '<div class="wall">'
+      +'<div class="wall-prog" style="color:'+progColor+'"><i></i></div>'
+      +'<div class="wall-top"><div class="brand"><span class="badge">HD GEN2</span><span class="tt">Fleet Status</span></div>'
+      +  '<div class="wall-mini">'+miniHtml+'</div>'
+      +  '<button class="wall-exit" onclick="__board_exitwall()">⛶ Exit</button></div>'
+      +'<div class="wall-stage" id="wallStage">'+spotHtml(id)+'</div>'
+      +'<div class="wall-dots">'+dots+'</div>'
+      +'</div>';
+    var stage=document.getElementById("wallStage");
+    if(stage) stage.addEventListener("click",function(){ __board_wallnext(); });
+    // animate the dwell progress bar
+    var p=document.querySelector(".wall-prog i"), dwell=dwellFor(status);
+    if(p){ p.style.transition="none"; p.style.width="0%";
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ p.style.transition="width "+dwell+"ms linear"; p.style.width="100%"; }); }); }
+  }
+  function wallLoop(){
+    var list=wallList(); if(!list.length){ return; }
+    var id=list[state.wallIdx % list.length], st=overallStatus(id,state.fleet[id],state.logs);
+    clearTimeout(wallTimer);
+    wallTimer=setTimeout(function(){ state.wallIdx=state.wallIdx+1; renderWall(); wallLoop(); }, dwellFor(st));
+  }
+  async function requestWake(){ try{ if("wakeLock" in navigator){ wakeLock=await navigator.wakeLock.request("screen"); } }catch(e){} }
+  function releaseWake(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch(e){} }
+  function enterWall(){ state.wall=true; state.wallIdx=0; qlActive=false; openId=null; requestWake(); renderWall(); wallLoop(); }
+  function exitWall(){ state.wall=false; clearTimeout(wallTimer); releaseWake(); render(); }
+  function wallNext(){ state.wallIdx=state.wallIdx+1; renderWall(); wallLoop(); }
 
   window.__board_refresh=function(){ pull(); };
+  window.__board_wall=function(){ enterWall(); };
+  window.__board_exitwall=function(){ exitWall(); };
+  window.__board_wallnext=function(){ wallNext(); };
+  var wantWall = (function(){ try{ return new URLSearchParams(location.search).get("wall")==="1"; }catch(e){ return false; } })();
   window.__startBoard=function(){
     var app=document.getElementById("app"); app.hidden=false;
     pull();
     setInterval(pull, 60000);           // auto-refresh every 60s
-    document.addEventListener("visibilitychange",function(){ if(!document.hidden) pull(); });
+    document.addEventListener("visibilitychange",function(){
+      if(!document.hidden){ pull(); if(state.wall) requestWake(); }   // re-acquire wake lock after backgrounding
+    });
   };
 })();
 </script>
