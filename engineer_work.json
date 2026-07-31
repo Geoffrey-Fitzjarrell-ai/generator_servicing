@@ -343,6 +343,22 @@
       "notes": "HD15's shore ethernet had an issue of the port being pushed in, fixed this and no longer an issue",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1785479556009",
+      "title": "HD14 ethernet port",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD14",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-07-31",
+      "end": "2026-07-31",
+      "allDay": false,
+      "startTime": "13:00",
+      "endTime": "17:00",
+      "notes": "HD14's ethernet port was pushed all the way out of the shore ethernet slot, fixed now",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
