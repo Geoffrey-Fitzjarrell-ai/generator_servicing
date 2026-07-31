@@ -476,8 +476,9 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
         unlock("master"); }
       else if (HASH_NAMES[hName]){ var nm = HASH_NAMES[hName];
         try { localStorage.setItem("fleet_user", nm);
-              localStorage.setItem("fleet_lang", nm === "Masakiyo" ? "ja" : "en"); } catch(e){}
-        unlock("view"); }                                  // name login — view-only
+              localStorage.setItem("fleet_lang", nm === "Masakiyo" ? "ja" : "en");
+              localStorage.setItem("fleet_welcome", nm); } catch(e){}
+        unlock("master"); }                                // name login — full admin, same as GTR
       else if (h === HASH_DAILY){ unlock("view"); }        // shared team password — view-only
       else { err.textContent = "Incorrect password"; pw.value = ""; pw.focus(); }
     }
