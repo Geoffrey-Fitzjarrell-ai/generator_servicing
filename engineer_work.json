@@ -187,20 +187,6 @@
       "jiraUrl": ""
     },
     {
-      "id": "w_1785368816827",
-      "title": "VCO ",
-      "engineer": "Geoff Fitzjarrell",
-      "asset": "HD6, HD10",
-      "category": "admin",
-      "status": "planned",
-      "start": "2026-07-30",
-      "end": "2026-07-31",
-      "allDay": true,
-      "notes": "HD6 and HD10 can have the FW on their TE-2006's updated",
-      "jiraKey": "VCO-3688",
-      "jiraUrl": "https://appliedintuition.atlassian.net/browse/VCO-3688"
-    },
-    {
       "id": "w_1785461874133",
       "title": "Debug panel check",
       "engineer": "Geoff Fitzjarrell",
@@ -269,6 +255,20 @@
       "notes": "Modify back kit to comply with states",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1785368816827",
+      "title": "VCO ",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD6, HD10",
+      "category": "admin",
+      "status": "planned",
+      "start": "2026-07-30",
+      "end": "2026-07-31",
+      "allDay": false,
+      "notes": "HD6 and HD10 can have the FW on their TE-2006's updated",
+      "jiraKey": "VCO-3688",
+      "jiraUrl": "https://appliedintuition.atlassian.net/browse/VCO-3688"
     }
   ]
 }
