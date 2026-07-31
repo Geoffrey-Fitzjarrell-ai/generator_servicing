@@ -218,7 +218,10 @@
     "b62a515711ba7940195a292d672bc17856466616d890d9e02fe753c8592ee252": "Masakiyo",
     "77fe232d22d574610d05e1d5e37bae79528f4f862914b43cf55e1e3befb0a7dc": "Geoff"
   };
-  var VER="v2", KEY="fleet_gate_"+VER;
+  var VER="v3", KEY="fleet_gate_"+VER;
+  try{ if(!localStorage.getItem(KEY)){ var __o2=JSON.parse(localStorage.getItem("fleet_gate_v2")||"null");
+    if(__o2&&__o2.tier==="master") localStorage.setItem(KEY,JSON.stringify({tier:"master"}));
+    localStorage.removeItem("fleet_gate_v2"); } }catch(e){}
   function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
   function authed(){try{var o=JSON.parse(localStorage.getItem(KEY)||"null");if(!o)return false;
     if(o.tier==="master")return true;if((o.tier==="view"||o.tier==="day")&&o.date===today())return true;return false;}catch(e){return false;}}
@@ -815,7 +818,7 @@
       });
     });
     document.getElementById("resetBtn").addEventListener("click",function(){
-      try{ localStorage.removeItem(DKEY); localStorage.removeItem("fleet_gate_v2");
+      try{ localStorage.removeItem(DKEY); localStorage.removeItem("fleet_gate_v3"); localStorage.removeItem("fleet_gate_v2");
            localStorage.removeItem("fleet_user"); localStorage.removeItem("fleet_lang"); localStorage.removeItem("fleet_welcome"); }catch(e){}
       window.location.reload();
     });

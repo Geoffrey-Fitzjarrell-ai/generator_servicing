@@ -406,7 +406,7 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 <button id="fleetReq" onclick="window.__fleetRequestChange&&window.__fleetRequestChange('')"
   style="display:none;position:fixed;left:118px;bottom:12px;z-index:60;font:600 11px/1 'JetBrains Mono',monospace;letter-spacing:.06em;
   color:#f0a500;background:#131925;border:1px solid #5a4a1e;border-radius:8px;padding:8px 12px;cursor:pointer;opacity:.85;">✎ Request change</button>
-<script>window.__fleetLogout=function(){try{["fleet_gate_v2","fleet_user","fleet_lang","fleet_welcome","fleet_device"].forEach(function(k){localStorage.removeItem(k);});}catch(e){}window.location.href="home.html";};</script>
+<script>window.__fleetLogout=function(){try{["fleet_gate_v3","fleet_gate_v2","fleet_user","fleet_lang","fleet_welcome","fleet_device"].forEach(function(k){localStorage.removeItem(k);});}catch(e){}window.location.href="home.html";};</script>
 <div id="gate" style="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#080b12;">
   <div style="width:340px;max-width:88vw;text-align:center;font-family:'JetBrains Mono',monospace;color:#dde4f0;">
     <div style="font-size:12px;letter-spacing:.18em;color:#38465a;margin-bottom:6px;">HD&nbsp;GEN2</div>
@@ -436,8 +436,11 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
     "b62a515711ba7940195a292d672bc17856466616d890d9e02fe753c8592ee252": "Masakiyo",
     "77fe232d22d574610d05e1d5e37bae79528f4f862914b43cf55e1e3befb0a7dc": "Geoff"
   };
-  var VER  = "v2";
+  var VER  = "v3";
   var KEY  = "fleet_gate_" + VER;
+  try{ if(!localStorage.getItem(KEY)){ var __o2=JSON.parse(localStorage.getItem("fleet_gate_v2")||"null");
+    if(__o2&&__o2.tier==="master") localStorage.setItem(KEY,JSON.stringify({tier:"master"}));
+    localStorage.removeItem("fleet_gate_v2"); } }catch(e){}
   function today(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
   function authed(){
     try {
