@@ -926,6 +926,18 @@
       "notes": [
         "Check air filter on next check - possible change"
       ]
+    },
+    {
+      "date": "2026-07-31",
+      "hours": 752,
+      "technician": "Masakiyo",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        }
+      ],
+      "notes": []
     }
   ],
   "HD15": [
