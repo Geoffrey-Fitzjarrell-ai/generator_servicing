@@ -88,29 +88,23 @@
   #welcome.en .wc-k{color:var(--wred);text-shadow:0 0 14px rgba(255,42,58,.7);}
   #welcome.ja .wc-k{color:var(--wcyan);text-shadow:0 0 14px rgba(95,233,255,.7);font-family:var(--wsans);font-weight:700;}
   /* EN: tech wordmark (neon 'GF' removed — the 3D matrix + emblem is the hero) */
-  /* EN: fractured cyber decal (ROG-style) — hidden until the matrix tears open */
+  /* EN: red-chrome slashed wordmark (clean sticker-style slice) — hidden until the matrix tears open */
   #welcome .wc-decal{position:relative;margin-top:10px;opacity:0;z-index:1;
-    filter:drop-shadow(0 0 10px rgba(255,30,50,.6)) drop-shadow(0 0 34px rgba(200,10,25,.4));
-    animation:wcDecal .32s ease 1.42s both, wcWordFx 5s steps(1) 2.7s infinite;}
-  #welcome .wc-circ{position:absolute;left:-14%;top:-36%;width:128%;height:172%;pointer-events:none;z-index:0;opacity:.9;}
-  #welcome .wc-frag{position:absolute;inset:0;font-family:'Zen Dots',sans-serif;font-size:clamp(48px,12vw,124px);letter-spacing:.1em;line-height:1;
-    color:transparent;-webkit-background-clip:text;background-clip:text;z-index:1;}
-  #welcome .wc-frag.fb{position:relative;opacity:0;--dx:0px;--dy:12px;--rot:0deg;
-    background:repeating-linear-gradient(115deg,rgba(0,0,0,.7) 0 2px,rgba(0,0,0,0) 2px 15px),repeating-linear-gradient(25deg,rgba(0,0,0,.5) 0 1.5px,rgba(0,0,0,0) 1.5px 22px),linear-gradient(150deg,#b3121d,#870a13 55%,#5c060d);
-    animation:wcFragIn .5s cubic-bezier(.2,.9,.25,1) 1.46s both;}
-  #welcome .wc-frag.f1{--dx:-56px;--dy:-30px;--rot:-7deg;clip-path:polygon(0% 0%,40% 0%,31% 47%,0% 63%);
-    background:repeating-linear-gradient(115deg,rgba(0,0,0,.55) 0 2px,rgba(0,0,0,0) 2px 13px),linear-gradient(150deg,#ff8a92,#ff2434 48%,#c00d18);
-    animation:wcFragIn .55s cubic-bezier(.2,.9,.25,1) 1.5s both;}
-  #welcome .wc-frag.f2{--dx:64px;--dy:-24px;--rot:6deg;clip-path:polygon(42% 0%,100% 0%,100% 40%,53% 52%);
-    background:repeating-linear-gradient(115deg,rgba(0,0,0,.55) 0 2px,rgba(0,0,0,0) 2px 14px),linear-gradient(150deg,#ff7a84,#ff1e2d 46%,#b00c16);
-    animation:wcFragIn .55s cubic-bezier(.2,.9,.25,1) 1.56s both;}
-  #welcome .wc-frag.f3{--dx:-48px;--dy:34px;--rot:5deg;clip-path:polygon(0% 65%,33% 49%,45% 100%,0% 100%);
-    background:repeating-linear-gradient(115deg,rgba(0,0,0,.6) 0 2px,rgba(0,0,0,0) 2px 15px),linear-gradient(150deg,#ff5560,#e8101f 48%,#8c0a12);
-    animation:wcFragIn .55s cubic-bezier(.2,.9,.25,1) 1.62s both;}
-  #welcome .wc-frag.f4{--dx:58px;--dy:30px;--rot:-6deg;clip-path:polygon(55% 54%,100% 42%,100% 100%,47% 100%);
-    background:repeating-linear-gradient(115deg,rgba(0,0,0,.6) 0 2px,rgba(0,0,0,0) 2px 16px),linear-gradient(150deg,#e8101f,#9c0c16 50%,#5e070e);
-    animation:wcFragIn .55s cubic-bezier(.2,.9,.25,1) 1.68s both;}
-  #welcome .wc-frag.ol{background:none;-webkit-text-stroke:1px rgba(255,150,160,.5);opacity:0;animation:wcF .5s ease 1.85s forwards;}
+    animation:wcDecal .3s ease 1.42s both, wcWordFx 6s steps(1) 3s infinite;}
+  #welcome .wc-circ{position:absolute;left:-12%;top:-30%;width:124%;height:160%;pointer-events:none;z-index:0;opacity:.55;}
+  #welcome .wc-slab{position:relative;z-index:1;font-family:'Zen Dots',sans-serif;font-size:clamp(52px,13vw,132px);letter-spacing:.08em;line-height:1;
+    color:transparent;-webkit-background-clip:text;background-clip:text;
+    background:linear-gradient(180deg,#ffb9be 0%,#ff4550 34%,#e01020 52%,#7e0a12 100%);
+    -webkit-text-stroke:1px rgba(60,0,6,.9);
+    filter:drop-shadow(0 0 8px rgba(255,32,50,.65)) drop-shadow(0 0 28px rgba(200,8,24,.45));}
+  #welcome .wc-slab.top{position:absolute;inset:0;clip-path:polygon(0 0,100% 0,100% 34%,0 56%);--dx:-70px;--dy:-16px;
+    animation:wcSlam .5s cubic-bezier(.2,.9,.25,1) 1.46s both, wcSliceIdle 6s steps(1) 3.2s infinite;}
+  #welcome .wc-slab.bot{clip-path:polygon(0 56%,100% 34%,100% 100%,0 100%);--dx:70px;--dy:16px;
+    animation:wcSlam .5s cubic-bezier(.2,.9,.25,1) 1.52s both;}
+  #welcome .wc-slab.shine{position:absolute;inset:0;-webkit-text-stroke:0;filter:none;opacity:0;
+    background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.9) 50%,transparent 70%);background-size:240% 100%;
+    animation:wcShine 1.1s ease 2.05s 1 both;}
+  #welcome .wc-cutline{position:absolute;left:-4%;top:0;width:108%;height:100%;pointer-events:none;z-index:2;opacity:0;animation:wcF .3s ease 1.95s forwards;}
   /* JA: katakana → katana slice → kanji reveal */
   #welcome .wc-holowrap{position:relative;margin-top:8px;filter:drop-shadow(0 0 14px rgba(95,233,255,.6)) drop-shadow(0 0 34px rgba(255,90,200,.45));}
   #welcome .wc-holo,#welcome .wc-kata{font-family:'Noto Sans JP',sans-serif;font-weight:900;font-size:clamp(56px,15vw,140px);letter-spacing:.05em;
@@ -162,7 +156,9 @@
   @keyframes wcHolo{to{background-position:280% 0;}}
   @keyframes wcHoloIn{0%{opacity:0;filter:blur(16px)}8%{opacity:1;filter:blur(0)}12%{opacity:.35}16%{opacity:1}20%{opacity:.6}24%{opacity:1}100%{opacity:1;filter:blur(0)}}
   @keyframes wcDecal{from{opacity:0}to{opacity:1}}
-  @keyframes wcFragIn{0%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(1.18);filter:blur(7px) brightness(2.2)}55%{opacity:1;filter:blur(0) brightness(1.5)}100%{opacity:1;transform:translate(0,0) rotate(0) scale(1);filter:blur(0) brightness(1)}}
+  @keyframes wcSlam{0%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.15)}100%{opacity:1;transform:translate(0,0) scale(1)}}
+  @keyframes wcShine{0%{opacity:.9;background-position:220% 0}100%{opacity:0;background-position:-60% 0}}
+  @keyframes wcSliceIdle{0%,92%,100%{transform:translate(0,0)}93%{transform:translate(4px,-2px)}95%{transform:translate(-3px,1px)}96.5%{transform:translate(0,0)}}
   @keyframes wcWordFx{0%,90%,100%{transform:translate(0)}91%{transform:translate(-3px,1px)}92%{transform:translate(3px,-1px)}93%{transform:translate(0)}96%{transform:translate(2px,0)}97%{transform:translate(0)}}
   @keyframes wcSlash{0%{opacity:0;transform:rotate(-9deg) translateX(-130%)}12%{opacity:1}55%{opacity:1}100%{opacity:0;transform:rotate(-9deg) translateX(130%)}}
   @keyframes wcCutTop{0%{opacity:1;transform:translate(0,0)}28%{opacity:1}100%{opacity:0;transform:translate(16px,-46px) rotate(-3deg)}}
@@ -521,13 +517,15 @@
         +'<polyline points="210,232 260,232 288,206" fill="none" stroke="#ff3b4c" stroke-width="1.2" opacity=".45"/>'
         +'<rect x="234" y="154" width="7" height="7" fill="#c8ccd4" opacity=".55"/>'
         +'<rect x="370" y="68" width="7" height="7" fill="#c8ccd4" opacity=".5"/></svg>';
+      var cutline='<svg class="wc-cutline" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
+        +'<line x1="0" y1="56" x2="100" y2="34" stroke="rgba(255,220,226,.9)" stroke-width="0.8"/>'
+        +'<line x1="0" y1="57.5" x2="100" y2="35.5" stroke="rgba(255,42,58,.55)" stroke-width="0.6"/></svg>';
       nameHtml='<div class="wc-decal">'+circ
-        +'<div class="wc-frag fb">'+wordU+'</div>'
-        +'<div class="wc-frag f1">'+wordU+'</div>'
-        +'<div class="wc-frag f2">'+wordU+'</div>'
-        +'<div class="wc-frag f3">'+wordU+'</div>'
-        +'<div class="wc-frag f4">'+wordU+'</div>'
-        +'<div class="wc-frag ol">'+wordU+'</div></div>';
+        +'<div class="wc-slab bot">'+wordU+'</div>'
+        +'<div class="wc-slab top">'+wordU+'</div>'
+        +cutline
+        +'<div class="wc-slab shine">'+wordU+'</div>'
+        +'</div>';
     }
     var readHtml = (lang==="ja")
       ? '車両 <b>'+fleetN+'</b> &nbsp;·&nbsp; 期限超過 <span class="h">'+odN+'</span> &nbsp;·&nbsp; 本日 <b>'+todayN+'</b>'
