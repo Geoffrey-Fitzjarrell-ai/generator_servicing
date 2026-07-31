@@ -201,20 +201,6 @@
       "jiraUrl": ""
     },
     {
-      "id": "w_1785113378359",
-      "title": "HD10 Servicing",
-      "engineer": "Masakiyo Kato",
-      "asset": "HD10",
-      "category": "maintenance",
-      "status": "planned",
-      "start": "2026-07-30",
-      "end": "2026-07-30",
-      "allDay": true,
-      "notes": "HD10 is out of the office until this day but is behind on maintenance for fule filter, and coming soon for oil change",
-      "jiraKey": "",
-      "jiraUrl": ""
-    },
-    {
       "id": "w_1785368816827",
       "title": "VCO ",
       "engineer": "Geoff Fitzjarrell",
@@ -267,6 +253,20 @@
       "end": "2026-07-31",
       "allDay": true,
       "notes": "Check trucks at TRC for central debug panel, and ensure all port adapters are installed and cables are connected",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1785113378359",
+      "title": "HD10 Servicing",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD10",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-07-30",
+      "end": "2026-07-30",
+      "allDay": true,
+      "notes": "HD10 is out of the office until this day but is behind on maintenance for fule filter, and coming soon for oil change",
       "jiraKey": "",
       "jiraUrl": ""
     }
