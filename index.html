@@ -2144,15 +2144,15 @@ const WORK_CATS   = Object.keys(WORK_META);
 const WORK_STATUS = ["planned","in-progress","done","blocked"];
 
 async function fetchWork(){
-  try{ const r=await fetch(WORK_GET+"?t="+Date.now(),{cache:"no-store"}); if(r.ok){ const j=await r.json(); return (j&&j.items)||[]; } }catch(e){}
-  try{ const r=await fetch(WORK_URL+"?t="+Date.now(),{cache:"no-store"}); if(r.ok){ const j=await r.json(); return (j&&j.items)||[]; } }catch(e){}
+  try{ const r=await fetch(WORK_GET+"?t="+Date.now(),{cache:"no-store"}); if(r.ok){ const j=await r.json(); return {items:(j&&j.items)||[], engineers:(j&&j.engineers)||[]}; } }catch(e){}
+  try{ const r=await fetch(WORK_URL+"?t="+Date.now(),{cache:"no-store"}); if(r.ok){ const j=await r.json(); return {items:(j&&j.items)||[], engineers:(j&&j.engineers)||[]}; } }catch(e){}
   return null;
 }
 async function postWork(body){
   const r=await fetch(PROXY_URL,{method:"POST",headers:{"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},body:JSON.stringify(Object.assign({action:"logWork"},body))});
   const j=await r.json().catch(()=>({}));
   if(!r.ok||!j.ok) throw new Error(j.error||("HTTP "+r.status));
-  return j.items||[];
+  return {items:j.items||[], engineers:j.engineers||[]};
 }
 
 const NOTES_GET = PROXY_URL + "notes";
@@ -2175,6 +2175,8 @@ async function postService(body){
 
 function EngineersView(){
   const [items,setItems] = useState(null);
+  const [engineers,setEngineers] = useState([]);
+  const [engForm,setEngForm] = useState(null);   // {name} inline add-engineer form
   const [loadErr,setLoadErr] = useState(false);
   const [saving,setSaving]   = useState(false);
   const [netErr,setNetErr]   = useState("");
@@ -2213,10 +2215,10 @@ function EngineersView(){
 
   useEffect(()=>{
     let alive=true;
-    const pull=async(initial)=>{ const arr=await fetchWork();
+    const pull=async(initial)=>{ const res=await fetchWork();
       if(!alive) return;
-      if(arr===null){ if(initial) setLoadErr(true); return; }
-      if(!busyRef.current || initial){ setItems(arr); setSynced(Date.now()); } };
+      if(res===null){ if(initial) setLoadErr(true); return; }
+      if(!busyRef.current || initial){ setItems(res.items); setEngineers(res.engineers||[]); setSynced(Date.now()); } };
     pull(true);
     const t=setInterval(()=>pull(false),20000);
     return ()=>{ alive=false; clearInterval(t); };
@@ -2226,19 +2228,24 @@ function EngineersView(){
   if(!items)  return PH("div",{style:{padding:40,color:"var(--text-dim)",fontFamily:"var(--mono)"}},"Loading engineer work…");
 
   async function upsert(item){ setSaving(true); setNetErr("");
-    try{ const next=await postWork({op:"upsert",item}); setItems(next); setSynced(Date.now()); return true; }
+    try{ const res=await postWork({op:"upsert",item}); setItems(res.items); setEngineers(res.engineers); setSynced(Date.now()); return true; }
     catch(e){ setNetErr("Save failed: "+e.message); return false; }
     finally{ setSaving(false); } }
   async function removeItem(id){ setSaving(true); setNetErr("");
-    try{ const next=await postWork({op:"delete",id}); setItems(next); setSynced(Date.now()); return true; }
+    try{ const res=await postWork({op:"delete",id}); setItems(res.items); setEngineers(res.engineers); setSynced(Date.now()); return true; }
     catch(e){ setNetErr("Delete failed: "+e.message); return false; }
     finally{ setSaving(false); } }
   async function replaceAll(arr){ setSaving(true); setNetErr("");
-    try{ const next=await postWork({op:"replace",items:arr}); setItems(next); setSynced(Date.now()); return true; }
+    try{ const res=await postWork({op:"replace",items:arr}); setItems(res.items); setEngineers(res.engineers); setSynced(Date.now()); return true; }
     catch(e){ setNetErr("Import failed: "+e.message); return false; }
+    finally{ setSaving(false); } }
+  async function addEngineer(name){ setSaving(true); setNetErr("");
+    try{ const res=await postWork({op:"addEngineer",name}); setItems(res.items); setEngineers(res.engineers); setSynced(Date.now()); return true; }
+    catch(e){ setNetErr("Add engineer failed: "+e.message); return false; }
     finally{ setSaving(false); } }
 
   const roster = (()=>{ const set=new Set(KNOWN_ENGINEERS);
+    engineers.forEach(n=>n&&set.add(n));
     items.forEach(it=>it.engineer&&set.add(canonEng(it.engineer)));
     return ["Unassigned",...[...set].sort()]; })();
 
@@ -2261,7 +2268,7 @@ function EngineersView(){
   const inRange = it => { const s=it.start, e=it.end||it.start; return e>=rangeStart && s<=rangeEnd; };
   const visible = it => inRange(it) && matchQ(it);
 
-  const ENGINEERS = ["Geoff Fitzjarrell","Masakiyo Kato","Isuzu (dealer)"];
+  const ENGINEERS = [...new Set(["Geoff Fitzjarrell","Masakiyo Kato","Isuzu (dealer)", ...engineers])];
   const byE={}; items.filter(visible).forEach(it=>{ const k=canonEng(it.engineer)||"Unassigned"; (byE[k]=byE[k]||[]).push(it); });
   // Fixed roster shown as lanes always; append any other engineer that has work
   // in range so nothing is hidden, and Unassigned only when it's actually used.
@@ -2484,7 +2491,30 @@ function EngineersView(){
     : saving ? PH("span",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--amber)"}},"saving…")
     : PH("span",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--green)"}},"● shared"+(synced?" · synced":""));
 
+  const CAL_BASE = "https://ai.generator-fleet-proxy.workers.dev/calendar.ics?engineer=";
+  const doAddEng = async ()=>{ const n=(engForm&&engForm.name||"").trim(); if(!n) return;
+    const ok=await addEngineer(n); if(ok) setEngForm({name:n,added:n}); };
+  const engEl = engForm ? PH("div",{style:{...panel,marginBottom:14,borderColor:"var(--purple)"}},
+    engForm.added
+      ? PH("div",null,
+          PH("div",{style:{fontSize:13,color:"var(--text)",marginBottom:8}}, "✓ "+engForm.added+" added to the roster. Personal calendar link:"),
+          PH("div",{style:{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}},
+            PH("input",{readOnly:true,value:CAL_BASE+encodeURIComponent(engForm.added),onFocus:e=>e.target.select(),
+              style:{...sel,flex:1,minWidth:260,fontFamily:"var(--mono)",fontSize:11}}),
+            PH("button",{onClick:()=>{ try{ navigator.clipboard.writeText(CAL_BASE+encodeURIComponent(engForm.added)); }catch(e){} },style:navBtn},"Copy"),
+            PH("button",{onClick:()=>setEngForm(null),style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff"}},"Done")),
+          PH("div",{style:{fontSize:11,color:"var(--text-faint)",marginTop:8}},"Add it in Google Calendar (desktop): Other calendars → + → From URL."))
+      : PH("div",{style:{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}},
+          PH("span",{style:{fontSize:12,color:"var(--text-dim)"}},"Full name"),
+          PH("input",{autoFocus:true,value:engForm.name,onChange:e=>setEngForm({...engForm,name:e.target.value}),
+            onKeyDown:e=>{ if(e.key==="Enter") doAddEng(); },placeholder:"e.g. Bex Taylor",style:{...sel,width:240}}),
+          PH("button",{disabled:saving||!engForm.name.trim(),onClick:doAddEng,
+            style:{...navBtn,background:"var(--purple)",borderColor:"var(--purple)",color:"#fff",opacity:(saving||!engForm.name.trim())?.6:1}},saving?"Adding…":"Add"),
+          PH("button",{onClick:()=>setEngForm(null),style:navBtn},"Cancel"))
+  ):null;
+
   return PH("div",{style:{padding:"14px 18px 40px",fontFamily:"var(--sans)"}},
+    engEl,
     PH("datalist",{id:"eng-roster"}, KNOWN_ENGINEERS.map(n=>PH("option",{key:n,value:n}))),
     PH("div",{style:{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}},
       PH("div",{style:{display:"flex",gap:2,alignItems:"center"}},
@@ -2497,6 +2527,7 @@ function EngineersView(){
         q?PH("button",{onClick:()=>setQ(""),style:{...navBtn,padding:"3px 7px",marginLeft:4}},"×"):null),
       PH("select",{value:weeks,onChange:e=>setWeeks(+e.target.value),style:sel},[1,2,4,6,8,12].map(n=>PH("option",{key:n,value:n},n+(n===1?" week":" weeks")))),
       PH("button",{onClick:()=>openNew(),disabled:saving,style:{...navBtn,background:"var(--green)",borderColor:"var(--green)",color:"#fff",fontWeight:700}},"+ Add work"),
+      PH("button",{onClick:()=>setEngForm({name:"",added:null}),disabled:saving,style:{...navBtn,borderColor:"var(--purple)",color:"var(--purple)",fontWeight:700}},"+ Add engineer"),
       PH("div",{style:{marginLeft:"auto",display:"flex",gap:6,alignItems:"center"}},
         statusEl,
         PH("button",{onClick:()=>setIo({mode:"export",text:JSON.stringify({items},null,2)}),style:navBtn},"Export"),

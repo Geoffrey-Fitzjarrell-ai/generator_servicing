@@ -1172,6 +1172,14 @@ export default {
           const cleaned = arr.map(cleanWorkItem).filter(x => x.title && x.start);
           doc = await mutateWork(env, d => { d.items = cleaned; },
             "Engineer work: replace (" + cleaned.length + " items)");
+        } else if (op === "addEngineer") {
+          const name = String(payload.name || "").trim().slice(0, 80);
+          if (!name) return json({ error: "Missing name" }, 400);
+          doc = await mutateWork(env, d => {
+            if (!Array.isArray(d.engineers)) d.engineers = [];
+            if (!d.engineers.some(n => String(n).toLowerCase() === name.toLowerCase())) d.engineers.push(name);
+            if (d.engineers.length > 100) d.engineers = d.engineers.slice(0, 100);
+          }, "Engineer roster: add " + name);
         } else {
           const it = cleanWorkItem(payload.item || {});
           if (!it.title || !it.start) return json({ error: "Missing title/start" }, 400);
@@ -1179,7 +1187,7 @@ export default {
           doc = await mutateWork(env, d => { d.items = [...d.items.filter(x => x.id !== it.id), it]; },
             "Engineer work: upsert " + it.id);
         }
-        return json({ ok: true, items: doc.items });
+        return json({ ok: true, items: doc.items, engineers: doc.engineers || [] });
       }
 
       // ── Per-truck memos: upsert / delete ──
