@@ -359,6 +359,22 @@
       "notes": "HD14's ethernet port was pushed all the way out of the shore ethernet slot, fixed now",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1785481831121",
+      "title": "learning",
+      "engineer": "Masakiyo Kato",
+      "asset": "",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-07-31",
+      "end": "2026-07-31",
+      "allDay": false,
+      "startTime": "17:00",
+      "endTime": "20:00",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
