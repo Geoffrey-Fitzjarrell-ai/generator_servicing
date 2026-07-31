@@ -420,6 +420,15 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
   // and bump VER (bumping VER forces everyone to re-enter).
   var HASH_DAILY  = "3752e23452e983a6592f37cd66da9aa781b7141e33a1dc064b7c7d71569d4d40"; // shared pw — access resets each day
   var HASH_MASTER = "fb5c665d28440f700a4494e67fda34c137b32c2ca749338d297bc7b6b7a46e76"; // master pw — never expires
+  // Team logins for the shop iPads — persistent (never expire), matched
+  // case-insensitively (input is lowercased+trimmed before hashing) so the
+  // on-screen keyboard's capitalization doesn't matter. To add a person: run
+  //   echo -n "theirname" | shasum -a 256   (use the lowercase name)
+  // and append the hash below.
+  var HASH_NAMES = {
+    "b62a515711ba7940195a292d672bc17856466616d890d9e02fe753c8592ee252": "Masakiyo",
+    "77fe232d22d574610d05e1d5e37bae79528f4f862914b43cf55e1e3befb0a7dc": "Geoff"
+  };
   var VER  = "v2";
   var KEY  = "fleet_gate_" + VER;
   function today(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
@@ -451,8 +460,11 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
         err = document.getElementById("gateErr");
     async function tryit(){
       err.textContent = "";
-      var h = await sha(pw.value || "");
+      var raw = pw.value || "";
+      var h = await sha(raw);
+      var hName = await sha(raw.trim().toLowerCase());   // name logins are case-insensitive
       if (h === HASH_MASTER){ unlock("master"); }
+      else if (HASH_NAMES[hName]){ unlock("master"); }   // team iPad login — persistent
       else if (h === HASH_DAILY){ unlock("day"); }
       else { err.textContent = "Incorrect password"; pw.value = ""; pw.focus(); }
     }
