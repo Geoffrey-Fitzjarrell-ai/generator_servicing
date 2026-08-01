@@ -740,6 +740,11 @@ async function loadJson(path, token) {
   return JSON.parse(decodeURIComponent(escape(atob(file.content))));
 }
 
+// Trucks pulled from the lineup. Ingest must never re-create these in data.json
+// (both writeHours and the cron auto-create unknown truck_ids), and status/help
+// queries about them get a short "no longer tracked" note instead of failing.
+const DECOMMISSIONED = new Set(["HD18"]);
+
 function extractTruckId(text) {
   const m = text.match(/hd\s?-?\s?(\d{1,2})/i);
   return m ? "HD" + m[1] : null;
@@ -785,6 +790,13 @@ async function answerMention(event, env) {
   const channel = event.channel;
   const thread_ts = event.thread_ts || event.ts;
   const truck = extractTruckId(text);
+
+  if (truck && DECOMMISSIONED.has(truck)) {
+    // Removed from the lineup — don't ingest, don't resurrect in data.json.
+    return slackPostMessage(env,
+      `*${truck}* has been decommissioned and is no longer tracked.`,
+      { channel, thread_ts });
+  }
 
   if (!rawText || /help|使い方|what can you/.test(text)) {
     return slackPostMessage(env, HELP_TEXT, { channel, thread_ts });

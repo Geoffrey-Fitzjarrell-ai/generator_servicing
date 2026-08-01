@@ -1740,35 +1740,5 @@
 "label": "3ヶ月点検 Booking"
 }
 ]
-},
-"HD18": {
-"2026-06-04": [
-{
-"shift": "DAY",
-"type": "other",
-"label": "Isuzu hands off"
-}
-],
-"2026-06-26": [
-{
-"shift": "DAY",
-"type": "calibration",
-"label": "3ヶ月点検 Booking"
-}
-],
-"2026-07-16": [
-{
-"shift": "DAY",
-"type": "calibration",
-"label": "Calibration"
-}
-],
-"2026-07-06": [
-{
-"shift": "NIGHT",
-"type": "mission",
-"label": "ISUZU OPERATOR TRAINING HD18- Mission Takahashi/Suzuki T P-d"
-}
-]
 }
 }

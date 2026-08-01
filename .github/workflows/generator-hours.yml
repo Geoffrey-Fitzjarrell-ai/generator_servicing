@@ -143,6 +143,9 @@ jobs:
 
           # ── 1. Parse generator hours from thread replies ──────────────────────
           pattern = re.compile(r'(HD\d+)\s+Generator hours:\s*(\d+(?:\.\d+)?)\s*h?', re.IGNORECASE)
+          # Trucks removed from the lineup — never ingest or auto-create them in
+          # data.json (mirrors DECOMMISSIONED in worker.js). Posts are ignored.
+          DECOMMISSIONED = {"HD18"}
           confirm_pattern = re.compile(r'^\s*(confirm|yes|correct|ok)\b', re.IGNORECASE)
 
           # Look back 24h for threads (shift reports may start earlier in the day),
@@ -307,6 +310,9 @@ jobs:
                       cm = corr_pattern.search(text)
                       if cm:
                           truck_id = cm.group(1).upper()
+                          if truck_id in DECOMMISSIONED:
+                              handled[rts] = "ignored_decommissioned"; state_dirty = True
+                              continue
                           corrections[truck_id] = {"hours": round(float(cm.group(2))),
                                                    "user_id": user_id, "ts": rts, "channel": CHANNEL}
                           handled[rts] = "corrected"; state_dirty = True
@@ -315,6 +321,9 @@ jobs:
                       for m in pattern.finditer(text):
                           truck_id = m.group(1).upper()
                           hours    = round(float(m.group(2)))
+
+                          if truck_id in DECOMMISSIONED:
+                              continue
 
                           if expected_truck and truck_id != expected_truck:
                               print(f"REJECT wrong-thread: {truck_id} posted in "
