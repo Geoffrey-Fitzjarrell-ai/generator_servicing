@@ -17,5 +17,24 @@
     ],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD8",
+    "tasks": [
+      "Battery Box check",
+      "Air filter / Battery check"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0971ULJJ0N",
+      "name": null
+    },
+    "loggedAt": "2026-08-02T22:59:15.953Z",
+    "hours": 1706,
+    "notes": [
+      "Battery for generator - 12.73; battery box 24.79 no loose components"
+    ],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
