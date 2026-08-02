@@ -391,6 +391,22 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1785712683350",
+      "title": "TE-2006 FW update",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD16, HD17",
+      "category": "admin",
+      "status": "planned",
+      "start": "2026-08-03",
+      "end": "2026-08-03",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "10:00",
+      "notes": "Update bootloader/FW for HD16 and HD17 Switches 1-4",
+      "jiraKey": "VCO-3688",
+      "jiraUrl": "https://appliedintuition.atlassian.net/browse/VCO-3688"
     }
   ],
   "engineers": [
