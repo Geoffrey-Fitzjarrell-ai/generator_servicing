@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-07-31"
+    "updated": "2026-08-02"
   },
   "items": [
     {
@@ -373,6 +373,22 @@
       "startTime": "08:00",
       "endTime": "18:00",
       "notes": "Check trucks at TRC for central debug panel, and ensure all port adapters are installed and cables are connected",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1785712643401",
+      "title": "Generator servicing",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD8",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-03",
+      "end": "2026-08-03",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "10:00",
+      "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
     }
