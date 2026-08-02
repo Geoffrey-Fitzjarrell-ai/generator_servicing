@@ -302,6 +302,24 @@
       "notes": [
         "adding sponge tape to the oil filter service door, door is loose and not tightened sufficiently.  If this does not improve the door being secured, may require repair"
       ]
+    },
+    {
+      "date": "2026-08-02",
+      "hours": 1706,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        },
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        }
+      ],
+      "notes": [
+        "Battery for generator - 12.73; battery box 24.79 no loose components"
+      ]
     }
   ],
   "HD9": [
