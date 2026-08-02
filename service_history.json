@@ -284,6 +284,24 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-08-02",
+      "hours": 1706,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        }
+      ],
+      "notes": [
+        "adding sponge tape to the oil filter service door, door is loose and not tightened sufficiently.  If this does not improve the door being secured, may require repair"
+      ]
     }
   ],
   "HD9": [
