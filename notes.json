@@ -34,9 +34,16 @@
       "text": "not yet debag port build",
       "author": "Geoff Fitzjarrell",
       "ts": "2026-07-31T07:50:12.150Z"
+    },
+    {
+      "id": "n_1785711514882_va4p",
+      "truck": "HD8",
+      "text": "Generator wiped down and cleaned",
+      "author": "Geoff Fitzjarrell",
+      "ts": "2026-08-02T22:58:35.148Z"
     }
   ],
   "_meta": {
-    "updated": "2026-07-31"
+    "updated": "2026-08-02"
   }
 }
