@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-08-02"
+    "updated": "2026-08-03"
   },
   "items": [
     {
@@ -407,6 +407,22 @@
       "notes": "Update bootloader/FW for HD16 and HD17 Switches 1-4",
       "jiraKey": "VCO-3688",
       "jiraUrl": "https://appliedintuition.atlassian.net/browse/VCO-3688"
+    },
+    {
+      "id": "w_1785801323950",
+      "title": "HD7 bring up",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD7",
+      "category": "admin",
+      "status": "planned",
+      "start": "2026-08-04",
+      "end": "2026-08-04",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
