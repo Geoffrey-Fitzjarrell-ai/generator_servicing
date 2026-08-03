@@ -14,7 +14,15 @@
     "drive_belt": 1680,
     "clean_radiator": 1578
   },
-  "HD7": {},
+  "HD7": {
+    "airfilter_battery": 839,
+    "oil_filter": 839,
+    "coolant_lines": 839,
+    "fuel_filter": 839,
+    "drive_belt": 839,
+    "clean_radiator": 839,
+    "airfilter_500": 839
+  },
   "HD8": {
     "oil_filter": 1706,
     "airfilter_battery": 1706,
