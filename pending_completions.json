@@ -36,5 +36,23 @@
     ],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD8",
+    "tasks": [
+      "Check drive belt & tension"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0971ULJJ0N",
+      "name": null
+    },
+    "loggedAt": "2026-08-03T00:42:36.983Z",
+    "hours": 1706,
+    "notes": [
+      "Drive belt tension belt checked along with battery and other maintenance"
+    ],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
