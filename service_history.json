@@ -145,7 +145,46 @@
       "notes": []
     }
   ],
-  "HD7": [],
+  "HD7": [
+    {
+      "date": "2026-08-03",
+      "hours": 839,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        },
+        {
+          "key": "fuel_filter",
+          "label": "Fuel filter change"
+        },
+        {
+          "key": "drive_belt",
+          "label": "Check drive belt & tension"
+        },
+        {
+          "key": "clean_radiator",
+          "label": "Clean radiator"
+        },
+        {
+          "key": "airfilter_500",
+          "label": "Change air filter"
+        }
+      ],
+      "notes": [
+        "Will also replae regulator.  Generator mount brackets tight not loose, battery box to be left until wiring is corrected"
+      ]
+    }
+  ],
   "HD8": [
     {
       "date": "2026-04-20",
