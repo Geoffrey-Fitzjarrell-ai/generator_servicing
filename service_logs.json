@@ -21,7 +21,8 @@
     "fuel_filter": 839,
     "drive_belt": 839,
     "clean_radiator": 839,
-    "airfilter_500": 839
+    "airfilter_500": 839,
+    "battery_box": 839
   },
   "HD8": {
     "oil_filter": 1706,
