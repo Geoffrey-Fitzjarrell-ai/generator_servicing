@@ -56,14 +56,14 @@
     }
   },
   "HD11": {
-    "hours": 1521,
+    "hours": 1532,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Toru Tanaka",
-    "lastUpdated": "2026-08-03T00:28:00Z",
+    "lastUpdated": "2026-08-04T03:34:23Z",
     "postedBy": {
-      "id": "U09TT0S0UF8",
-      "name": null
+      "id": "U0AEE78SP2R",
+      "name": "U0AEE78SP2R"
     }
   },
   "HD12": {
