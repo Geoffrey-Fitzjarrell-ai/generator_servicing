@@ -183,6 +183,20 @@
       "notes": [
         "Will also replae regulator.  Generator mount brackets tight not loose, battery box to be left until wiring is corrected"
       ]
+    },
+    {
+      "date": "2026-08-04",
+      "hours": 839,
+      "technician": "masakiyo",
+      "tasks": [
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        }
+      ],
+      "notes": [
+        "We modified the routing of the internal wiring in the battery box and corrected defects in the terminal finishes at several locations."
+      ]
     }
   ],
   "HD8": [
