@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "truck": "HD7",
+    "tasks": [
+      "Battery Box check"
+    ],
+    "technician": "masakiyo",
+    "postedBy": {
+      "id": "U07RU3LH24F",
+      "name": null
+    },
+    "loggedAt": "2026-08-04T13:38:46.718Z",
+    "hours": 839,
+    "notes": [
+      "We modified the routing of the internal wiring in the battery box and corrected defects in the terminal finishes at several locations."
+    ],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
