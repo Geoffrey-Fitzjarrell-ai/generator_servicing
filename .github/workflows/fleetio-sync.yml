@@ -1,8 +1,8 @@
 name: Sync Fleetio Vehicle Data
 
-# v1: manual trigger only. Once the response shape is confirmed from a run,
-# a schedule + dashboard read will be added. Writes fleetio.json (new file,
-# does not touch existing data.json / service_*.json).
+# Targeted sync: pulls the 14 HD trucks by Fleetio ID (no whole-fleet paging,
+# no rate-limit risk). Writes fleetio.json (new file; does not touch existing data).
+# v2: still manual-only until the committed file is confirmed, then a cron is added.
 on:
   workflow_dispatch:
 
@@ -16,18 +16,27 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           python3 - <<'EOF'
-          import os, json, re, base64, time
+          import os, json, base64, time
           import urllib.request, urllib.parse, urllib.error as _ue
           from datetime import datetime, timezone
 
           FLEETIO_KEY   = os.environ["FLEETIO_API_KEY"]
           GH_TOKEN      = os.environ["GH_TOKEN"]
-          ACCOUNT_TOKEN = "a0294e2c81"          # non-secret: it's the URL slug
+          ACCOUNT_TOKEN = "a0294e2c81"
           REPO          = "Geoffrey-Fitzjarrell-ai/generator_servicing"
           FLEETIO_BASE  = "https://secure.fleetio.com/api/v1"
           NOW           = datetime.now(timezone.utc)
 
-          def _urlopen(req, timeout=30, tries=4):
+          # HD -> Fleetio vehicle id (discovered from the account, verified 2026-08-05)
+          HD_FLEET = {
+              "HD5": 4456463, "HD6": 4335601, "HD7": 4335602, "HD8": 4335603,
+              "HD9": 4335604, "HD10": 4335605, "HD11": 4335606, "HD12": 4608053,
+              "HD13": 4608054, "HD14": 4608055, "HD15": 4608056, "HD16": 4608057,
+              "HD17": 4608058, "HD18": 4608059,
+          }
+          DECOMMISSIONED = {"HD18"}   # mirror dashboard: skip decommissioned trucks
+
+          def _urlopen(req, timeout=25, tries=4):
               for i in range(tries):
                   try:
                       return urllib.request.urlopen(req, timeout=timeout)
@@ -47,106 +56,80 @@ jobs:
               req = urllib.request.Request(url, headers={
                   "Authorization": f"Token {FLEETIO_KEY}",
                   "Account-Token": ACCOUNT_TOKEN,
-                  "Accept": "application/json",
-              })
+                  "Accept": "application/json"})
               with _urlopen(req) as r:
-                  return json.loads(r.read()), r.status
+                  return json.loads(r.read())
 
-          fatal_error = None
+          def records_of(resp):
+              if isinstance(resp, dict):
+                  return resp.get("records", [])
+              return resp if isinstance(resp, list) else []
 
-          # ---- 1. List all vehicles (paginated) ----
-          vehicles = []
-          page = 1
-          while True:
+          vehicles = {}
+          sample_service_keys = None
+          for hd, vid in HD_FLEET.items():
+              if hd in DECOMMISSIONED:
+                  continue
               try:
-                  data, status = fleetio_get("vehicles", {"per_page": 100, "page": page})
+                  v = fleetio_get(f"vehicles/{vid}")
               except _ue.HTTPError as e:
-                  body = ""
-                  try: body = e.read().decode()[:500]
-                  except Exception: pass
-                  fatal_error = {"stage": "list_vehicles", "http": e.code,
-                                 "reason": str(e.reason), "body": body}
-                  print(f"ERROR vehicles page {page}: HTTP {e.code} {e.reason}")
-                  print("Body:", body)
-                  break
-              # Fleetio may return a bare list or a paginated object
-              records = data.get("records", data) if isinstance(data, dict) else data
-              if not records:
-                  break
-              vehicles.extend(records)
-              if len(records) < 100:
-                  break
-              page += 1
+                  vehicles[hd] = {"fleetio_id": vid, "error": f"HTTP {e.code}"}
+                  print(f"{hd}: vehicle fetch HTTP {e.code}")
+                  continue
 
-          print(f"OK vehicles: {len(vehicles)} record(s)")
+              # recent service entries via nested route (reliable per-vehicle filter)
+              services = []
+              try:
+                  se = fleetio_get(f"vehicles/{vid}/service_entries", {"per_page": 5})
+                  recs = records_of(se)
+                  if recs and sample_service_keys is None:
+                      sample_service_keys = sorted(recs[0].keys())
+                  for s in recs:
+                      services.append({
+                          "id": s.get("id"),
+                          "completed_at": s.get("completed_at") or s.get("started_at"),
+                          "meter": s.get("starting_meter_value") or s.get("completed_meter_value"),
+                          "total_amount": s.get("total_amount_cents"),
+                          "summary": (s.get("labels") or s.get("comments_count")),
+                      })
+              except _ue.HTTPError as e:
+                  services = [{"error": f"HTTP {e.code}"}]
 
-          def hd_key(name):
-              m = re.search(r"HD\s*0*(\d+)", str(name or "").upper())
-              return f"HD{int(m.group(1))}" if m else None
-
-          mapped, unmapped = {}, {}
-          for v in vehicles:
-              vid   = v.get("id")
-              name  = v.get("name")
-              entry = {
+              vehicles[hd] = {
                   "fleetio_id": vid,
-                  "name":       name,
-                  "make":       v.get("make"),
-                  "model":      v.get("model"),
-                  "year":       v.get("year"),
-                  "status":     v.get("vehicle_status_name") or v.get("status"),
-                  "meter":      {
-                      "value": v.get("current_meter_value") or v.get("primary_meter_value"),
-                      "unit":  v.get("primary_meter_unit"),
-                  },
+                  "name": v.get("name"),
+                  "make": v.get("make"),
+                  "model": v.get("model"),
+                  "year": v.get("year"),
+                  "vin": v.get("vin"),
+                  "status": v.get("vehicle_status_name") or v.get("status"),
+                  "meter": {"value": v.get("current_meter_value") or v.get("primary_meter_value"),
+                            "unit": v.get("primary_meter_unit")},
+                  "recent_service_entries": services,
               }
-              k = hd_key(name)
-              print(f"  vehicle {vid}: name={name!r} -> {k or 'UNMAPPED'} | meter={entry['meter']['value']} {entry['meter']['unit']}")
-              (mapped if k else unmapped)[k or str(vid)] = entry
-
-          # ---- 2. Probe service-entries shape for the known vehicle (4608057) ----
-          # Try the filter forms Fleetio has used; record whichever returns 200.
-          probe = {"vehicle_id": 4608057, "results": None, "form_used": None}
-          for label, params in [
-              ("q[vehicle_id_eq]", {"q[vehicle_id_eq]": 4608057, "per_page": 3}),
-              ("vehicle_id",       {"vehicle_id": 4608057, "per_page": 3}),
-          ]:
-              try:
-                  se, status = fleetio_get("service_entries", params)
-                  recs = se.get("records", se) if isinstance(se, dict) else se
-                  probe["form_used"] = label
-                  probe["results"] = len(recs) if isinstance(recs, list) else "non-list"
-                  sample = recs[0] if isinstance(recs, list) and recs else None
-                  print(f"OK service_entries via {label}: {probe['results']} record(s)")
-                  if sample:
-                      print("  sample keys:", sorted(sample.keys())[:20])
-                  break
-              except _ue.HTTPError as e:
-                  print(f"  service_entries via {label}: HTTP {e.code}")
+              print(f"{hd}: {v.get('name')} meter={vehicles[hd]['meter']['value']}{vehicles[hd]['meter']['unit']} "
+                    f"status={vehicles[hd]['status']} services={len(services)}")
+              time.sleep(0.3)   # gentle on rate limits
 
           out = {
               "generated_at": NOW.isoformat(),
               "source": "fleetio",
               "account": ACCOUNT_TOKEN,
-              "vehicle_count": len(vehicles),
-              "vehicles": mapped,
-              "unmapped": unmapped,
-              "_service_entries_probe": probe,
-              "_error": fatal_error,
+              "truck_count": len(vehicles),
+              "decommissioned_skipped": sorted(DECOMMISSIONED),
+              "trucks": vehicles,
+              "_service_entry_fields": sample_service_keys,
           }
 
-          # ---- 3. Commit fleetio.json via GitHub contents API ----
           def gh_get_sha(path):
               url = f"https://api.github.com/repos/{REPO}/contents/{path}"
               req = urllib.request.Request(url, headers={
-                  "Authorization": f"Bearer {GH_TOKEN}",
-                  "Accept": "application/vnd.github+json"})
+                  "Authorization": f"Bearer {GH_TOKEN}", "Accept": "application/vnd.github+json"})
               try:
                   with _urlopen(req) as r:
                       return json.loads(r.read()).get("sha")
               except _ue.HTTPError as e:
-                  if e.code == 404:
-                      return None
+                  if e.code == 404: return None
                   raise
 
           def gh_put(path, content, message):
@@ -154,16 +137,13 @@ jobs:
               payload = {"message": message,
                          "content": base64.b64encode(json.dumps(content, indent=2).encode()).decode()}
               sha = gh_get_sha(path)
-              if sha:
-                  payload["sha"] = sha
+              if sha: payload["sha"] = sha
               req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={
-                  "Authorization": f"Bearer {GH_TOKEN}",
-                  "Accept": "application/vnd.github+json",
+                  "Authorization": f"Bearer {GH_TOKEN}", "Accept": "application/vnd.github+json",
                   "Content-Type": "application/json"}, method="PUT")
               with _urlopen(req) as r:
                   r.read()
 
-          gh_put("fleetio.json", out,
-                 f"chore: sync Fleetio vehicle data ({len(vehicles)} vehicles) [skip ci]")
-          print("Committed fleetio.json")
+          gh_put("fleetio.json", out, f"chore: sync Fleetio ({len(vehicles)} HD trucks) [skip ci]")
+          print(f"Committed fleetio.json — {len(vehicles)} trucks")
           EOF
