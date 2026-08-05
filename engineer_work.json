@@ -439,6 +439,22 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1785899888423",
+      "title": "HD7 Bringup",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD7",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-05",
+      "end": "2026-08-05",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
