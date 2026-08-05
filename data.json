@@ -124,13 +124,13 @@
     "groundedNote": "Broken support strut"
   },
   "HD17": {
-    "hours": 487,
+    "hours": 495,
     "intervalStart": 0,
     "overdue": false,
     "technician": "",
-    "lastUpdated": "2026-08-05T01:28:43Z",
+    "lastUpdated": "2026-08-05T21:05:55Z",
     "postedBy": {
-      "id": "U09UPB6CG56",
+      "id": "U0AV3PG35JM",
       "name": null
     }
   },
