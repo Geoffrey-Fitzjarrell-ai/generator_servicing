@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-08-03"
+    "updated": "2026-08-05"
   },
   "items": [
     {
@@ -420,6 +420,22 @@
       "allDay": true,
       "startTime": "",
       "endTime": "",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1785899794808",
+      "title": "HD7 Bring up",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD7",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-03",
+      "end": "2026-08-03",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
