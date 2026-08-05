@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at": "2026-08-04T22:41:05Z",
+  "checked_at": "2026-08-05T22:39:32Z",
   "passed": [
     "worker alive",
     "worker up to date (build 9bbb0991)",
@@ -12,7 +12,7 @@
     "weekly-summary.yml healthy",
     "pages-build-deployment healthy",
     "dashboard serving",
-    "all 13 data files parse"
+    "all 14 data files parse"
   ],
   "issues": []
 }
