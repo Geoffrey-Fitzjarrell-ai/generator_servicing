@@ -119,7 +119,9 @@
     "postedBy": {
       "id": "U0ABG6DFW03",
       "name": null
-    }
+    },
+    "grounded": true,
+    "groundedNote": "Broken support strut"
   },
   "HD17": {
     "hours": 487,
