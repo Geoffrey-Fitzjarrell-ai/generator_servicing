@@ -552,6 +552,10 @@ const GITHUB_TOKEN = "PASTE_YOUR_GITHUB_PAT_HERE";
 const PENDING_PATH = "pending_completions.json";
 const DAILY_HOURS_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/daily_hours.json";
 const TICKETS_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/tickets.json";
+// EXTERNAL SOURCE — Fleetio. Odometer (km) + service records synced from Fleetio,
+// kept visually separate from our generator-hours tracking so the two don't get confused.
+const FLEETIO_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/fleetio.json";
+const FLEETIO_ACCENT = "#2bb3c0";
 const TASK_INFO = {
   airfilter_battery: {
     replace: ["Air filter element", "Check battery terminals for corrosion"],
@@ -900,6 +904,7 @@ function App({ jump }) {
   const [svcNotes,      setSvcNotes]      = useState("");
   const [tickets,       setTickets]       = useState({});
   const [dailyHours,    setDailyHours]    = useState({});
+  const [fleetio,       setFleetio]       = useState({trucks:{}});
   const [expandedTask,  setExpandedTask]  = useState(null);
   const [groundingNote, setGroundingNote] = useState('');
   const [groundingBusy, setGroundingBusy] = useState(false);
@@ -921,11 +926,12 @@ function App({ jump }) {
     setError(null);
     try {
       const bust="?_="+Date.now();
-      const [r1,r2,r3,r4,r5]=await Promise.all([fetch(DATA_URL+bust),fetch(LOGS_URL+bust),fetch(HISTORY_URL+bust),fetch(TICKETS_URL+bust),fetch(DAILY_HOURS_URL+bust)]);
+      const [r1,r2,r3,r4,r5,r6]=await Promise.all([fetch(DATA_URL+bust),fetch(LOGS_URL+bust),fetch(HISTORY_URL+bust),fetch(TICKETS_URL+bust),fetch(DAILY_HOURS_URL+bust),fetch(FLEETIO_URL+bust)]);
       if(!r1.ok) throw new Error();
-      const [data,seedLogs,hist,tix,dh]=await Promise.all([r1.json(),r2.ok?r2.json():{},r3.ok?r3.json():{},r4.ok?r4.json():{},r5.ok?r5.json():{}]);
+      const [data,seedLogs,hist,tix,dh,fio]=await Promise.all([r1.json(),r2.ok?r2.json():{},r3.ok?r3.json():{},r4.ok?r4.json():{},r5.ok?r5.json():{},r6.ok?r6.json():{trucks:{}}]);
       setTickets(tix||{});
       setDailyHours(dh||{});
+      setFleetio(fio&&fio.trucks?fio:{trucks:{}});
       const fl={};
       for(const t of TRUCKS) fl[t]={hours:null,intervalStart:0,overdue:false,technician:"",lastUpdated:null,postedBy:null,...(data[t]||{})};
       setFleet(fl);
@@ -1552,6 +1558,50 @@ function App({ jump }) {
           )
         ),
         saveError?React.createElement("div",{className:"save-error-banner"},"⚠ "+saveError):null,
+        (function(){
+          var fio=(fleetio&&fleetio.trucks)?fleetio.trucks[selected]:null;
+          var synced=fleetio&&fleetio.generated_at?String(fleetio.generated_at).slice(0,10):null;
+          var oos=fio&&/out of service/i.test(String(fio.status||""));
+          var svc=(fio&&fio.recent_service_entries)?fio.recent_service_entries.filter(function(s){return s&&!s.error;}):[];
+          return React.createElement("div",{style:{marginTop:4,borderLeft:"3px solid "+FLEETIO_ACCENT,paddingLeft:12,paddingTop:8,paddingBottom:8,background:"rgba(43,179,192,0.04)",borderRadius:"var(--radius)"}},
+            React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginBottom:6}},
+              React.createElement("div",{className:"section-title",style:{marginBottom:0}},selected+" — Vehicle Data"),
+              React.createElement("span",{style:{fontFamily:"var(--mono)",fontSize:9,letterSpacing:"0.1em",textTransform:"uppercase",padding:"2px 7px",borderRadius:3,background:"rgba(43,179,192,0.16)",color:FLEETIO_ACCENT,border:"1px solid "+FLEETIO_ACCENT}},"\u25c6 Source: Fleetio"),
+              synced?React.createElement("span",{style:{fontFamily:"var(--mono)",fontSize:9,color:"var(--text-faint)"}},"synced "+synced):null
+            ),
+            React.createElement("div",{style:{fontSize:10,color:"var(--text-faint)",marginBottom:10,lineHeight:1.4}},"Odometer & service records pulled from Fleetio \u2014 separate from the generator-hours tracking above."),
+            !fio?React.createElement("div",{className:"empty-msg"},"No Fleetio record for this truck."):
+            React.createElement("div",null,
+              React.createElement("div",{style:{display:"flex",gap:18,flexWrap:"wrap",marginBottom:12}},
+                React.createElement("div",null,
+                  React.createElement("div",{style:{fontSize:9,color:"var(--text-faint)",letterSpacing:"0.1em",textTransform:"uppercase"}},"Odometer"),
+                  React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:16,fontWeight:700,color:FLEETIO_ACCENT}},(fio.meter&&fio.meter.value!=null)?(Number(fio.meter.value).toLocaleString()+" "+(fio.meter.unit||"km")):"\u2014")
+                ),
+                React.createElement("div",null,
+                  React.createElement("div",{style:{fontSize:9,color:"var(--text-faint)",letterSpacing:"0.1em",textTransform:"uppercase"}},"Fleetio Status"),
+                  React.createElement("span",{style:{display:"inline-block",marginTop:3,fontFamily:"var(--mono)",fontSize:11,padding:"2px 8px",borderRadius:3,background:oos?"var(--red-dim)":"rgba(61,168,112,.16)",color:oos?"var(--red)":"var(--green)"}},fio.status||"\u2014")
+                ),
+                (fio.make||fio.model)?React.createElement("div",null,
+                  React.createElement("div",{style:{fontSize:9,color:"var(--text-faint)",letterSpacing:"0.1em",textTransform:"uppercase"}},"Vehicle"),
+                  React.createElement("div",{style:{fontSize:12,color:"var(--text)",marginTop:3}},[fio.make,fio.model,fio.year].filter(Boolean).join(" "))
+                ):null,
+                fio.vin?React.createElement("div",null,
+                  React.createElement("div",{style:{fontSize:9,color:"var(--text-faint)",letterSpacing:"0.1em",textTransform:"uppercase"}},"VIN"),
+                  React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:"var(--text-dim)",marginTop:3}},fio.vin)
+                ):null
+              ),
+              React.createElement("div",{style:{fontSize:9,color:"var(--text-faint)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}},"Recent Fleetio Service"),
+              svc.length?React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:4}},
+                svc.map(function(s,i){return React.createElement("div",{key:i,style:{display:"flex",gap:10,alignItems:"center",padding:"6px 10px",background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:"var(--radius)"}},
+                  React.createElement("span",{style:{fontFamily:"var(--mono)",fontSize:10,color:FLEETIO_ACCENT,flexShrink:0,minWidth:78}},s.completed_at?String(s.completed_at).slice(0,10):(s.started_at?String(s.started_at).slice(0,10):"\u2014")),
+                  React.createElement("span",{style:{fontSize:12,color:"var(--text)",flex:1}},s.vendor||s.reference||"Service entry"),
+                  s.status?React.createElement("span",{style:{fontFamily:"var(--mono)",fontSize:9,color:"var(--text-faint)"}},s.status):null,
+                  (s.meter!=null)?React.createElement("span",{style:{fontFamily:"var(--mono)",fontSize:9,color:"var(--text-faint)"}},Number(s.meter).toLocaleString()+"km"):null
+                );})
+              ):React.createElement("div",{className:"empty-msg"},"No service entries logged in Fleetio for this truck.")
+            )
+          );
+        })(),
         React.createElement("div",{style:{marginTop:4}},
           React.createElement("div",{className:"section-title"},selected+" — Notes / Memo"),
           React.createElement("div",{style:{display:"flex",gap:8,alignItems:"flex-start",marginBottom:10}},

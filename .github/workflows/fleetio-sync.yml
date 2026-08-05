@@ -3,8 +3,9 @@ name: Sync Fleetio Vehicle Data
 # Group-scoped sync: pulls every vehicle in the JP VOPS group (id 1999094),
 # maps each to its HD key, skips decommissioned trucks, records recent service
 # entries. Bounded to one small group => no whole-fleet paging, no rate limits.
-# Manual-only until go-live cron is confirmed.
 on:
+  schedule:
+    - cron: '0 21 * * *'   # 06:00 JST daily
   workflow_dispatch:
 
 jobs:
