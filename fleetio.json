@@ -1,164 +1,52 @@
 {
-  "generated_at": "2026-08-05T05:25:51.886565+00:00",
+  "generated_at": "2026-08-05T05:37:13.909134+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
-  "vehicle_count": 111500,
-  "vehicles": {
-    "HD18": {
-      "fleetio_id": 4608059,
-      "name": "IZJ-818 (HD18)",
-      "make": "Isuzu",
-      "model": "CYJ77D-WX-D 23A",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "41282.0",
-        "unit": "km"
-      }
-    },
-    "HD17": {
-      "fleetio_id": 4608058,
-      "name": "IZJ-817 (HD17)",
-      "make": "Isuzu",
-      "model": "CYJ77D-WX-D 23A",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "11515.0",
-        "unit": "km"
-      }
-    },
-    "HD16": {
-      "fleetio_id": 4608057,
-      "name": "IZJ-816 (HD16)",
-      "make": "Isuzu",
-      "model": "CYJ77D-WX-D 23A",
-      "year": 2025,
-      "status": "Out of Service",
-      "meter": {
-        "value": "21383.0",
-        "unit": "km"
-      }
-    },
-    "HD15": {
-      "fleetio_id": 4608056,
-      "name": "IZJ-815 (HD15)",
-      "make": "Isuzu",
-      "model": "CYJ77D-WX-D 23A",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "28751.0",
-        "unit": "km"
-      }
-    },
-    "HD14": {
-      "fleetio_id": 4608055,
-      "name": "IZJ-814 (HD14)",
-      "make": "Isuzu",
-      "model": "CYJ77D-WX-D 23A",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "26911.0",
-        "unit": "km"
-      }
-    },
-    "HD13": {
-      "fleetio_id": 4608054,
-      "name": "IZJ-813 (HD13)",
-      "make": "Isuzu",
-      "model": "CYJ77D-WX-D 23A",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "26877.0",
-        "unit": "km"
-      }
-    },
-    "HD12": {
-      "fleetio_id": 4608053,
-      "name": "IZJ-812 (HD12)",
-      "make": "Isuzu",
-      "model": "CYJ77D-WX-D 23A",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "31579.0",
-        "unit": "km"
-      }
-    },
+  "truck_count": 13,
+  "decommissioned_skipped": [
+    "HD18"
+  ],
+  "trucks": {
     "HD5": {
       "fleetio_id": 4456463,
       "name": "IZJ-805 (HD5)",
       "make": "Isuzu",
       "model": "CYJ77D-WX-D 23A",
       "year": 2025,
+      "vin": "CYJ77D-7013616",
       "status": "Active",
       "meter": {
         "value": "31330.5",
         "unit": "km"
-      }
-    },
-    "HD11": {
-      "fleetio_id": 4335606,
-      "name": "IZJ-811 (HD11)",
-      "make": "Isuzu",
-      "model": "CYJ77D-WX-D 23A",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "58377.0",
-        "unit": "km"
-      }
-    },
-    "HD10": {
-      "fleetio_id": 4335605,
-      "name": "IZJ-810 (HD10)",
-      "make": "Isuzu",
-      "model": "CYJ77D-WX-D 23A",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "70430.0",
-        "unit": "km"
-      }
-    },
-    "HD9": {
-      "fleetio_id": 4335604,
-      "name": "IZJ-809 (HD9)",
-      "make": "Isuzu",
-      "model": "CYJ77D-WX-D 23A",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "65429.0",
-        "unit": "km"
-      }
-    },
-    "HD8": {
-      "fleetio_id": 4335603,
-      "name": "IZJ-808 (HD8)",
-      "make": "Isuzu",
-      "model": "CYJ77D-WX-D 23A",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "60841.0",
-        "unit": "km"
-      }
-    },
-    "HD7": {
-      "fleetio_id": 4335602,
-      "name": "IZJ-807 (HD7)",
-      "make": "Isuzu",
-      "model": "CYJ77D-WX-D 23A",
-      "year": 2025,
-      "status": "Out of Service",
-      "meter": {
-        "value": "22072.0",
-        "unit": "km"
-      }
+      },
+      "recent_service_entries": [
+        {
+          "id": 52339410,
+          "completed_at": "2026-06-13T08:43:00.000+09:00",
+          "meter": null,
+          "total_amount": null,
+          "summary": 1
+        },
+        {
+          "id": 52329528,
+          "completed_at": "2026-07-22T02:01:00.000+09:00",
+          "meter": null,
+          "total_amount": null,
+          "summary": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ]
+        },
+        {
+          "id": 43406862,
+          "completed_at": "2025-12-13T06:18:00.000+09:00",
+          "meter": null,
+          "total_amount": null,
+          "summary": 0
+        }
+      ]
     },
     "HD6": {
       "fleetio_id": 4335601,
@@ -166,1056 +54,242 @@
       "make": "Isuzu",
       "model": "CYJ77D-WX-D 23A",
       "year": 2025,
+      "vin": "CYJ77D-7014031",
       "status": "Active",
       "meter": {
         "value": "67117.0",
         "unit": "km"
-      }
+      },
+      "recent_service_entries": [
+        {
+          "id": 42874982,
+          "completed_at": "2026-02-22T00:00:00.000+09:00",
+          "meter": null,
+          "total_amount": null,
+          "summary": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ]
+        }
+      ]
+    },
+    "HD7": {
+      "fleetio_id": 4335602,
+      "name": "IZJ-807 (HD7)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7014032",
+      "status": "Out of Service",
+      "meter": {
+        "value": "22072.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [
+        {
+          "id": 42875001,
+          "completed_at": "2026-02-22T00:00:00.000+09:00",
+          "meter": null,
+          "total_amount": null,
+          "summary": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ]
+        }
+      ]
+    },
+    "HD8": {
+      "fleetio_id": 4335603,
+      "name": "IZJ-808 (HD8)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7014033",
+      "status": "Active",
+      "meter": {
+        "value": "60841.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [
+        {
+          "id": 43362166,
+          "completed_at": "2025-12-13T00:00:00.000+09:00",
+          "meter": null,
+          "total_amount": null,
+          "summary": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ]
+        }
+      ]
+    },
+    "HD9": {
+      "fleetio_id": 4335604,
+      "name": "IZJ-809 (HD9)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7014034",
+      "status": "Active",
+      "meter": {
+        "value": "65429.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [
+        {
+          "id": 43362178,
+          "completed_at": "2025-12-13T00:00:00.000+09:00",
+          "meter": null,
+          "total_amount": null,
+          "summary": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ]
+        }
+      ]
+    },
+    "HD10": {
+      "fleetio_id": 4335605,
+      "name": "IZJ-810 (HD10)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7014035",
+      "status": "Active",
+      "meter": {
+        "value": "70430.0",
+        "unit": "km"
+      },
+      "recent_service_entries": []
+    },
+    "HD11": {
+      "fleetio_id": 4335606,
+      "name": "IZJ-811 (HD11)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7014036",
+      "status": "Active",
+      "meter": {
+        "value": "58377.0",
+        "unit": "km"
+      },
+      "recent_service_entries": []
+    },
+    "HD12": {
+      "fleetio_id": 4608053,
+      "name": "IZJ-812 (HD12)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7015191",
+      "status": "Active",
+      "meter": {
+        "value": "31579.0",
+        "unit": "km"
+      },
+      "recent_service_entries": []
+    },
+    "HD13": {
+      "fleetio_id": 4608054,
+      "name": "IZJ-813 (HD13)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7015192",
+      "status": "Active",
+      "meter": {
+        "value": "26877.0",
+        "unit": "km"
+      },
+      "recent_service_entries": []
+    },
+    "HD14": {
+      "fleetio_id": 4608055,
+      "name": "IZJ-814 (HD14)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7015278",
+      "status": "Active",
+      "meter": {
+        "value": "26911.0",
+        "unit": "km"
+      },
+      "recent_service_entries": []
+    },
+    "HD15": {
+      "fleetio_id": 4608056,
+      "name": "IZJ-815 (HD15)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7015279",
+      "status": "Active",
+      "meter": {
+        "value": "28751.0",
+        "unit": "km"
+      },
+      "recent_service_entries": []
+    },
+    "HD16": {
+      "fleetio_id": 4608057,
+      "name": "IZJ-816 (HD16)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7015280",
+      "status": "Out of Service",
+      "meter": {
+        "value": "21383.0",
+        "unit": "km"
+      },
+      "recent_service_entries": []
+    },
+    "HD17": {
+      "fleetio_id": 4608058,
+      "name": "IZJ-817 (HD17)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7015281",
+      "status": "Active",
+      "meter": {
+        "value": "11515.0",
+        "unit": "km"
+      },
+      "recent_service_entries": []
     }
   },
-  "unmapped": {
-    "5496524": {
-      "fleetio_id": 5496524,
-      "name": "MCE-118",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": 2023,
-      "status": "Build",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5494511": {
-      "fleetio_id": 5494511,
-      "name": "CHE-102",
-      "make": "Jeep",
-      "model": "Grand Cherokee",
-      "year": 2025,
-      "status": "Inactive",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5486173": {
-      "fleetio_id": 5486173,
-      "name": "DMX-202",
-      "make": "Isuzu",
-      "model": "D-MAX",
-      "year": 2026,
-      "status": "Build",
-      "meter": {
-        "value": "0.0",
-        "unit": "km"
-      }
-    },
-    "5482090": {
-      "fleetio_id": 5482090,
-      "name": "CHE-101",
-      "make": "Jeep",
-      "model": "Grand Cherokee",
-      "year": 2026,
-      "status": "Inactive",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5465599": {
-      "fleetio_id": 5465599,
-      "name": "MCE-117",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": null,
-      "status": "Build",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5465598": {
-      "fleetio_id": 5465598,
-      "name": "MCE-116",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": null,
-      "status": "Build",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5403683": {
-      "fleetio_id": 5403683,
-      "name": "Volvo SD115",
-      "make": "Volvo",
-      "model": "SD115",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5369277": {
-      "fleetio_id": 5369277,
-      "name": "CIV-205",
-      "make": "Honda",
-      "model": "Civic Hybrid",
-      "year": 2026,
-      "status": "Build",
-      "meter": {
-        "value": "58.0",
-        "unit": "mi"
-      }
-    },
-    "5369270": {
-      "fleetio_id": 5369270,
-      "name": "CIV-204",
-      "make": "Honda",
-      "model": "Civic Hybrid",
-      "year": 2026,
-      "status": "Build",
-      "meter": {
-        "value": "61.0",
-        "unit": "mi"
-      }
-    },
-    "5369255": {
-      "fleetio_id": 5369255,
-      "name": "Water Truck",
-      "make": "Ford",
-      "model": "F-750 Super Duty",
-      "year": 2016,
-      "status": "Active",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5369248": {
-      "fleetio_id": 5369248,
-      "name": "Fuel Truck",
-      "make": "International",
-      "model": "ProStar+",
-      "year": 2013,
-      "status": "Active",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5369171": {
-      "fleetio_id": 5369171,
-      "name": "CAT-160M",
-      "make": "Caterpillar",
-      "model": "160M2AWD",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5365337": {
-      "fleetio_id": 5365337,
-      "name": "VOL-220K",
-      "make": "Volvo",
-      "model": "L220K",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5365333": {
-      "fleetio_id": 5365333,
-      "name": "VOL-ECR355",
-      "make": "Volvo",
-      "model": "ECR-355FL5",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5365332": {
-      "fleetio_id": 5365332,
-      "name": "VOL-EC250",
-      "make": "Volvo",
-      "model": "EC-250EL",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5361936": {
-      "fleetio_id": 5361936,
-      "name": "ADT-203",
-      "make": "Caterpillar",
-      "model": "745",
-      "year": null,
-      "status": "Inactive",
-      "meter": {
-        "value": "0.0",
-        "unit": "hr"
-      }
-    },
-    "5361707": {
-      "fleetio_id": 5361707,
-      "name": "CAT D6",
-      "make": "Caterpillar",
-      "model": "D6TXL",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5361653": {
-      "fleetio_id": 5361653,
-      "name": "KOM WA-500",
-      "make": "Komatsu",
-      "model": "WA500-8",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5358651": {
-      "fleetio_id": 5358651,
-      "name": "XTR-204",
-      "make": "Nissan",
-      "model": "X-Trail",
-      "year": 2024,
-      "status": "Inactive",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5344516": {
-      "fleetio_id": 5344516,
-      "name": "CIV-202",
-      "make": "Honda",
-      "model": "Civic Hybrid",
-      "year": 2026,
-      "status": "Calibration",
-      "meter": {
-        "value": "118.0",
-        "unit": "mi"
-      }
-    },
-    "5344515": {
-      "fleetio_id": 5344515,
-      "name": "CIV-203",
-      "make": "Honda",
-      "model": "Civic Hybrid",
-      "year": 2026,
-      "status": "Build",
-      "meter": {
-        "value": "108.0",
-        "unit": "mi"
-      }
-    },
-    "5255100": {
-      "fleetio_id": 5255100,
-      "name": "MCE-115",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "1771.0",
-        "unit": "km"
-      }
-    },
-    "5255095": {
-      "fleetio_id": 5255095,
-      "name": "MCE-114",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "20591.0",
-        "unit": "km"
-      }
-    },
-    "5253701": {
-      "fleetio_id": 5253701,
-      "name": "XTR-203",
-      "make": "Nissan",
-      "model": "X-Trail",
-      "year": 2024,
-      "status": "Build",
-      "meter": {
-        "value": "0.0",
-        "unit": "km"
-      }
-    },
-    "5214424": {
-      "fleetio_id": 5214424,
-      "name": "CIV-201",
-      "make": "Honda",
-      "model": "Civic Hybrid",
-      "year": 2026,
-      "status": "Active",
-      "meter": {
-        "value": "428.0",
-        "unit": "mi"
-      }
-    },
-    "5201812": {
-      "fleetio_id": 5201812,
-      "name": "XTR-202",
-      "make": "Nissan",
-      "model": "X-Trail",
-      "year": 2024,
-      "status": "Build",
-      "meter": {
-        "value": "0.0",
-        "unit": "km"
-      }
-    },
-    "5141861": {
-      "fleetio_id": 5141861,
-      "name": "ION-201",
-      "make": "Hyundai",
-      "model": "IONIQ 5",
-      "year": 2026,
-      "status": "Build",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "5058088": {
-      "fleetio_id": 5058088,
-      "name": "ADT-202",
-      "make": "Caterpillar",
-      "model": "745",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "4118.0",
-        "unit": "mi"
-      }
-    },
-    "5058087": {
-      "fleetio_id": 5058087,
-      "name": "ADT-201",
-      "make": "Caterpillar",
-      "model": "745",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "3402.5",
-        "unit": "mi"
-      }
-    },
-    "5007988": {
-      "fleetio_id": 5007988,
-      "name": "PRO-101",
-      "make": "Ram",
-      "model": "ProMaster",
-      "year": 2026,
-      "status": "Active",
-      "meter": {
-        "value": "2085.0",
-        "unit": "mi"
-      }
-    },
-    "5006051": {
-      "fleetio_id": 5006051,
-      "name": "FOR-602",
-      "make": "Ford",
-      "model": "F-600 Super Duty",
-      "year": 2026,
-      "status": "Active",
-      "meter": {
-        "value": "3581.0",
-        "unit": "mi"
-      }
-    },
-    "5005906": {
-      "fleetio_id": 5005906,
-      "name": "FOR-603",
-      "make": "Ford",
-      "model": "F-600 Super Duty",
-      "year": 2025,
-      "status": "Build",
-      "meter": {
-        "value": "8075.0",
-        "unit": "mi"
-      }
-    },
-    "4994532": {
-      "fleetio_id": 4994532,
-      "name": "MCE-206",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": 2023,
-      "status": "Active",
-      "meter": {
-        "value": "18621.0",
-        "unit": "km"
-      }
-    },
-    "4970591": {
-      "fleetio_id": 4970591,
-      "name": "FOR-601",
-      "make": "Ford",
-      "model": "F-600 Super Duty",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "5920.0",
-        "unit": "mi"
-      }
-    },
-    "4927467": {
-      "fleetio_id": 4927467,
-      "name": "POR-911 (Martini)",
-      "make": "Porsche",
-      "model": "911",
-      "year": null,
-      "status": "Inactive",
-      "meter": {
-        "value": "43510.0",
-        "unit": "km"
-      }
-    },
-    "4805179": {
-      "fleetio_id": 4805179,
-      "name": "LEF-101",
-      "make": "Nissan",
-      "model": "LEAF",
-      "year": 2026,
-      "status": "Inactive",
-      "meter": {
-        "value": "41.0",
-        "unit": "mi"
-      }
-    },
-    "4796072": {
-      "fleetio_id": 4796072,
-      "name": "KUB-101",
-      "make": "Kubota",
-      "model": "RTV-X1130RL-A 4WD Utility Vehicle",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "4781259": {
-      "fleetio_id": 4781259,
-      "name": "MCE-113",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "17225.0",
-        "unit": "km"
-      }
-    },
-    "4781258": {
-      "fleetio_id": 4781258,
-      "name": "MCE-112",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "15165.0",
-        "unit": "km"
-      }
-    },
-    "4768856": {
-      "fleetio_id": 4768856,
-      "name": "MAC-201",
-      "make": "Porsche",
-      "model": "Macan",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "7933.0",
-        "unit": "km"
-      }
-    },
-    "4737795": {
-      "fleetio_id": 4737795,
-      "name": "MARTAC M18.7 Unmanned Surface Vessel",
-      "make": "MARTAC",
-      "model": "M18",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "47.6",
-        "unit": "hr"
-      }
-    },
-    "4735910": {
-      "fleetio_id": 4735910,
-      "name": "MARTAC M18.6 Unmanned Surface Vessel",
-      "make": "MARTAC",
-      "model": "M18",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "48.0",
-        "unit": "hr"
-      }
-    },
-    "4586548": {
-      "fleetio_id": 4586548,
-      "name": "DMX-201",
-      "make": "Isuzu",
-      "model": "D-MAX",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "7496.0",
-        "unit": "mi"
-      }
-    },
-    "4576087": {
-      "fleetio_id": 4576087,
-      "name": "MCE-205",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "2695.0",
-        "unit": "mi"
-      }
-    },
-    "4553929": {
-      "fleetio_id": 4553929,
-      "name": "ROG-215",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Inactive",
-      "meter": {
-        "value": "19793.0",
-        "unit": "mi"
-      }
-    },
-    "4553926": {
-      "fleetio_id": 4553926,
-      "name": "ROG-214",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "42222.0",
-        "unit": "mi"
-      }
-    },
-    "4553922": {
-      "fleetio_id": 4553922,
-      "name": "ROG-213",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "10990.0",
-        "unit": "mi"
-      }
-    },
-    "4553914": {
-      "fleetio_id": 4553914,
-      "name": "ROG-212",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Inactive",
-      "meter": {
-        "value": "7503.0",
-        "unit": "mi"
-      }
-    },
-    "4553910": {
-      "fleetio_id": 4553910,
-      "name": "ROG-211",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "13374.0",
-        "unit": "mi"
-      }
-    },
-    "4536652": {
-      "fleetio_id": 4536652,
-      "name": "JCB-101",
-      "make": "JCB",
-      "model": "3TS-8T NA",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "0.0",
-        "unit": "hr"
-      }
-    },
-    "4531558": {
-      "fleetio_id": 4531558,
-      "name": "FOR-501",
-      "make": "Ford",
-      "model": "F-550 Super Duty",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "10128.0",
-        "unit": "mi"
-      }
-    },
-    "4473302": {
-      "fleetio_id": 4473302,
-      "name": "MCE-204",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": 2024,
-      "status": "Validation",
-      "meter": {
-        "value": "6365.3",
-        "unit": "mi"
-      }
-    },
-    "4473300": {
-      "fleetio_id": 4473300,
-      "name": "MCE-202",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "8390.0",
-        "unit": "mi"
-      }
-    },
-    "4473298": {
-      "fleetio_id": 4473298,
-      "name": "MCE-203",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": 2024,
-      "status": "Validation",
-      "meter": {
-        "value": "542.0",
-        "unit": "mi"
-      }
-    },
-    "4456522": {
-      "fleetio_id": 4456522,
-      "name": "POR-102",
-      "make": "Porsche",
-      "model": "911",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "43602.0",
-        "unit": "mi"
-      }
-    },
-    "4455565": {
-      "fleetio_id": 4455565,
-      "name": "PAN-101",
-      "make": "Porsche",
-      "model": "Panamera",
-      "year": null,
-      "status": "Inactive",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "4455558": {
-      "fleetio_id": 4455558,
-      "name": "POR-101",
-      "make": "Porsche",
-      "model": "911",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "43287.0",
-        "unit": "mi"
-      }
-    },
-    "4455557": {
-      "fleetio_id": 4455557,
-      "name": "MAC-104",
-      "make": "Porsche",
-      "model": "Macan",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "47428.0",
-        "unit": "mi"
-      }
-    },
-    "4455555": {
-      "fleetio_id": 4455555,
-      "name": "MAC-C7",
-      "make": "Porsche",
-      "model": "Macan",
-      "year": 2024,
-      "status": "Inactive",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "4455488": {
-      "fleetio_id": 4455488,
-      "name": "MAC-C10",
-      "make": "Porsche",
-      "model": "Macan",
-      "year": 2024,
-      "status": "Inactive",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "4450790": {
-      "fleetio_id": 4450790,
-      "name": "FEN-101",
-      "make": "Fendt",
-      "model": "716G6",
-      "year": 2022,
-      "status": "Active",
-      "meter": {
-        "value": "0.0",
-        "unit": "hr"
-      }
-    },
-    "4449307": {
-      "fleetio_id": 4449307,
-      "name": "CIT-102",
-      "make": "Citro\u00ebn",
-      "model": "C3",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "4549.0",
-        "unit": "km"
-      }
-    },
-    "4421994": {
-      "fleetio_id": 4421994,
-      "name": "VOL-101",
-      "make": "Volvo Construction Equipment",
-      "model": "Hauler A40G",
-      "year": 2020,
-      "status": "Active",
-      "meter": {
-        "value": "2425.0",
-        "unit": "hr"
-      }
-    },
-    "4392316": {
-      "fleetio_id": 4392316,
-      "name": "MAC-103 (Lugia)",
-      "make": "Porsche",
-      "model": "Macan",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "26899.0",
-        "unit": "mi"
-      }
-    },
-    "4392314": {
-      "fleetio_id": 4392314,
-      "name": "MAC-102",
-      "make": "Porsche",
-      "model": "Macan",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "23521.1",
-        "unit": "mi"
-      }
-    },
-    "4392307": {
-      "fleetio_id": 4392307,
-      "name": "MAC-101",
-      "make": "Porsche",
-      "model": "Macan",
-      "year": 2025,
-      "status": "Active",
-      "meter": {
-        "value": "50845.0",
-        "unit": "mi"
-      }
-    },
-    "4176558": {
-      "fleetio_id": 4176558,
-      "name": "KOM-101",
-      "make": "Komatsu",
-      "model": "HM400",
-      "year": null,
-      "status": "Active",
-      "meter": {
-        "value": "8200.8",
-        "unit": "hr"
-      }
-    },
-    "4163024": {
-      "fleetio_id": 4163024,
-      "name": "ROG-210",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Build",
-      "meter": {
-        "value": "11569.0",
-        "unit": "mi"
-      }
-    },
-    "4163011": {
-      "fleetio_id": 4163011,
-      "name": "ROG-209",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "12499.0",
-        "unit": "mi"
-      }
-    },
-    "4163010": {
-      "fleetio_id": 4163010,
-      "name": "ROG-208",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "11228.0",
-        "unit": "mi"
-      }
-    },
-    "4163000": {
-      "fleetio_id": 4163000,
-      "name": "ROG-207",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "14757.0",
-        "unit": "mi"
-      }
-    },
-    "4162999": {
-      "fleetio_id": 4162999,
-      "name": "ROG-206",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Out of Service",
-      "meter": {
-        "value": "16076.0",
-        "unit": "mi"
-      }
-    },
-    "4162998": {
-      "fleetio_id": 4162998,
-      "name": "ROG-205",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "10681.0",
-        "unit": "mi"
-      }
-    },
-    "4162997": {
-      "fleetio_id": 4162997,
-      "name": "ROG-204",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Inactive",
-      "meter": {
-        "value": "0.0",
-        "unit": "mi"
-      }
-    },
-    "4162996": {
-      "fleetio_id": 4162996,
-      "name": "ROG-203",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "5473.0",
-        "unit": "mi"
-      }
-    },
-    "4162971": {
-      "fleetio_id": 4162971,
-      "name": "ROG-202",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Out of Service",
-      "meter": {
-        "value": "15785.0",
-        "unit": "mi"
-      }
-    },
-    "4161192": {
-      "fleetio_id": 4161192,
-      "name": "ACD-101",
-      "make": "Honda",
-      "model": "Accord Hybrid",
-      "year": 2025,
-      "status": "Inactive",
-      "meter": {
-        "value": "43032.0",
-        "unit": "mi"
-      }
-    },
-    "4161191": {
-      "fleetio_id": 4161191,
-      "name": "ROG-201",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Build",
-      "meter": {
-        "value": "20002.0",
-        "unit": "mi"
-      }
-    },
-    "4161183": {
-      "fleetio_id": 4161183,
-      "name": "ROG-148",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "35359.0",
-        "unit": "mi"
-      }
-    },
-    "4143524": {
-      "fleetio_id": 4143524,
-      "name": "CIT-101",
-      "make": "Citro\u00ebn",
-      "model": "C3",
-      "year": 2024,
-      "status": "Inactive",
-      "meter": {
-        "value": "45336.0",
-        "unit": "km"
-      }
-    },
-    "4143480": {
-      "fleetio_id": 4143480,
-      "name": "MCE-111",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "6807.0",
-        "unit": "km"
-      }
-    },
-    "4140340": {
-      "fleetio_id": 4140340,
-      "name": "MCE-110",
-      "make": "Ford",
-      "model": "Mustang Mach-E",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "28673.0",
-        "unit": "km"
-      }
-    },
-    "4131609": {
-      "fleetio_id": 4131609,
-      "name": "ROG-149",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Out of Service",
-      "meter": {
-        "value": "42072.0",
-        "unit": "mi"
-      }
-    },
-    "4131607": {
-      "fleetio_id": 4131607,
-      "name": "ROG-147",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "55376.0",
-        "unit": "mi"
-      }
-    },
-    "4131605": {
-      "fleetio_id": 4131605,
-      "name": "ROG-146",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Active",
-      "meter": {
-        "value": "29061.0",
-        "unit": "mi"
-      }
-    },
-    "4131604": {
-      "fleetio_id": 4131604,
-      "name": "ROG-145",
-      "make": "Nissan",
-      "model": "Rogue",
-      "year": 2024,
-      "status": "Out of Service",
-      "meter": {
-        "value": "27743.0",
-        "unit": "mi"
-      }
-    }
-  },
-  "_service_entries_probe": {
-    "vehicle_id": 4608057,
-    "results": 100,
-    "form_used": "vehicle_id"
-  },
-  "_error": {
-    "stage": "list_vehicles",
-    "http": 429,
-    "reason": "Too Many Requests",
-    "body": "{\"title\":\"Too Many Requests\",\"status\":429,\"detail\":\"Too many requests detected from your account token. Please try again later. If you believe this is an error, please contact Fleetio Support at api@fleetio.com.\"}"
-  }
+  "_service_entry_fields": [
+    "attachment_permissions",
+    "auto_integrate_repair_order_status",
+    "comments_count",
+    "completed_at",
+    "created_at",
+    "documents_count",
+    "general_notes",
+    "id",
+    "images_count",
+    "is_sample",
+    "labels",
+    "primary_meter_entry",
+    "reference",
+    "started_at",
+    "status",
+    "updated_at",
+    "vehicle_id",
+    "vendor",
+    "vendor_id",
+    "vendor_name",
+    "work_order_id"
+  ]
 }
