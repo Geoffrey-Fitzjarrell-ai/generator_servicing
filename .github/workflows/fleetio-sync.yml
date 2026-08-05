@@ -62,75 +62,62 @@ jobs:
               m = re.search(r"HD\s*0*(\d+)", str(name or "").upper())
               return f"HD{int(m.group(1))}" if m else None
 
-          # ---- discover group vehicles (bounded page loop, hard cap) ----
-          group_vehicles, filter_used = [], None
-          for label, extra in [
-              ("group_id_eq", {"q[group_id_eq]": GROUP_ID}),
-              ("group_id_cont_any_slash", {"q[group_id_cont_any_slash][]": GROUP_ID}),
-          ]:
-              try:
-                  seen_ids, page, acc = set(), 1, []
-                  while page <= 5:
-                      params = {"per_page": 100, "page": page, **extra}
-                      recs = records_of(fleetio_get("vehicles", params))
-                      new = [v for v in recs if v.get("id") not in seen_ids]
-                      if not new: break
-                      for v in new: seen_ids.add(v.get("id"))
-                      acc.extend(new)
-                      if len(recs) < 100: break
-                      page += 1
-                  if acc:
-                      group_vehicles, filter_used = acc, label
-                      break
-              except _ue.HTTPError as e:
-                  print(f"group filter {label}: HTTP {e.code}")
+          # ---- list all group vehicles (one bounded page; dedup guards runaway) ----
+          all_vehicles, seen, page = [], set(), 1
+          while page <= 5:
+              recs = records_of(fleetio_get("vehicles", {"per_page": 100, "page": page}))
+              new = [v for v in recs if v.get("id") not in seen]
+              if not new: break
+              for v in new: seen.add(v.get("id"))
+              all_vehicles.extend(new)
+              if len(recs) < 100: break
+              page += 1
+          print(f"listed {len(all_vehicles)} vehicle(s)")
 
-          print(f"group {GROUP_ID}: {len(group_vehicles)} vehicle(s) via '{filter_used}'")
-
-          trucks, unmapped, sample_keys = {}, {}, None
-          for v in group_vehicles:
-              vid, name = v.get("id"), v.get("name")
-              k = hd_key(name)
+          # ---- partition: HD trucks get full treatment; others are noted only ----
+          trucks, others, sample_keys = {}, [], None
+          for v in all_vehicles:
+              k = hd_key(v.get("name"))
+              if not k:
+                  others.append({"id": v.get("id"), "name": v.get("name")})
+                  continue
+              if k in DECOMMISSIONED:
+                  print(f"  skip decommissioned {k}"); continue
+              vid = v.get("id")
               rec = {
-                  "fleetio_id": vid, "name": name,
+                  "fleetio_id": vid, "name": v.get("name"),
                   "make": v.get("make"), "model": v.get("model"), "year": v.get("year"),
                   "vin": v.get("vin"),
                   "status": v.get("vehicle_status_name") or v.get("status"),
                   "meter": {"value": v.get("current_meter_value") or v.get("primary_meter_value"),
                             "unit": v.get("primary_meter_unit")},
               }
-              if k in DECOMMISSIONED:
-                  print(f"  skip decommissioned {k}"); continue
-              # recent service entries (nested route = reliable per-vehicle filter)
               services = []
               try:
-                  recs = records_of(fleetio_get(f"vehicles/{vid}/service_entries", {"per_page": 5}))
-                  if recs and sample_keys is None: sample_keys = sorted(recs[0].keys())
-                  for s in recs:
-                      pme = s.get("primary_meter_entry") or {}
+                  se = records_of(fleetio_get(f"vehicles/{vid}/service_entries", {"per_page": 5}))
+                  if se and sample_keys is None: sample_keys = sorted(se[0].keys())
+                  for srec in se:
+                      pme = srec.get("primary_meter_entry") or {}
                       services.append({
-                          "id": s.get("id"),
-                          "status": s.get("status"),
-                          "completed_at": s.get("completed_at"),
-                          "started_at": s.get("started_at"),
-                          "vendor": s.get("vendor_name"),
-                          "reference": s.get("reference"),
-                          "labels": s.get("labels"),
+                          "id": srec.get("id"), "status": srec.get("status"),
+                          "completed_at": srec.get("completed_at"), "started_at": srec.get("started_at"),
+                          "vendor": srec.get("vendor_name"), "reference": srec.get("reference"),
+                          "labels": srec.get("labels"),
                           "meter": pme.get("value") if isinstance(pme, dict) else pme,
                       })
               except _ue.HTTPError as e:
                   services = [{"error": f"HTTP {e.code}"}]
               rec["recent_service_entries"] = services
-              (trucks if k else unmapped)[k or str(vid)] = rec
-              print(f"  {k or 'UNMAPPED'}: {name} {rec['meter']['value']}{rec['meter']['unit']} "
-                    f"{rec['status']} services={len(services)}")
+              trucks[k] = rec
+              print(f"  {k}: {rec['name']} {rec['meter']['value']}{rec['meter']['unit']} {rec['status']} services={len(services)}")
               time.sleep(0.3)
 
           out = {
               "generated_at": NOW.isoformat(), "source": "fleetio",
-              "account": ACCOUNT_TOKEN, "group_id": GROUP_ID, "filter_used": filter_used,
+              "account": ACCOUNT_TOKEN, "total_listed": len(all_vehicles),
               "truck_count": len(trucks), "decommissioned_skipped": sorted(DECOMMISSIONED),
-              "trucks": trucks, "unmapped": unmapped,
+              "trucks": trucks,
+              "other_group_vehicles": sorted(o["name"] for o in others),
               "_service_entry_fields": sample_keys,
           }
 
@@ -152,5 +139,5 @@ jobs:
               with _urlopen(req) as r: r.read()
 
           gh_put("fleetio.json", out, f"chore: sync Fleetio group {GROUP_ID} ({len(trucks)} trucks) [skip ci]")
-          print(f"Committed fleetio.json — {len(trucks)} mapped, {len(unmapped)} unmapped")
+          print(f"Committed fleetio.json — {len(trucks)} HD trucks, {len(others)} other vehicles noted")
           EOF
