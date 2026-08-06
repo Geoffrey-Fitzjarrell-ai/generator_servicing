@@ -503,6 +503,22 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1786056540592",
+      "title": "HD9 Generator",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD9",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-07",
+      "end": "2026-08-07",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "Full servicing for HD9 generator",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
