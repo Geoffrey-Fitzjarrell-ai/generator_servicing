@@ -471,6 +471,22 @@
       "notes": "Rear sensor suite to be installed and camera modification",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1786056501307",
+      "title": "HD7 modification",
+      "engineer": "Masakiyo Kato",
+      "asset": "",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-06",
+      "end": "2026-08-07",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "Rear sensor suite to be installed and camera modification",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
