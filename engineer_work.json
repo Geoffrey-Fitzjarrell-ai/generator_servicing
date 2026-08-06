@@ -487,6 +487,22 @@
       "notes": "Rear sensor suite to be installed and camera modification",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1786056522031",
+      "title": "MCE Measure and modify",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "MCE-206",
+      "category": "repair",
+      "status": "planned",
+      "start": "2026-08-07",
+      "end": "2026-08-07",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
