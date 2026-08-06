@@ -659,6 +659,9 @@ async function writeServiceLogToRepo(truck, log, entry) {
         hours: entry.hours,
         tasks: entry.tasks,
         notes: entry.notes || [],
+        laborHours: entry.laborHours,    // wrench time (undefined until tablet prompt is wired)
+        travelHours: entry.travelHours,  // travel to/from TRC
+        jobType: entry.jobType,
       })
     });
     return res.ok;

@@ -1135,10 +1135,16 @@ export default {
       }
 
       if (action === "logCompletion") {
-        const { truck, technician, hours, tasks, notes } = payload;
+        const { truck, technician, hours, tasks, notes, laborHours, travelHours, jobType } = payload;
         if (!truck || !Array.isArray(tasks) || tasks.length === 0) {
           return json({ error: "Missing truck or tasks" }, 400);
         }
+        // Optional job-duration metrics (tablet prompt). Absent/invalid => null,
+        // so older clients that don't send them keep working unchanged.
+        const _dur = v => { const n = Number(v); return (Number.isFinite(n) && n >= 0 && n < 1000) ? n : null; };
+        const _labor  = _dur(laborHours);
+        const _travel = _dur(travelHours);
+        const _jobType = jobType ? String(jobType).slice(0, 40) : null;
         // Notes are free text destined for a JSON file rendered in the UI —
         // cap length and count so a bad client can't bloat the repo.
         const noteList = (Array.isArray(notes) ? notes : [])
@@ -1164,6 +1170,9 @@ export default {
           technician: technician || "",
           tasks: tasks.map(t => ({ key: t.key, label: t.label })),
           notes: noteList,
+          laborHours: _labor,     // wrench time for this job (null = not captured)
+          travelHours: _travel,   // round-trip travel to/from TRC (null = not captured)
+          jobType: _jobType,      // optional free-form label
         });
         await ghPut(
           "service_history.json", env.GITHUB_PAT, hist, histFile.sha,
