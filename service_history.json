@@ -543,6 +543,25 @@
       "laborHours": null,
       "travelHours": null,
       "jobType": null
+    },
+    {
+      "date": "2026-08-06",
+      "hours": 1706,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "clean_radiator",
+          "label": "Clean radiator"
+        }
+      ],
+      "notes": [],
+      "laborHours": null,
+      "travelHours": null,
+      "jobType": null
     }
   ],
   "HD10": [
