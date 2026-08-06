@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-08-05"
+    "updated": "2026-08-06"
   },
   "items": [
     {
@@ -453,6 +453,22 @@
       "startTime": "08:00",
       "endTime": "12:00",
       "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1786056448011",
+      "title": "HD7 modification",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD7",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-06",
+      "end": "2026-08-07",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "Rear sensor suite to be installed and camera modification",
       "jiraKey": "",
       "jiraUrl": ""
     }
