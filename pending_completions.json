@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "truck": "HD9",
+    "tasks": [
+      "Oil / filter change",
+      "Check coolant lines",
+      "Check drive belt & tension"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0AU900KF5M",
+      "name": null
+    },
+    "loggedAt": "2026-08-06T23:40:14.063Z",
+    "hours": 1706,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
