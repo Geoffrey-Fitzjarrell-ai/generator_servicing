@@ -22,13 +22,13 @@
     }
   },
   "HD8": {
-    "hours": 1765,
+    "hours": 1773,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Daichi Hayakawa",
-    "lastUpdated": "2026-08-05T11:14:32Z",
+    "lastUpdated": "2026-08-06T00:33:43Z",
     "postedBy": {
-      "id": "U0AT1RYRS1Z",
+      "id": "U0ABK5GDYGM",
       "name": null
     }
   },
