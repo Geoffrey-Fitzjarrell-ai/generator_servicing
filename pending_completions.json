@@ -32,5 +32,22 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD9",
+    "tasks": [
+      "Air filter / Battery check",
+      "Clean radiator"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0AU900KF5M",
+      "name": null
+    },
+    "loggedAt": "2026-08-06T23:52:30.637Z",
+    "hours": 1706,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
