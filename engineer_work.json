@@ -567,6 +567,22 @@
       "notes": "Replace generator bracket",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1786098713050",
+      "title": "Generator service",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD11",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-10",
+      "end": "2026-08-10",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "Oil change",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
