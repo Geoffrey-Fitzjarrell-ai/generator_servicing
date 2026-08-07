@@ -16,5 +16,21 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD13",
+    "tasks": [
+      "Fuel filter change"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U09TT0S0UF8",
+      "name": null
+    },
+    "loggedAt": "2026-08-07T00:33:35.405Z",
+    "hours": 738,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
