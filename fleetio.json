@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-05T05:41:58.659342+00:00",
+  "generated_at": "2026-08-07T01:00:38.379496+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -17,7 +17,7 @@
       "vin": "CYJ77D-7015281",
       "status": "Active",
       "meter": {
-        "value": "11515.0",
+        "value": "12197.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -29,9 +29,9 @@
       "model": "CYJ77D-WX-D 23A",
       "year": 2025,
       "vin": "CYJ77D-7015280",
-      "status": "Out of Service",
+      "status": "Active",
       "meter": {
-        "value": "21383.0",
+        "value": "21863.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -45,7 +45,7 @@
       "vin": "CYJ77D-7015279",
       "status": "Active",
       "meter": {
-        "value": "28751.0",
+        "value": "29501.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -59,7 +59,7 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "26911.0",
+        "value": "27230.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -73,7 +73,7 @@
       "vin": "CYJ77D-7015192",
       "status": "Active",
       "meter": {
-        "value": "26877.0",
+        "value": "27574.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -87,7 +87,7 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "31579.0",
+        "value": "31759.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -151,7 +151,7 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "58377.0",
+        "value": "59388.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -165,7 +165,7 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "70430.0",
+        "value": "70438.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -177,9 +177,9 @@
       "model": "CYJ77D-WX-D 23A",
       "year": 2025,
       "vin": "CYJ77D-7014034",
-      "status": "Active",
+      "status": "Out of Service",
       "meter": {
-        "value": "65429.0",
+        "value": "66209.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -209,7 +209,7 @@
       "vin": "CYJ77D-7014033",
       "status": "Active",
       "meter": {
-        "value": "60841.0",
+        "value": "62368.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -239,7 +239,7 @@
       "vin": "CYJ77D-7014032",
       "status": "Out of Service",
       "meter": {
-        "value": "22072.0",
+        "value": "22214.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -269,7 +269,7 @@
       "vin": "CYJ77D-7014031",
       "status": "Active",
       "meter": {
-        "value": "67117.0",
+        "value": "68091.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -349,7 +349,6 @@
     "POR-102",
     "POR-911 (Martini)",
     "PRO-101",
-    "ROG-145",
     "ROG-146",
     "ROG-147",
     "ROG-148",
@@ -375,6 +374,7 @@
     "VOL-ECR355",
     "Volvo SD115",
     "Water Truck",
+    "XCI-201",
     "XTR-202",
     "XTR-203",
     "XTR-204"
