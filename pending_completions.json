@@ -49,5 +49,21 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD9",
+    "tasks": [
+      "Battery Box check"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0AU900KF5M",
+      "name": null
+    },
+    "loggedAt": "2026-08-07T00:06:05.525Z",
+    "hours": 1706,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
