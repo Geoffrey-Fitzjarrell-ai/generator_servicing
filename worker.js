@@ -375,6 +375,9 @@ async function recordHandled(env, rts, verdict) {
 // concurrent write to another truck is never clobbered. `force` bypasses the
 // only-move-forward floor (admin corrections).
 async function writeHours(env, truck, hours, userId, userName, commitMsg, force) {
+  // Never ingest or resurrect a decommissioned truck, regardless of caller
+  // (real-time, confirm, admin correction). Single choke point for all writers.
+  if (DECOMMISSIONED.has(truck)) return { wrote: false, prev: null, decommissioned: true };
   for (let attempt = 0; attempt < 3; attempt++) {
     const file = await ghGet("data.json", env.GITHUB_PAT);
     const data = b64json(file);
@@ -583,6 +586,18 @@ async function handleSlackMessageEvent(event, env) {
   const thread  = event.thread_ts || event.ts;
   const en      = isEnglishTruck(truck);
   const mention = userId ? (en ? `<@${userId}> ` : `<@${userId}> さん、`) : "";
+
+  // Decommissioned trucks (e.g. HD18): don't ingest or resurrect in data.json.
+  // Mirrors the cron + @mention guards, which this live path was missing —
+  // that gap let HD18 back into data.json on 2026-08-06.
+  if (DECOMMISSIONED.has(truck)) {
+    await slackPostMessage(env,
+      en ? `*${truck}* has been decommissioned and is no longer tracked.`
+         : `*${truck}* は退役済みのため、現在は追跡していません。`,
+      { channel, thread_ts: thread });
+    await recordHandled(env, rts, "ignored_decommissioned");
+    return;
+  }
 
   const rejectHint = (t) => en
     ? `\nIf ${t}'s value needs correcting, post "${t} correction: <correct value>h".`

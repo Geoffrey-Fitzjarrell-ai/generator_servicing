@@ -139,16 +139,5 @@
     "technician": "",
     "lastUpdated": null,
     "postedBy": null
-  },
-  "HD18": {
-    "hours": 366,
-    "intervalStart": 0,
-    "overdue": false,
-    "technician": "",
-    "lastUpdated": "2026-08-06T11:24:31Z",
-    "postedBy": {
-      "id": "U0971UJ8RKQ",
-      "name": null
-    }
   }
 }
