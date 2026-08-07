@@ -1451,11 +1451,26 @@
       "technician": "Geoff Fitzjarrell",
       "tasks": [
         {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
           "key": "battery_box",
           "label": "Battery Box check"
         }
       ],
       "notes": []
+    },
+    {
+      "audit": true,
+      "action": "edited",
+      "date": "2026-08-07",
+      "ts": "2026-08-07T10:24:18.266Z",
+      "hours": null,
+      "technician": "",
+      "tasks": [],
+      "notes": [],
+      "summary": "Edited service — now 2026-07-28 · 497h (was 2026-07-28 · 497h)"
     }
   ],
   "HD17": [
