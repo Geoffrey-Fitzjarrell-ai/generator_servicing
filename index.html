@@ -671,6 +671,44 @@ async function writeServiceLogToRepo(truck, log, entry) {
   } catch(e) { console.error("proxy write failed", e); return false; }
 }
 
+// ── Device-local outbox ──────────────────────────────────────────────
+// Server-side pending (writePending) rides the SAME Worker as the direct
+// write, so a fully-unreachable Worker loses both — and the completion with
+// them. This outbox persists completions in localStorage and replays them on
+// load / interval / reconnect until they actually land, so nothing is lost
+// even when the proxy is down entirely.
+const OUTBOX_KEY = "fleet_outbox_v1";
+function outboxAll(){ try{ return JSON.parse(localStorage.getItem(OUTBOX_KEY)||"[]"); }catch(e){ return []; } }
+function outboxWrite(arr){ try{ localStorage.setItem(OUTBOX_KEY,JSON.stringify(arr)); return true; }catch(e){ return false; } }
+function outboxCount(){ return outboxAll().length; }
+function outboxAdd(item){
+  const arr=outboxAll();
+  arr.push(Object.assign({id:"ob_"+Date.now()+"_"+Math.random().toString(36).slice(2,7), ts:new Date().toISOString()}, item));
+  return outboxWrite(arr);
+}
+function outboxRemove(id){ outboxWrite(outboxAll().filter(x=>x.id!==id)); }
+let _outboxFlushing=false;
+async function flushOutbox(){
+  if(_outboxFlushing) return 0;
+  const items=outboxAll();
+  if(!items.length) return 0;
+  _outboxFlushing=true;
+  let recovered=0;
+  try{
+    for(const it of items){
+      let wrote=false;
+      try{ wrote=await writeServiceLogToRepo(it.truck,it.log,it.entry); }catch(e){ wrote=false; }
+      if(wrote){
+        try{ await writePending(Object.assign({},it.pending,{alreadyLogged:true})); }catch(e){}
+        outboxRemove(it.id); recovered++;
+      }
+      // not written → leave in outbox, retry next cycle
+    }
+  } finally { _outboxFlushing=false; }
+  return recovered;
+}
+window.__fleetOutboxCount = outboxCount;
+
 function Gauge({ criticalTask, hours }) {
   if (!criticalTask || hours == null) {
     return React.createElement("div", {style:{padding:"8px 0",color:"var(--text-faint)",fontSize:11,fontFamily:"var(--mono)"}}, "No interval data");
@@ -933,6 +971,9 @@ function App({ jump }) {
 
   async function loadAll() {
     setError(null);
+    // Replay any device-local completions that couldn't reach the Worker
+    // before, so recovered writes show up in the fresh data fetch below.
+    try{ await flushOutbox(); }catch(e){}
     try {
       const bust="?_="+Date.now();
       const [r1,r2,r3,r4,r5,r6]=await Promise.all([fetch(DATA_URL+bust),fetch(LOGS_URL+bust),fetch(HISTORY_URL+bust),fetch(TICKETS_URL+bust),fetch(DAILY_HOURS_URL+bust),fetch(FLEETIO_URL+bust)]);
@@ -954,6 +995,7 @@ function App({ jump }) {
       setSvcLogs(logs);
       setSyncedAt(new Date());
       fetchNotes().then(n=>{ if(n!==null) setNotes(n); });
+      if(outboxCount()>0) setSaveError(outboxCount()+" completion(s) saved on this device are still waiting to upload — they'll sync automatically when the server is reachable.");
     } catch(e){setError("Fleet data unavailable.");}
     setLoaded(true);
   }
@@ -964,7 +1006,9 @@ function App({ jump }) {
       const jst=new Date(Date.now()+9*3600*1000).getUTCHours();
       if(jst>=6&&jst<22) loadAll();
     },5*60*1000);
-    return()=>clearInterval(ar);
+    const onOnline=()=>{ flushOutbox().then(n=>{ if(n) loadAll(); }); };
+    window.addEventListener("online",onOnline);
+    return()=>{ clearInterval(ar); window.removeEventListener("online",onOnline); };
   },[]);
 
   useEffect(()=>{
@@ -1102,21 +1146,23 @@ function App({ jump }) {
     const noteList = svcNotes.trim() ? [svcNotes.trim()] : [];
     const labor  = laborHrs.trim()==="" ? null : Number(laborHrs);
     const travel = travelHrs.trim()==="" ? null : Number(travelHrs);
-    const ok = await writeServiceLogToRepo(selected,newLog,{
+    const svcEntry = {
       technician:techName,
       hours,
       tasks:done.map(t=>({key:t.key,label:t.name})),
       notes:noteList,
       laborHours: labor,
       travelHours: travel
-    });
+    };
+    const ok = await writeServiceLogToRepo(selected,newLog,svcEntry);
 
-    // The pending entry drives the Slack "tasks completed" notification. It also
-    // doubles as a safety net: if the write above failed, alreadyLogged=false
-    // tells the cron job to promote this entry into service_logs/service_history
-    // itself on its next run, so the completion still isn't lost — Geoff just
-    // needs to know it didn't land instantly.
-    await writePending({
+    // The pending entry drives the Slack "tasks completed" notification and is
+    // the SERVER-SIDE safety net: alreadyLogged=false tells the cron job to
+    // promote it into service_logs/service_history on its next run. But it hits
+    // the same Worker as the write above, so if the Worker is fully unreachable
+    // both fail and nothing is queued server-side — that case is caught by the
+    // device-local outbox in the final branch.
+    const pendingEntry = {
       truck:selected,
       tasks:done.map(t=>t.name),
       technician:techName,
@@ -1124,8 +1170,8 @@ function App({ jump }) {
       loggedAt:new Date().toISOString(),
       hours,
       notes:noteList,
-      alreadyLogged: ok,
-    });
+    };
+    const pendingOk = await writePending({...pendingEntry, alreadyLogged: ok});
 
     if(ok){
       setSvcLogs(p=>({...p,[selected]:newLog}));
@@ -1137,11 +1183,21 @@ function App({ jump }) {
       });
       setChecked({});setLogMode(false);setSvcNotes("");setLaborHrs("");setTravelHrs("");
       setShowSuccess(true);setTimeout(()=>setShowSuccess(false),1400);
+    } else if(pendingOk){
+      // Direct write missed, but the server-side pending queue accepted it —
+      // the scheduled cron job WILL promote it. This message is honest.
+      // Leave checked/logMode so the tech can see what didn't land instantly.
+      setSaveError("Direct write didn't land, but this is queued on the server — the scheduled job will sync it within a few hours. You can also hit Save again to retry now.");
     } else {
-      // Leave checked/logMode as-is so Geoff can see exactly what didn't save
-      // and hit Save again — it'll sync automatically via the cron safety net
-      // even if this retry also fails.
-      setSaveError("Couldn't reach the repo — this will auto-sync within a few hours via the scheduled job, but you can also try Save again now.");
+      // Worker fully unreachable: nothing was queued server-side. Persist to the
+      // device-local outbox so the completion is NOT lost — it replays
+      // automatically on the next load/interval and when the connection returns.
+      const queued = outboxAdd({truck:selected, log:newLog, entry:svcEntry, pending:pendingEntry});
+      if(queued){
+        setSaveError("Couldn't reach the server — saved on THIS device. It'll upload automatically when the connection is back (or hit Save again). Keep this tab open until it clears.");
+      } else {
+        setSaveError("Couldn't reach the server and couldn't save locally either. Nothing was recorded — please note the tasks and try again.");
+      }
     }
     setSaving(false);
   }
