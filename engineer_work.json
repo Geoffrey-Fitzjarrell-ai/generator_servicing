@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-08-06"
+    "updated": "2026-08-07"
   },
   "items": [
     {
@@ -517,6 +517,22 @@
       "startTime": "",
       "endTime": "",
       "notes": "Full servicing for HD9 generator",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1786066094606",
+      "title": "HD9 Debug panel check ",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD9",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-08-07",
+      "end": "2026-08-07",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "Check to see if there is a debug panel present on Hd9",
       "jiraKey": "",
       "jiraUrl": ""
     }
