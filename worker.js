@@ -1126,9 +1126,11 @@ export default {
         if (grounded) {
           data[truck].grounded = true;
           data[truck].groundedNote = note || "Under repair";
+          data[truck].groundedSource = "manual";
         } else {
           delete data[truck].grounded;
           delete data[truck].groundedNote;
+          delete data[truck].groundedSource;
         }
         await ghPut("data.json", env.GITHUB_PAT, data, file.sha, (grounded ? "Ground " : "Unground ") + truck);
         return json({ ok: true });
