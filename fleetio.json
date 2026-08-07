@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07T01:00:38.379496+00:00",
+  "generated_at": "2026-08-07T21:36:00.508033+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -31,7 +31,7 @@
       "vin": "CYJ77D-7015280",
       "status": "Active",
       "meter": {
-        "value": "21863.0",
+        "value": "22164.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -45,7 +45,7 @@
       "vin": "CYJ77D-7015279",
       "status": "Active",
       "meter": {
-        "value": "29501.0",
+        "value": "30027.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -59,7 +59,7 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "27230.0",
+        "value": "27597.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -73,7 +73,7 @@
       "vin": "CYJ77D-7015192",
       "status": "Active",
       "meter": {
-        "value": "27574.0",
+        "value": "27750.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -87,7 +87,7 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "31759.0",
+        "value": "31777.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -151,7 +151,7 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "59388.0",
+        "value": "59808.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -177,7 +177,7 @@
       "model": "CYJ77D-WX-D 23A",
       "year": 2025,
       "vin": "CYJ77D-7014034",
-      "status": "Out of Service",
+      "status": "Active",
       "meter": {
         "value": "66209.0",
         "unit": "km"
@@ -209,7 +209,7 @@
       "vin": "CYJ77D-7014033",
       "status": "Active",
       "meter": {
-        "value": "62368.0",
+        "value": "63302.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -237,7 +237,7 @@
       "model": "CYJ77D-WX-D 23A",
       "year": 2025,
       "vin": "CYJ77D-7014032",
-      "status": "Out of Service",
+      "status": "Active",
       "meter": {
         "value": "22214.0",
         "unit": "km"
