@@ -75,13 +75,13 @@
     "clean_radiator": 616
   },
   "HD13": {
-    "oil_filter": 606,
+    "oil_filter": 738,
     "airfilter_battery": 606,
     "battery_box": 606,
     "airfilter_500": 456,
-    "coolant_lines": 606,
+    "coolant_lines": 738,
     "fuel_filter": 460,
-    "drive_belt": 606,
+    "drive_belt": 738,
     "clean_radiator": 606
   },
   "HD14": {
