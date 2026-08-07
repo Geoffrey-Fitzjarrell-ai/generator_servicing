@@ -403,6 +403,9 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 <button id="fleetSignOut" onclick="window.__fleetLogout&&window.__fleetLogout()"
   style="position:fixed;left:12px;bottom:12px;z-index:60;font:600 11px/1 'JetBrains Mono',monospace;letter-spacing:.06em;
   color:#6e7f99;background:#131925;border:1px solid #28364f;border-radius:8px;padding:8px 12px;cursor:pointer;opacity:.65;">⎋ Sign out</button>
+<a id="fleetMetrics" href="metrics.html"
+  style="position:fixed;right:12px;bottom:12px;z-index:60;font:600 11px/1 'JetBrains Mono',monospace;letter-spacing:.06em;
+  color:#4a7cf5;background:#131925;border:1px solid #28364f;border-radius:8px;padding:8px 12px;cursor:pointer;opacity:.75;text-decoration:none;">📊 Metrics</a>
 <button id="fleetReq" onclick="window.__fleetRequestChange&&window.__fleetRequestChange('')"
   style="display:none;position:fixed;left:118px;bottom:12px;z-index:60;font:600 11px/1 'JetBrains Mono',monospace;letter-spacing:.06em;
   color:#f0a500;background:#131925;border:1px solid #5a4a1e;border-radius:8px;padding:8px 12px;cursor:pointer;opacity:.85;">✎ Request change</button>
@@ -905,6 +908,8 @@ function App({ jump }) {
   const [showSuccess,   setShowSuccess]   = useState(false);
   const [techName,      setTechName]      = useState("Geoff Fitzjarrell");
   const [svcNotes,      setSvcNotes]      = useState("");
+  const [laborHrs,      setLaborHrs]      = useState("");   // wrench time for this job
+  const [travelHrs,     setTravelHrs]     = useState("");   // round-trip travel to/from TRC
   const [tickets,       setTickets]       = useState({});
   const [dailyHours,    setDailyHours]    = useState({});
   const [fleetio,       setFleetio]       = useState({trucks:{}});
@@ -1085,11 +1090,15 @@ function App({ jump }) {
     // look like a successful save (this is what silently ate an HD9 completion
     // before: the notification fired regardless of whether this write worked).
     const noteList = svcNotes.trim() ? [svcNotes.trim()] : [];
+    const labor  = laborHrs.trim()==="" ? null : Number(laborHrs);
+    const travel = travelHrs.trim()==="" ? null : Number(travelHrs);
     const ok = await writeServiceLogToRepo(selected,newLog,{
       technician:techName,
       hours,
       tasks:done.map(t=>({key:t.key,label:t.name})),
-      notes:noteList
+      notes:noteList,
+      laborHours: labor,
+      travelHours: travel
     });
 
     // The pending entry drives the Slack "tasks completed" notification. It also
@@ -1113,10 +1122,10 @@ function App({ jump }) {
       try{localStorage.setItem("svc:"+selected,JSON.stringify(newLog));}catch(e){}
       setSvcHistory(p=>{
         const arr=p[selected]?[...p[selected]]:[];
-        arr.push({date:new Date().toISOString().slice(0,10),hours,technician:techName,tasks:done.map(t=>({key:t.key,label:t.name})),notes:noteList});
+        arr.push({date:new Date().toISOString().slice(0,10),hours,technician:techName,tasks:done.map(t=>({key:t.key,label:t.name})),notes:noteList,laborHours:labor,travelHours:travel});
         return {...p,[selected]:arr};
       });
-      setChecked({});setLogMode(false);setSvcNotes("");
+      setChecked({});setLogMode(false);setSvcNotes("");setLaborHrs("");setTravelHrs("");
       setShowSuccess(true);setTimeout(()=>setShowSuccess(false),1400);
     } else {
       // Leave checked/logMode as-is so Geoff can see exactly what didn't save
@@ -1555,8 +1564,22 @@ function App({ jump }) {
               maxLength:300,
               style:{padding:"8px 10px",background:"var(--surface2)",border:"1px solid var(--border2)",borderRadius:"var(--radius)",color:"var(--text)",fontFamily:"var(--sans)",fontSize:12,flex:1,minWidth:220}
             }),
+            React.createElement("input",{
+              type:"number", value:laborHrs, min:0, step:0.5,
+              onChange:e=>setLaborHrs(e.target.value),
+              placeholder:"Wrench hrs",
+              title:"How long did the maintenance take? (hours)",
+              style:{padding:"8px 10px",background:"var(--surface2)",border:"1px solid var(--border2)",borderRadius:"var(--radius)",color:"var(--text)",fontFamily:"var(--mono)",fontSize:12,width:96}
+            }),
+            React.createElement("input",{
+              type:"number", value:travelHrs, min:0, step:0.5,
+              onChange:e=>setTravelHrs(e.target.value),
+              placeholder:"Travel hrs",
+              title:"Round-trip travel time to/from TRC (hours)",
+              style:{padding:"8px 10px",background:"var(--surface2)",border:"1px solid var(--border2)",borderRadius:"var(--radius)",color:"var(--text)",fontFamily:"var(--mono)",fontSize:12,width:96}
+            }),
             React.createElement("button",{className:"btn-primary",onClick:handleSave,disabled:saving||Object.values(checked).every(v=>!v)},saving?"Saving…":"Save Completed Tasks"),
-            React.createElement("button",{className:"btn-cancel",disabled:saving,onClick:()=>{setLogMode(false);setChecked({});setTechName("Geoff Fitzjarrell");setSvcNotes("");setSaveError(null);}},"Cancel"),
+            React.createElement("button",{className:"btn-cancel",disabled:saving,onClick:()=>{setLogMode(false);setChecked({});setTechName("Geoff Fitzjarrell");setSvcNotes("");setLaborHrs("");setTravelHrs("");setSaveError(null);}},"Cancel"),
             React.createElement("span",{className:"save-hint"},"Check tasks above, then save")
           )
         ),

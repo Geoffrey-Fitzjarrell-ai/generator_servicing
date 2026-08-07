@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maintenance Metrics — Weekly Time</title>
+<style>
+  :root{
+    --bg:#0d1017; --surface:#141a24; --surface2:#1a2130; --border:#243044;
+    --text:#e6edf5; --faint:#8497ad; --dim:#5c6b80;
+    --labor:#3da870;   /* wrench time  */
+    --travel:#4a7cf5;  /* travel time  */
+    --amber:#f0a500; --red:#e04545;
+    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+    --sans:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    --radius:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(ellipse 90% 60% at 50% -10%,#16202e 0%,transparent 55%),var(--bg);
+       color:var(--text);font-family:var(--sans);min-height:100vh;padding-bottom:80px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  header{padding:40px 0 14px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;color:var(--dim);text-transform:uppercase;margin-bottom:8px}
+  h1{font-size:clamp(26px,4vw,38px);font-weight:800;letter-spacing:-.02em}
+  .back{font-family:var(--mono);font-size:12px;color:var(--faint);text-decoration:none;border:1px solid var(--border);
+        padding:8px 12px;border-radius:var(--radius);white-space:nowrap}
+  .back:hover{color:var(--text);border-color:var(--travel)}
+  .legend{display:flex;gap:16px;font-family:var(--mono);font-size:11px;color:var(--faint);margin:6px 0 22px}
+  .legend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:26px}
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px}
+  .kpi .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase}
+  .kpi .row{display:flex;gap:18px;margin-top:12px;flex-wrap:wrap}
+  .kpi .metric .n{font-size:26px;font-weight:800;font-family:var(--mono);line-height:1}
+  .kpi .metric .u{font-size:10px;color:var(--faint);font-family:var(--mono);margin-top:4px;letter-spacing:.1em;text-transform:uppercase}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:26px}
+  .panel h2{font-size:13px;font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
+  .chart{display:flex;align-items:flex-end;gap:8px;height:180px;padding-top:8px;overflow-x:auto}
+  .bar-col{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:44px;flex:1}
+  .bar{width:26px;display:flex;flex-direction:column-reverse;border-radius:3px 3px 0 0;overflow:hidden;background:var(--surface2)}
+  .bar .seg{width:100%}
+  .bar-lbl{font-family:var(--mono);font-size:9px;color:var(--dim);text-align:center;line-height:1.3;white-space:nowrap}
+  .bar-val{font-family:var(--mono);font-size:9px;color:var(--faint)}
+
+  .trucks{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+  .tcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px}
+  .tcard .th{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .tcard .tk{font-size:18px;font-weight:800;font-family:var(--mono)}
+  .oos{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--red);border:1px solid var(--red);
+       padding:2px 6px;border-radius:4px}
+  .tot{display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+  .tot .m .n{font-family:var(--mono);font-size:16px;font-weight:700}
+  .tot .m .u{font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px}
+  th,td{text-align:right;padding:5px 4px;border-bottom:1px solid var(--surface2)}
+  th:first-child,td:first-child{text-align:left;color:var(--faint)}
+  thead th{color:var(--dim);font-weight:500;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+  td .lab{color:var(--labor)} td .trv{color:var(--travel)}
+  .muted{color:var(--dim)}
+  .note{font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:8px;line-height:1.5}
+  .loading,.err{font-family:var(--mono);font-size:12px;color:var(--faint);padding:60px 0;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Fleet Status · Japan VOPS</div>
+      <h1>Maintenance Time Metrics</h1>
+    </div>
+    <a class="back" href="home.html">← Dashboard</a>
+  </header>
+  <div class="legend">
+    <span><span class="sw" style="background:var(--labor)"></span>Wrench time</span>
+    <span><span class="sw" style="background:var(--travel)"></span>Travel to/from TRC</span>
+    <span class="muted">weeks are ISO Mon–Sun</span>
+  </div>
+  <div id="app"><div class="loading">LOADING SERVICE HISTORY…</div></div>
+</div>
+
+<script>
+const BASE = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/";
+const HISTORY_URL = BASE + "service_history.json";
+const DATA_URL    = BASE + "data.json";
+const FLEETIO_URL = BASE + "fleetio.json";
+
+const r1 = n => Math.round(n*10)/10;         // 1 decimal
+const hdNum = k => parseInt(String(k).replace(/\D/g,""),10) || 0;
+
+// Monday (local) of the week containing date-string YYYY-MM-DD
+function mondayKey(dstr){
+  const d = new Date(dstr + "T00:00:00");
+  const day = (d.getDay()+6)%7;             // Mon=0 … Sun=6
+  d.setDate(d.getDate()-day);
+  return d.toISOString().slice(0,10);
+}
+function isoWeekNo(dstr){
+  const d = new Date(dstr + "T00:00:00Z");
+  const day = (d.getUTCDay()+6)%7;
+  d.setUTCDate(d.getUTCDate()-day+3);
+  const firstThu = new Date(Date.UTC(d.getUTCFullYear(),0,4));
+  return 1+Math.round(((d-firstThu)/864e5 - 3 + ((firstThu.getUTCDay()+6)%7))/7);
+}
+function weekLabel(mk){
+  const d=new Date(mk+"T00:00:00");
+  return d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+}
+const num = v => (typeof v==="number" && isFinite(v)) ? v : null;
+
+async function load(){
+  let hist={}, data={}, fio={trucks:{}};
+  try{
+    const [h,d,f] = await Promise.all([
+      fetch(HISTORY_URL+"?_="+Date.now()),
+      fetch(DATA_URL+"?_="+Date.now()),
+      fetch(FLEETIO_URL+"?_="+Date.now()),
+    ]);
+    hist = h.ok ? await h.json() : {};
+    data = d.ok ? await d.json() : {};
+    fio  = f.ok ? await f.json() : {trucks:{}};
+  }catch(e){
+    document.getElementById("app").innerHTML='<div class="err">Could not load service history.</div>';
+    return;
+  }
+  render(hist, data, fio);
+}
+
+function aggregate(hist){
+  // per-truck: { HDx: { weeks:{mk:{labor,travel,jobs,trips}}, tot:{...} } }
+  const trucks={}; const fleetWeeks={};
+  for(const [tk, entries] of Object.entries(hist||{})){
+    if(!Array.isArray(entries)) continue;
+    const T = trucks[tk] = {weeks:{}, tot:{labor:0,travel:0,jobs:0,trips:0,labData:0,trvData:0}};
+    for(const e of entries){
+      if(!e || !e.date) continue;
+      const mk = mondayKey(e.date);
+      const lab = num(e.laborHours), trv = num(e.travelHours);
+      const isTrip = trv!=null && trv>0;                 // a real return-to-TRC trip
+      const W = T.weeks[mk] || (T.weeks[mk]={labor:0,travel:0,jobs:0,trips:0});
+      const F = fleetWeeks[mk] || (fleetWeeks[mk]={labor:0,travel:0,jobs:0,trips:0});
+      W.jobs++; F.jobs++; T.tot.jobs++;
+      if(lab!=null){ W.labor+=lab; F.labor+=lab; T.tot.labor+=lab; T.tot.labData++; }
+      if(trv!=null){ W.travel+=trv; F.travel+=trv; T.tot.travel+=trv; }
+      if(isTrip){ W.trips++; F.trips++; T.tot.trips++; }
+    }
+  }
+  return {trucks, fleetWeeks};
+}
+
+function sumWeeks(fleetWeeks, keys){
+  const s={labor:0,travel:0,jobs:0,trips:0};
+  for(const k of keys){ const w=fleetWeeks[k]; if(!w) continue; s.labor+=w.labor;s.travel+=w.travel;s.jobs+=w.jobs;s.trips+=w.trips; }
+  return s;
+}
+
+function kpiCard(title, s){
+  return `<div class="kpi"><div class="lbl">${title}</div><div class="row">
+    <div class="metric"><div class="n" style="color:var(--labor)">${r1(s.labor)}</div><div class="u">wrench h</div></div>
+    <div class="metric"><div class="n" style="color:var(--travel)">${r1(s.travel)}</div><div class="u">travel h</div></div>
+    <div class="metric"><div class="n">${s.jobs}</div><div class="u">jobs</div></div>
+    <div class="metric"><div class="n">${s.trips}</div><div class="u">TRC trips</div></div>
+  </div></div>`;
+}
+
+function render(hist, data, fio){
+  const {trucks, fleetWeeks} = aggregate(hist);
+  const app = document.getElementById("app");
+
+  const allWeeks = Object.keys(fleetWeeks).sort();          // asc
+  const thisMk = mondayKey(new Date().toISOString().slice(0,10));
+  const last4  = allWeeks.slice(-4);
+  const kThis  = sumWeeks(fleetWeeks,[thisMk]);
+  const k4     = sumWeeks(fleetWeeks,last4);
+  const kAll   = sumWeeks(fleetWeeks,allWeeks);
+
+  // ---- fleet weekly chart (last 12 weeks) ----
+  const chartWeeks = allWeeks.slice(-12);
+  const maxH = Math.max(1, ...chartWeeks.map(k=>fleetWeeks[k].labor+fleetWeeks[k].travel));
+  const bars = chartWeeks.map(k=>{
+    const w=fleetWeeks[k]; const tot=w.labor+w.travel;
+    const h=Math.round(150*(tot/maxH));
+    const lh=tot>0?Math.round(h*(w.labor/tot)):0, th=h-lh;
+    return `<div class="bar-col">
+      <div class="bar-val">${tot>0?r1(tot):""}</div>
+      <div class="bar" style="height:${h}px">
+        <div class="seg" style="height:${lh}px;background:var(--labor)"></div>
+        <div class="seg" style="height:${th}px;background:var(--travel)"></div>
+      </div>
+      <div class="bar-lbl">${weekLabel(k)}<br>W${isoWeekNo(k)}</div>
+    </div>`;
+  }).join("");
+
+  // ---- per-truck cards ----
+  const oosSet = new Set(Object.entries(fio.trucks||{})
+      .filter(([k,v])=>String(v.status||"").toLowerCase().includes("out of service"))
+      .map(([k])=>k));
+  const groundedSet = new Set(Object.keys(data||{}).filter(k=>data[k]&&data[k].grounded));
+
+  const cards = Object.keys(trucks).sort((a,b)=>hdNum(a)-hdNum(b)).map(tk=>{
+    const T=trucks[tk];
+    const recent=Object.keys(T.weeks).sort().slice(-6).reverse();
+    const rows=recent.map(mk=>{
+      const w=T.weeks[mk];
+      return `<tr><td>${weekLabel(mk)} · W${isoWeekNo(mk)}</td>
+        <td class="lab">${w.labor>0?r1(w.labor):'<span class="muted">—</span>'}</td>
+        <td class="trv">${w.travel>0?r1(w.travel):'<span class="muted">—</span>'}</td>
+        <td>${w.jobs}</td><td>${w.trips}</td></tr>`;
+    }).join("") || `<tr><td colspan="5" class="muted">no history</td></tr>`;
+    const oos = oosSet.has(tk)||groundedSet.has(tk) ? `<span class="oos">◆ OOS</span>` : "";
+    const coverage = T.tot.jobs>0 ? Math.round(100*T.tot.labData/T.tot.jobs) : 0;
+    return `<div class="tcard">
+      <div class="th"><span class="tk">${tk}</span>${oos}</div>
+      <div class="tot">
+        <div class="m"><div class="n lab" style="color:var(--labor)">${r1(T.tot.labor)}h</div><div class="u">wrench (all-time)</div></div>
+        <div class="m"><div class="n trv" style="color:var(--travel)">${r1(T.tot.travel)}h</div><div class="u">travel (all-time)</div></div>
+        <div class="m"><div class="n">${T.tot.jobs}</div><div class="u">jobs</div></div>
+      </div>
+      <table><thead><tr><th>Week</th><th>Wrench</th><th>Travel</th><th>Jobs</th><th>Trips</th></tr></thead>
+        <tbody>${rows}</tbody></table>
+      ${coverage<100?`<div class="note">${coverage}% of jobs have duration logged — older entries predate the tablet prompt.</div>`:""}
+    </div>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="kpis">
+      ${kpiCard("This week",kThis)}
+      ${kpiCard("Last 4 weeks",k4)}
+      ${kpiCard("All time",kAll)}
+    </div>
+    <div class="panel">
+      <h2>Fleet weekly time — wrench + travel (last 12 weeks)</h2>
+      <div class="chart">${bars || '<div class="muted">no weekly data yet</div>'}</div>
+    </div>
+    <div class="panel" style="padding-bottom:20px">
+      <h2>Per-truck</h2>
+      <div class="trucks">${cards || '<div class="muted">no trucks in history</div>'}</div>
+    </div>
+    <div class="note">
+      Wrench + travel time are captured on the completion screen (index.html) at log time and stored per
+      service-history entry. This view ignores the generator run-hour meter — it measures labor + travel only.
+    </div>`;
+}
+
+load();
+</script>
+</body>
+</html>
