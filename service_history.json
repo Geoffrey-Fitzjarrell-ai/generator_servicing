@@ -1471,6 +1471,35 @@
       "tasks": [],
       "notes": [],
       "summary": "Edited service — now 2026-07-28 · 497h (was 2026-07-28 · 497h)"
+    },
+    {
+      "date": "2026-07-28",
+      "hours": 497,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        }
+      ],
+      "notes": [
+        "Forgot to add air filter and battery check to this"
+      ]
+    },
+    {
+      "audit": true,
+      "action": "edited",
+      "date": "2026-08-07",
+      "ts": "2026-08-07T10:25:07.678Z",
+      "hours": null,
+      "technician": "",
+      "tasks": [],
+      "notes": [],
+      "summary": "Edited service — now 2026-07-28 · 497h"
     }
   ],
   "HD17": [
