@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "truck": "HD15",
+    "tasks": [
+      "Air filter / Battery check",
+      "Oil / filter change",
+      "Battery Box check"
+    ],
+    "technician": "Masakiyo Kato",
+    "postedBy": {
+      "id": "U09UPB6CG56",
+      "name": null
+    },
+    "loggedAt": "2026-08-07T23:41:20.539Z",
+    "hours": 805,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
