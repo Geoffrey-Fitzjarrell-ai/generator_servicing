@@ -535,6 +535,22 @@
       "notes": "Check to see if there is a debug panel present on Hd9",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1786098653018",
+      "title": "Generator service",
+      "engineer": "Masakiyo Kato",
+      "asset": "HD15",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-07",
+      "end": "2026-08-07",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "Oil change ",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
