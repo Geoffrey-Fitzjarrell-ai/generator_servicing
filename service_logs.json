@@ -105,9 +105,9 @@
     "clean_radiator": 527
   },
   "HD16": {
-    "airfilter_battery": 497,
+    "airfilter_battery": 550,
     "battery_box": 497,
-    "oil_filter": 407,
+    "oil_filter": 550,
     "fuel_filter": 430,
     "airfilter_500": 178,
     "coolant_lines": 294,

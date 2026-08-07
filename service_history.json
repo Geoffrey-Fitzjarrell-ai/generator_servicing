@@ -1493,6 +1493,25 @@
       "tasks": [],
       "notes": [],
       "summary": "Reverted service — 2026-07-28 · 497h · Air filter / Battery check, Battery Box check"
+    },
+    {
+      "date": "2026-08-07",
+      "hours": 550,
+      "technician": "Masakiyo Kato",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        }
+      ],
+      "notes": [],
+      "laborHours": null,
+      "travelHours": null,
+      "jobType": null
     }
   ],
   "HD17": [
