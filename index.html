@@ -637,13 +637,13 @@ async function writePending(entry) {
   } catch(e) { console.error("writePending failed", e); return false; }
 }
 
-async function writeGrounded(truck, grounded, note) {
+async function writeGrounded(truck, grounded, note, announce) {
   if(isViewOnly()) return false;
   try {
     const res = await fetch(PROXY_URL, {
       method: "POST",
       headers: {"Content-Type":"application/json","X-Auth-Key":PROXY_SECRET},
-      body: JSON.stringify({action:"setGrounded", truck, grounded, note: note||"Under repair"})
+      body: JSON.stringify({action:"setGrounded", truck, grounded, note: note||"Under repair", announce})
     });
     return res.ok;
   } catch(e){ console.error("writeGrounded failed", e); return false; }
@@ -915,6 +915,7 @@ function App({ jump }) {
   const [fleetio,       setFleetio]       = useState({trucks:{}});
   const [expandedTask,  setExpandedTask]  = useState(null);
   const [groundingNote, setGroundingNote] = useState('');
+  const [groundErr,     setGroundErr]     = useState('');   // reason-required feedback
   const [groundingBusy, setGroundingBusy] = useState(false);
   const [saving,        setSaving]        = useState(false);
   const [saveError,     setSaveError]     = useState(null);
@@ -996,6 +997,9 @@ function App({ jump }) {
   const log=svcLogs[selected]||{};
   const hours=truck.hours;
   const isGrounded=!!truck.grounded;
+  // Auto-level for the manual ground choices: grounding this truck would make the
+  // total >=2 → recommend global (HIGH); otherwise 1 → recommend drivers (LOW/MID).
+  const groundRec=(Object.values(fleet).filter(v=>v&&v.grounded).length>=1)?"global":"drivers";
 
   const taskStatus=tasksForTruck(selected).map(task=>{
     const last=log[task.key];
@@ -1065,12 +1069,18 @@ function App({ jump }) {
     return{status,pct,hours:hrs,since,dueAt,last,remaining:dueAt-hrs,over:hrs-dueAt};
   }
 
-  async function handleToggleGrounded(){
-    setGroundingBusy(true);
+  async function handleToggleGrounded(mode){
     const nowGrounded = !truck.grounded;
-    const ok = await writeGrounded(selected, nowGrounded, groundingNote||"Under repair");
+    // Reason required only for a global (high-tier) alert.
+    if(nowGrounded && mode==="global" && !groundingNote.trim()){
+      setGroundErr("A reason is required for a global (high-tier) alert.");
+      return;
+    }
+    setGroundErr('');
+    setGroundingBusy(true);
+    const ok = await writeGrounded(selected, nowGrounded, groundingNote||"Under repair", nowGrounded?mode:undefined);
     if(ok){
-      setFleet(f=>({...f,[selected]:{...f[selected],grounded:nowGrounded,groundedNote:groundingNote||"Under repair"}}));
+      setFleet(f=>({...f,[selected]:{...f[selected],grounded:nowGrounded,groundedNote:groundingNote||"Under repair",groundedSource:nowGrounded?"manual":undefined}}));
       setGroundingNote('');
     }
     setGroundingBusy(false);
@@ -1440,9 +1450,13 @@ function App({ jump }) {
         React.createElement("div",{className:"ground-section"},
           React.createElement("div",{className:"ground-section-lbl"},isGrounded?"Status":"Ground Truck"),
           !isGrounded?React.createElement(React.Fragment,null,
-            React.createElement("input",{type:"text",className:"ground-note-input",placeholder:"Reason for grounding…",value:groundingNote,onChange:e=>setGroundingNote(e.target.value)}),
-            React.createElement("button",{className:"ground-btn do-ground",disabled:groundingBusy,onClick:handleToggleGrounded},groundingBusy?"UPDATING…":"⬡  Mark as Grounded")
-          ):React.createElement("button",{className:"ground-btn do-unground",disabled:groundingBusy,onClick:handleToggleGrounded},groundingBusy?"UPDATING…":"↑  Return to Service")
+            React.createElement("input",{type:"text",className:"ground-note-input",placeholder:"Reason for grounding…",value:groundingNote,onChange:e=>{setGroundingNote(e.target.value);if(groundErr)setGroundErr('');}}),
+            React.createElement("button",{className:"ground-btn do-ground",disabled:groundingBusy,style:{marginTop:6,background:"#3a4658",borderColor:"#3a4658",color:"#fff"},onClick:()=>handleToggleGrounded("silent")},groundingBusy?"UPDATING…":"⬡  Ground (silent)"),
+            React.createElement("button",{className:"ground-btn do-ground",disabled:groundingBusy,style:{marginTop:6,background:"#c8881a",borderColor:"#c8881a",color:"#fff"},onClick:()=>handleToggleGrounded("drivers")},groundingBusy?"UPDATING…":("🔔  Ground + notify drivers"+(groundRec==="drivers"?"  ★":""))),
+            React.createElement("button",{className:"ground-btn do-ground",disabled:groundingBusy,style:{marginTop:6,background:"#c0392b",borderColor:"#c0392b",color:"#fff"},onClick:()=>handleToggleGrounded("global")},groundingBusy?"UPDATING…":("🔴  Ground + GLOBAL alert"+(groundRec==="global"?"  ★":""))),
+            groundErr?React.createElement("div",{style:{color:"#e04545",fontFamily:"var(--mono)",fontSize:10,marginTop:6}},groundErr):null,
+            React.createElement("div",{style:{color:"#5c6b80",fontFamily:"var(--mono)",fontSize:9,marginTop:6,letterSpacing:"0.04em"}},"★ auto-leveled: "+(groundRec==="global"?"≥2 grounded → global ops":"1 grounded → drivers"))
+          ):React.createElement("button",{className:"ground-btn do-unground",disabled:groundingBusy,onClick:()=>handleToggleGrounded()},groundingBusy?"UPDATING…":"↑  Return to Service")
         ),
         truck.postedBy?React.createElement("div",{className:"reporter"},
           React.createElement("div",{className:"reporter-lbl"},"Last reported by"),
