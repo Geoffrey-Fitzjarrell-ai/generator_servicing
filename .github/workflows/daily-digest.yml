@@ -61,14 +61,14 @@ jobs:
 
           # Mirrors index.html TASKS / tasksForTruck / truckStatus exactly.
           TASKS = [
-              {"key": "airfilter_battery", "interval": 50,  "jp": "エアフィルター・バッテリー点検"},
-              {"key": "oil_filter",        "interval": 150, "jp": "オイル／フィルター交換"},
-              {"key": "airfilter_clean",   "interval": 250, "jp": "エアフィルター清掃"},
-              {"key": "coolant_lines",     "interval": 250, "jp": "クーラントライン点検"},
-              {"key": "fuel_filter",       "interval": 250, "jp": "燃料フィルター交換"},
-              {"key": "drive_belt",        "interval": 500, "jp": "ドライブベルト点検"},
-              {"key": "clean_radiator",    "interval": 500, "jp": "ラジエーター清掃"},
-              {"key": "airfilter_500",     "interval": 500, "jp": "エアフィルター交換"},
+              {"key": "airfilter_battery", "interval": 50,  "jp": "エアフィルター・バッテリー点検", "en": "Air filter / battery check"},
+              {"key": "oil_filter",        "interval": 150, "jp": "オイル／フィルター交換",         "en": "Oil / filter change"},
+              {"key": "airfilter_clean",   "interval": 250, "jp": "エアフィルター清掃",             "en": "Air filter cleaning"},
+              {"key": "coolant_lines",     "interval": 250, "jp": "クーラントライン点検",           "en": "Coolant line check"},
+              {"key": "fuel_filter",       "interval": 250, "jp": "燃料フィルター交換",             "en": "Fuel filter change"},
+              {"key": "drive_belt",        "interval": 500, "jp": "ドライブベルト点検",             "en": "Drive belt check"},
+              {"key": "clean_radiator",    "interval": 500, "jp": "ラジエーター清掃",               "en": "Radiator cleaning"},
+              {"key": "airfilter_500",     "interval": 500, "jp": "エアフィルター交換",             "en": "Air filter replacement"},
           ]
 
           def tasks_for_truck(truck_id):
@@ -102,6 +102,7 @@ jobs:
                   return None
               st = "overdue" if worst["ratio"] >= 1 else "warn" if worst["ratio"] >= 0.9 else "ok"
               return {"status": st, "hours": hours, "task": worst["task"]["jp"],
+                      "task_en": worst["task"].get("en", worst["task"]["jp"]),
                       "ratio": worst["ratio"], "rem": worst["rem"]}
 
           def bar(ratio, width=10):
@@ -125,6 +126,12 @@ jobs:
               tail = f"超過{abs(round(rem))}h" if rem <= 0 else f"あと{round(rem)}h"
               pct = min(round(i["ratio"] * 100), 999)
               return f"{t:<5} {str(i['hours'])+'h':>6} {bar(i['ratio'])} {pct:>3}% {i['task']}（{tail}）"
+
+          def row_line_en(t, i):
+              rem = i["rem"]
+              tail = f"over {abs(round(rem))}h" if rem <= 0 else f"in {round(rem)}h"
+              pct = min(round(i["ratio"] * 100), 999)
+              return f"{t:<5} {str(i['hours'])+'h':>6} {bar(i['ratio'])} {pct:>3}% {i['task_en']} ({tail})"
 
           WEEKDAYS = ["月", "火", "水", "木", "金", "土", "日"]
           header = f"🌅 げんきくん 朝の整備サマリー — {NOW_JST.month}/{NOW_JST.day}（{WEEKDAYS[NOW_JST.weekday()]}）"
@@ -166,7 +173,8 @@ jobs:
           # truck, so nobody is re-pinged daily for the same thing. A truck must leave
           # warn/overdue (serviced or grounded) and come back to alert again; warn -> overdue
           # counts as a new alert (escalation).
-          ALERT_USERS = ["U07RU3LH24F", "U09UPB6CG56"]  # Geoff, Masakiyo Kato
+          # (uid, lang) — Geoff gets English, Masakiyo gets Japanese.
+          ALERT_RECIPIENTS = [("U07RU3LH24F", "en"), ("U0BBE3JUHUY", "jp")]
           STATE_PATH  = "service_alert_state.json"
 
           def gh_get_state():
@@ -208,23 +216,37 @@ jobs:
           fired_warn = [(t, i) for t, i in warn    if prev.get(t) is None]
 
           if fired_over or fired_warn:
-              dm_blocks = [{"type": "header", "text": {"type": "plain_text",
-                  "text": "🔧 整備アラート / Service due", "emoji": True}}]
-              if fired_over:
-                  b = "\n".join(row_line(t, i) for t, i in fired_over)
-                  dm_blocks.append({"type": "section", "text": {"type": "mrkdwn",
-                      "text": f"🔴 *整備期限超過 / Overdue*\n```{b}```"}})
-              if fired_warn:
-                  b = "\n".join(row_line(t, i) for t, i in fired_warn)
-                  dm_blocks.append({"type": "section", "text": {"type": "mrkdwn",
-                      "text": f"🟡 *まもなく整備 / Coming due*\n```{b}```"}})
-              dm_blocks.append({"type": "context", "elements": [{"type": "mrkdwn",
-                  "text": "<https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/|"
-                          "📊 ダッシュボード / Dashboard>"}]})
-              dm_fallback = f"整備アラート — 超過{len(fired_over)}台 / まもなく{len(fired_warn)}台"
-              for uid in ALERT_USERS:
-                  res = slack_post({"channel": uid, "text": dm_fallback, "blocks": dm_blocks})
-                  print(f"DM {uid}: " + ("ok" if res.get("ok") else f"FAILED {res.get('error')}"))
+              L = {
+                  "en": {"head": "🔧 Service due", "over": "🔴 *Overdue*",
+                         "warn": "🟡 *Coming due*", "link": "📊 Dashboard",
+                         "row": row_line_en,
+                         "fb": f"Service due — {len(fired_over)} overdue / {len(fired_warn)} coming due"},
+                  "jp": {"head": "🔧 整備アラート", "over": "🔴 *整備期限超過*",
+                         "warn": "🟡 *まもなく整備*", "link": "📊 ダッシュボード",
+                         "row": row_line,
+                         "fb": f"整備アラート — 超過{len(fired_over)}台 / まもなく{len(fired_warn)}台"},
+              }
+
+              def build_blocks(lang):
+                  cfg = L[lang]
+                  blk = [{"type": "header", "text": {"type": "plain_text",
+                      "text": cfg["head"], "emoji": True}}]
+                  if fired_over:
+                      b = "\n".join(cfg["row"](t, i) for t, i in fired_over)
+                      blk.append({"type": "section", "text": {"type": "mrkdwn",
+                          "text": f"{cfg['over']}\n```{b}```"}})
+                  if fired_warn:
+                      b = "\n".join(cfg["row"](t, i) for t, i in fired_warn)
+                      blk.append({"type": "section", "text": {"type": "mrkdwn",
+                          "text": f"{cfg['warn']}\n```{b}```"}})
+                  blk.append({"type": "context", "elements": [{"type": "mrkdwn",
+                      "text": f"<https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/|{cfg['link']}>"}]})
+                  return blk
+
+              for uid, lang in ALERT_RECIPIENTS:
+                  res = slack_post({"channel": uid, "text": L[lang]["fb"],
+                                    "blocks": build_blocks(lang)})
+                  print(f"DM {uid} ({lang}): " + ("ok" if res.get("ok") else f"FAILED {res.get('error')}"))
           else:
               print("No new warn/overdue transitions; no DM sent.")
 
