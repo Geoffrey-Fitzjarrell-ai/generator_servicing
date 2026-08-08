@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-08-07"
+    "updated": "2026-08-08"
   },
   "items": [
     {
@@ -553,22 +553,6 @@
       "jiraUrl": ""
     },
     {
-      "id": "w_1786098713050",
-      "title": "Generator service",
-      "engineer": "Geoff Fitzjarrell",
-      "asset": "HD11",
-      "category": "maintenance",
-      "status": "planned",
-      "start": "2026-08-10",
-      "end": "2026-08-10",
-      "allDay": true,
-      "startTime": "",
-      "endTime": "",
-      "notes": "Oil change",
-      "jiraKey": "",
-      "jiraUrl": ""
-    },
-    {
       "id": "w_1786098674288",
       "title": "HD8 Generator brackets",
       "engineer": "Masakiyo Kato",
@@ -581,6 +565,22 @@
       "startTime": "",
       "endTime": "",
       "notes": "Replace generator bracket",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1786098713050",
+      "title": "Generator service",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD11",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-10",
+      "end": "2026-08-10",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "Oil change",
       "jiraKey": "",
       "jiraUrl": ""
     }
