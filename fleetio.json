@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07T21:36:00.508033+00:00",
+  "generated_at": "2026-08-08T21:27:17.060402+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -31,7 +31,7 @@
       "vin": "CYJ77D-7015280",
       "status": "Active",
       "meter": {
-        "value": "22164.0",
+        "value": "22492.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -59,7 +59,7 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "27597.0",
+        "value": "27991.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -87,7 +87,7 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "31777.0",
+        "value": "31928.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -151,7 +151,7 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "59808.0",
+        "value": "60208.0",
         "unit": "km"
       },
       "recent_service_entries": []
@@ -179,7 +179,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "66209.0",
+        "value": "66700.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -269,7 +269,7 @@
       "vin": "CYJ77D-7014031",
       "status": "Active",
       "meter": {
-        "value": "68091.0",
+        "value": "68376.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -309,6 +309,7 @@
     "CIV-205",
     "DMX-201",
     "DMX-202",
+    "ELF-201",
     "FEN-101",
     "FOR-501",
     "FOR-601",
@@ -349,7 +350,6 @@
     "POR-102",
     "POR-911 (Martini)",
     "PRO-101",
-    "ROG-146",
     "ROG-147",
     "ROG-148",
     "ROG-149",
