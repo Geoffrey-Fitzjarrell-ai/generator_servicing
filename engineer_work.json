@@ -583,6 +583,22 @@
       "notes": "Oil change",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1786151940296",
+      "title": "Generator Servicing",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD14",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-10",
+      "end": "2026-08-10",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
