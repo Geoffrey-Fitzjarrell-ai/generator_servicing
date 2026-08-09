@@ -789,6 +789,47 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-08-09",
+      "hours": 1569,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        },
+        {
+          "key": "fuel_filter",
+          "label": "Fuel filter change"
+        },
+        {
+          "key": "drive_belt",
+          "label": "Check drive belt & tension"
+        },
+        {
+          "key": "clean_radiator",
+          "label": "Clean radiator"
+        },
+        {
+          "key": "airfilter_500",
+          "label": "Change air filter"
+        }
+      ],
+      "notes": [
+        "Air filter looks new, install rivnuts or rear end of bottom cover"
+      ],
+      "laborHours": null,
+      "travelHours": null,
+      "jobType": null
     }
   ],
   "HD12": [
