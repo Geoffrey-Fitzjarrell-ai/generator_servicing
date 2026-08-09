@@ -1684,6 +1684,14 @@ function App({ jump }) {
                 fio.vin?React.createElement("div",null,
                   React.createElement("div",{style:{fontSize:9,color:"var(--text-faint)",letterSpacing:"0.1em",textTransform:"uppercase"}},"VIN"),
                   React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:11,color:"var(--text-dim)",marginTop:3}},fio.vin)
+                ):null,
+                (fio.last_location&&(fio.last_location.label||fio.last_location.lat))?React.createElement("div",null,
+                  React.createElement("div",{style:{fontSize:9,color:"var(--text-faint)",letterSpacing:"0.1em",textTransform:"uppercase"}},"Last Location"),
+                  React.createElement("div",{style:{fontSize:12,color:"var(--text)",marginTop:3}},
+                    fio.last_location.label||((fio.last_location.lat&&fio.last_location.lon)?(Number(fio.last_location.lat).toFixed(4)+", "+Number(fio.last_location.lon).toFixed(4)):"\u2014"),
+                    (fio.last_location.lat&&fio.last_location.lon)?React.createElement("a",{href:"https://maps.google.com/?q="+fio.last_location.lat+","+fio.last_location.lon,target:"_blank",rel:"noopener",style:{marginLeft:8,fontFamily:"var(--mono)",fontSize:9,color:FLEETIO_ACCENT}},"map \u2197"):null
+                  ),
+                  fio.last_location.updated_at?React.createElement("div",{style:{fontFamily:"var(--mono)",fontSize:9,color:"var(--text-faint)",marginTop:2}},"as of "+String(fio.last_location.updated_at).slice(0,16).replace("T"," ")):null
                 ):null
               ),
               React.createElement("div",{style:{fontSize:9,color:"var(--text-faint)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}},"Recent Fleetio Service"),
