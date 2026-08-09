@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "truck": "HD11",
+    "tasks": [
+      "Air filter / Battery check",
+      "Oil / filter change",
+      "Check coolant lines",
+      "Fuel filter change",
+      "Check drive belt & tension",
+      "Clean radiator",
+      "Change air filter"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0AEE78SP2R",
+      "name": null
+    },
+    "loggedAt": "2026-08-09T23:44:12.991Z",
+    "hours": 1569,
+    "notes": [
+      "Air filter looks new, install rivnuts or rear end of bottom cover"
+    ],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
