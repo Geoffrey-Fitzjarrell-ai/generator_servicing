@@ -143,6 +143,29 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-08-10",
+      "hours": 2012,
+      "technician": "Masakiyo Kato",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        },
+        {
+          "key": "airfilter_500",
+          "label": "Change air filter"
+        }
+      ],
+      "notes": [],
+      "laborHours": 0,
+      "travelHours": 0,
+      "jobType": null
     }
   ],
   "HD7": [
