@@ -128,18 +128,20 @@ jobs:
               except _ue.HTTPError as e:
                   services = [{"error": f"HTTP {e.code}"}]
               rec["recent_service_entries"] = services
-              # most-recent location entry = "last known location" (per_page min is >1)
               try:
                   le = records_of(fleetio_get(f"vehicles/{vid}/location_entries", {"per_page": 10}))
-                  le.sort(key=lambda x: (x.get("located_at") or x.get("created_at") or ""), reverse=True)
+                  # prefer the flagged current entry, else newest by date/created_at
+                  le.sort(key=lambda x:(1 if x.get("is_current") else 0, str(x.get("date") or x.get("created_at") or "")), reverse=True)
                   if le:
                       e0 = le[0]; geo = e0.get("geolocation") or {}
                       if sample_loc_keys[0] is None: sample_loc_keys[0] = sorted(e0.keys())
+                      if k == "HD16": rec["_loc_raw"] = e0
                       rec["location"] = {
-                          "address": e0.get("formatted_address") or e0.get("address") or e0.get("reverse_geocoded_address"),
-                          "lat": (geo.get("latitude") if isinstance(geo, dict) else None) or e0.get("latitude"),
-                          "lng": (geo.get("longitude") if isinstance(geo, dict) else None) or e0.get("longitude"),
-                          "located_at": e0.get("located_at") or e0.get("created_at"),
+                          "address": e0.get("address"),
+                          "lat": geo.get("latitude") if isinstance(geo, dict) else None,
+                          "lng": geo.get("longitude") if isinstance(geo, dict) else None,
+                          "at": e0.get("date") or e0.get("created_at"),
+                          "is_current": e0.get("is_current"),
                       }
                   else:
                       rec["location"] = None
