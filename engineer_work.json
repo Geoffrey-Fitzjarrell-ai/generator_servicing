@@ -615,6 +615,22 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1786327344231",
+      "title": "Generator servicing",
+      "engineer": "Masakiyo Kato",
+      "asset": "HD14",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-14",
+      "end": "2026-08-14",
+      "allDay": false,
+      "startTime": "18:00",
+      "endTime": "20:00",
+      "notes": "Fuel filter will be due by this time along with other maintenance needed; please check truck detail",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
