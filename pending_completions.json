@@ -22,5 +22,28 @@
     ],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD14",
+    "tasks": [
+      "Air filter / Battery check",
+      "Battery Box check",
+      "Oil / filter change",
+      "Check coolant lines",
+      "Fuel filter change",
+      "Check drive belt & tension",
+      "Clean radiator",
+      "Change air filter"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0AFM5Z1GUA",
+      "name": null
+    },
+    "loggedAt": "2026-08-10T00:24:56.163Z",
+    "hours": 801,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
