@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T01:02:43.687488+00:00",
+  "generated_at": "2026-08-10T01:05:00.263366+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -492,5 +492,31 @@
     "work_orders_count",
     "year"
   ],
-  "_location_entry_fields": null
+  "_location_entry_fields": null,
+  "_loc_probe": [
+    {
+      "path": "location_entries/1681921245",
+      "code": 404
+    },
+    {
+      "path": "location_entries",
+      "code": 404
+    },
+    {
+      "path": "vehicles/4608058/location_entries",
+      "code": 400
+    },
+    {
+      "path": "location_entries/1680333769",
+      "code": 404
+    },
+    {
+      "path": "location_entries",
+      "code": 404
+    },
+    {
+      "path": "vehicles/4608057/location_entries",
+      "code": 400
+    }
+  ]
 }
