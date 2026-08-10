@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T21:29:02.199659+00:00",
+  "generated_at": "2026-08-10T00:59:06.894614+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -17,9 +17,10 @@
       "vin": "CYJ77D-7015281",
       "status": "Active",
       "meter": {
-        "value": "12197.0",
+        "value": "12199.0",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": []
     },
     "HD16": {
@@ -34,6 +35,7 @@
         "value": "22492.0",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": []
     },
     "HD15": {
@@ -45,9 +47,10 @@
       "vin": "CYJ77D-7015279",
       "status": "Active",
       "meter": {
-        "value": "30119.0",
+        "value": "30120.0",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": []
     },
     "HD14": {
@@ -62,6 +65,7 @@
         "value": "27991.0",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": []
     },
     "HD13": {
@@ -76,6 +80,7 @@
         "value": "28133.0",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": []
     },
     "HD12": {
@@ -90,6 +95,7 @@
         "value": "32074.0",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": []
     },
     "HD5": {
@@ -104,6 +110,7 @@
         "value": "31330.5",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": [
         {
           "id": 52339410,
@@ -154,6 +161,7 @@
         "value": "60208.0",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": []
     },
     "HD10": {
@@ -165,9 +173,10 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "70834.0",
+        "value": "71538.0",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": []
     },
     "HD9": {
@@ -182,6 +191,7 @@
         "value": "67221.0",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": [
         {
           "id": 43362178,
@@ -212,6 +222,7 @@
         "value": "63302.0",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": [
         {
           "id": 43362166,
@@ -239,9 +250,10 @@
       "vin": "CYJ77D-7014032",
       "status": "Active",
       "meter": {
-        "value": "22214.0",
+        "value": "22222.0",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": [
         {
           "id": 42875001,
@@ -272,6 +284,7 @@
         "value": "68686.0",
         "unit": "km"
       },
+      "last_location": null,
       "recent_service_entries": [
         {
           "id": 42874982,
@@ -401,5 +414,69 @@
     "vendor_id",
     "vendor_name",
     "work_order_id"
+  ],
+  "_vehicle_fields": [
+    "account_id",
+    "ai_enabled",
+    "archived_at",
+    "assetable_type",
+    "axle_config_id",
+    "color",
+    "comments_count",
+    "created_at",
+    "current_location_entry_id",
+    "custom_fields",
+    "default_image_url_small",
+    "documents_count",
+    "driver",
+    "estimated_replacement_mileage",
+    "estimated_resale_price_cents",
+    "estimated_service_months",
+    "fuel_entries_count",
+    "fuel_type_id",
+    "fuel_type_name",
+    "fuel_volume_units",
+    "group_ancestry",
+    "group_id",
+    "group_name",
+    "id",
+    "images_count",
+    "in_service_date",
+    "in_service_meter_value",
+    "is_sample",
+    "issues_count",
+    "labels",
+    "license_plate",
+    "make",
+    "model",
+    "name",
+    "out_of_service_date",
+    "out_of_service_meter_value",
+    "ownership",
+    "primary_meter_date",
+    "primary_meter_unit",
+    "primary_meter_usage_per_day",
+    "primary_meter_value",
+    "registration_expiration_month",
+    "registration_state",
+    "secondary_meter_date",
+    "secondary_meter_unit",
+    "secondary_meter_usage_per_day",
+    "secondary_meter_value",
+    "service_entries_count",
+    "service_reminders_count",
+    "specs",
+    "system_of_measurement",
+    "trim",
+    "updated_at",
+    "vehicle_renewal_reminders_count",
+    "vehicle_status_color",
+    "vehicle_status_id",
+    "vehicle_status_name",
+    "vehicle_type_id",
+    "vehicle_type_name",
+    "vin",
+    "work_orders_count",
+    "year"
   ]
 }
