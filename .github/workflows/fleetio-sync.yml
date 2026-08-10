@@ -128,30 +128,23 @@ jobs:
               except _ue.HTTPError as e:
                   services = [{"error": f"HTTP {e.code}"}]
               rec["recent_service_entries"] = services
-              # ---- LOCATION diagnostic: capture status+body across variants ----
-              def _try(path, params, hdrs):
-                  import urllib.parse as _up
-                  url = f"{FLEETIO_BASE}/{path}"
-                  if params: url += "?" + _up.urlencode(params)
-                  h = {"Authorization": f"Token {FLEETIO_KEY}", "Account-Token": ACCOUNT_TOKEN, "Accept": "application/json"}
-                  h.update(hdrs or {})
-                  req = urllib.request.Request(url, headers=h)
-                  try:
-                      with _urlopen(req) as r:
-                          body = r.read().decode()
-                          return {"status": r.status, "ok": True, "body_head": body[:200]}
-                  except _ue.HTTPError as e:
-                      try: b = e.read().decode()[:300]
-                      except Exception: b = ""
-                      return {"status": e.code, "ok": False, "body": b}
-              if k == "HD16":
-                  rec["_loc_diag"] = {
-                      "nested_plain":   _try(f"vehicles/{vid}/location_entries", {"per_page":1}, None),
-                      "nested_v240315": _try(f"vehicles/{vid}/location_entries", {"per_page":1}, {"Fleetio-Api-Version":"2024-03-15"}),
-                      "nested_v250505": _try(f"vehicles/{vid}/location_entries", {"per_page":1}, {"Fleetio-Api-Version":"2025-05-05"}),
-                      "toplevel_filter": _try("location_entries", {"q[vehicle_id_eq]":vid,"per_page":1}, {"Fleetio-Api-Version":"2024-03-15"}),
-                  }
-              rec["location"] = None
+              # most-recent location entry = "last known location" (per_page min is >1)
+              try:
+                  le = records_of(fleetio_get(f"vehicles/{vid}/location_entries", {"per_page": 10}))
+                  le.sort(key=lambda x: (x.get("located_at") or x.get("created_at") or ""), reverse=True)
+                  if le:
+                      e0 = le[0]; geo = e0.get("geolocation") or {}
+                      if sample_loc_keys[0] is None: sample_loc_keys[0] = sorted(e0.keys())
+                      rec["location"] = {
+                          "address": e0.get("formatted_address") or e0.get("address") or e0.get("reverse_geocoded_address"),
+                          "lat": (geo.get("latitude") if isinstance(geo, dict) else None) or e0.get("latitude"),
+                          "lng": (geo.get("longitude") if isinstance(geo, dict) else None) or e0.get("longitude"),
+                          "located_at": e0.get("located_at") or e0.get("created_at"),
+                      }
+                  else:
+                      rec["location"] = None
+              except _ue.HTTPError as e:
+                  rec["location"] = {"error": f"HTTP {e.code}"}
               trucks[k] = rec
               print(f"  {k}: {rec['name']} {rec['meter']['value']}{rec['meter']['unit']} {rec['status']} services={len(services)}")
               time.sleep(0.3)
@@ -163,6 +156,7 @@ jobs:
               "trucks": trucks,
               "other_group_vehicles": sorted(o["name"] for o in others),
               "_service_entry_fields": sample_keys,
+              "_location_entry_fields": sample_loc_keys[0],
               "_location_entry_fields": le_sample_keys,
           }
 
