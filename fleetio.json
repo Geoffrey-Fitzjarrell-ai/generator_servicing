@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T07:45:03.182844+00:00",
+  "generated_at": "2026-08-10T10:14:29.679435+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -122,15 +122,15 @@
       "vin": "CYJ77D-7015281",
       "status": "Active",
       "meter": {
-        "value": "12199.0",
+        "value": "12315.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578258,
-        "lng": 139.747055,
-        "at": "2026-08-10T09:54:58.603+09:00",
+        "lat": 35.578255,
+        "lng": 139.747052,
+        "at": "2026-08-10T17:12:45.350+09:00",
         "is_current": true
       }
     },
@@ -143,7 +143,7 @@
       "vin": "CYJ77D-7015280",
       "status": "Active",
       "meter": {
-        "value": "22492.0",
+        "value": "22629.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -185,15 +185,15 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "27991.0",
+        "value": "28204.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.57826,
-        "lng": 139.747055,
-        "at": "2026-08-10T09:30:32.257+09:00",
+        "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
+        "lat": 36.477237,
+        "lng": 140.329098,
+        "at": "2026-08-10T17:41:03.957+09:00",
         "is_current": true
       }
     },
@@ -206,15 +206,15 @@
       "vin": "CYJ77D-7015192",
       "status": "Active",
       "meter": {
-        "value": "28133.0",
+        "value": "28273.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.579545,
-        "lng": 139.74621,
-        "at": "2026-08-10T09:55:25.439+09:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578251,
+        "lng": 139.747054,
+        "at": "2026-08-10T17:25:04.738+09:00",
         "is_current": true
       }
     },
@@ -227,15 +227,15 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "32077.0",
+        "value": "32084.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "F8J8+6V Shirosato, Ibaraki, Japan",
-        "lat": 36.480615,
-        "lng": 140.317234,
-        "at": "2026-08-10T12:10:50.040+09:00",
+        "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
+        "lat": 36.477286,
+        "lng": 140.329124,
+        "at": "2026-08-10T17:36:42.192+09:00",
         "is_current": true
       }
     },
@@ -305,15 +305,15 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "60208.0",
+        "value": "60337.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578257,
-        "lng": 139.747068,
-        "at": "2026-08-10T10:05:29.233+09:00",
+        "lat": 35.57826,
+        "lng": 139.747069,
+        "at": "2026-08-10T17:56:54.942+09:00",
         "is_current": true
       }
     },
@@ -326,15 +326,15 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "71538.0",
+        "value": "72012.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "3-ch\u014dme-22-22 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.31191,
-        "lng": 136.68169,
-        "at": "2026-08-10T09:17:38.523+09:00",
+        "lat": 35.31178,
+        "lng": 136.68192,
+        "at": "2026-08-10T18:44:01.876+09:00",
         "is_current": true
       }
     },
@@ -458,7 +458,7 @@
       "vin": "CYJ77D-7014031",
       "status": "Active",
       "meter": {
-        "value": "68686.0",
+        "value": "68885.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -479,10 +479,10 @@
         }
       ],
       "location": {
-        "address": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578411,
-        "lng": 139.747467,
-        "at": "2026-08-09T18:20:34.588+09:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578474,
+        "lng": 139.747048,
+        "at": "2026-08-10T18:36:04.688+09:00",
         "is_current": true
       }
     }
