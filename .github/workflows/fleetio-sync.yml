@@ -128,6 +128,23 @@ jobs:
               except _ue.HTTPError as e:
                   services = [{"error": f"HTTP {e.code}"}]
               rec["recent_service_entries"] = services
+              # most-recent location entry = "last known location" (labeled as Fleetio in UI)
+              try:
+                  le = records_of(fleetio_get(f"vehicles/{vid}/location_entries", {"per_page": 1}))
+                  if le:
+                      e0 = le[0]
+                      geo = e0.get("geolocation") or {}
+                      rec["location"] = {
+                          "address": e0.get("formatted_address") or e0.get("address"),
+                          "lat": (geo.get("latitude") if isinstance(geo, dict) else None) or e0.get("latitude"),
+                          "lng": (geo.get("longitude") if isinstance(geo, dict) else None) or e0.get("longitude"),
+                          "located_at": e0.get("located_at") or e0.get("created_at"),
+                          "_fields": sorted(e0.keys()),
+                      }
+                  else:
+                      rec["location"] = None
+              except _ue.HTTPError as e:
+                  rec["location"] = {"error": f"HTTP {e.code}"}
               trucks[k] = rec
               print(f"  {k}: {rec['name']} {rec['meter']['value']}{rec['meter']['unit']} {rec['status']} services={len(services)}")
               time.sleep(0.3)
