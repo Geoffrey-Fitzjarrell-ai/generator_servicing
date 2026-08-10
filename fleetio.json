@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T01:05:00.263366+00:00",
+  "generated_at": "2026-08-10T01:07:18.075940+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -168,7 +168,7 @@
         "value": "60208.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1681923733,
+      "current_location_entry_id": 1681925752,
       "last_location": null,
       "recent_service_entries": []
     },
@@ -495,28 +495,36 @@
   "_location_entry_fields": null,
   "_loc_probe": [
     {
-      "path": "location_entries/1681921245",
+      "path": "v1/location_entries/1681921245",
       "code": 404
     },
     {
-      "path": "location_entries",
-      "code": 404
-    },
-    {
-      "path": "vehicles/4608058/location_entries",
+      "path": "v1/vehicles/4608058/location_entries",
       "code": 400
     },
     {
-      "path": "location_entries/1680333769",
+      "path": "v2/location_entries/1681921245",
       "code": 404
     },
     {
-      "path": "location_entries",
+      "path": "v2/vehicles/4608058/location_entries",
       "code": 404
     },
     {
-      "path": "vehicles/4608057/location_entries",
+      "path": "v2/location_entries",
+      "code": 404
+    },
+    {
+      "path": "v1/location_entries/1680333769",
+      "code": 404
+    },
+    {
+      "path": "v1/vehicles/4608057/location_entries",
       "code": 400
+    },
+    {
+      "path": "v2/location_entries/1680333769",
+      "code": 404
     }
   ]
 }
