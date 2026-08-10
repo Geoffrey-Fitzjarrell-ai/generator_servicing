@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T01:07:18.075940+00:00",
+  "generated_at": "2026-08-10T01:09:15.654117+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -21,7 +21,12 @@
         "unit": "km"
       },
       "current_location_entry_id": 1681921245,
-      "last_location": null,
+      "last_location": {
+        "label": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578258,
+        "lon": 139.747055,
+        "updated_at": "2026-08-10T09:54:58.603+09:00"
+      },
       "recent_service_entries": []
     },
     "HD16": {
@@ -37,7 +42,12 @@
         "unit": "km"
       },
       "current_location_entry_id": 1680333769,
-      "last_location": null,
+      "last_location": {
+        "label": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578451,
+        "lon": 139.747616,
+        "updated_at": "2026-08-08T19:24:43.421+09:00"
+      },
       "recent_service_entries": []
     },
     "HD15": {
@@ -53,7 +63,12 @@
         "unit": "km"
       },
       "current_location_entry_id": 1681919462,
-      "last_location": null,
+      "last_location": {
+        "label": "Japan, \u3012305-0817 Ibaraki, Tsukuba, Kenky\u016bgakuen, 5-ch\u014dme\u2212\uff14\u2212\uff17",
+        "lat": 36.082844,
+        "lon": 140.08087,
+        "updated_at": "2026-08-10T09:50:28.888+09:00"
+      },
       "recent_service_entries": []
     },
     "HD14": {
@@ -69,7 +84,12 @@
         "unit": "km"
       },
       "current_location_entry_id": 1681907792,
-      "last_location": null,
+      "last_location": {
+        "label": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.57826,
+        "lon": 139.747055,
+        "updated_at": "2026-08-10T09:30:32.257+09:00"
+      },
       "recent_service_entries": []
     },
     "HD13": {
@@ -85,7 +105,12 @@
         "unit": "km"
       },
       "current_location_entry_id": 1681921492,
-      "last_location": null,
+      "last_location": {
+        "label": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.579545,
+        "lon": 139.74621,
+        "updated_at": "2026-08-10T09:55:25.439+09:00"
+      },
       "recent_service_entries": []
     },
     "HD12": {
@@ -101,7 +126,12 @@
         "unit": "km"
       },
       "current_location_entry_id": 1681910702,
-      "last_location": null,
+      "last_location": {
+        "label": "3-ch\u014dme-28-1 \u014cmorihigashi, Ota City, Tokyo 143-0012, Japan",
+        "lat": 35.573932,
+        "lon": 139.739647,
+        "updated_at": "2026-08-10T09:33:54.550+09:00"
+      },
       "recent_service_entries": []
     },
     "HD5": {
@@ -117,7 +147,11 @@
         "unit": "km"
       },
       "current_location_entry_id": 1680273948,
-      "last_location": null,
+      "last_location": {
+        "lat": 37.380384,
+        "lon": -122.034306,
+        "updated_at": "2026-08-07T19:15:05.000-04:00"
+      },
       "recent_service_entries": [
         {
           "id": 52339410,
@@ -169,7 +203,12 @@
         "unit": "km"
       },
       "current_location_entry_id": 1681925752,
-      "last_location": null,
+      "last_location": {
+        "label": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578257,
+        "lon": 139.747068,
+        "updated_at": "2026-08-10T10:05:29.233+09:00"
+      },
       "recent_service_entries": []
     },
     "HD10": {
@@ -185,7 +224,12 @@
         "unit": "km"
       },
       "current_location_entry_id": 1681900310,
-      "last_location": null,
+      "last_location": {
+        "label": "3-ch\u014dme-22-22 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.31191,
+        "lon": 136.68169,
+        "updated_at": "2026-08-10T09:17:38.523+09:00"
+      },
       "recent_service_entries": []
     },
     "HD9": {
@@ -201,7 +245,12 @@
         "unit": "km"
       },
       "current_location_entry_id": 1681893793,
-      "last_location": null,
+      "last_location": {
+        "label": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.236578,
+        "lon": 138.924163,
+        "updated_at": "2026-08-10T09:04:44.353+09:00"
+      },
       "recent_service_entries": [
         {
           "id": 43362178,
@@ -233,7 +282,12 @@
         "unit": "km"
       },
       "current_location_entry_id": 1679336016,
-      "last_location": null,
+      "last_location": {
+        "label": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 6-ch\u014dme\u22124\u2212\uff18 \u65e5\u672c\u57e0\u982d\u5009\u5eab\u5e73\u548c\u5cf6\u4e8b\u696d\u6240",
+        "lat": 35.578178,
+        "lon": 139.75158,
+        "updated_at": "2026-08-07T16:15:15.241-04:00"
+      },
       "recent_service_entries": [
         {
           "id": 43362166,
@@ -265,7 +319,12 @@
         "unit": "km"
       },
       "current_location_entry_id": 1540734321,
-      "last_location": null,
+      "last_location": {
+        "label": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-8512, Japan",
+        "lat": 35.580251,
+        "lon": 139.744126,
+        "updated_at": "2026-05-01T05:13:25.709-04:00"
+      },
       "recent_service_entries": [
         {
           "id": 42875001,
@@ -297,7 +356,12 @@
         "unit": "km"
       },
       "current_location_entry_id": 1681501361,
-      "last_location": null,
+      "last_location": {
+        "label": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578411,
+        "lon": 139.747467,
+        "updated_at": "2026-08-09T18:20:34.588+09:00"
+      },
       "recent_service_entries": [
         {
           "id": 42874982,
@@ -492,39 +556,178 @@
     "work_orders_count",
     "year"
   ],
-  "_location_entry_fields": null,
+  "_location_entry_fields": [
+    "address",
+    "address_components",
+    "contact_id",
+    "created_at",
+    "date",
+    "geolocation",
+    "id",
+    "is_current",
+    "item_id",
+    "item_type",
+    "locatable_id",
+    "locatable_type",
+    "location",
+    "updated_at",
+    "vehicle_id"
+  ],
   "_loc_probe": [
     {
-      "path": "v1/location_entries/1681921245",
-      "code": 404
+      "path": "v1/vehicles/4608058[detail]",
+      "ok": true,
+      "keys": [
+        "current_location_entry_id",
+        "estimated_replacement_mileage",
+        "license_plate",
+        "current_location_entry"
+      ]
     },
     {
-      "path": "v1/vehicles/4608058/location_entries",
-      "code": 400
+      "path": "v1/veh/location_entries?noparams",
+      "ok": true,
+      "keys": [
+        "address",
+        "address_components",
+        "contact_id",
+        "created_at",
+        "date",
+        "geolocation",
+        "id",
+        "is_current",
+        "item_id",
+        "item_type",
+        "locatable_id",
+        "locatable_type",
+        "location",
+        "updated_at",
+        "vehicle_id"
+      ]
     },
     {
-      "path": "v2/location_entries/1681921245",
-      "code": 404
+      "path": "v1/vehicles/4608057[detail]",
+      "ok": true,
+      "keys": [
+        "current_location_entry_id",
+        "estimated_replacement_mileage",
+        "license_plate",
+        "current_location_entry"
+      ]
     },
     {
-      "path": "v2/vehicles/4608058/location_entries",
-      "code": 404
+      "path": "v1/veh/location_entries?noparams",
+      "ok": true,
+      "keys": [
+        "address",
+        "address_components",
+        "contact_id",
+        "created_at",
+        "date",
+        "geolocation",
+        "id",
+        "is_current",
+        "item_id",
+        "item_type",
+        "locatable_id",
+        "locatable_type",
+        "location",
+        "updated_at",
+        "vehicle_id"
+      ]
     },
     {
-      "path": "v2/location_entries",
-      "code": 404
+      "path": "v1/vehicles/4608056[detail]",
+      "ok": true,
+      "keys": [
+        "current_location_entry_id",
+        "estimated_replacement_mileage",
+        "license_plate",
+        "current_location_entry"
+      ]
     },
     {
-      "path": "v1/location_entries/1680333769",
-      "code": 404
+      "path": "v1/veh/location_entries?noparams",
+      "ok": true,
+      "keys": [
+        "address",
+        "address_components",
+        "contact_id",
+        "created_at",
+        "date",
+        "geolocation",
+        "id",
+        "is_current",
+        "item_id",
+        "item_type",
+        "locatable_id",
+        "locatable_type",
+        "location",
+        "updated_at",
+        "vehicle_id"
+      ]
     },
     {
-      "path": "v1/vehicles/4608057/location_entries",
-      "code": 400
+      "path": "v1/vehicles/4608055[detail]",
+      "ok": true,
+      "keys": [
+        "current_location_entry_id",
+        "estimated_replacement_mileage",
+        "license_plate",
+        "current_location_entry"
+      ]
     },
     {
-      "path": "v2/location_entries/1680333769",
-      "code": 404
+      "path": "v1/veh/location_entries?noparams",
+      "ok": true,
+      "keys": [
+        "address",
+        "address_components",
+        "contact_id",
+        "created_at",
+        "date",
+        "geolocation",
+        "id",
+        "is_current",
+        "item_id",
+        "item_type",
+        "locatable_id",
+        "locatable_type",
+        "location",
+        "updated_at",
+        "vehicle_id"
+      ]
+    },
+    {
+      "path": "v1/vehicles/4608054[detail]",
+      "ok": true,
+      "keys": [
+        "current_location_entry_id",
+        "estimated_replacement_mileage",
+        "license_plate",
+        "current_location_entry"
+      ]
+    },
+    {
+      "path": "v1/veh/location_entries?noparams",
+      "ok": true,
+      "keys": [
+        "address",
+        "address_components",
+        "contact_id",
+        "created_at",
+        "date",
+        "geolocation",
+        "id",
+        "is_current",
+        "item_id",
+        "item_type",
+        "locatable_id",
+        "locatable_type",
+        "location",
+        "updated_at",
+        "vehicle_id"
+      ]
     }
   ]
 }
