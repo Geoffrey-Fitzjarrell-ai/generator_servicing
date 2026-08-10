@@ -77,7 +77,7 @@ jobs:
           print(f"listed {len(all_vehicles)} vehicle(s)")
 
           # ---- partition: HD trucks get full treatment; others are noted only ----
-          trucks, others, sample_keys, veh_sample_keys = {}, [], None, None
+          trucks, others, sample_keys, veh_sample_keys, le_sample_keys = {}, [], None, None, None
           for v in all_vehicles:
               k = hd_key(v.get("name"))
               if not k:
@@ -118,6 +118,35 @@ jobs:
               if lu:
                   loc["updated_at"] = lu
               rec["last_location"] = ({kk: vv for kk, vv in loc.items() if vv} or None)
+              # Fleetio keeps location in a separate "location entry" resource; the
+              # vehicle only carries current_location_entry_id. Resolve it for the
+              # real place/coords. Dumps location_entry keys once for field discovery.
+              if not rec["last_location"] and v.get("current_location_entry_id"):
+                  try:
+                      leid = v.get("current_location_entry_id")
+                      try:
+                          le = fleetio_get(f"location_entries/{leid}")
+                      except _ue.HTTPError:
+                          les = records_of(fleetio_get(f"vehicles/{vid}/location_entries", {"per_page": 1}))
+                          le = les[0] if les else None
+                      if isinstance(le, dict):
+                          if le_sample_keys is None:
+                              le_sample_keys = sorted(le.keys())
+                              print(f"location_entry fields available: {le_sample_keys}")
+                          lloc = {}
+                          lloc["label"] = (le.get("name") or le.get("address") or le.get("formatted_address")
+                                           or le.get("geocoded_address") or le.get("description"))
+                          lloc["lat"] = le.get("latitude") or le.get("lat") or le.get("geolocation_latitude")
+                          lloc["lon"] = le.get("longitude") or le.get("lng") or le.get("lon") or le.get("geolocation_longitude")
+                          geo = le.get("geolocation")
+                          if isinstance(geo, dict):
+                              lloc["lat"] = lloc.get("lat") or geo.get("latitude") or geo.get("lat")
+                              lloc["lon"] = lloc.get("lon") or geo.get("longitude") or geo.get("lng") or geo.get("lon")
+                          lloc["updated_at"] = (le.get("located_at") or le.get("date")
+                                                or le.get("reported_at") or le.get("created_at") or le.get("updated_at"))
+                          rec["last_location"] = ({kk: vv for kk, vv in lloc.items() if vv} or None)
+                  except Exception as _e:
+                      print(f"  {k}: location_entry fetch failed: {_e}")
               services = []
               try:
                   se = records_of(fleetio_get(f"vehicles/{vid}/service_entries", {"per_page": 5}))
@@ -146,6 +175,7 @@ jobs:
               "other_group_vehicles": sorted(o["name"] for o in others),
               "_service_entry_fields": sample_keys,
               "_vehicle_fields": veh_sample_keys,
+              "_location_entry_fields": le_sample_keys,
           }
 
           def gh_get_sha(path):
