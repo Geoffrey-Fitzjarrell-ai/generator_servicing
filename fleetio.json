@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T07:37:34.995341+00:00",
+  "generated_at": "2026-08-10T07:39:36.491465+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -22,9 +22,7 @@
       },
       "last_location": null,
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD24": {
       "fleetio_id": 5526098,
@@ -40,9 +38,7 @@
       },
       "last_location": null,
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD23": {
       "fleetio_id": 5526097,
@@ -58,9 +54,7 @@
       },
       "last_location": null,
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD22": {
       "fleetio_id": 5526096,
@@ -76,9 +70,7 @@
       },
       "last_location": null,
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD21": {
       "fleetio_id": 5526089,
@@ -94,9 +86,7 @@
       },
       "last_location": null,
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD20": {
       "fleetio_id": 5526088,
@@ -112,9 +102,7 @@
       },
       "last_location": null,
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD19": {
       "fleetio_id": 5526039,
@@ -130,9 +118,7 @@
       },
       "last_location": null,
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD17": {
       "fleetio_id": 4608058,
@@ -153,9 +139,7 @@
         "updated_at": "2026-08-10T09:54:58.603+09:00"
       },
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD16": {
       "fleetio_id": 4608057,
@@ -176,9 +160,29 @@
         "updated_at": "2026-08-08T19:24:43.421+09:00"
       },
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "_loc_diag": {
+        "nested_plain": {
+          "status": 400,
+          "ok": false,
+          "body": "{\"errors\":{\"per_page\":[\"out of range\"]}}"
+        },
+        "nested_v240315": {
+          "status": 400,
+          "ok": false,
+          "body": "{\"errors\":{\"per_page\":[\"out of range\"]}}"
+        },
+        "nested_v250505": {
+          "status": 400,
+          "ok": false,
+          "body": "{\"errors\":{\"per_page\":[\"out of range\"]}}"
+        },
+        "toplevel_filter": {
+          "status": 404,
+          "ok": false,
+          "body": "{\"title\":\"Not Found\",\"status\":404,\"detail\":\"This resource could not be found.\"}"
+        }
+      },
+      "location": null
     },
     "HD15": {
       "fleetio_id": 4608056,
@@ -199,9 +203,7 @@
         "updated_at": "2026-08-10T09:50:28.888+09:00"
       },
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD14": {
       "fleetio_id": 4608055,
@@ -222,9 +224,7 @@
         "updated_at": "2026-08-10T09:30:32.257+09:00"
       },
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD13": {
       "fleetio_id": 4608054,
@@ -245,9 +245,7 @@
         "updated_at": "2026-08-10T09:55:25.439+09:00"
       },
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD12": {
       "fleetio_id": 4608053,
@@ -268,9 +266,7 @@
         "updated_at": "2026-08-10T12:10:50.040+09:00"
       },
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD5": {
       "fleetio_id": 4456463,
@@ -327,9 +323,7 @@
           "meter": null
         }
       ],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD11": {
       "fleetio_id": 4335606,
@@ -350,9 +344,7 @@
         "updated_at": "2026-08-10T10:05:29.233+09:00"
       },
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD10": {
       "fleetio_id": 4335605,
@@ -373,9 +365,7 @@
         "updated_at": "2026-08-10T09:17:38.523+09:00"
       },
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD9": {
       "fleetio_id": 4335604,
@@ -412,9 +402,7 @@
           "meter": "348.0"
         }
       ],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD8": {
       "fleetio_id": 4335603,
@@ -451,9 +439,7 @@
           "meter": "323.0"
         }
       ],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD7": {
       "fleetio_id": 4335602,
@@ -490,9 +476,7 @@
           "meter": "21398.0"
         }
       ],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     },
     "HD6": {
       "fleetio_id": 4335601,
@@ -529,9 +513,7 @@
           "meter": "22198.0"
         }
       ],
-      "location": {
-        "error": "HTTP 400"
-      }
+      "location": null
     }
   },
   "other_group_vehicles": [
