@@ -631,6 +631,22 @@
       "notes": "Fuel filter will be due by this time along with other maintenance needed; please check truck detail",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1786327457083",
+      "title": "Generator Maintenance",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD17",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-12",
+      "end": "2026-08-12",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "Fuel filter",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
