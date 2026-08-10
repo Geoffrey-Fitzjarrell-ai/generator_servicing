@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T01:00:56.146271+00:00",
+  "generated_at": "2026-08-10T01:02:43.687488+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -20,6 +20,7 @@
         "value": "12199.0",
         "unit": "km"
       },
+      "current_location_entry_id": 1681921245,
       "last_location": null,
       "recent_service_entries": []
     },
@@ -35,6 +36,7 @@
         "value": "22492.0",
         "unit": "km"
       },
+      "current_location_entry_id": 1680333769,
       "last_location": null,
       "recent_service_entries": []
     },
@@ -50,6 +52,7 @@
         "value": "30120.0",
         "unit": "km"
       },
+      "current_location_entry_id": 1681919462,
       "last_location": null,
       "recent_service_entries": []
     },
@@ -65,6 +68,7 @@
         "value": "27991.0",
         "unit": "km"
       },
+      "current_location_entry_id": 1681907792,
       "last_location": null,
       "recent_service_entries": []
     },
@@ -80,6 +84,7 @@
         "value": "28133.0",
         "unit": "km"
       },
+      "current_location_entry_id": 1681921492,
       "last_location": null,
       "recent_service_entries": []
     },
@@ -95,6 +100,7 @@
         "value": "32074.0",
         "unit": "km"
       },
+      "current_location_entry_id": 1681910702,
       "last_location": null,
       "recent_service_entries": []
     },
@@ -110,6 +116,7 @@
         "value": "31330.5",
         "unit": "km"
       },
+      "current_location_entry_id": 1680273948,
       "last_location": null,
       "recent_service_entries": [
         {
@@ -161,6 +168,7 @@
         "value": "60208.0",
         "unit": "km"
       },
+      "current_location_entry_id": 1681923733,
       "last_location": null,
       "recent_service_entries": []
     },
@@ -176,6 +184,7 @@
         "value": "71538.0",
         "unit": "km"
       },
+      "current_location_entry_id": 1681900310,
       "last_location": null,
       "recent_service_entries": []
     },
@@ -191,6 +200,7 @@
         "value": "67221.0",
         "unit": "km"
       },
+      "current_location_entry_id": 1681893793,
       "last_location": null,
       "recent_service_entries": [
         {
@@ -222,6 +232,7 @@
         "value": "63302.0",
         "unit": "km"
       },
+      "current_location_entry_id": 1679336016,
       "last_location": null,
       "recent_service_entries": [
         {
@@ -253,6 +264,7 @@
         "value": "22222.0",
         "unit": "km"
       },
+      "current_location_entry_id": 1540734321,
       "last_location": null,
       "recent_service_entries": [
         {
@@ -284,6 +296,7 @@
         "value": "68686.0",
         "unit": "km"
       },
+      "current_location_entry_id": 1681501361,
       "last_location": null,
       "recent_service_entries": [
         {
