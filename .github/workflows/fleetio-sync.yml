@@ -16,6 +16,7 @@ jobs:
         env:
           FLEETIO_API_KEY: ${{ secrets.FLEETIO_API_KEY }}
           GH_TOKEN: ${{ secrets.GH_PAT }}
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         run: |
           python3 - <<'EOF'
           import os, json, base64, time, re, traceback
@@ -149,6 +150,135 @@ jobs:
               out["_fatal"] = traceback.format_exc()[-1500:]
               out.setdefault("trucks", {})
               print("FATAL:\n" + out["_fatal"])
+
+          # ---- announce newly-grounded trucks (Active -> Out of Service) to Slack ----
+          # Edge-triggered: compares fresh status against the PREVIOUSLY committed
+          # fleetio.json, so a truck is announced the moment it flips to OOS and is NOT
+          # re-announced on subsequent syncs while it stays grounded. Isolated in try/
+          # except so a Slack failure never blocks the fleetio.json commit.
+          SLACK_TOKEN = os.environ.get("SLACK_TOKEN")
+          CHANNEL     = "C08L1TWLU14"   # #japan-vops-driver-support
+
+          def is_oos(s):
+              return "out of service" in str(s or "").strip().lower()
+
+          def gh_get_json(path):
+              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
+              req = urllib.request.Request(url, headers={
+                  "Authorization": f"Bearer {GH_TOKEN}", "Accept": "application/vnd.github+json"})
+              try:
+                  with _urlopen(req) as r:
+                      resp = json.loads(r.read())
+                  return json.loads(base64.b64decode(resp["content"]).decode())
+              except _ue.HTTPError as e:
+                  if e.code == 404: return {}
+                  raise
+
+          def slack_post(payload):
+              data = json.dumps(payload).encode()
+              req = urllib.request.Request(
+                  "https://slack.com/api/chat.postMessage", data=data,
+                  headers={"Authorization": f"Bearer {SLACK_TOKEN}", "Content-Type": "application/json"})
+              with _urlopen(req) as r:
+                  return json.loads(r.read())
+
+          try:
+              prev = (gh_get_json("fleetio.json") or {}).get("trucks", {}) or {}
+              newly = [(k, rec) for k, rec in out["trucks"].items()
+                       if is_oos(rec.get("status")) and not is_oos(prev.get(k, {}).get("status"))]
+              if not newly:
+                  print("grounded-announce: no trucks newly grounded")
+              elif not SLACK_TOKEN:
+                  print(f"grounded-announce: WARN {len(newly)} newly grounded but SLACK_TOKEN unset; skipped")
+              else:
+                  for k, rec in newly:
+                      name = rec.get("name") or k
+                      # optional context: most recent open (non-completed) service entry
+                      ctx = ""
+                      for se in (rec.get("recent_service_entries") or []):
+                          if isinstance(se, dict) and se.get("status") \
+                                  and str(se.get("status")).lower() != "completed":
+                              bits = [b for b in (se.get("vendor"), se.get("reference")) if b]
+                              if bits:
+                                  ctx = " — " + " / ".join(str(b) for b in bits)
+                              break
+                      body = (f"*{k}* ({name}) は *運行停止 (Out of Service)* になりました。\n"
+                              f"*{k}* ({name}) is now *Out of Service*{ctx}")
+                      blocks = [
+                          {"type": "header", "text": {"type": "plain_text",
+                              "text": "🚨 車両 運行停止 / VEHICLE GROUNDED", "emoji": True}},
+                          {"type": "section", "text": {"type": "mrkdwn", "text": body}},
+                          {"type": "context", "elements": [{"type": "mrkdwn", "text": "◆ SOURCE: FLEETIO"}]},
+                      ]
+                      fallback = f"🚨 {k} ({name}) 運行停止 / Out of Service (source: Fleetio)"
+                      res = slack_post({"channel": CHANNEL, "text": fallback, "blocks": blocks})
+                      print(f"grounded-announce: {k} slack ok={res.get('ok')} {res.get('error','')}")
+          except Exception as _e:
+              print(f"grounded-announce: WARN step failed (sync continues): {_e}")
+
+          # ---- reflect Fleetio OOS into the dashboard's own grounded flag (data.json) ----
+          # So a truck marked Out of Service in Fleetio actually renders as grounded on
+          # Truck Detail / Pit Wall / digest. Level-based: reconciles every sync, not only
+          # on the transition. Only auto-CLEARS groundings that Fleetio itself set
+          # (groundedSource == "fleetio"); a manual grounding is never overridden.
+          # Read-modify-write with 409 retry because the Worker also writes data.json.
+          def gh_get_file(path):
+              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
+              req = urllib.request.Request(url, headers={
+                  "Authorization": f"Bearer {GH_TOKEN}", "Accept": "application/vnd.github+json"})
+              with _urlopen(req) as r:
+                  resp = json.loads(r.read())
+              return json.loads(base64.b64decode(resp["content"]).decode()), resp["sha"]
+
+          def gh_put_file(path, content, message, sha):
+              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
+              payload = {"message": message,
+                         "content": base64.b64encode(json.dumps(content, indent=2).encode()).decode(),
+                         "sha": sha}
+              req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={
+                  "Authorization": f"Bearer {GH_TOKEN}", "Accept": "application/vnd.github+json",
+                  "Content-Type": "application/json"}, method="PUT")
+              with _urlopen(req) as r: r.read()
+
+          def reconcile_grounded(trucks):
+              for attempt in range(4):
+                  data, sha = gh_get_file("data.json")
+                  changed = []
+                  for k, rec in trucks.items():
+                      if k not in data or not isinstance(data[k], dict):
+                          continue
+                      cur = data[k]
+                      oos = is_oos(rec.get("status"))
+                      grounded = bool(cur.get("grounded"))
+                      src = cur.get("groundedSource")
+                      if oos and not grounded:
+                          cur["grounded"] = True
+                          cur["groundedNote"] = "Out of service (Fleetio)"
+                          cur["groundedSource"] = "fleetio"
+                          changed.append("+" + k)
+                      elif (not oos) and grounded and src == "fleetio":
+                          cur.pop("grounded", None)
+                          cur.pop("groundedNote", None)
+                          cur.pop("groundedSource", None)
+                          changed.append("-" + k)
+                  if not changed:
+                      print("grounded-reconcile: data.json already in sync")
+                      return
+                  try:
+                      gh_put_file("data.json", data,
+                          "chore: reconcile grounded from Fleetio (" + ", ".join(changed) + ") [skip ci]", sha)
+                      print("grounded-reconcile:", ", ".join(changed))
+                      return
+                  except _ue.HTTPError as e:
+                      if e.code == 409 and attempt < 3:
+                          time.sleep(1.5 * (attempt + 1)); continue
+                      raise
+              print("grounded-reconcile: gave up after repeated write conflicts")
+
+          try:
+              reconcile_grounded(out["trucks"])
+          except Exception as _e:
+              print(f"grounded-reconcile: WARN step failed (sync continues): {_e}")
 
           # ---- commit fleetio.json ----
           def gh_get_sha(path):
