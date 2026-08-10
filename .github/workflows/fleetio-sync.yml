@@ -60,6 +60,33 @@ jobs:
               if isinstance(resp, dict): return resp.get("records", [])
               return resp if isinstance(resp, list) else []
 
+          # Resolve a vehicle's current location entry. Fleetio's exact path isn't
+          # documented for us, so probe a few candidate shapes and record the outcome
+          # (into loc_probe, surfaced in fleetio.json) so we can confirm what works.
+          loc_probe = []
+          def resolve_location(vid, leid):
+              cands = [
+                  ("location_entries/" + str(leid), None),
+                  ("location_entries", {"vehicle_id": vid, "per_page": 1, "sort[created_at]": "desc"}),
+                  (f"vehicles/{vid}/location_entries", {"per_page": 1}),
+              ]
+              for path, params in cands:
+                  try:
+                      resp = fleetio_get(path, params)
+                      le = resp if (isinstance(resp, dict) and "records" not in resp) \
+                           else (records_of(resp)[0] if records_of(resp) else None)
+                      ok = isinstance(le, dict) and bool(le)
+                      if len(loc_probe) < 6:
+                          loc_probe.append({"path": path, "ok": ok,
+                                            "keys": sorted(le.keys()) if ok else None})
+                      if ok:
+                          return le
+                  except _ue.HTTPError as e:
+                      if len(loc_probe) < 6: loc_probe.append({"path": path, "code": e.code})
+                  except Exception as e:
+                      if len(loc_probe) < 6: loc_probe.append({"path": path, "err": str(e)[:80]})
+              return None
+
           def hd_key(name):
               m = re.search(r"HD\s*0*(\d+)", str(name or "").upper())
               return f"HD{int(m.group(1))}" if m else None
@@ -123,31 +150,20 @@ jobs:
               # vehicle only carries current_location_entry_id. Resolve it for the
               # real place/coords. Dumps location_entry keys once for field discovery.
               if not rec["last_location"] and v.get("current_location_entry_id"):
-                  try:
-                      leid = v.get("current_location_entry_id")
-                      try:
-                          le = fleetio_get(f"location_entries/{leid}")
-                      except _ue.HTTPError:
-                          les = records_of(fleetio_get(f"vehicles/{vid}/location_entries", {"per_page": 1}))
-                          le = les[0] if les else None
-                      if isinstance(le, dict):
-                          if le_sample_keys is None:
-                              le_sample_keys = sorted(le.keys())
-                              print(f"location_entry fields available: {le_sample_keys}")
-                          lloc = {}
-                          lloc["label"] = (le.get("name") or le.get("address") or le.get("formatted_address")
-                                           or le.get("geocoded_address") or le.get("description"))
-                          lloc["lat"] = le.get("latitude") or le.get("lat") or le.get("geolocation_latitude")
-                          lloc["lon"] = le.get("longitude") or le.get("lng") or le.get("lon") or le.get("geolocation_longitude")
-                          geo = le.get("geolocation")
-                          if isinstance(geo, dict):
-                              lloc["lat"] = lloc.get("lat") or geo.get("latitude") or geo.get("lat")
-                              lloc["lon"] = lloc.get("lon") or geo.get("longitude") or geo.get("lng") or geo.get("lon")
-                          lloc["updated_at"] = (le.get("located_at") or le.get("date")
-                                                or le.get("reported_at") or le.get("created_at") or le.get("updated_at"))
-                          rec["last_location"] = ({kk: vv for kk, vv in lloc.items() if vv} or None)
-                  except Exception as _e:
-                      print(f"  {k}: location_entry fetch failed: {_e}")
+                  le = resolve_location(vid, v.get("current_location_entry_id"))
+                  if isinstance(le, dict):
+                      if le_sample_keys is None:
+                          le_sample_keys = sorted(le.keys())
+                      geo = le.get("geolocation") if isinstance(le.get("geolocation"), dict) else {}
+                      lloc = {
+                          "label": (le.get("name") or le.get("address") or le.get("formatted_address")
+                                    or le.get("geocoded_address") or le.get("description")),
+                          "lat": le.get("latitude") or le.get("lat") or geo.get("latitude") or geo.get("lat"),
+                          "lon": le.get("longitude") or le.get("lng") or le.get("lon") or geo.get("longitude") or geo.get("lng"),
+                          "updated_at": (le.get("located_at") or le.get("date") or le.get("reported_at")
+                                         or le.get("created_at") or le.get("updated_at")),
+                      }
+                      rec["last_location"] = ({kk: vv for kk, vv in lloc.items() if vv} or None)
               services = []
               try:
                   se = records_of(fleetio_get(f"vehicles/{vid}/service_entries", {"per_page": 5}))
@@ -177,6 +193,7 @@ jobs:
               "_service_entry_fields": sample_keys,
               "_vehicle_fields": veh_sample_keys,
               "_location_entry_fields": le_sample_keys,
+              "_loc_probe": loc_probe,
           }
 
           def gh_get_sha(path):
