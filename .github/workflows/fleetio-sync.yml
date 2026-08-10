@@ -1,8 +1,8 @@
 name: Sync Fleetio Vehicle Data
 
-# Group-scoped sync: pulls every vehicle in the JP VOPS group (id 1999094),
-# maps each to its HD key, skips decommissioned trucks, records recent service
-# entries. Bounded to one small group => no whole-fleet paging, no rate limits.
+# Group-scoped sync of the JP VOPS HD trucks. Pulls per-truck: vehicle record,
+# recent service entries, and last-known location (Fleetio location_entries).
+# Writes fleetio.json. Bounded + deduped => no runaway paging, no rate limits.
 on:
   schedule:
     - cron: '0 21 * * *'   # 06:00 JST daily
@@ -16,17 +16,15 @@ jobs:
         env:
           FLEETIO_API_KEY: ${{ secrets.FLEETIO_API_KEY }}
           GH_TOKEN: ${{ secrets.GH_PAT }}
-          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         run: |
           python3 - <<'EOF'
-          import os, json, base64, time, re
+          import os, json, base64, time, re, traceback
           import urllib.request, urllib.parse, urllib.error as _ue
           from datetime import datetime, timezone
 
           FLEETIO_KEY   = os.environ["FLEETIO_API_KEY"]
           GH_TOKEN      = os.environ["GH_TOKEN"]
           ACCOUNT_TOKEN = "a0294e2c81"
-          GROUP_ID      = 1999094           # JP VOPS group (from saved-view URL)
           REPO          = "Geoffrey-Fitzjarrell-ai/generator_servicing"
           FLEETIO_BASE  = "https://secure.fleetio.com/api/v1"
           NOW           = datetime.now(timezone.utc)
@@ -45,14 +43,13 @@ jobs:
                           time.sleep(2**i); continue
                       raise
 
-          def fleetio_get(path, params=None, base=None):
-              url = f"{base or FLEETIO_BASE}/{path}"
+          def fleetio_get(path, params=None):
+              url = f"{FLEETIO_BASE}/{path}"
               if params:
                   url += "?" + urllib.parse.urlencode(params, doseq=True)
               req = urllib.request.Request(url, headers={
                   "Authorization": f"Token {FLEETIO_KEY}",
-                  "Account-Token": ACCOUNT_TOKEN,
-                  "Accept": "application/json"})
+                  "Account-Token": ACCOUNT_TOKEN, "Accept": "application/json"})
               with _urlopen(req) as r:
                   return json.loads(r.read())
 
@@ -64,104 +61,96 @@ jobs:
               m = re.search(r"HD\s*0*(\d+)", str(name or "").upper())
               return f"HD{int(m.group(1))}" if m else None
 
-          # ---- list all group vehicles (one bounded page; dedup guards runaway) ----
-          all_vehicles, seen, page = [], set(), 1
-          while page <= 5:
-              recs = records_of(fleetio_get("vehicles", {"per_page": 100, "page": page}))
-              new = [v for v in recs if v.get("id") not in seen]
-              if not new: break
-              for v in new: seen.add(v.get("id"))
-              all_vehicles.extend(new)
-              if len(recs) < 100: break
-              page += 1
-          print(f"listed {len(all_vehicles)} vehicle(s)")
+          out = {"generated_at": NOW.isoformat(), "source": "fleetio", "account": ACCOUNT_TOKEN}
+          try:
+              # ---- list all group vehicles (bounded, deduped) ----
+              all_vehicles, seen, page = [], set(), 1
+              while page <= 5:
+                  recs = records_of(fleetio_get("vehicles", {"per_page": 100, "page": page}))
+                  new = [v for v in recs if v.get("id") not in seen]
+                  if not new: break
+                  for v in new: seen.add(v.get("id"))
+                  all_vehicles.extend(new)
+                  if len(recs) < 100: break
+                  page += 1
+              print(f"listed {len(all_vehicles)} vehicle(s)")
 
-          # ---- partition: HD trucks get full treatment; others are noted only ----
-          trucks, others, sample_keys, le_sample_keys = {}, [], None, None
-          for v in all_vehicles:
-              k = hd_key(v.get("name"))
-              if not k:
-                  others.append({"id": v.get("id"), "name": v.get("name")})
-                  continue
-              if k in DECOMMISSIONED:
-                  print(f"  skip decommissioned {k}"); continue
-              vid = v.get("id")
-              rec = {
-                  "fleetio_id": vid, "name": v.get("name"),
-                  "make": v.get("make"), "model": v.get("model"), "year": v.get("year"),
-                  "vin": v.get("vin"),
-                  "status": v.get("vehicle_status_name") or v.get("status"),
-                  "meter": {"value": v.get("current_meter_value") or v.get("primary_meter_value"),
-                            "unit": v.get("primary_meter_unit")},
-              }
-              # ---- last known location via Fleetio location_entries (current entry) ----
-              rec["last_location"] = None
-              try:
-                  les = records_of(fleetio_get(f"vehicles/{vid}/location_entries"))
-                  le = next((e for e in les if e.get("is_current")), les[0] if les else None)
-                  if isinstance(le, dict):
-                      if le_sample_keys is None:
-                          le_sample_keys = sorted(le.keys())
-                      geo = le.get("geolocation") if isinstance(le.get("geolocation"), dict) else {}
-                      loc = {
-                          "label": le.get("address") or le.get("location") or le.get("name"),
-                          "lat": geo.get("latitude") or geo.get("lat") or le.get("latitude") or le.get("lat"),
-                          "lon": geo.get("longitude") or geo.get("lng") or geo.get("lon") or le.get("longitude") or le.get("lng"),
-                          "updated_at": le.get("date") or le.get("updated_at") or le.get("created_at"),
-                      }
-                      rec["last_location"] = {kk: vv for kk, vv in loc.items() if vv} or None
-              except Exception as _e:
-                  print(f"  {k}: location fetch failed: {_e}")
-              services = []
-              try:
-                  se = records_of(fleetio_get(f"vehicles/{vid}/service_entries", {"per_page": 5}))
-                  if se and sample_keys is None: sample_keys = sorted(se[0].keys())
-                  for srec in se:
-                      pme = srec.get("primary_meter_entry") or {}
-                      services.append({
-                          "id": srec.get("id"), "status": srec.get("status"),
-                          "completed_at": srec.get("completed_at"), "started_at": srec.get("started_at"),
-                          "vendor": srec.get("vendor_name"), "reference": srec.get("reference"),
-                          "labels": srec.get("labels"),
+              trucks, others = {}, []
+              svc_fields = [None]; loc_fields = [None]
+
+              def newest_location(vid):
+                  try:
+                      les = records_of(fleetio_get(f"vehicles/{vid}/location_entries", {"per_page": 10}))
+                  except Exception as e:
+                      return {"error": str(e)[:120]}
+                  if not les: return None
+                  les.sort(key=lambda x:(1 if x.get("is_current") else 0,
+                                         str(x.get("date") or x.get("created_at") or "")), reverse=True)
+                  e0 = les[0]
+                  if loc_fields[0] is None: loc_fields[0] = sorted(e0.keys())
+                  geo = e0.get("geolocation") if isinstance(e0.get("geolocation"), dict) else {}
+                  loc = {
+                      "address": e0.get("address") or e0.get("location"),
+                      "lat": geo.get("latitude") or e0.get("latitude"),
+                      "lng": geo.get("longitude") or e0.get("longitude"),
+                      "at":  e0.get("date") or e0.get("created_at"),
+                      "is_current": e0.get("is_current"),
+                  }
+                  return {kk:vv for kk,vv in loc.items() if vv is not None} or None
+
+              def recent_services(vid):
+                  try:
+                      se = records_of(fleetio_get(f"vehicles/{vid}/service_entries", {"per_page": 5}))
+                  except Exception as e:
+                      return [{"error": str(e)[:120]}]
+                  rows = []
+                  for s in se:
+                      if svc_fields[0] is None: svc_fields[0] = sorted(s.keys())
+                      pme = s.get("primary_meter_entry") or {}
+                      rows.append({
+                          "id": s.get("id"), "status": s.get("status"),
+                          "completed_at": s.get("completed_at"), "started_at": s.get("started_at"),
+                          "vendor": s.get("vendor_name"), "reference": s.get("reference"),
+                          "labels": s.get("labels"),
                           "meter": pme.get("value") if isinstance(pme, dict) else pme,
                       })
-              except _ue.HTTPError as e:
-                  services = [{"error": f"HTTP {e.code}"}]
-              rec["recent_service_entries"] = services
-              try:
-                  le = records_of(fleetio_get(f"vehicles/{vid}/location_entries", {"per_page": 10}))
-                  # prefer the flagged current entry, else newest by date/created_at
-                  le.sort(key=lambda x:(1 if x.get("is_current") else 0, str(x.get("date") or x.get("created_at") or "")), reverse=True)
-                  if le:
-                      e0 = le[0]; geo = e0.get("geolocation") or {}
-                      if sample_loc_keys[0] is None: sample_loc_keys[0] = sorted(e0.keys())
-                      if k == "HD16": rec["_loc_raw"] = e0
-                      rec["location"] = {
-                          "address": e0.get("address"),
-                          "lat": geo.get("latitude") if isinstance(geo, dict) else None,
-                          "lng": geo.get("longitude") if isinstance(geo, dict) else None,
-                          "at": e0.get("date") or e0.get("created_at"),
-                          "is_current": e0.get("is_current"),
-                      }
-                  else:
-                      rec["location"] = None
-              except _ue.HTTPError as e:
-                  rec["location"] = {"error": f"HTTP {e.code}"}
-              trucks[k] = rec
-              print(f"  {k}: {rec['name']} {rec['meter']['value']}{rec['meter']['unit']} {rec['status']} services={len(services)}")
-              time.sleep(0.3)
+                  return rows
 
-          out = {
-              "generated_at": NOW.isoformat(), "source": "fleetio",
-              "account": ACCOUNT_TOKEN, "total_listed": len(all_vehicles),
-              "truck_count": len(trucks), "decommissioned_skipped": sorted(DECOMMISSIONED),
-              "trucks": trucks,
-              "other_group_vehicles": sorted(o["name"] for o in others),
-              "_service_entry_fields": sample_keys,
-              "_location_entry_fields": sample_loc_keys[0],
-              "_location_entry_fields": le_sample_keys,
-          }
+              for v in all_vehicles:
+                  k = hd_key(v.get("name"))
+                  if not k:
+                      others.append(v.get("name")); continue
+                  if k in DECOMMISSIONED: continue
+                  vid = v.get("id")
+                  rec = {
+                      "fleetio_id": vid, "name": v.get("name"),
+                      "make": v.get("make"), "model": v.get("model"), "year": v.get("year"),
+                      "vin": v.get("vin"),
+                      "status": v.get("vehicle_status_name") or v.get("status"),
+                      "meter": {"value": v.get("current_meter_value") or v.get("primary_meter_value"),
+                                "unit": v.get("primary_meter_unit")},
+                      "recent_service_entries": recent_services(vid),
+                      "location": newest_location(vid),
+                  }
+                  trucks[k] = rec
+                  L = rec["location"]
+                  print(f"  {k}: {rec['name']} {rec['meter']['value']}{rec['meter']['unit']} "
+                        f"{rec['status']} svc={len(rec['recent_service_entries'])} "
+                        f"loc={(L.get('address') if isinstance(L,dict) else L)}")
+                  time.sleep(0.3)
 
+              out.update({
+                  "total_listed": len(all_vehicles), "truck_count": len(trucks),
+                  "decommissioned_skipped": sorted(DECOMMISSIONED),
+                  "trucks": trucks, "other_group_vehicles": sorted(others),
+                  "_service_entry_fields": svc_fields[0], "_location_entry_fields": loc_fields[0],
+              })
+          except Exception:
+              out["_fatal"] = traceback.format_exc()[-1500:]
+              out.setdefault("trucks", {})
+              print("FATAL:\n" + out["_fatal"])
+
+          # ---- commit fleetio.json ----
           def gh_get_sha(path):
               url=f"https://api.github.com/repos/{REPO}/contents/{path}"
               req=urllib.request.Request(url, headers={"Authorization":f"Bearer {GH_TOKEN}","Accept":"application/vnd.github+json"})
@@ -179,135 +168,7 @@ jobs:
                   "Authorization":f"Bearer {GH_TOKEN}","Accept":"application/vnd.github+json","Content-Type":"application/json"},method="PUT")
               with _urlopen(req) as r: r.read()
 
-          # ---- announce newly-grounded trucks (Active -> Out of Service) to Slack ----
-          # Edge-triggered: compares fresh status against the PREVIOUSLY committed
-          # fleetio.json, so a truck is announced the moment it flips to OOS and is NOT
-          # re-announced on subsequent syncs while it stays grounded. Isolated in try/
-          # except so a Slack failure never blocks the fleetio.json commit.
-          SLACK_TOKEN = os.environ.get("SLACK_TOKEN")
-          CHANNEL     = "C08L1TWLU14"   # #japan-vops-driver-support
-
-          def is_oos(s):
-              return "out of service" in str(s or "").strip().lower()
-
-          def gh_get_json(path):
-              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
-              req = urllib.request.Request(url, headers={
-                  "Authorization": f"Bearer {GH_TOKEN}", "Accept": "application/vnd.github+json"})
-              try:
-                  with _urlopen(req) as r:
-                      resp = json.loads(r.read())
-                  return json.loads(base64.b64decode(resp["content"]).decode())
-              except _ue.HTTPError as e:
-                  if e.code == 404: return {}
-                  raise
-
-          def slack_post(payload):
-              data = json.dumps(payload).encode()
-              req = urllib.request.Request(
-                  "https://slack.com/api/chat.postMessage", data=data,
-                  headers={"Authorization": f"Bearer {SLACK_TOKEN}", "Content-Type": "application/json"})
-              with _urlopen(req) as r:
-                  return json.loads(r.read())
-
-          try:
-              prev = (gh_get_json("fleetio.json") or {}).get("trucks", {}) or {}
-              newly = [(k, rec) for k, rec in out["trucks"].items()
-                       if is_oos(rec.get("status")) and not is_oos(prev.get(k, {}).get("status"))]
-              if not newly:
-                  print("grounded-announce: no trucks newly grounded")
-              elif not SLACK_TOKEN:
-                  print(f"grounded-announce: WARN {len(newly)} newly grounded but SLACK_TOKEN unset; skipped")
-              else:
-                  for k, rec in newly:
-                      name = rec.get("name") or k
-                      # optional context: most recent open (non-completed) service entry
-                      ctx = ""
-                      for se in (rec.get("recent_service_entries") or []):
-                          if isinstance(se, dict) and se.get("status") \
-                                  and str(se.get("status")).lower() != "completed":
-                              bits = [b for b in (se.get("vendor"), se.get("reference")) if b]
-                              if bits:
-                                  ctx = " — " + " / ".join(str(b) for b in bits)
-                              break
-                      body = (f"*{k}* ({name}) は *運行停止 (Out of Service)* になりました。\n"
-                              f"*{k}* ({name}) is now *Out of Service*{ctx}")
-                      blocks = [
-                          {"type": "header", "text": {"type": "plain_text",
-                              "text": "🚨 車両 運行停止 / VEHICLE GROUNDED", "emoji": True}},
-                          {"type": "section", "text": {"type": "mrkdwn", "text": body}},
-                          {"type": "context", "elements": [{"type": "mrkdwn", "text": "◆ SOURCE: FLEETIO"}]},
-                      ]
-                      fallback = f"🚨 {k} ({name}) 運行停止 / Out of Service (source: Fleetio)"
-                      res = slack_post({"channel": CHANNEL, "text": fallback, "blocks": blocks})
-                      print(f"grounded-announce: {k} slack ok={res.get('ok')} {res.get('error','')}")
-          except Exception as _e:
-              print(f"grounded-announce: WARN step failed (sync continues): {_e}")
-
-          # ---- reflect Fleetio OOS into the dashboard's own grounded flag (data.json) ----
-          # So a truck marked Out of Service in Fleetio actually renders as grounded on
-          # Truck Detail / Pit Wall / digest. Level-based: reconciles every sync, not only
-          # on the transition. Only auto-CLEARS groundings that Fleetio itself set
-          # (groundedSource == "fleetio"); a manual grounding is never overridden.
-          # Read-modify-write with 409 retry because the Worker also writes data.json.
-          def gh_get_file(path):
-              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
-              req = urllib.request.Request(url, headers={
-                  "Authorization": f"Bearer {GH_TOKEN}", "Accept": "application/vnd.github+json"})
-              with _urlopen(req) as r:
-                  resp = json.loads(r.read())
-              return json.loads(base64.b64decode(resp["content"]).decode()), resp["sha"]
-
-          def gh_put_file(path, content, message, sha):
-              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
-              payload = {"message": message,
-                         "content": base64.b64encode(json.dumps(content, indent=2).encode()).decode(),
-                         "sha": sha}
-              req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={
-                  "Authorization": f"Bearer {GH_TOKEN}", "Accept": "application/vnd.github+json",
-                  "Content-Type": "application/json"}, method="PUT")
-              with _urlopen(req) as r: r.read()
-
-          def reconcile_grounded(trucks):
-              for attempt in range(4):
-                  data, sha = gh_get_file("data.json")
-                  changed = []
-                  for k, rec in trucks.items():
-                      if k not in data or not isinstance(data[k], dict):
-                          continue
-                      cur = data[k]
-                      oos = is_oos(rec.get("status"))
-                      grounded = bool(cur.get("grounded"))
-                      src = cur.get("groundedSource")
-                      if oos and not grounded:
-                          cur["grounded"] = True
-                          cur["groundedNote"] = "Out of service (Fleetio)"
-                          cur["groundedSource"] = "fleetio"
-                          changed.append("+" + k)
-                      elif (not oos) and grounded and src == "fleetio":
-                          cur.pop("grounded", None)
-                          cur.pop("groundedNote", None)
-                          cur.pop("groundedSource", None)
-                          changed.append("-" + k)
-                  if not changed:
-                      print("grounded-reconcile: data.json already in sync")
-                      return
-                  try:
-                      gh_put_file("data.json", data,
-                          "chore: reconcile grounded from Fleetio (" + ", ".join(changed) + ") [skip ci]", sha)
-                      print("grounded-reconcile:", ", ".join(changed))
-                      return
-                  except _ue.HTTPError as e:
-                      if e.code == 409 and attempt < 3:
-                          time.sleep(1.5 * (attempt + 1)); continue
-                      raise
-              print("grounded-reconcile: gave up after repeated write conflicts")
-
-          try:
-              reconcile_grounded(out["trucks"])
-          except Exception as _e:
-              print(f"grounded-reconcile: WARN step failed (sync continues): {_e}")
-
-          gh_put("fleetio.json", out, f"chore: sync Fleetio group {GROUP_ID} ({len(trucks)} trucks) [skip ci]")
-          print(f"Committed fleetio.json — {len(trucks)} HD trucks, {len(others)} other vehicles noted")
+          gh_put("fleetio.json", out, f"chore: sync Fleetio ({out.get('truck_count','?')} trucks) [skip ci]")
+          print("Committed fleetio.json")
+          if out.get("_fatal"): raise SystemExit(1)
           EOF
