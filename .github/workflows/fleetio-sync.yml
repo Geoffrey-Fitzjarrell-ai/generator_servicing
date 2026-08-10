@@ -60,43 +60,6 @@ jobs:
               if isinstance(resp, dict): return resp.get("records", [])
               return resp if isinstance(resp, list) else []
 
-          # Resolve a vehicle's current location entry. Fleetio's exact path isn't
-          # documented for us, so probe a few candidate shapes and record the outcome
-          # (into loc_probe, surfaced in fleetio.json) so we can confirm what works.
-          loc_probe = []
-          def resolve_location(vid, leid):
-              from datetime import timedelta
-              now = NOW; d30 = now - timedelta(days=30)
-              def probe(tag, **kw):
-                  if len(loc_probe) < 10:
-                      loc_probe.append({"path": tag, **{k: v for k, v in kw.items() if v is not None}})
-              # 1) vehicle detail — may carry an inline current location the list omits
-              try:
-                  vd = fleetio_get(f"vehicles/{vid}")
-                  if isinstance(vd, dict):
-                      lk = [f for f in vd.keys() if any(w in f.lower() for w in ("location","lat","lon","geo","coord","place","address"))]
-                      probe(f"v1/vehicles/{vid}[detail]", ok=True, keys=lk)
-                      for f in ("current_location", "location", "last_location"):
-                          val = vd.get(f)
-                          if isinstance(val, dict) and val: return val
-                          if isinstance(val, str) and val: return {"name": val}
-              except _ue.HTTPError as e:
-                  probe(f"v1/vehicles/{vid}[detail]", code=e.code, body=e.read().decode("utf-8","replace")[:200])
-              # 2) nested location_entries with param variations (capture 400 body)
-              for params, label in [(None, "noparams"), ({"per_page": 1}, "per_page"),
-                                    ({"per_page": 1, "start_date": d30.strftime("%Y-%m-%d"),
-                                      "end_date": now.strftime("%Y-%m-%d")}, "daterange")]:
-                  try:
-                      resp = fleetio_get(f"vehicles/{vid}/location_entries", params)
-                      les = records_of(resp)
-                      le = les[0] if les else (resp if isinstance(resp, dict) and "records" not in resp else None)
-                      ok = isinstance(le, dict) and bool(le)
-                      probe(f"v1/veh/location_entries?{label}", ok=ok, keys=sorted(le.keys()) if ok else None)
-                      if ok: return le
-                  except _ue.HTTPError as e:
-                      probe(f"v1/veh/location_entries?{label}", code=e.code, body=e.read().decode("utf-8","replace")[:200])
-              return None
-
           def hd_key(name):
               m = re.search(r"HD\s*0*(\d+)", str(name or "").upper())
               return f"HD{int(m.group(1))}" if m else None
@@ -114,7 +77,7 @@ jobs:
           print(f"listed {len(all_vehicles)} vehicle(s)")
 
           # ---- partition: HD trucks get full treatment; others are noted only ----
-          trucks, others, sample_keys, veh_sample_keys, le_sample_keys = {}, [], None, None, None
+          trucks, others, sample_keys, le_sample_keys = {}, [], None, None
           for v in all_vehicles:
               k = hd_key(v.get("name"))
               if not k:
@@ -130,50 +93,25 @@ jobs:
                   "status": v.get("vehicle_status_name") or v.get("status"),
                   "meter": {"value": v.get("current_meter_value") or v.get("primary_meter_value"),
                             "unit": v.get("primary_meter_unit")},
-                  "current_location_entry_id": v.get("current_location_entry_id"),
               }
-              # ---- last known location (best-effort; field names vary by GPS/telematics setup) ----
-              # Also dumps the vehicle payload keys once so we can see exactly what
-              # Fleetio returns and pin the real location field if these guesses miss.
-              if veh_sample_keys is None:
-                  veh_sample_keys = sorted(v.keys())
-                  print(f"vehicle fields available: {veh_sample_keys}")
-              loc = {}
-              lv = next((v.get(kk) for kk in ("current_location", "location", "location_description",
-                        "last_location", "gps_location", "current_location_name") if v.get(kk)), None)
-              if isinstance(lv, str):
-                  loc["label"] = lv
-              elif isinstance(lv, dict):
-                  loc["label"] = lv.get("name") or lv.get("address") or lv.get("formatted_address") or lv.get("formatted")
-                  loc["lat"] = lv.get("latitude") or lv.get("lat")
-                  loc["lon"] = lv.get("longitude") or lv.get("lng") or lv.get("lon")
-              if not loc.get("lat"):
-                  la = v.get("latitude") or v.get("current_latitude")
-                  lo = v.get("longitude") or v.get("current_longitude")
-                  if la and lo:
-                      loc["lat"], loc["lon"] = la, lo
-              lu = v.get("location_updated_at") or v.get("gps_updated_at")
-              if lu:
-                  loc["updated_at"] = lu
-              rec["last_location"] = ({kk: vv for kk, vv in loc.items() if vv} or None)
-              # Fleetio keeps location in a separate "location entry" resource; the
-              # vehicle only carries current_location_entry_id. Resolve it for the
-              # real place/coords. Dumps location_entry keys once for field discovery.
-              if not rec["last_location"] and v.get("current_location_entry_id"):
-                  le = resolve_location(vid, v.get("current_location_entry_id"))
+              # ---- last known location via Fleetio location_entries (current entry) ----
+              rec["last_location"] = None
+              try:
+                  les = records_of(fleetio_get(f"vehicles/{vid}/location_entries"))
+                  le = next((e for e in les if e.get("is_current")), les[0] if les else None)
                   if isinstance(le, dict):
                       if le_sample_keys is None:
                           le_sample_keys = sorted(le.keys())
                       geo = le.get("geolocation") if isinstance(le.get("geolocation"), dict) else {}
-                      lloc = {
-                          "label": (le.get("name") or le.get("address") or le.get("formatted_address")
-                                    or le.get("geocoded_address") or le.get("description")),
-                          "lat": le.get("latitude") or le.get("lat") or geo.get("latitude") or geo.get("lat"),
-                          "lon": le.get("longitude") or le.get("lng") or le.get("lon") or geo.get("longitude") or geo.get("lng"),
-                          "updated_at": (le.get("located_at") or le.get("date") or le.get("reported_at")
-                                         or le.get("created_at") or le.get("updated_at")),
+                      loc = {
+                          "label": le.get("address") or le.get("location") or le.get("name"),
+                          "lat": geo.get("latitude") or geo.get("lat") or le.get("latitude") or le.get("lat"),
+                          "lon": geo.get("longitude") or geo.get("lng") or geo.get("lon") or le.get("longitude") or le.get("lng"),
+                          "updated_at": le.get("date") or le.get("updated_at") or le.get("created_at"),
                       }
-                      rec["last_location"] = ({kk: vv for kk, vv in lloc.items() if vv} or None)
+                      rec["last_location"] = {kk: vv for kk, vv in loc.items() if vv} or None
+              except Exception as _e:
+                  print(f"  {k}: location fetch failed: {_e}")
               services = []
               try:
                   se = records_of(fleetio_get(f"vehicles/{vid}/service_entries", {"per_page": 5}))
@@ -201,9 +139,7 @@ jobs:
               "trucks": trucks,
               "other_group_vehicles": sorted(o["name"] for o in others),
               "_service_entry_fields": sample_keys,
-              "_vehicle_fields": veh_sample_keys,
               "_location_entry_fields": le_sample_keys,
-              "_loc_probe": loc_probe,
           }
 
           def gh_get_sha(path):
