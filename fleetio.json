@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T07:39:36.491465+00:00",
+  "generated_at": "2026-08-10T07:45:03.182844+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -20,7 +20,6 @@
         "value": "607.0",
         "unit": "mi"
       },
-      "last_location": null,
       "recent_service_entries": [],
       "location": null
     },
@@ -36,7 +35,6 @@
         "value": "637.0",
         "unit": "mi"
       },
-      "last_location": null,
       "recent_service_entries": [],
       "location": null
     },
@@ -52,7 +50,6 @@
         "value": "605.0",
         "unit": "mi"
       },
-      "last_location": null,
       "recent_service_entries": [],
       "location": null
     },
@@ -68,7 +65,6 @@
         "value": "698.0",
         "unit": "mi"
       },
-      "last_location": null,
       "recent_service_entries": [],
       "location": null
     },
@@ -84,7 +80,6 @@
         "value": "633.0",
         "unit": "mi"
       },
-      "last_location": null,
       "recent_service_entries": [],
       "location": null
     },
@@ -100,7 +95,6 @@
         "value": "633.0",
         "unit": "mi"
       },
-      "last_location": null,
       "recent_service_entries": [],
       "location": null
     },
@@ -116,7 +110,6 @@
         "value": "632.0",
         "unit": "mi"
       },
-      "last_location": null,
       "recent_service_entries": [],
       "location": null
     },
@@ -132,14 +125,14 @@
         "value": "12199.0",
         "unit": "km"
       },
-      "last_location": {
-        "label": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578258,
-        "lon": 139.747055,
-        "updated_at": "2026-08-10T09:54:58.603+09:00"
-      },
       "recent_service_entries": [],
-      "location": null
+      "location": {
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578258,
+        "lng": 139.747055,
+        "at": "2026-08-10T09:54:58.603+09:00",
+        "is_current": true
+      }
     },
     "HD16": {
       "fleetio_id": 4608057,
@@ -153,36 +146,14 @@
         "value": "22492.0",
         "unit": "km"
       },
-      "last_location": {
-        "label": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578451,
-        "lon": 139.747616,
-        "updated_at": "2026-08-08T19:24:43.421+09:00"
-      },
       "recent_service_entries": [],
-      "_loc_diag": {
-        "nested_plain": {
-          "status": 400,
-          "ok": false,
-          "body": "{\"errors\":{\"per_page\":[\"out of range\"]}}"
-        },
-        "nested_v240315": {
-          "status": 400,
-          "ok": false,
-          "body": "{\"errors\":{\"per_page\":[\"out of range\"]}}"
-        },
-        "nested_v250505": {
-          "status": 400,
-          "ok": false,
-          "body": "{\"errors\":{\"per_page\":[\"out of range\"]}}"
-        },
-        "toplevel_filter": {
-          "status": 404,
-          "ok": false,
-          "body": "{\"title\":\"Not Found\",\"status\":404,\"detail\":\"This resource could not be found.\"}"
-        }
-      },
-      "location": null
+      "location": {
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578451,
+        "lng": 139.747616,
+        "at": "2026-08-08T19:24:43.421+09:00",
+        "is_current": true
+      }
     },
     "HD15": {
       "fleetio_id": 4608056,
@@ -196,14 +167,14 @@
         "value": "30120.0",
         "unit": "km"
       },
-      "last_location": {
-        "label": "Japan, \u3012305-0817 Ibaraki, Tsukuba, Kenky\u016bgakuen, 5-ch\u014dme\u2212\uff14\u2212\uff17",
-        "lat": 36.082844,
-        "lon": 140.08087,
-        "updated_at": "2026-08-10T09:50:28.888+09:00"
-      },
       "recent_service_entries": [],
-      "location": null
+      "location": {
+        "address": "Japan, \u3012305-0817 Ibaraki, Tsukuba, Kenky\u016bgakuen, 5-ch\u014dme\u2212\uff14\u2212\uff17",
+        "lat": 36.082844,
+        "lng": 140.08087,
+        "at": "2026-08-10T09:50:28.888+09:00",
+        "is_current": true
+      }
     },
     "HD14": {
       "fleetio_id": 4608055,
@@ -217,14 +188,14 @@
         "value": "27991.0",
         "unit": "km"
       },
-      "last_location": {
-        "label": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.57826,
-        "lon": 139.747055,
-        "updated_at": "2026-08-10T09:30:32.257+09:00"
-      },
       "recent_service_entries": [],
-      "location": null
+      "location": {
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.57826,
+        "lng": 139.747055,
+        "at": "2026-08-10T09:30:32.257+09:00",
+        "is_current": true
+      }
     },
     "HD13": {
       "fleetio_id": 4608054,
@@ -238,14 +209,14 @@
         "value": "28133.0",
         "unit": "km"
       },
-      "last_location": {
-        "label": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.579545,
-        "lon": 139.74621,
-        "updated_at": "2026-08-10T09:55:25.439+09:00"
-      },
       "recent_service_entries": [],
-      "location": null
+      "location": {
+        "address": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.579545,
+        "lng": 139.74621,
+        "at": "2026-08-10T09:55:25.439+09:00",
+        "is_current": true
+      }
     },
     "HD12": {
       "fleetio_id": 4608053,
@@ -259,14 +230,14 @@
         "value": "32077.0",
         "unit": "km"
       },
-      "last_location": {
-        "label": "F8J8+6V Shirosato, Ibaraki, Japan",
-        "lat": 36.480615,
-        "lon": 140.317234,
-        "updated_at": "2026-08-10T12:10:50.040+09:00"
-      },
       "recent_service_entries": [],
-      "location": null
+      "location": {
+        "address": "F8J8+6V Shirosato, Ibaraki, Japan",
+        "lat": 36.480615,
+        "lng": 140.317234,
+        "at": "2026-08-10T12:10:50.040+09:00",
+        "is_current": true
+      }
     },
     "HD5": {
       "fleetio_id": 4456463,
@@ -279,12 +250,6 @@
       "meter": {
         "value": "31330.5",
         "unit": "km"
-      },
-      "last_location": {
-        "label": "POINT (-122.034306 37.380384)",
-        "lat": 37.380384,
-        "lon": -122.034306,
-        "updated_at": "2026-08-07T19:15:05.000-04:00"
       },
       "recent_service_entries": [
         {
@@ -323,7 +288,13 @@
           "meter": null
         }
       ],
-      "location": null
+      "location": {
+        "address": "POINT (-122.034306 37.380384)",
+        "lat": 37.380384,
+        "lng": -122.034306,
+        "at": "2026-08-07T19:15:05.000-04:00",
+        "is_current": true
+      }
     },
     "HD11": {
       "fleetio_id": 4335606,
@@ -337,14 +308,14 @@
         "value": "60208.0",
         "unit": "km"
       },
-      "last_location": {
-        "label": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578257,
-        "lon": 139.747068,
-        "updated_at": "2026-08-10T10:05:29.233+09:00"
-      },
       "recent_service_entries": [],
-      "location": null
+      "location": {
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578257,
+        "lng": 139.747068,
+        "at": "2026-08-10T10:05:29.233+09:00",
+        "is_current": true
+      }
     },
     "HD10": {
       "fleetio_id": 4335605,
@@ -358,14 +329,14 @@
         "value": "71538.0",
         "unit": "km"
       },
-      "last_location": {
-        "label": "3-ch\u014dme-22-22 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.31191,
-        "lon": 136.68169,
-        "updated_at": "2026-08-10T09:17:38.523+09:00"
-      },
       "recent_service_entries": [],
-      "location": null
+      "location": {
+        "address": "3-ch\u014dme-22-22 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.31191,
+        "lng": 136.68169,
+        "at": "2026-08-10T09:17:38.523+09:00",
+        "is_current": true
+      }
     },
     "HD9": {
       "fleetio_id": 4335604,
@@ -378,12 +349,6 @@
       "meter": {
         "value": "67221.0",
         "unit": "km"
-      },
-      "last_location": {
-        "label": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.236578,
-        "lon": 138.924163,
-        "updated_at": "2026-08-10T09:04:44.353+09:00"
       },
       "recent_service_entries": [
         {
@@ -402,7 +367,13 @@
           "meter": "348.0"
         }
       ],
-      "location": null
+      "location": {
+        "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.236578,
+        "lng": 138.924163,
+        "at": "2026-08-10T09:04:44.353+09:00",
+        "is_current": true
+      }
     },
     "HD8": {
       "fleetio_id": 4335603,
@@ -415,12 +386,6 @@
       "meter": {
         "value": "63302.0",
         "unit": "km"
-      },
-      "last_location": {
-        "label": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 6-ch\u014dme\u22124\u2212\uff18 \u65e5\u672c\u57e0\u982d\u5009\u5eab\u5e73\u548c\u5cf6\u4e8b\u696d\u6240",
-        "lat": 35.578178,
-        "lon": 139.75158,
-        "updated_at": "2026-08-07T16:15:15.241-04:00"
       },
       "recent_service_entries": [
         {
@@ -439,7 +404,13 @@
           "meter": "323.0"
         }
       ],
-      "location": null
+      "location": {
+        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 6-ch\u014dme\u22124\u2212\uff18 \u65e5\u672c\u57e0\u982d\u5009\u5eab\u5e73\u548c\u5cf6\u4e8b\u696d\u6240",
+        "lat": 35.578178,
+        "lng": 139.75158,
+        "at": "2026-08-07T16:15:15.241-04:00",
+        "is_current": true
+      }
     },
     "HD7": {
       "fleetio_id": 4335602,
@@ -452,12 +423,6 @@
       "meter": {
         "value": "22222.0",
         "unit": "km"
-      },
-      "last_location": {
-        "label": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-8512, Japan",
-        "lat": 35.580251,
-        "lon": 139.744126,
-        "updated_at": "2026-05-01T05:13:25.709-04:00"
       },
       "recent_service_entries": [
         {
@@ -476,7 +441,13 @@
           "meter": "21398.0"
         }
       ],
-      "location": null
+      "location": {
+        "address": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-8512, Japan",
+        "lat": 35.580251,
+        "lng": 139.744126,
+        "at": "2026-05-01T05:13:25.709-04:00",
+        "is_current": true
+      }
     },
     "HD6": {
       "fleetio_id": 4335601,
@@ -489,12 +460,6 @@
       "meter": {
         "value": "68686.0",
         "unit": "km"
-      },
-      "last_location": {
-        "label": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578411,
-        "lon": 139.747467,
-        "updated_at": "2026-08-09T18:20:34.588+09:00"
       },
       "recent_service_entries": [
         {
@@ -513,7 +478,13 @@
           "meter": "22198.0"
         }
       ],
-      "location": null
+      "location": {
+        "address": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578411,
+        "lng": 139.747467,
+        "at": "2026-08-09T18:20:34.588+09:00",
+        "is_current": true
+      }
     }
   },
   "other_group_vehicles": [
