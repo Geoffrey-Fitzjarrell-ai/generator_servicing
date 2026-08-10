@@ -1,13 +1,139 @@
 {
-  "generated_at": "2026-08-10T01:14:26.764320+00:00",
+  "generated_at": "2026-08-10T07:37:34.995341+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
-  "truck_count": 13,
+  "truck_count": 20,
   "decommissioned_skipped": [
     "HD18"
   ],
   "trucks": {
+    "HD25": {
+      "fleetio_id": 5526099,
+      "name": "IZJ-825(HD25)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019137",
+      "status": "Inactive",
+      "meter": {
+        "value": "607.0",
+        "unit": "mi"
+      },
+      "last_location": null,
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
+    },
+    "HD24": {
+      "fleetio_id": 5526098,
+      "name": "IZJ-824(HD24)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019136",
+      "status": "Inactive",
+      "meter": {
+        "value": "637.0",
+        "unit": "mi"
+      },
+      "last_location": null,
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
+    },
+    "HD23": {
+      "fleetio_id": 5526097,
+      "name": "IZJ-823(HD23)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019135",
+      "status": "Inactive",
+      "meter": {
+        "value": "605.0",
+        "unit": "mi"
+      },
+      "last_location": null,
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
+    },
+    "HD22": {
+      "fleetio_id": 5526096,
+      "name": "IZJ-822(HD22)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019108",
+      "status": "Inactive",
+      "meter": {
+        "value": "698.0",
+        "unit": "mi"
+      },
+      "last_location": null,
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
+    },
+    "HD21": {
+      "fleetio_id": 5526089,
+      "name": "IZJ-821(HD21)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019107",
+      "status": "Inactive",
+      "meter": {
+        "value": "633.0",
+        "unit": "mi"
+      },
+      "last_location": null,
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
+    },
+    "HD20": {
+      "fleetio_id": 5526088,
+      "name": "IZJ-820(HD20)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019106",
+      "status": "Inactive",
+      "meter": {
+        "value": "633.0",
+        "unit": "mi"
+      },
+      "last_location": null,
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
+    },
+    "HD19": {
+      "fleetio_id": 5526039,
+      "name": "IZJ-819(HD19)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019079",
+      "status": "Inactive",
+      "meter": {
+        "value": "632.0",
+        "unit": "mi"
+      },
+      "last_location": null,
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
+    },
     "HD17": {
       "fleetio_id": 4608058,
       "name": "IZJ-817 (HD17)",
@@ -26,7 +152,10 @@
         "lon": 139.747055,
         "updated_at": "2026-08-10T09:54:58.603+09:00"
       },
-      "recent_service_entries": []
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
     },
     "HD16": {
       "fleetio_id": 4608057,
@@ -46,7 +175,10 @@
         "lon": 139.747616,
         "updated_at": "2026-08-08T19:24:43.421+09:00"
       },
-      "recent_service_entries": []
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
     },
     "HD15": {
       "fleetio_id": 4608056,
@@ -66,7 +198,10 @@
         "lon": 140.08087,
         "updated_at": "2026-08-10T09:50:28.888+09:00"
       },
-      "recent_service_entries": []
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
     },
     "HD14": {
       "fleetio_id": 4608055,
@@ -86,7 +221,10 @@
         "lon": 139.747055,
         "updated_at": "2026-08-10T09:30:32.257+09:00"
       },
-      "recent_service_entries": []
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
     },
     "HD13": {
       "fleetio_id": 4608054,
@@ -106,7 +244,10 @@
         "lon": 139.74621,
         "updated_at": "2026-08-10T09:55:25.439+09:00"
       },
-      "recent_service_entries": []
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
     },
     "HD12": {
       "fleetio_id": 4608053,
@@ -117,16 +258,19 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "32074.0",
+        "value": "32077.0",
         "unit": "km"
       },
       "last_location": {
-        "label": "3-ch\u014dme-28-1 \u014cmorihigashi, Ota City, Tokyo 143-0012, Japan",
-        "lat": 35.573932,
-        "lon": 139.739647,
-        "updated_at": "2026-08-10T09:33:54.550+09:00"
+        "label": "F8J8+6V Shirosato, Ibaraki, Japan",
+        "lat": 36.480615,
+        "lon": 140.317234,
+        "updated_at": "2026-08-10T12:10:50.040+09:00"
       },
-      "recent_service_entries": []
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
     },
     "HD5": {
       "fleetio_id": 4456463,
@@ -182,7 +326,10 @@
           "labels": [],
           "meter": null
         }
-      ]
+      ],
+      "location": {
+        "error": "HTTP 400"
+      }
     },
     "HD11": {
       "fleetio_id": 4335606,
@@ -202,7 +349,10 @@
         "lon": 139.747068,
         "updated_at": "2026-08-10T10:05:29.233+09:00"
       },
-      "recent_service_entries": []
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
     },
     "HD10": {
       "fleetio_id": 4335605,
@@ -222,7 +372,10 @@
         "lon": 136.68169,
         "updated_at": "2026-08-10T09:17:38.523+09:00"
       },
-      "recent_service_entries": []
+      "recent_service_entries": [],
+      "location": {
+        "error": "HTTP 400"
+      }
     },
     "HD9": {
       "fleetio_id": 4335604,
@@ -258,7 +411,10 @@
           ],
           "meter": "348.0"
         }
-      ]
+      ],
+      "location": {
+        "error": "HTTP 400"
+      }
     },
     "HD8": {
       "fleetio_id": 4335603,
@@ -294,7 +450,10 @@
           ],
           "meter": "323.0"
         }
-      ]
+      ],
+      "location": {
+        "error": "HTTP 400"
+      }
     },
     "HD7": {
       "fleetio_id": 4335602,
@@ -330,7 +489,10 @@
           ],
           "meter": "21398.0"
         }
-      ]
+      ],
+      "location": {
+        "error": "HTTP 400"
+      }
     },
     "HD6": {
       "fleetio_id": 4335601,
@@ -366,7 +528,10 @@
           ],
           "meter": "22198.0"
         }
-      ]
+      ],
+      "location": {
+        "error": "HTTP 400"
+      }
     }
   },
   "other_group_vehicles": [
@@ -378,7 +543,6 @@
     "CAT-160M",
     "CHE-101",
     "CHE-102",
-    "CIT-101",
     "CIT-102",
     "CIV-201",
     "CIV-202",
@@ -409,8 +573,6 @@
     "MAC-C7",
     "MARTAC M18.6 Unmanned Surface Vessel",
     "MARTAC M18.7 Unmanned Surface Vessel",
-    "MCE-110",
-    "MCE-111",
     "MCE-112",
     "MCE-113",
     "MCE-114",
@@ -428,10 +590,6 @@
     "POR-102",
     "POR-911 (Martini)",
     "PRO-101",
-    "ROG-147",
-    "ROG-148",
-    "ROG-149",
-    "ROG-201",
     "ROG-202",
     "ROG-203",
     "ROG-204",
