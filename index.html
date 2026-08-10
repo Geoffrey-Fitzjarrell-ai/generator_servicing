@@ -242,6 +242,17 @@ html,body { height:100%; background:var(--bg); color:var(--text); font-family:va
 .daily-hours-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
 .daily-hours-lbl { font-size:9px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; }
 .daily-hours-avg { font-family:var(--mono); font-size:10px; color:var(--text-faint); }
+.loc-slot { padding:10px 12px; border-radius:var(--radius); background:var(--surface2); border:1px solid var(--border); margin-top:10px; }
+.loc-slot-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+.loc-slot-lbl { font-size:9px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; }
+.loc-slot-at { font-family:var(--mono); font-size:9px; color:var(--text-faint); }
+.loc-map-wrap { position:relative; width:100%; height:170px; border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); background:var(--surface); }
+.loc-map-frame { width:100%; height:100%; border:0; display:block; }
+.loc-map-marker { position:absolute; left:50%; top:50%; width:32px; height:40px; transform:translate(-50%,-100%); pointer-events:none; z-index:2; animation:locDrop .45s cubic-bezier(.34,1.56,.64,1); }
+.loc-map-marker svg { width:100%; height:100%; display:block; }
+@keyframes locDrop { 0%{opacity:0;transform:translate(-50%,-160%);} 100%{opacity:1;transform:translate(-50%,-100%);} }
+.loc-slot-addr { display:inline-block; margin-top:8px; font-size:12px; color:var(--text); text-decoration:none; border-bottom:1px dotted #2bb3c0; }
+.loc-slot-addr:hover { color:#2bb3c0; }
 .daily-bars { display:flex; align-items:flex-end; gap:6px; height:110px; padding-top:18px; position:relative; }
 .daily-bar-wrap { display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px; flex:1; height:100%; position:relative; }
 .daily-bar-val { font-family:var(--mono); font-size:10px; color:var(--text); white-space:nowrap; }
@@ -561,6 +572,7 @@ const TICKETS_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/g
 // kept visually separate from our generator-hours tracking so the two don't get confused.
 const FLEETIO_URL = "https://raw.githubusercontent.com/Geoffrey-Fitzjarrell-ai/generator_servicing/main/fleetio.json";
 const fmtFleetioLoc=(loc)=>{if(!loc)return null;const a=loc.address&&String(loc.address);const hasPoint=a&&a.indexOf("POINT")===0;const lat=(loc.lat!=null)?Number(loc.lat):null;const lng=(loc.lng!=null)?Number(loc.lng):null;const coords=(lat!=null&&lng!=null)?(lat.toFixed(5)+", "+lng.toFixed(5)):null;const label=(a&&!hasPoint)?a:(coords||a||"\u2014");const map=(lat!=null&&lng!=null)?("https://www.google.com/maps?q="+lat+","+lng):null;return{label:label,map:map,at:loc.at||null};};
+const TRUCK_MARKER_SVG="<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 44 56\"><defs><filter id=\"lm-sh\" x=\"-40%\" y=\"-20%\" width=\"180%\" height=\"160%\"><feDropShadow dx=\"0\" dy=\"1.5\" stdDeviation=\"1.6\" flood-color=\"#000\" flood-opacity=\"0.45\"/></filter></defs><path filter=\"url(#lm-sh)\" d=\"M22 3 C12 3 4 11 4 21 C4 34 22 52 22 52 C22 52 40 34 40 21 C40 11 32 3 22 3 Z\" fill=\"#2bb3c0\" stroke=\"#0e6b76\" stroke-width=\"1.2\"/><circle cx=\"22\" cy=\"20\" r=\"13\" fill=\"#ffffff\"/><g transform=\"translate(22 20)\"><rect x=\"-9\" y=\"-4.5\" width=\"10\" height=\"8\" rx=\"1\" fill=\"#0e6b76\"/><path d=\"M1 -1.5 H4.5 L7.5 1.5 V3.5 H1 Z\" fill=\"#0e6b76\"/><rect x=\"4.6\" y=\"-0.6\" width=\"2.4\" height=\"2.1\" rx=\"0.4\" fill=\"#bfe9ee\"/><circle cx=\"-5.5\" cy=\"4\" r=\"1.7\" fill=\"#0e6b76\" stroke=\"#fff\" stroke-width=\"0.7\"/><circle cx=\"3.8\" cy=\"4\" r=\"1.7\" fill=\"#0e6b76\" stroke=\"#fff\" stroke-width=\"0.7\"/></g></svg>";
 const FLEETIO_ACCENT = "#2bb3c0";
 const TASK_INFO = {
   airfilter_battery: {
@@ -1557,7 +1569,27 @@ function App({ jump }) {
               React.createElement("div",{className:"daily-no-data"},"No hours logged yet — fills in automatically from daily Slack posts"));
             return React.createElement(React.Fragment,null,head,frame);
           })()
-        )
+        ),
+        (function(){
+          var _t=(fleetio&&fleetio.trucks)?fleetio.trucks[selected]:null;
+          var _loc=_t?_t.location:null; var L=fmtFleetioLoc(_loc);
+          var lat=(_loc&&_loc.lat!=null)?Number(_loc.lat):null;
+          var lng=(_loc&&_loc.lng!=null)?Number(_loc.lng):null;
+          if(lat==null||lng==null||!isFinite(lat)||!isFinite(lng)) return null;
+          var embed="https://www.google.com/maps?q="+lat+","+lng+"&z=15&output=embed";
+          var full="https://www.google.com/maps?q="+lat+","+lng;
+          return React.createElement("div",{className:"loc-slot",key:"loc"+selected},
+            React.createElement("div",{className:"loc-slot-head"},
+              React.createElement("div",{className:"loc-slot-lbl"},"Last Known Location"),
+              (L&&L.at)?React.createElement("div",{className:"loc-slot-at"},"as of "+String(L.at).slice(0,10)):null
+            ),
+            React.createElement("div",{className:"loc-map-wrap"},
+              React.createElement("iframe",{src:embed,className:"loc-map-frame",loading:"lazy",title:selected+" location",referrerPolicy:"no-referrer-when-downgrade"}),
+              React.createElement("div",{className:"loc-map-marker",title:selected,dangerouslySetInnerHTML:{__html:TRUCK_MARKER_SVG}})
+            ),
+            React.createElement("a",{href:full,target:"_blank",rel:"noopener",className:"loc-slot-addr"},(L&&L.label)?L.label:(lat.toFixed(5)+", "+lng.toFixed(5)))
+          );
+        })()
       ),
       React.createElement("div",{className:"right-panel "+(transitioning?"panel-exit":"panel-enter"),key:"R"+displayKey},
         showSuccess?React.createElement("div",{className:"success-flash"}):null,
@@ -1690,7 +1722,7 @@ function App({ jump }) {
                 ):null
               
               ),
-              (function(){var L=fmtFleetioLoc(fio.location);return L?React.createElement("div",{style:{marginBottom:12}},React.createElement("div",{style:{fontSize:9,color:"var(--text-faint)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:4}},"Last Known Location"),React.createElement("div",{style:{display:"flex",alignItems:"baseline",gap:8,flexWrap:"wrap"}},L.map?React.createElement("a",{href:L.map,target:"_blank",rel:"noopener",style:{color:FLEETIO_ACCENT,fontSize:12,textDecoration:"none",borderBottom:"1px dotted "+FLEETIO_ACCENT}},L.label):React.createElement("span",{style:{fontSize:12,color:"var(--text)"}},L.label),L.at?React.createElement("span",{style:{fontFamily:"var(--mono)",fontSize:9,color:"var(--text-faint)"}},String(L.at).slice(0,10)):null)):null;})(),
+              
               React.createElement("div",{style:{fontSize:9,color:"var(--text-faint)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}},"Recent Fleetio Service"),
               svc.length?React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:4}},
                 svc.map(function(s,i){return React.createElement("div",{key:i,style:{display:"flex",gap:10,alignItems:"center",padding:"6px 10px",background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:"var(--radius)"}},
