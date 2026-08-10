@@ -65,30 +65,36 @@ jobs:
           # (into loc_probe, surfaced in fleetio.json) so we can confirm what works.
           loc_probe = []
           def resolve_location(vid, leid):
-              V2 = "https://secure.fleetio.com/api/v2"
-              cands = [
-                  ("location_entries/" + str(leid), None, None),
-                  (f"vehicles/{vid}/location_entries", {"per_page": 1}, None),
-                  ("location_entries/" + str(leid), None, V2),
-                  (f"vehicles/{vid}/location_entries", {"per_page": 1}, V2),
-                  ("location_entries", {"filter[vehicle_id]": vid, "per_page": 1}, V2),
-              ]
-              for path, params, base in cands:
-                  tag = ("v2/" if base else "v1/") + path.split("?")[0]
+              from datetime import timedelta
+              now = NOW; d30 = now - timedelta(days=30)
+              def probe(tag, **kw):
+                  if len(loc_probe) < 10:
+                      loc_probe.append({"path": tag, **{k: v for k, v in kw.items() if v is not None}})
+              # 1) vehicle detail — may carry an inline current location the list omits
+              try:
+                  vd = fleetio_get(f"vehicles/{vid}")
+                  if isinstance(vd, dict):
+                      lk = [f for f in vd.keys() if any(w in f.lower() for w in ("location","lat","lon","geo","coord","place","address"))]
+                      probe(f"v1/vehicles/{vid}[detail]", ok=True, keys=lk)
+                      for f in ("current_location", "location", "last_location"):
+                          val = vd.get(f)
+                          if isinstance(val, dict) and val: return val
+                          if isinstance(val, str) and val: return {"name": val}
+              except _ue.HTTPError as e:
+                  probe(f"v1/vehicles/{vid}[detail]", code=e.code, body=e.read().decode("utf-8","replace")[:200])
+              # 2) nested location_entries with param variations (capture 400 body)
+              for params, label in [(None, "noparams"), ({"per_page": 1}, "per_page"),
+                                    ({"per_page": 1, "start_date": d30.strftime("%Y-%m-%d"),
+                                      "end_date": now.strftime("%Y-%m-%d")}, "daterange")]:
                   try:
-                      resp = fleetio_get(path, params, base)
-                      le = resp if (isinstance(resp, dict) and "records" not in resp) \
-                           else (records_of(resp)[0] if records_of(resp) else None)
+                      resp = fleetio_get(f"vehicles/{vid}/location_entries", params)
+                      les = records_of(resp)
+                      le = les[0] if les else (resp if isinstance(resp, dict) and "records" not in resp else None)
                       ok = isinstance(le, dict) and bool(le)
-                      if len(loc_probe) < 8:
-                          loc_probe.append({"path": tag, "ok": ok,
-                                            "keys": sorted(le.keys()) if ok else None})
-                      if ok:
-                          return le
+                      probe(f"v1/veh/location_entries?{label}", ok=ok, keys=sorted(le.keys()) if ok else None)
+                      if ok: return le
                   except _ue.HTTPError as e:
-                      if len(loc_probe) < 8: loc_probe.append({"path": tag, "code": e.code})
-                  except Exception as e:
-                      if len(loc_probe) < 8: loc_probe.append({"path": tag, "err": str(e)[:80]})
+                      probe(f"v1/veh/location_entries?{label}", code=e.code, body=e.read().decode("utf-8","replace")[:200])
               return None
 
           def hd_key(name):
