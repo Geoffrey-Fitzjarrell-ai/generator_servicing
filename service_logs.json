@@ -106,12 +106,13 @@
   },
   "HD16": {
     "airfilter_battery": 550,
-    "battery_box": 497,
+    "battery_box": 578,
     "oil_filter": 550,
     "fuel_filter": 430,
     "airfilter_500": 178,
-    "coolant_lines": 294,
-    "drive_belt": 294
+    "coolant_lines": 578,
+    "drive_belt": 294,
+    "clean_radiator": 578
   },
   "HD17": {
     "airfilter_battery": 434,
