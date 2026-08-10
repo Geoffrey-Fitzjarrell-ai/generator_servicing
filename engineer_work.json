@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-08-08"
+    "updated": "2026-08-10"
   },
   "items": [
     {
@@ -596,6 +596,22 @@
       "allDay": false,
       "startTime": "08:00",
       "endTime": "12:00",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1786322946857",
+      "title": "Generator service",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD6",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-13",
+      "end": "2026-08-13",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
