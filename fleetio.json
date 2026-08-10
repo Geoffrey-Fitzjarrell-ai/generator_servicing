@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T01:09:15.654117+00:00",
+  "generated_at": "2026-08-10T01:14:26.764320+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -20,7 +20,6 @@
         "value": "12199.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1681921245,
       "last_location": {
         "label": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.578258,
@@ -41,7 +40,6 @@
         "value": "22492.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1680333769,
       "last_location": {
         "label": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.578451,
@@ -62,7 +60,6 @@
         "value": "30120.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1681919462,
       "last_location": {
         "label": "Japan, \u3012305-0817 Ibaraki, Tsukuba, Kenky\u016bgakuen, 5-ch\u014dme\u2212\uff14\u2212\uff17",
         "lat": 36.082844,
@@ -83,7 +80,6 @@
         "value": "27991.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1681907792,
       "last_location": {
         "label": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.57826,
@@ -104,7 +100,6 @@
         "value": "28133.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1681921492,
       "last_location": {
         "label": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.579545,
@@ -125,7 +120,6 @@
         "value": "32074.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1681910702,
       "last_location": {
         "label": "3-ch\u014dme-28-1 \u014cmorihigashi, Ota City, Tokyo 143-0012, Japan",
         "lat": 35.573932,
@@ -146,8 +140,8 @@
         "value": "31330.5",
         "unit": "km"
       },
-      "current_location_entry_id": 1680273948,
       "last_location": {
+        "label": "POINT (-122.034306 37.380384)",
         "lat": 37.380384,
         "lon": -122.034306,
         "updated_at": "2026-08-07T19:15:05.000-04:00"
@@ -202,7 +196,6 @@
         "value": "60208.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1681925752,
       "last_location": {
         "label": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.578257,
@@ -223,7 +216,6 @@
         "value": "71538.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1681900310,
       "last_location": {
         "label": "3-ch\u014dme-22-22 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
         "lat": 35.31191,
@@ -244,7 +236,6 @@
         "value": "67221.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1681893793,
       "last_location": {
         "label": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
         "lat": 35.236578,
@@ -281,7 +272,6 @@
         "value": "63302.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1679336016,
       "last_location": {
         "label": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 6-ch\u014dme\u22124\u2212\uff18 \u65e5\u672c\u57e0\u982d\u5009\u5eab\u5e73\u548c\u5cf6\u4e8b\u696d\u6240",
         "lat": 35.578178,
@@ -318,7 +308,6 @@
         "value": "22222.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1540734321,
       "last_location": {
         "label": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-8512, Japan",
         "lat": 35.580251,
@@ -355,7 +344,6 @@
         "value": "68686.0",
         "unit": "km"
       },
-      "current_location_entry_id": 1681501361,
       "last_location": {
         "label": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.578411,
@@ -492,70 +480,6 @@
     "vendor_name",
     "work_order_id"
   ],
-  "_vehicle_fields": [
-    "account_id",
-    "ai_enabled",
-    "archived_at",
-    "assetable_type",
-    "axle_config_id",
-    "color",
-    "comments_count",
-    "created_at",
-    "current_location_entry_id",
-    "custom_fields",
-    "default_image_url_small",
-    "documents_count",
-    "driver",
-    "estimated_replacement_mileage",
-    "estimated_resale_price_cents",
-    "estimated_service_months",
-    "fuel_entries_count",
-    "fuel_type_id",
-    "fuel_type_name",
-    "fuel_volume_units",
-    "group_ancestry",
-    "group_id",
-    "group_name",
-    "id",
-    "images_count",
-    "in_service_date",
-    "in_service_meter_value",
-    "is_sample",
-    "issues_count",
-    "labels",
-    "license_plate",
-    "make",
-    "model",
-    "name",
-    "out_of_service_date",
-    "out_of_service_meter_value",
-    "ownership",
-    "primary_meter_date",
-    "primary_meter_unit",
-    "primary_meter_usage_per_day",
-    "primary_meter_value",
-    "registration_expiration_month",
-    "registration_state",
-    "secondary_meter_date",
-    "secondary_meter_unit",
-    "secondary_meter_usage_per_day",
-    "secondary_meter_value",
-    "service_entries_count",
-    "service_reminders_count",
-    "specs",
-    "system_of_measurement",
-    "trim",
-    "updated_at",
-    "vehicle_renewal_reminders_count",
-    "vehicle_status_color",
-    "vehicle_status_id",
-    "vehicle_status_name",
-    "vehicle_type_id",
-    "vehicle_type_name",
-    "vin",
-    "work_orders_count",
-    "year"
-  ],
   "_location_entry_fields": [
     "address",
     "address_components",
@@ -572,162 +496,5 @@
     "location",
     "updated_at",
     "vehicle_id"
-  ],
-  "_loc_probe": [
-    {
-      "path": "v1/vehicles/4608058[detail]",
-      "ok": true,
-      "keys": [
-        "current_location_entry_id",
-        "estimated_replacement_mileage",
-        "license_plate",
-        "current_location_entry"
-      ]
-    },
-    {
-      "path": "v1/veh/location_entries?noparams",
-      "ok": true,
-      "keys": [
-        "address",
-        "address_components",
-        "contact_id",
-        "created_at",
-        "date",
-        "geolocation",
-        "id",
-        "is_current",
-        "item_id",
-        "item_type",
-        "locatable_id",
-        "locatable_type",
-        "location",
-        "updated_at",
-        "vehicle_id"
-      ]
-    },
-    {
-      "path": "v1/vehicles/4608057[detail]",
-      "ok": true,
-      "keys": [
-        "current_location_entry_id",
-        "estimated_replacement_mileage",
-        "license_plate",
-        "current_location_entry"
-      ]
-    },
-    {
-      "path": "v1/veh/location_entries?noparams",
-      "ok": true,
-      "keys": [
-        "address",
-        "address_components",
-        "contact_id",
-        "created_at",
-        "date",
-        "geolocation",
-        "id",
-        "is_current",
-        "item_id",
-        "item_type",
-        "locatable_id",
-        "locatable_type",
-        "location",
-        "updated_at",
-        "vehicle_id"
-      ]
-    },
-    {
-      "path": "v1/vehicles/4608056[detail]",
-      "ok": true,
-      "keys": [
-        "current_location_entry_id",
-        "estimated_replacement_mileage",
-        "license_plate",
-        "current_location_entry"
-      ]
-    },
-    {
-      "path": "v1/veh/location_entries?noparams",
-      "ok": true,
-      "keys": [
-        "address",
-        "address_components",
-        "contact_id",
-        "created_at",
-        "date",
-        "geolocation",
-        "id",
-        "is_current",
-        "item_id",
-        "item_type",
-        "locatable_id",
-        "locatable_type",
-        "location",
-        "updated_at",
-        "vehicle_id"
-      ]
-    },
-    {
-      "path": "v1/vehicles/4608055[detail]",
-      "ok": true,
-      "keys": [
-        "current_location_entry_id",
-        "estimated_replacement_mileage",
-        "license_plate",
-        "current_location_entry"
-      ]
-    },
-    {
-      "path": "v1/veh/location_entries?noparams",
-      "ok": true,
-      "keys": [
-        "address",
-        "address_components",
-        "contact_id",
-        "created_at",
-        "date",
-        "geolocation",
-        "id",
-        "is_current",
-        "item_id",
-        "item_type",
-        "locatable_id",
-        "locatable_type",
-        "location",
-        "updated_at",
-        "vehicle_id"
-      ]
-    },
-    {
-      "path": "v1/vehicles/4608054[detail]",
-      "ok": true,
-      "keys": [
-        "current_location_entry_id",
-        "estimated_replacement_mileage",
-        "license_plate",
-        "current_location_entry"
-      ]
-    },
-    {
-      "path": "v1/veh/location_entries?noparams",
-      "ok": true,
-      "keys": [
-        "address",
-        "address_components",
-        "contact_id",
-        "created_at",
-        "date",
-        "geolocation",
-        "id",
-        "is_current",
-        "item_id",
-        "item_type",
-        "locatable_id",
-        "locatable_type",
-        "location",
-        "updated_at",
-        "vehicle_id"
-      ]
-    }
   ]
 }
