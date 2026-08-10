@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T10:14:29.679435+00:00",
+  "generated_at": "2026-08-10T21:38:28.287736+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -164,7 +164,7 @@
       "vin": "CYJ77D-7015279",
       "status": "Active",
       "meter": {
-        "value": "30120.0",
+        "value": "30173.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -347,7 +347,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "67221.0",
+        "value": "68010.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -369,9 +369,9 @@
       ],
       "location": {
         "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.236578,
-        "lng": 138.924163,
-        "at": "2026-08-10T09:04:44.353+09:00",
+        "lat": 35.236622,
+        "lng": 138.92409,
+        "at": "2026-08-10T16:28:43.493-04:00",
         "is_current": true
       }
     },
@@ -458,7 +458,7 @@
       "vin": "CYJ77D-7014031",
       "status": "Active",
       "meter": {
-        "value": "68885.0",
+        "value": "69424.0",
         "unit": "km"
       },
       "recent_service_entries": [
