@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T00:59:06.894614+00:00",
+  "generated_at": "2026-08-10T01:00:56.146271+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -478,5 +478,6 @@
     "vin",
     "work_orders_count",
     "year"
-  ]
+  ],
+  "_location_entry_fields": null
 }
