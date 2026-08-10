@@ -93,6 +93,7 @@ jobs:
                   "status": v.get("vehicle_status_name") or v.get("status"),
                   "meter": {"value": v.get("current_meter_value") or v.get("primary_meter_value"),
                             "unit": v.get("primary_meter_unit")},
+                  "current_location_entry_id": v.get("current_location_entry_id"),
               }
               # ---- last known location (best-effort; field names vary by GPS/telematics setup) ----
               # Also dumps the vehicle payload keys once so we can see exactly what
