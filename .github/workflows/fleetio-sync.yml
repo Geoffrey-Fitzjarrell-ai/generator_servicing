@@ -5,7 +5,7 @@ name: Sync Fleetio Vehicle Data
 # Writes fleetio.json. Bounded + deduped => no runaway paging, no rate limits.
 on:
   schedule:
-    - cron: '0 21 * * *'   # 06:00 JST daily
+    - cron: '0 * * * *'    # top of every hour (was daily 06:00 JST); GitHub best-effort, may slip a few min under load
   workflow_dispatch:
 
 jobs:
