@@ -64,7 +64,10 @@
     "postedBy": {
       "id": "U0BE3QDSBEZ",
       "name": null
-    }
+    },
+    "grounded": true,
+    "groundedNote": "Under repair",
+    "groundedSource": "manual"
   },
   "HD12": {
     "hours": 834,
