@@ -647,6 +647,22 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1786520272152",
+      "title": "IMU provisioning",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "XTR-202",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-08-13",
+      "end": "2026-08-13",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "Provision Imu that was replaced in the Xtrail",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
