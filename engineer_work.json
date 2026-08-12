@@ -663,6 +663,22 @@
       "notes": "Provision Imu that was replaced in the Xtrail",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1786520306821",
+      "title": "Make Sd card check manual ",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "",
+      "category": "admin",
+      "status": "planned",
+      "start": "2026-08-13",
+      "end": "2026-08-13",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "Make a manual for the drivers and operators to begin inventory for the SD cards in the truck's kvaser loggers\n",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
