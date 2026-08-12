@@ -166,6 +166,23 @@
       "laborHours": 0,
       "travelHours": 0,
       "jobType": null
+    },
+    {
+      "date": "2026-08-12",
+      "hours": 2036,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": [
+        "Generator oil filter access door loose; swapped with HD13, and will fix door or order replacement"
+      ],
+      "laborHours": 0,
+      "travelHours": 0,
+      "jobType": null
     }
   ],
   "HD7": [
