@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T06:20:02.880406+00:00",
+  "generated_at": "2026-08-12T07:45:35.282585+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -204,7 +204,7 @@
       "model": "CYJ77D-WX-D 23A",
       "year": 2025,
       "vin": "CYJ77D-7015192",
-      "status": "Out of Service",
+      "status": "Active",
       "meter": {
         "value": "28470.0",
         "unit": "km"
