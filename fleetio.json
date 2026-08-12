@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T04:47:11.426193+00:00",
+  "generated_at": "2026-08-12T06:20:02.880406+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -405,10 +405,10 @@
         }
       ],
       "location": {
-        "address": "Japan, \u3012307-0052 Ibaraki, Yuki, Ch\u016b\u014dch\u014d, 1-ch\u014dme\u2212\uff12\u2212\uff13",
-        "lat": 36.294632,
-        "lng": 139.872275,
-        "at": "2026-08-11T16:16:34.867-04:00",
+        "address": "Japan, \u3012307-0052 Ibaraki, Yuki, Ch\u016b\u014dch\u014d, 1-ch\u014dme\u2212\uff14\u2212\uff11\uff15",
+        "lat": 36.294224,
+        "lng": 139.87218,
+        "at": "2026-08-12T01:23:12.073-04:00",
         "is_current": true
       }
     },
