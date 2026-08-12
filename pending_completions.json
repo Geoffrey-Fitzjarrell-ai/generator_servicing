@@ -19,5 +19,23 @@
     ],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD6",
+    "tasks": [
+      "Oil / filter change"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0ABK5GDYGM",
+      "name": null
+    },
+    "loggedAt": "2026-08-12T01:18:39.011Z",
+    "hours": 2036,
+    "notes": [
+      "Generator oil filter access door loose; swapped with HD13, and will fix door or order replacement"
+    ],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
