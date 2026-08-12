@@ -1774,6 +1774,35 @@
         }
       ],
       "notes": []
+    },
+    {
+      "date": "2026-08-12",
+      "hours": 523,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        },
+        {
+          "key": "drive_belt",
+          "label": "Check drive belt & tension"
+        },
+        {
+          "key": "clean_radiator",
+          "label": "Clean radiator"
+        }
+      ],
+      "notes": [
+        "Truck headed out before I could get to the battery/battery box will save for following inspection"
+      ],
+      "laborHours": 0,
+      "travelHours": 0,
+      "jobType": null
     }
   ]
 }
