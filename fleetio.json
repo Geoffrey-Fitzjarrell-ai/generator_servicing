@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T08:18:18.693521+00:00",
+  "generated_at": "2026-08-12T10:06:07.703795+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -164,15 +164,15 @@
       "vin": "CYJ77D-7015279",
       "status": "Active",
       "meter": {
-        "value": "30284.0",
+        "value": "30594.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1-ch\u014dme-3-10 Kitak\u014djiya, Ota City, Tokyo 144-0032, Japan",
-        "lat": 35.564658,
-        "lng": 139.736536,
-        "at": "2026-08-11T20:49:10.701-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.577526,
+        "lng": 139.747322,
+        "at": "2026-08-12T05:26:36.051-04:00",
         "is_current": true
       }
     },
@@ -185,15 +185,15 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "28425.0",
+        "value": "28565.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477357,
-        "lng": 140.329069,
-        "at": "2026-08-11T19:56:06.903-04:00",
+        "lat": 36.477313,
+        "lng": 140.329161,
+        "at": "2026-08-12T05:13:48.535-04:00",
         "is_current": true
       }
     },
@@ -289,10 +289,10 @@
         }
       ],
       "location": {
-        "address": "POINT (-122.034333 37.380392)",
-        "lat": 37.380392,
-        "lng": -122.034333,
-        "at": "2026-08-10T20:16:59.000-04:00",
+        "address": "POINT (-122.034613 37.380417)",
+        "lat": 37.380417,
+        "lng": -122.034613,
+        "at": "2026-08-12T02:50:11.000-04:00",
         "is_current": true
       }
     },
@@ -305,7 +305,7 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "60377.0",
+        "value": "60577.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -326,16 +326,16 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "74014.0",
+        "value": "74549.0",
         "unit": "km"
       },
-      "recent_service_entries": [
-        {
-          "error": "HTTP Error 429: Too Many Requests"
-        }
-      ],
+      "recent_service_entries": [],
       "location": {
-        "error": "HTTP Error 429: Too Many Requests"
+        "address": "3-ch\u014dme-22-22 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.311752,
+        "lng": 136.68187,
+        "at": "2026-08-12T05:36:36.698-04:00",
+        "is_current": true
       }
     },
     "HD9": {
@@ -352,11 +352,27 @@
       },
       "recent_service_entries": [
         {
-          "error": "HTTP Error 429: Too Many Requests"
+          "id": 43362178,
+          "status": "completed",
+          "completed_at": "2025-12-13T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "Tonox Hiratsuka Plant",
+          "reference": "",
+          "labels": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ],
+          "meter": "348.0"
         }
       ],
       "location": {
-        "error": "HTTP Error 429: Too Many Requests"
+        "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.236641,
+        "lng": 138.9241,
+        "at": "2026-08-11T16:53:57.119-04:00",
+        "is_current": true
       }
     },
     "HD8": {
@@ -405,7 +421,7 @@
       "vin": "CYJ77D-7014032",
       "status": "Active",
       "meter": {
-        "value": "22412.0",
+        "value": "22545.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -442,7 +458,7 @@
       "vin": "CYJ77D-7014031",
       "status": "Active",
       "meter": {
-        "value": "69973.0",
+        "value": "70212.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -464,9 +480,9 @@
       ],
       "location": {
         "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578518,
-        "lng": 139.7474,
-        "at": "2026-08-11T21:25:42.932-04:00",
+        "lat": 35.57851,
+        "lng": 139.74736,
+        "at": "2026-08-12T05:30:22.468-04:00",
         "is_current": true
       }
     }
