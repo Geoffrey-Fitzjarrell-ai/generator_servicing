@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T07:45:35.282585+00:00",
+  "generated_at": "2026-08-12T08:18:18.693521+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -329,13 +329,13 @@
         "value": "74014.0",
         "unit": "km"
       },
-      "recent_service_entries": [],
+      "recent_service_entries": [
+        {
+          "error": "HTTP Error 429: Too Many Requests"
+        }
+      ],
       "location": {
-        "address": "3-ch\u014dme-22-22 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.311867,
-        "lng": 136.68188,
-        "at": "2026-08-11T19:57:50.945-04:00",
-        "is_current": true
+        "error": "HTTP Error 429: Too Many Requests"
       }
     },
     "HD9": {
@@ -352,27 +352,11 @@
       },
       "recent_service_entries": [
         {
-          "id": 43362178,
-          "status": "completed",
-          "completed_at": "2025-12-13T00:00:00.000+09:00",
-          "started_at": null,
-          "vendor": "Tonox Hiratsuka Plant",
-          "reference": "",
-          "labels": [
-            {
-              "id": 403826,
-              "name": "Base vehicle"
-            }
-          ],
-          "meter": "348.0"
+          "error": "HTTP Error 429: Too Many Requests"
         }
       ],
       "location": {
-        "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.236641,
-        "lng": 138.9241,
-        "at": "2026-08-11T16:53:57.119-04:00",
-        "is_current": true
+        "error": "HTTP Error 429: Too Many Requests"
       }
     },
     "HD8": {
