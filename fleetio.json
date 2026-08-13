@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-13T10:07:26.391303+00:00",
+  "generated_at": "2026-08-13T11:47:29.321117+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -332,9 +332,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "Japan, \u3012501-6304 Gifu, Hashima, Funabashich\u014d Dezuka, 2-ch\u014dme\u2212\uff13\uff12\u2212\uff13\uff12 \u30d5\u30ed\u30fc\u30e9\u30bf\u30a6\u30f3 H",
-        "lat": 35.31146,
-        "lng": 136.6821,
-        "at": "2026-08-13T05:03:50.646-04:00",
+        "lat": 35.311386,
+        "lng": 136.68199,
+        "at": "2026-08-13T06:42:09.861-04:00",
         "is_current": true
       }
     },
@@ -369,9 +369,9 @@
       ],
       "location": {
         "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.236633,
-        "lng": 138.924086,
-        "at": "2026-08-12T17:19:23.079-04:00",
+        "lat": 35.236664,
+        "lng": 138.924215,
+        "at": "2026-08-13T07:12:11.886-04:00",
         "is_current": true
       }
     },
@@ -384,7 +384,7 @@
       "vin": "CYJ77D-7014033",
       "status": "Active",
       "meter": {
-        "value": "64022.0",
+        "value": "64501.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -480,9 +480,9 @@
       ],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578279,
-        "lng": 139.747037,
-        "at": "2026-08-13T03:09:28.130-04:00",
+        "lat": 35.578259,
+        "lng": 139.747068,
+        "at": "2026-08-13T06:48:17.754-04:00",
         "is_current": true
       }
     }
