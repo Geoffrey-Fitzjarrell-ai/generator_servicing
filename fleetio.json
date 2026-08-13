@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-13T17:57:40.536730+00:00",
+  "generated_at": "2026-08-13T19:13:19.806786+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -36,9 +36,7 @@
         "unit": "mi"
       },
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP Error 429: Too Many Requests"
-      }
+      "location": null
     },
     "HD23": {
       "fleetio_id": 5526097,
@@ -52,11 +50,7 @@
         "value": "605.0",
         "unit": "mi"
       },
-      "recent_service_entries": [
-        {
-          "error": "HTTP Error 429: Too Many Requests"
-        }
-      ],
+      "recent_service_entries": [],
       "location": null
     },
     "HD22": {
@@ -390,7 +384,7 @@
       "vin": "CYJ77D-7014033",
       "status": "Active",
       "meter": {
-        "value": "64501.0",
+        "value": "64709.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -411,10 +405,10 @@
         }
       ],
       "location": {
-        "address": "Japan, \u3012307-0052 Ibaraki, Yuki, Ch\u016b\u014dch\u014d, 1-ch\u014dme\u2212\uff11\u2212\uff19",
-        "lat": 36.294586,
-        "lng": 139.87183,
-        "at": "2026-08-13T08:10:50.074-04:00",
+        "address": "Japan, \u3012307-0052 Ibaraki, Yuki, Ch\u016b\u014dch\u014d, 1-ch\u014dme\u2212\uff13\u2212\uff12",
+        "lat": 36.294186,
+        "lng": 139.872205,
+        "at": "2026-08-13T14:30:13.206-04:00",
         "is_current": true
       }
     },
