@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T23:41:57.345189+00:00",
+  "generated_at": "2026-08-13T02:02:58.191206+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -128,9 +128,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578253,
-        "lng": 139.74707,
-        "at": "2026-08-12T06:17:44.551-04:00",
+        "lat": 35.578256,
+        "lng": 139.74706,
+        "at": "2026-08-12T20:47:05.493-04:00",
         "is_current": true
       }
     },
@@ -169,10 +169,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.577526,
-        "lng": 139.747322,
-        "at": "2026-08-12T05:26:36.051-04:00",
+        "address": "Japan, \u3012143-0004 Tokyo, Ota City, Sh\u014dwajima, 1-ch\u014dme\u22121\u2212\uff15 \u30cf\u30bf\u30e4\u30aa\u30fc\u30b1\u30fc\u30a8\u30b9",
+        "lat": 35.574489,
+        "lng": 139.746488,
+        "at": "2026-08-12T20:44:22.844-04:00",
         "is_current": true
       }
     },
@@ -191,9 +191,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477313,
+        "lat": 36.477268,
         "lng": 140.329161,
-        "at": "2026-08-12T05:13:48.535-04:00",
+        "at": "2026-08-12T20:07:41.744-04:00",
         "is_current": true
       }
     },
@@ -227,15 +227,15 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "32099.0",
+        "value": "32160.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "F8J9+46 Shirosato, Ibaraki, Japan",
-        "lat": 36.480286,
-        "lng": 140.318044,
-        "at": "2026-08-11T20:30:40.502-04:00",
+        "address": "1680-8 Suzug\u014dya, Shirosato, Higashiibaraki District, Ibaraki 311-4335, Japan",
+        "lat": 36.482358,
+        "lng": 140.315528,
+        "at": "2026-08-12T20:13:08.097-04:00",
         "is_current": true
       }
     },
@@ -331,10 +331,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Nagama-2569 Kaminakach\u014d, Hashima, Gifu 501-6311, Japan",
-        "lat": 35.304604,
-        "lng": 136.6947,
-        "at": "2026-08-12T18:24:25.216-04:00",
+        "address": "1-ch\u014dme-52-1 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.311905,
+        "lng": 136.68213,
+        "at": "2026-08-12T19:55:37.787-04:00",
         "is_current": true
       }
     },
@@ -405,10 +405,10 @@
         }
       ],
       "location": {
-        "address": "Japan, \u3012307-0052 Ibaraki, Yuki, Ch\u016b\u014dch\u014d, 1-ch\u014dme\u2212\uff14\u2212\uff11\uff15",
-        "lat": 36.294346,
-        "lng": 139.872158,
-        "at": "2026-08-12T14:35:28.167-04:00",
+        "address": "Japan, \u3012307-0052 Ibaraki, Yuki, Ch\u016b\u014dch\u014d, 1-ch\u014dme\u2212\uff13\u2212\uff12",
+        "lat": 36.294174,
+        "lng": 139.87224,
+        "at": "2026-08-12T20:04:19.567-04:00",
         "is_current": true
       }
     },
@@ -480,9 +480,9 @@
       ],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578259,
-        "lng": 139.747064,
-        "at": "2026-08-12T16:56:47.398-04:00",
+        "lat": 35.57828,
+        "lng": 139.747039,
+        "at": "2026-08-12T20:53:19.132-04:00",
         "is_current": true
       }
     }
