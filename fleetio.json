@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-13T08:21:46.023198+00:00",
+  "generated_at": "2026-08-13T10:07:26.391303+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -122,15 +122,15 @@
       "vin": "CYJ77D-7015281",
       "status": "Active",
       "meter": {
-        "value": "12968.0",
+        "value": "13330.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578256,
-        "lng": 139.74706,
-        "at": "2026-08-12T20:47:05.493-04:00",
+        "lat": 35.57826,
+        "lng": 139.747063,
+        "at": "2026-08-13T05:38:20.891-04:00",
         "is_current": true
       }
     },
@@ -143,7 +143,7 @@
       "vin": "CYJ77D-7015280",
       "status": "Active",
       "meter": {
-        "value": "23255.0",
+        "value": "23635.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -164,15 +164,15 @@
       "vin": "CYJ77D-7015279",
       "status": "Active",
       "meter": {
-        "value": "30594.0",
+        "value": "30956.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Japan, \u3012143-0004 Tokyo, Ota City, Sh\u014dwajima, 1-ch\u014dme\u22121\u2212\uff15 \u30cf\u30bf\u30e4\u30aa\u30fc\u30b1\u30fc\u30a8\u30b9",
-        "lat": 35.574489,
-        "lng": 139.746488,
-        "at": "2026-08-12T20:44:22.844-04:00",
+        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 6-ch\u014dme\u22121\u2212\uff11 Distribution A Bldg., \u68df \uff21\uff37\uff14-\uff33",
+        "lat": 35.578198,
+        "lng": 139.747578,
+        "at": "2026-08-13T05:14:19.888-04:00",
         "is_current": true
       }
     },
@@ -227,15 +227,15 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "32160.0",
+        "value": "34172.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "1680-8 Suzug\u014dya, Shirosato, Higashiibaraki District, Ibaraki 311-4335, Japan",
-        "lat": 36.482358,
-        "lng": 140.315528,
-        "at": "2026-08-12T20:13:08.097-04:00",
+        "lat": 36.482309,
+        "lng": 140.315383,
+        "at": "2026-08-13T05:14:46.471-04:00",
         "is_current": true
       }
     },
@@ -289,10 +289,10 @@
         }
       ],
       "location": {
-        "address": "POINT (-122.034613 37.380417)",
-        "lat": 37.380417,
-        "lng": -122.034613,
-        "at": "2026-08-12T02:50:11.000-04:00",
+        "address": "POINT (-122.034709 37.380598)",
+        "lat": 37.380598,
+        "lng": -122.034709,
+        "at": "2026-08-12T12:59:22.000-04:00",
         "is_current": true
       }
     },
@@ -326,15 +326,15 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "75207.0",
+        "value": "75570.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1-ch\u014dme-52-1 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.311905,
-        "lng": 136.68213,
-        "at": "2026-08-12T19:55:37.787-04:00",
+        "address": "Japan, \u3012501-6304 Gifu, Hashima, Funabashich\u014d Dezuka, 2-ch\u014dme\u2212\uff13\uff12\u2212\uff13\uff12 \u30d5\u30ed\u30fc\u30e9\u30bf\u30a6\u30f3 H",
+        "lat": 35.31146,
+        "lng": 136.6821,
+        "at": "2026-08-13T05:03:50.646-04:00",
         "is_current": true
       }
     },
