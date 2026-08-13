@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-13T11:47:29.321117+00:00",
+  "generated_at": "2026-08-13T13:12:29.787571+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -185,15 +185,15 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "28565.0",
+        "value": "28880.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477268,
-        "lng": 140.329161,
-        "at": "2026-08-12T20:07:41.744-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578261,
+        "lng": 139.747059,
+        "at": "2026-08-13T08:34:09.411-04:00",
         "is_current": true
       }
     },
@@ -405,10 +405,10 @@
         }
       ],
       "location": {
-        "address": "Japan, \u3012307-0052 Ibaraki, Yuki, Ch\u016b\u014dch\u014d, 1-ch\u014dme\u2212\uff13\u2212\uff12",
-        "lat": 36.294174,
-        "lng": 139.87224,
-        "at": "2026-08-12T20:04:19.567-04:00",
+        "address": "Japan, \u3012307-0052 Ibaraki, Yuki, Ch\u016b\u014dch\u014d, 1-ch\u014dme\u2212\uff11\u2212\uff19",
+        "lat": 36.294586,
+        "lng": 139.87183,
+        "at": "2026-08-13T08:10:50.074-04:00",
         "is_current": true
       }
     },
@@ -421,7 +421,7 @@
       "vin": "CYJ77D-7014032",
       "status": "Active",
       "meter": {
-        "value": "22545.0",
+        "value": "22881.0",
         "unit": "km"
       },
       "recent_service_entries": [
