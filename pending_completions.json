@@ -15,5 +15,21 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD16",
+    "tasks": [
+      "Air filter / Battery check"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U09NG2B5316",
+      "name": null
+    },
+    "loggedAt": "2026-08-13T22:52:59.373Z",
+    "hours": 602,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
