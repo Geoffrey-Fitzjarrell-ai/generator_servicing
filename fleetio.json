@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14T10:02:55.147946+00:00",
+  "generated_at": "2026-08-14T11:43:43.771518+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -305,7 +305,7 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "60579.0",
+        "value": "60964.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -369,9 +369,9 @@
       ],
       "location": {
         "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.236604,
-        "lng": 138.924184,
-        "at": "2026-08-13T16:31:05.648-04:00",
+        "lat": 35.236719,
+        "lng": 138.924123,
+        "at": "2026-08-14T20:00:52.550+09:00",
         "is_current": true
       }
     },
@@ -384,7 +384,7 @@
       "vin": "CYJ77D-7014033",
       "status": "Active",
       "meter": {
-        "value": "64709.0",
+        "value": "65187.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -405,10 +405,10 @@
         }
       ],
       "location": {
-        "address": "Japan, \u3012307-0052 Ibaraki, Yuki, Ch\u016b\u014dch\u014d, 1-ch\u014dme\u2212\uff14\u2212\uff11\uff16",
-        "lat": 36.294434,
-        "lng": 139.87201,
-        "at": "2026-08-13T20:08:23.988-04:00",
+        "address": "Japan, \u3012307-0052 Ibaraki, Yuki, Ch\u016b\u014dch\u014d, 1-ch\u014dme\u2212\uff12\u2212\uff14",
+        "lat": 36.29439,
+        "lng": 139.872275,
+        "at": "2026-08-14T20:19:15.355+09:00",
         "is_current": true
       }
     },
@@ -458,7 +458,7 @@
       "vin": "CYJ77D-7014031",
       "status": "Active",
       "meter": {
-        "value": "71053.0",
+        "value": "71057.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -479,10 +479,10 @@
         }
       ],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578197,
-        "lng": 139.74703,
-        "at": "2026-08-13T16:29:47.332-04:00",
+        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 5-ch\u014dme\u22125\u2212\uff16 \u5927\u68ee\u81ea\u52d5\u8eca\u904b\u8f38\u5e73\u548c\u5cf6\u5009\u5eab",
+        "lat": 35.578686,
+        "lng": 139.746002,
+        "at": "2026-08-14T20:11:39.018+09:00",
         "is_current": true
       }
     }
