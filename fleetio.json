@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-13T23:41:26.942563+00:00",
+  "generated_at": "2026-08-14T02:00:35.735460+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -169,10 +169,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 6-ch\u014dme\u22121\u2212\uff11 Distribution A Bldg., \u68df \uff21\uff37\uff14-\uff33",
-        "lat": 35.578198,
-        "lng": 139.747578,
-        "at": "2026-08-13T05:14:19.888-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578333,
+        "lng": 139.747257,
+        "at": "2026-08-14T09:38:18.355+09:00",
         "is_current": true
       }
     },
@@ -233,9 +233,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "1680-8 Suzug\u014dya, Shirosato, Higashiibaraki District, Ibaraki 311-4335, Japan",
-        "lat": 36.482309,
-        "lng": 140.315383,
-        "at": "2026-08-13T05:14:46.471-04:00",
+        "lat": 36.482359,
+        "lng": 140.315529,
+        "at": "2026-08-14T09:08:40.461+09:00",
         "is_current": true
       }
     },
@@ -305,7 +305,7 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "60577.0",
+        "value": "60579.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -405,10 +405,10 @@
         }
       ],
       "location": {
-        "address": "Japan, \u3012307-0052 Ibaraki, Yuki, Ch\u016b\u014dch\u014d, 1-ch\u014dme\u2212\uff13\u2212\uff12",
-        "lat": 36.294186,
-        "lng": 139.872205,
-        "at": "2026-08-13T14:30:13.206-04:00",
+        "address": "Japan, \u3012307-0052 Ibaraki, Yuki, Ch\u016b\u014dch\u014d, 1-ch\u014dme\u2212\uff14\u2212\uff11\uff16",
+        "lat": 36.294434,
+        "lng": 139.87201,
+        "at": "2026-08-13T20:08:23.988-04:00",
         "is_current": true
       }
     },
