@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14T17:53:31.831775+00:00",
+  "generated_at": "2026-08-14T18:55:15.241149+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -81,9 +81,7 @@
         "unit": "mi"
       },
       "recent_service_entries": [],
-      "location": {
-        "error": "HTTP Error 429: Too Many Requests"
-      }
+      "location": null
     },
     "HD20": {
       "fleetio_id": 5526088,
@@ -97,14 +95,8 @@
         "value": "633.0",
         "unit": "mi"
       },
-      "recent_service_entries": [
-        {
-          "error": "HTTP Error 429: Too Many Requests"
-        }
-      ],
-      "location": {
-        "error": "HTTP Error 429: Too Many Requests"
-      }
+      "recent_service_entries": [],
+      "location": null
     },
     "HD19": {
       "fleetio_id": 5526039,
@@ -392,7 +384,7 @@
       "vin": "CYJ77D-7014033",
       "status": "Active",
       "meter": {
-        "value": "65187.0",
+        "value": "65454.0",
         "unit": "km"
       },
       "recent_service_entries": [
