@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14T16:53:58.636650+00:00",
+  "generated_at": "2026-08-14T17:53:31.831775+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -81,7 +81,9 @@
         "unit": "mi"
       },
       "recent_service_entries": [],
-      "location": null
+      "location": {
+        "error": "HTTP Error 429: Too Many Requests"
+      }
     },
     "HD20": {
       "fleetio_id": 5526088,
@@ -95,8 +97,14 @@
         "value": "633.0",
         "unit": "mi"
       },
-      "recent_service_entries": [],
-      "location": null
+      "recent_service_entries": [
+        {
+          "error": "HTTP Error 429: Too Many Requests"
+        }
+      ],
+      "location": {
+        "error": "HTTP Error 429: Too Many Requests"
+      }
     },
     "HD19": {
       "fleetio_id": 5526039,
