@@ -427,6 +427,29 @@
       "notes": [
         "Drive belt tension belt checked along with battery and other maintenance"
       ]
+    },
+    {
+      "date": "2026-08-15",
+      "hours": 1874,
+      "technician": "Masakiyo",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        }
+      ],
+      "notes": [],
+      "laborHours": 0,
+      "travelHours": 0,
+      "jobType": null
     }
   ],
   "HD9": [
