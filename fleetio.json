@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14T23:21:46.542432+00:00",
+  "generated_at": "2026-08-15T01:16:36.437128+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -191,9 +191,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578261,
-        "lng": 139.747059,
-        "at": "2026-08-13T08:34:09.411-04:00",
+        "lat": 35.57823,
+        "lng": 139.747054,
+        "at": "2026-08-15T09:32:37.907+09:00",
         "is_current": true
       }
     },
@@ -479,10 +479,10 @@
         }
       ],
       "location": {
-        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 5-ch\u014dme\u22125\u2212\uff16 \u5927\u68ee\u81ea\u52d5\u8eca\u904b\u8f38\u5e73\u548c\u5cf6\u5009\u5eab",
-        "lat": 35.578686,
-        "lng": 139.746002,
-        "at": "2026-08-14T20:11:39.018+09:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578983,
+        "lng": 139.746716,
+        "at": "2026-08-15T09:41:49.105+09:00",
         "is_current": true
       }
     }
