@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T22:21:12.722439+00:00",
+  "generated_at": "2026-08-16T23:19:48.854511+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -331,10 +331,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "HQ8C+GX Ota City, Tokyo, Japan",
-        "lat": 35.56633,
-        "lng": 139.7724,
-        "at": "2026-08-13T18:23:51.636-04:00",
+        "address": "Japan, \u3012167-0043 Tokyo, Suginami City, Kamiogi, 1-ch\u014dme\u221224\u2212\uff11\uff10 \u85e4\u91ce\u30d3\u30eb 2F",
+        "lat": 35.706877,
+        "lng": 139.615362,
+        "at": "2026-08-17T07:53:20.530+09:00",
         "is_current": true
       }
     },
