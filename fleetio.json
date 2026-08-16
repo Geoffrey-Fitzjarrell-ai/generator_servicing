@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T06:40:32.425526+00:00",
+  "generated_at": "2026-08-16T07:31:33.652692+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -167,13 +167,13 @@
         "value": "31339.0",
         "unit": "km"
       },
-      "recent_service_entries": [],
+      "recent_service_entries": [
+        {
+          "error": "HTTP Error 429: Too Many Requests"
+        }
+      ],
       "location": {
-        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578415,
-        "lng": 139.747318,
-        "at": "2026-08-14T18:52:22.289+09:00",
-        "is_current": true
+        "error": "HTTP Error 429: Too Many Requests"
       }
     },
     "HD14": {
