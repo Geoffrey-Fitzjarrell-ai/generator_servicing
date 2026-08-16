@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T08:29:52.889557+00:00",
+  "generated_at": "2026-08-16T09:27:41.454801+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -185,15 +185,15 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "29190.0",
+        "value": "29573.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.57826,
-        "lng": 139.747063,
-        "at": "2026-08-15T20:42:03.873-04:00",
+        "lat": 35.578261,
+        "lng": 139.747065,
+        "at": "2026-08-16T17:38:20.274+09:00",
         "is_current": true
       }
     },
@@ -458,7 +458,7 @@
       "vin": "CYJ77D-7014031",
       "status": "Active",
       "meter": {
-        "value": "71940.0",
+        "value": "72337.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -479,10 +479,10 @@
         }
       ],
       "location": {
-        "address": "644 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.236996,
-        "lng": 138.926151,
-        "at": "2026-08-15T21:04:55.424-04:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578683,
+        "lng": 139.747231,
+        "at": "2026-08-16T17:59:13.950+09:00",
         "is_current": true
       }
     }
