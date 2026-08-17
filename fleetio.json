@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-17T09:41:42.922602+00:00",
+  "generated_at": "2026-08-17T10:32:24.256234+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -232,10 +232,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "2-ch\u014dme-27-7 \u014cmorihonch\u014d, Ota City, Tokyo 143-0011, Japan",
-        "lat": 35.577854,
-        "lng": 139.73726,
-        "at": "2026-08-17T09:52:09.339+09:00",
+        "address": "2-ch\u014dme-12-1 Nishik\u014djiya, Ota City, Tokyo 144-0034, Japan",
+        "lat": 35.559023,
+        "lng": 139.737507,
+        "at": "2026-08-17T19:04:12.957+09:00",
         "is_current": true
       }
     },
@@ -347,7 +347,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "71591.0",
+        "value": "72123.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -368,10 +368,10 @@
         }
       ],
       "location": {
-        "address": "Japan, \u3012501-6304 Gifu, Hashima, Funabashich\u014d Dezuka, 2-ch\u014dme\u2212\uff13\uff12\u2212\uff13\uff12 \u30d5\u30ed\u30fc\u30e9\u30bf\u30a6\u30f3 H",
-        "lat": 35.31164,
-        "lng": 136.68204,
-        "at": "2026-08-17T06:55:00.779+09:00",
+        "address": "3-ch\u014dme-38 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.311676,
+        "lng": 136.68184,
+        "at": "2026-08-17T19:18:34.349+09:00",
         "is_current": true
       }
     },
@@ -384,7 +384,7 @@
       "vin": "CYJ77D-7014033",
       "status": "Active",
       "meter": {
-        "value": "65701.0",
+        "value": "66072.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -458,7 +458,7 @@
       "vin": "CYJ77D-7014031",
       "status": "Active",
       "meter": {
-        "value": "72337.0",
+        "value": "72729.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -479,10 +479,10 @@
         }
       ],
       "location": {
-        "address": "5-ch\u014dme-3-2 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578232,
-        "lng": 139.7438,
-        "at": "2026-08-16T20:35:18.763-04:00",
+        "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.237183,
+        "lng": 138.924664,
+        "at": "2026-08-17T18:49:44.588+09:00",
         "is_current": true
       }
     }
