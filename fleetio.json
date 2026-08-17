@@ -1,7 +1,611 @@
 {
-  "generated_at": "2026-08-17T08:45:37.328020+00:00",
+  "generated_at": "2026-08-17T09:41:42.922602+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
-  "_fatal": "Traceback (most recent call last):\n  File \"<stdin>\", line 49, in <module>\n  File \"<stdin>\", line 33, in fleetio_get\n  File \"<stdin>\", line 16, in _urlopen\n  File \"/usr/lib/python3.12/urllib/request.py\", line 215, in urlopen\n    return opener.open(url, data, timeout)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 521, in open\n    response = meth(req, response)\n               ^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 630, in http_response\n    response = self.parent.error(\n               ^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 559, in error\n    return self._call_chain(*args)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 492, in _call_chain\n    result = func(*args)\n             ^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 639, in http_error_default\n    raise HTTPError(req.full_url, code, msg, hdrs, fp)\nurllib.error.HTTPError: HTTP Error 429: Too Many Requests\n",
-  "trucks": {}
+  "total_listed": 100,
+  "truck_count": 20,
+  "decommissioned_skipped": [
+    "HD18"
+  ],
+  "trucks": {
+    "HD25": {
+      "fleetio_id": 5526099,
+      "name": "IZJ-825(HD25)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019137",
+      "status": "Inactive",
+      "meter": {
+        "value": "607.0",
+        "unit": "mi"
+      },
+      "recent_service_entries": [],
+      "location": null
+    },
+    "HD24": {
+      "fleetio_id": 5526098,
+      "name": "IZJ-824(HD24)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019136",
+      "status": "Inactive",
+      "meter": {
+        "value": "637.0",
+        "unit": "mi"
+      },
+      "recent_service_entries": [],
+      "location": null
+    },
+    "HD23": {
+      "fleetio_id": 5526097,
+      "name": "IZJ-823(HD23)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019135",
+      "status": "Inactive",
+      "meter": {
+        "value": "605.0",
+        "unit": "mi"
+      },
+      "recent_service_entries": [],
+      "location": null
+    },
+    "HD22": {
+      "fleetio_id": 5526096,
+      "name": "IZJ-822(HD22)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019108",
+      "status": "Inactive",
+      "meter": {
+        "value": "698.0",
+        "unit": "mi"
+      },
+      "recent_service_entries": [],
+      "location": null
+    },
+    "HD21": {
+      "fleetio_id": 5526089,
+      "name": "IZJ-821(HD21)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019107",
+      "status": "Inactive",
+      "meter": {
+        "value": "633.0",
+        "unit": "mi"
+      },
+      "recent_service_entries": [],
+      "location": null
+    },
+    "HD20": {
+      "fleetio_id": 5526088,
+      "name": "IZJ-820(HD20)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019106",
+      "status": "Inactive",
+      "meter": {
+        "value": "633.0",
+        "unit": "mi"
+      },
+      "recent_service_entries": [],
+      "location": null
+    },
+    "HD19": {
+      "fleetio_id": 5526039,
+      "name": "IZJ-819(HD19)",
+      "make": "Isuzu",
+      "model": "2WG-CYJ77D",
+      "year": 2026,
+      "vin": "CYJ77D-7019079",
+      "status": "Inactive",
+      "meter": {
+        "value": "632.0",
+        "unit": "mi"
+      },
+      "recent_service_entries": [],
+      "location": null
+    },
+    "HD17": {
+      "fleetio_id": 4608058,
+      "name": "IZJ-817 (HD17)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7015281",
+      "status": "Active",
+      "meter": {
+        "value": "13330.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [],
+      "location": {
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.57826,
+        "lng": 139.747063,
+        "at": "2026-08-13T05:38:20.891-04:00",
+        "is_current": true
+      }
+    },
+    "HD16": {
+      "fleetio_id": 4608057,
+      "name": "IZJ-816 (HD16)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7015280",
+      "status": "Active",
+      "meter": {
+        "value": "24038.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [],
+      "location": {
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578273,
+        "lng": 139.747126,
+        "at": "2026-08-17T09:50:22.566+09:00",
+        "is_current": true
+      }
+    },
+    "HD15": {
+      "fleetio_id": 4608056,
+      "name": "IZJ-815 (HD15)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7015279",
+      "status": "Active",
+      "meter": {
+        "value": "31339.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [],
+      "location": {
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578415,
+        "lng": 139.747318,
+        "at": "2026-08-14T18:52:22.289+09:00",
+        "is_current": true
+      }
+    },
+    "HD14": {
+      "fleetio_id": 4608055,
+      "name": "IZJ-814 (HD14)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7015278",
+      "status": "Active",
+      "meter": {
+        "value": "29908.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [],
+      "location": {
+        "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
+        "lat": 36.477547,
+        "lng": 140.329153,
+        "at": "2026-08-17T18:34:35.707+09:00",
+        "is_current": true
+      }
+    },
+    "HD13": {
+      "fleetio_id": 4608054,
+      "name": "IZJ-813 (HD13)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7015192",
+      "status": "Active",
+      "meter": {
+        "value": "30384.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [],
+      "location": {
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578252,
+        "lng": 139.747056,
+        "at": "2026-08-11T04:54:14.677-04:00",
+        "is_current": true
+      }
+    },
+    "HD12": {
+      "fleetio_id": 4608053,
+      "name": "IZJ-812 (HD12)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7015191",
+      "status": "Active",
+      "meter": {
+        "value": "34172.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [],
+      "location": {
+        "address": "2-ch\u014dme-27-7 \u014cmorihonch\u014d, Ota City, Tokyo 143-0011, Japan",
+        "lat": 35.577854,
+        "lng": 139.73726,
+        "at": "2026-08-17T09:52:09.339+09:00",
+        "is_current": true
+      }
+    },
+    "HD5": {
+      "fleetio_id": 4456463,
+      "name": "IZJ-805 (HD5)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7013616",
+      "status": "Active",
+      "meter": {
+        "value": "31330.5",
+        "unit": "km"
+      },
+      "recent_service_entries": [
+        {
+          "id": 52339410,
+          "status": "completed",
+          "completed_at": "2026-06-13T08:43:00.000+09:00",
+          "started_at": null,
+          "vendor": "WD Garage",
+          "reference": "114335",
+          "labels": [],
+          "meter": "0.0"
+        },
+        {
+          "id": 52329528,
+          "status": "completed",
+          "completed_at": "2026-07-22T02:01:00.000+09:00",
+          "started_at": null,
+          "vendor": "WD Garage",
+          "reference": "",
+          "labels": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ],
+          "meter": "31330.5"
+        },
+        {
+          "id": 43406862,
+          "status": "completed",
+          "completed_at": "2025-12-13T06:18:00.000+09:00",
+          "started_at": null,
+          "vendor": "Rush Truck Centers",
+          "reference": "",
+          "labels": [],
+          "meter": null
+        }
+      ],
+      "location": {
+        "address": "POINT (-122.034484 37.380424)",
+        "lat": 37.380424,
+        "lng": -122.034484,
+        "at": "2026-08-16T23:32:09.000+09:00",
+        "is_current": true
+      }
+    },
+    "HD11": {
+      "fleetio_id": 4335606,
+      "name": "IZJ-811 (HD11)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7014036",
+      "status": "Active",
+      "meter": {
+        "value": "60964.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [],
+      "location": {
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.57826,
+        "lng": 139.747069,
+        "at": "2026-08-10T17:56:54.942+09:00",
+        "is_current": true
+      }
+    },
+    "HD10": {
+      "fleetio_id": 4335605,
+      "name": "IZJ-810 (HD10)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7014035",
+      "status": "Active",
+      "meter": {
+        "value": "76484.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [],
+      "location": {
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578253,
+        "lng": 139.747106,
+        "at": "2026-08-17T18:04:26.450+09:00",
+        "is_current": true
+      }
+    },
+    "HD9": {
+      "fleetio_id": 4335604,
+      "name": "IZJ-809 (HD9)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7014034",
+      "status": "Active",
+      "meter": {
+        "value": "71591.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [
+        {
+          "id": 43362178,
+          "status": "completed",
+          "completed_at": "2025-12-13T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "Tonox Hiratsuka Plant",
+          "reference": "",
+          "labels": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ],
+          "meter": "348.0"
+        }
+      ],
+      "location": {
+        "address": "Japan, \u3012501-6304 Gifu, Hashima, Funabashich\u014d Dezuka, 2-ch\u014dme\u2212\uff13\uff12\u2212\uff13\uff12 \u30d5\u30ed\u30fc\u30e9\u30bf\u30a6\u30f3 H",
+        "lat": 35.31164,
+        "lng": 136.68204,
+        "at": "2026-08-17T06:55:00.779+09:00",
+        "is_current": true
+      }
+    },
+    "HD8": {
+      "fleetio_id": 4335603,
+      "name": "IZJ-808 (HD8)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7014033",
+      "status": "Active",
+      "meter": {
+        "value": "65701.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [
+        {
+          "id": 43362166,
+          "status": "completed",
+          "completed_at": "2025-12-13T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "Tonox Hiratsuka Plant",
+          "reference": "",
+          "labels": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ],
+          "meter": "323.0"
+        }
+      ],
+      "location": {
+        "address": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578451,
+        "lng": 139.747484,
+        "at": "2026-08-15T20:33:50.957+09:00",
+        "is_current": true
+      }
+    },
+    "HD7": {
+      "fleetio_id": 4335602,
+      "name": "IZJ-807 (HD7)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7014032",
+      "status": "Active",
+      "meter": {
+        "value": "23267.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [
+        {
+          "id": 42875001,
+          "status": "completed",
+          "completed_at": "2026-02-22T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ],
+          "meter": "21398.0"
+        }
+      ],
+      "location": {
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578264,
+        "lng": 139.74707,
+        "at": "2026-08-14T17:16:25.149+09:00",
+        "is_current": true
+      }
+    },
+    "HD6": {
+      "fleetio_id": 4335601,
+      "name": "IZJ-806 (HD6)",
+      "make": "Isuzu",
+      "model": "CYJ77D-WX-D 23A",
+      "year": 2025,
+      "vin": "CYJ77D-7014031",
+      "status": "Active",
+      "meter": {
+        "value": "72337.0",
+        "unit": "km"
+      },
+      "recent_service_entries": [
+        {
+          "id": 42874982,
+          "status": "completed",
+          "completed_at": "2026-02-22T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ],
+          "meter": "22198.0"
+        }
+      ],
+      "location": {
+        "address": "5-ch\u014dme-3-2 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578232,
+        "lng": 139.7438,
+        "at": "2026-08-16T20:35:18.763-04:00",
+        "is_current": true
+      }
+    }
+  },
+  "other_group_vehicles": [
+    "ACD-101",
+    "ADT-201",
+    "ADT-202",
+    "ADT-203",
+    "CAT D6",
+    "CAT-160M",
+    "CHE-201",
+    "CHE-202",
+    "CIT-102",
+    "CIV-201",
+    "CIV-202",
+    "CIV-203",
+    "CIV-204",
+    "CIV-205",
+    "DMX-201",
+    "DMX-202",
+    "ELF-201",
+    "FEN-101",
+    "FOR-501",
+    "FOR-601",
+    "FOR-602",
+    "FOR-603",
+    "Fuel Truck",
+    "ION-201",
+    "JCB-101",
+    "KOM WA-500",
+    "KOM-101",
+    "KUB-101",
+    "LEF-101",
+    "MAC-101",
+    "MAC-102",
+    "MAC-103 (Lugia)",
+    "MAC-104",
+    "MAC-201",
+    "MAC-C10",
+    "MAC-C7",
+    "MARTAC M18.6 Unmanned Surface Vessel",
+    "MARTAC M18.7 Unmanned Surface Vessel",
+    "MCE-112",
+    "MCE-113",
+    "MCE-114",
+    "MCE-115",
+    "MCE-116",
+    "MCE-117",
+    "MCE-118",
+    "MCE-202",
+    "MCE-203",
+    "MCE-204",
+    "MCE-205",
+    "MCE-206",
+    "PAN-101",
+    "POR-101",
+    "POR-102",
+    "POR-911 (Martini)",
+    "PRO-101",
+    "ROG-202",
+    "ROG-203",
+    "ROG-204",
+    "ROG-205",
+    "ROG-206",
+    "ROG-207",
+    "ROG-208",
+    "ROG-209",
+    "ROG-210",
+    "ROG-211",
+    "ROG-212",
+    "ROG-213",
+    "ROG-214",
+    "ROG-215",
+    "VOL-101",
+    "VOL-220K",
+    "VOL-EC250",
+    "VOL-ECR355",
+    "Volvo SD115",
+    "Water Truck",
+    "XCI-201",
+    "XTR-202",
+    "XTR-203",
+    "XTR-204"
+  ],
+  "_service_entry_fields": [
+    "attachment_permissions",
+    "auto_integrate_repair_order_status",
+    "comments_count",
+    "completed_at",
+    "created_at",
+    "documents_count",
+    "general_notes",
+    "id",
+    "images_count",
+    "is_sample",
+    "labels",
+    "primary_meter_entry",
+    "reference",
+    "started_at",
+    "status",
+    "updated_at",
+    "vehicle_id",
+    "vendor",
+    "vendor_id",
+    "vendor_name",
+    "work_order_id"
+  ],
+  "_location_entry_fields": [
+    "address",
+    "address_components",
+    "contact_id",
+    "created_at",
+    "date",
+    "geolocation",
+    "id",
+    "is_current",
+    "item_id",
+    "item_type",
+    "locatable_id",
+    "locatable_type",
+    "location",
+    "updated_at",
+    "vehicle_id"
+  ]
 }
