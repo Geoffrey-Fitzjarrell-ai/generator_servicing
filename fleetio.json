@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-17T10:32:24.256234+00:00",
+  "generated_at": "2026-08-17T11:26:38.565406+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -143,15 +143,15 @@
       "vin": "CYJ77D-7015280",
       "status": "Active",
       "meter": {
-        "value": "24038.0",
+        "value": "24432.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578273,
-        "lng": 139.747126,
-        "at": "2026-08-17T09:50:22.566+09:00",
+        "address": "1-ch\u014dme-52-1 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.311806,
+        "lng": 136.68213,
+        "at": "2026-08-17T19:39:33.745+09:00",
         "is_current": true
       }
     },
@@ -211,10 +211,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578252,
-        "lng": 139.747056,
-        "at": "2026-08-11T04:54:14.677-04:00",
+        "address": "POINT (139.747331 35.578579)",
+        "lat": 35.578579,
+        "lng": 139.747331,
+        "at": "2026-08-17T20:14:46.130+09:00",
         "is_current": true
       }
     },
@@ -368,10 +368,10 @@
         }
       ],
       "location": {
-        "address": "3-ch\u014dme-38 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.311676,
-        "lng": 136.68184,
-        "at": "2026-08-17T19:18:34.349+09:00",
+        "address": "3-ch\u014dme-22-22 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.312057,
+        "lng": 136.68164,
+        "at": "2026-08-17T19:39:13.092+09:00",
         "is_current": true
       }
     },
@@ -421,7 +421,7 @@
       "vin": "CYJ77D-7014032",
       "status": "Active",
       "meter": {
-        "value": "23267.0",
+        "value": "23651.0",
         "unit": "km"
       },
       "recent_service_entries": [
