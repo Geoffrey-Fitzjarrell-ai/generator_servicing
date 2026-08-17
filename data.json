@@ -11,11 +11,11 @@
     }
   },
   "HD7": {
-    "hours": 880,
+    "hours": 888,
     "intervalStart": 0,
     "overdue": false,
     "technician": "",
-    "lastUpdated": "2026-08-16T01:44:55Z",
+    "lastUpdated": "2026-08-17T00:44:09Z",
     "postedBy": {
       "id": "U0B3NMN2DS4",
       "name": null
