@@ -4,6 +4,8 @@
   "HD12": "overdue",
   "HD6": "overdue",
   "HD13": "overdue",
-  "HD7": "warn",
-  "HD8": "warn"
+  "HD7": "overdue",
+  "HD15": "overdue",
+  "HD8": "warn",
+  "HD16": "warn"
 }
