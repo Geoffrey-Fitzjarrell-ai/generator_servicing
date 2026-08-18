@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T08:37:40.227509+00:00",
+  "generated_at": "2026-08-18T09:34:26.192129+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -143,15 +143,15 @@
       "vin": "CYJ77D-7015280",
       "status": "Active",
       "meter": {
-        "value": "24432.0",
+        "value": "24845.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "8-ch\u014dme-17 Funabashich\u014d, Hashima, Gifu 501-6302, Japan",
-        "lat": 35.315247,
-        "lng": 136.687005,
-        "at": "2026-08-17T20:30:54.150-04:00",
+        "address": "Japan, \u3012501-6257 Gifu, Hashima, Fukujuch\u014d Hirakata, 1-ch\u014dme\u2212\uff13\uff12 \u30cf\u30df\u30f3\u30b0 \u30ed\u30fc\u30c9 Hirano",
+        "lat": 35.314527,
+        "lng": 136.684971,
+        "at": "2026-08-18T05:33:41.855-04:00",
         "is_current": true
       }
     },
@@ -305,15 +305,15 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "60964.0",
+        "value": "61030.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "2-ch\u014dme-6-3 Engy\u014d, Fujisawa, Kanagawa 252-0806, Japan",
-        "lat": 35.395825,
-        "lng": 139.452412,
-        "at": "2026-08-18T02:38:41.551-04:00",
+        "address": "1-1 Tsuchidana, Fujisawa, Kanagawa 252-0806, Japan",
+        "lat": 35.395624,
+        "lng": 139.45289,
+        "at": "2026-08-18T04:42:40.736-04:00",
         "is_current": true
       }
     },
@@ -421,7 +421,7 @@
       "vin": "CYJ77D-7014032",
       "status": "Active",
       "meter": {
-        "value": "23651.0",
+        "value": "23959.0",
         "unit": "km"
       },
       "recent_service_entries": [
