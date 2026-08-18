@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T20:24:46.939186+00:00",
+  "generated_at": "2026-08-18T21:25:13.128861+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -122,15 +122,15 @@
       "vin": "CYJ77D-7015281",
       "status": "Active",
       "meter": {
-        "value": "13742.0",
+        "value": "14149.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.236502,
-        "lng": 138.924097,
-        "at": "2026-08-18T06:49:48.648-04:00",
+        "lat": 35.23675,
+        "lng": 138.92423,
+        "at": "2026-08-18T16:28:14.731-04:00",
         "is_current": true
       }
     },
