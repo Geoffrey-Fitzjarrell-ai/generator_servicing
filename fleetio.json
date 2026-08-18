@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T21:25:13.128861+00:00",
+  "generated_at": "2026-08-18T22:24:13.802578+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -347,7 +347,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "73359.0",
+        "value": "74005.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -368,10 +368,10 @@
         }
       ],
       "location": {
-        "address": "3-ch\u014dme-22-22 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.31222,
-        "lng": 136.68169,
-        "at": "2026-08-18T06:43:03.641-04:00",
+        "address": "1-ch\u014dme-52-1 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.312393,
+        "lng": 136.6817,
+        "at": "2026-08-19T07:17:58.298+09:00",
         "is_current": true
       }
     },
@@ -458,7 +458,7 @@
       "vin": "CYJ77D-7014031",
       "status": "Active",
       "meter": {
-        "value": "73469.0",
+        "value": "73979.0",
         "unit": "km"
       },
       "recent_service_entries": [
