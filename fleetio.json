@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-17T23:23:22.454554+00:00",
+  "generated_at": "2026-08-18T01:15:33.086187+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -122,7 +122,7 @@
       "vin": "CYJ77D-7015281",
       "status": "Active",
       "meter": {
-        "value": "13330.0",
+        "value": "13335.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -148,10 +148,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1-ch\u014dme-52-1 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.311806,
-        "lng": 136.68213,
-        "at": "2026-08-17T19:39:33.745+09:00",
+        "address": "8-ch\u014dme-17 Funabashich\u014d, Hashima, Gifu 501-6302, Japan",
+        "lat": 35.315247,
+        "lng": 136.687005,
+        "at": "2026-08-17T20:30:54.150-04:00",
         "is_current": true
       }
     },
@@ -170,9 +170,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578415,
-        "lng": 139.747318,
-        "at": "2026-08-14T18:52:22.289+09:00",
+        "lat": 35.578461,
+        "lng": 139.747563,
+        "at": "2026-08-17T20:48:42.041-04:00",
         "is_current": true
       }
     },
@@ -191,9 +191,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477547,
-        "lng": 140.329153,
-        "at": "2026-08-17T18:34:35.707+09:00",
+        "lat": 36.477343,
+        "lng": 140.329193,
+        "at": "2026-08-17T20:20:06.849-04:00",
         "is_current": true
       }
     },
@@ -232,10 +232,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "2-ch\u014dme-12-1 Nishik\u014djiya, Ota City, Tokyo 144-0034, Japan",
-        "lat": 35.559023,
-        "lng": 139.737507,
-        "at": "2026-08-17T19:04:12.957+09:00",
+        "address": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-8512, Japan",
+        "lat": 35.579363,
+        "lng": 139.744364,
+        "at": "2026-08-17T21:06:21.917-04:00",
         "is_current": true
       }
     },
@@ -331,10 +331,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578253,
-        "lng": 139.747106,
-        "at": "2026-08-17T18:04:26.450+09:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578382,
+        "lng": 139.747256,
+        "at": "2026-08-17T20:24:24.036-04:00",
         "is_current": true
       }
     },
@@ -368,10 +368,10 @@
         }
       ],
       "location": {
-        "address": "3-ch\u014dme-22-22 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.312057,
-        "lng": 136.68164,
-        "at": "2026-08-17T19:39:13.092+09:00",
+        "address": "1-ch\u014dme-45 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.312565,
+        "lng": 136.68228,
+        "at": "2026-08-17T20:00:03.300-04:00",
         "is_current": true
       }
     },
@@ -480,9 +480,9 @@
       ],
       "location": {
         "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.237183,
-        "lng": 138.924664,
-        "at": "2026-08-17T18:49:44.588+09:00",
+        "lat": 35.236767,
+        "lng": 138.924476,
+        "at": "2026-08-17T20:55:02.124-04:00",
         "is_current": true
       }
     }
