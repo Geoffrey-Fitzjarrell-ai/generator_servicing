@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T10:29:08.155533+00:00",
+  "generated_at": "2026-08-18T11:25:46.055959+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -127,10 +127,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.57826,
-        "lng": 139.747063,
-        "at": "2026-08-13T05:38:20.891-04:00",
+        "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.236502,
+        "lng": 138.924097,
+        "at": "2026-08-18T06:49:48.648-04:00",
         "is_current": true
       }
     },
@@ -206,15 +206,15 @@
       "vin": "CYJ77D-7015192",
       "status": "Active",
       "meter": {
-        "value": "30884.0",
+        "value": "31007.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.237204,
-        "lng": 138.924675,
-        "at": "2026-08-18T00:54:04.316-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578259,
+        "lng": 139.747059,
+        "at": "2026-08-18T06:56:17.196-04:00",
         "is_current": true
       }
     },
@@ -305,15 +305,15 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "61030.0",
+        "value": "61090.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1-1 Tsuchidana, Fujisawa, Kanagawa 252-0806, Japan",
-        "lat": 35.395624,
-        "lng": 139.45289,
-        "at": "2026-08-18T04:42:40.736-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578291,
+        "lng": 139.747072,
+        "at": "2026-08-18T06:42:55.526-04:00",
         "is_current": true
       }
     },
@@ -368,10 +368,10 @@
         }
       ],
       "location": {
-        "address": "1-ch\u014dme-23 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.31249,
-        "lng": 136.68303,
-        "at": "2026-08-18T05:47:50.628-04:00",
+        "address": "3-ch\u014dme-22-22 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.31222,
+        "lng": 136.68169,
+        "at": "2026-08-18T06:43:03.641-04:00",
         "is_current": true
       }
     },
@@ -479,10 +479,10 @@
         }
       ],
       "location": {
-        "address": "727-1 Iriyamase, Fuji, Shizuoka 419-0204, Japan",
-        "lat": 35.199078,
-        "lng": 138.64578,
-        "at": "2026-08-18T05:54:05.654-04:00",
+        "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.236647,
+        "lng": 138.924132,
+        "at": "2026-08-18T20:24:58.466+09:00",
         "is_current": true
       }
     }
