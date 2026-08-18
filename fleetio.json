@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T04:36:23.455368+00:00",
+  "generated_at": "2026-08-18T05:30:04.083888+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -212,9 +212,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.236862,
-        "lng": 138.924875,
-        "at": "2026-08-17T16:36:15.021-04:00",
+        "lat": 35.237204,
+        "lng": 138.924675,
+        "at": "2026-08-18T00:54:04.316-04:00",
         "is_current": true
       }
     },
@@ -426,11 +426,27 @@
       },
       "recent_service_entries": [
         {
-          "error": "HTTP Error 429: Too Many Requests"
+          "id": 42875001,
+          "status": "completed",
+          "completed_at": "2026-02-22T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ],
+          "meter": "21398.0"
         }
       ],
       "location": {
-        "error": "HTTP Error 429: Too Many Requests"
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578264,
+        "lng": 139.74707,
+        "at": "2026-08-14T17:16:25.149+09:00",
+        "is_current": true
       }
     },
     "HD6": {
@@ -447,7 +463,19 @@
       },
       "recent_service_entries": [
         {
-          "error": "HTTP Error 429: Too Many Requests"
+          "id": 42874982,
+          "status": "completed",
+          "completed_at": "2026-02-22T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ],
+          "meter": "22198.0"
         }
       ],
       "location": {
