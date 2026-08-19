@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T23:22:15.944599+00:00",
+  "generated_at": "2026-08-19T01:16:57.396613+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -148,10 +148,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Japan, \u3012501-6257 Gifu, Hashima, Fukujuch\u014d Hirakata, 1-ch\u014dme\u2212\uff13\uff12 \u30cf\u30df\u30f3\u30b0 \u30ed\u30fc\u30c9 Hirano",
-        "lat": 35.314527,
-        "lng": 136.684971,
-        "at": "2026-08-18T05:33:41.855-04:00",
+        "address": "2-ch\u014dme-11 Funabashich\u014d Honmachi, Hashima, Gifu 501-6303, Japan",
+        "lat": 35.313479,
+        "lng": 136.684446,
+        "at": "2026-08-18T20:24:40.986-04:00",
         "is_current": true
       }
     },
@@ -171,8 +171,8 @@
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.578262,
-        "lng": 139.747072,
-        "at": "2026-08-18T07:30:16.372-04:00",
+        "lng": 139.747066,
+        "at": "2026-08-18T20:40:25.421-04:00",
         "is_current": true
       }
     },
@@ -185,15 +185,15 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "29908.0",
+        "value": "30149.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477343,
-        "lng": 140.329193,
-        "at": "2026-08-17T20:20:06.849-04:00",
+        "lat": 36.477332,
+        "lng": 140.329154,
+        "at": "2026-08-18T20:18:42.901-04:00",
         "is_current": true
       }
     },
@@ -232,10 +232,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578435,
-        "lng": 139.747453,
-        "at": "2026-08-18T05:51:45.122-04:00",
+        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 6-ch\u014dme\u22121\u2212\uff11 Distribution A Bldg., \u68df \uff21\uff37\uff14-\uff33",
+        "lat": 35.578377,
+        "lng": 139.747595,
+        "at": "2026-08-18T20:57:19.228-04:00",
         "is_current": true
       }
     },
@@ -310,10 +310,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578291,
-        "lng": 139.747072,
-        "at": "2026-08-18T06:42:55.526-04:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578281,
+        "lng": 139.748434,
+        "at": "2026-08-18T20:47:33.187-04:00",
         "is_current": true
       }
     },
@@ -442,10 +442,10 @@
         }
       ],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578264,
-        "lng": 139.74707,
-        "at": "2026-08-14T17:16:25.149+09:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578552,
+        "lng": 139.74739,
+        "at": "2026-08-18T20:54:30.638-04:00",
         "is_current": true
       }
     },
@@ -516,6 +516,7 @@
     "KOM WA-500",
     "KOM-101",
     "KUB-101",
+    "LDR-201",
     "LEF-101",
     "MAC-101",
     "MAC-102",
@@ -558,7 +559,6 @@
     "ROG-214",
     "ROG-215",
     "VOL-101",
-    "VOL-220K",
     "VOL-EC250",
     "VOL-ECR355",
     "Volvo SD115",
