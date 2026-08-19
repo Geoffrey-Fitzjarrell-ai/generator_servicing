@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-19T09:34:30.885597+00:00",
+  "generated_at": "2026-08-19T10:29:45.800371+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -143,15 +143,15 @@
       "vin": "CYJ77D-7015280",
       "status": "Active",
       "meter": {
-        "value": "24845.0",
+        "value": "25308.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "2-ch\u014dme-11 Funabashich\u014d Honmachi, Hashima, Gifu 501-6303, Japan",
-        "lat": 35.313479,
-        "lng": 136.684446,
-        "at": "2026-08-18T20:24:40.986-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578256,
+        "lng": 139.747061,
+        "at": "2026-08-19T06:20:42.107-04:00",
         "is_current": true
       }
     },
@@ -232,10 +232,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 6-ch\u014dme\u22121\u2212\uff11 Distribution A Bldg., \u68df \uff21\uff37\uff14-\uff33",
-        "lat": 35.578377,
-        "lng": 139.747595,
-        "at": "2026-08-18T20:57:19.228-04:00",
+        "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.237194,
+        "lng": 138.924663,
+        "at": "2026-08-19T05:38:55.261-04:00",
         "is_current": true
       }
     },
@@ -347,7 +347,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "74005.0",
+        "value": "74509.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -384,7 +384,7 @@
       "vin": "CYJ77D-7014033",
       "status": "Active",
       "meter": {
-        "value": "66418.0",
+        "value": "66867.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -458,7 +458,7 @@
       "vin": "CYJ77D-7014031",
       "status": "Active",
       "meter": {
-        "value": "73979.0",
+        "value": "74428.0",
         "unit": "km"
       },
       "recent_service_entries": [
