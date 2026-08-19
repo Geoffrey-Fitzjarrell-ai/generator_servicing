@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-19T10:29:45.800371+00:00",
+  "generated_at": "2026-08-19T11:26:06.114772+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -233,9 +233,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.237194,
-        "lng": 138.924663,
-        "at": "2026-08-19T05:38:55.261-04:00",
+        "lat": 35.237066,
+        "lng": 138.924504,
+        "at": "2026-08-19T06:52:16.706-04:00",
         "is_current": true
       }
     },
