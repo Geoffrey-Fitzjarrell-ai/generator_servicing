@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-19T22:25:37.146949+00:00",
+  "generated_at": "2026-08-19T23:23:06.000737+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -368,10 +368,10 @@
         }
       ],
       "location": {
-        "address": "1-ch\u014dme-45 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.312508,
-        "lng": 136.68178,
-        "at": "2026-08-19T16:00:59.582-04:00",
+        "address": "3-ch\u014dme-22-22 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.311737,
+        "lng": 136.6818,
+        "at": "2026-08-20T07:43:07.055+09:00",
         "is_current": true
       }
     },
