@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-08-19"
+    "updated": "2026-08-20"
   },
   "items": [
     {
@@ -693,6 +693,70 @@
       "startTime": "08:00",
       "endTime": "12:00",
       "notes": "Update trucks to release/trucking-1.2",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1787185235059",
+      "title": "Move DECK project UPS to shelf",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "",
+      "category": "other",
+      "status": "planned",
+      "start": "2026-08-20",
+      "end": "2026-08-20",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "Coordinate with Huang San",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1787185235060",
+      "title": "Move jack stands to lower level",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "",
+      "category": "other",
+      "status": "planned",
+      "start": "2026-08-20",
+      "end": "2026-08-20",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1787185235061",
+      "title": "Locate parts — Gen 3 build",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "",
+      "category": "admin",
+      "status": "planned",
+      "start": "2026-08-20",
+      "end": "2026-08-20",
+      "allDay": false,
+      "startTime": "13:00",
+      "endTime": "17:00",
+      "notes": "DRI: Chris Matsuda",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1787185235062",
+      "title": "Update Tonox tickets",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "",
+      "category": "admin",
+      "status": "planned",
+      "start": "2026-08-20",
+      "end": "2026-08-20",
+      "allDay": false,
+      "startTime": "13:00",
+      "endTime": "17:00",
+      "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
     }
