@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-19T23:23:06.000737+00:00",
+  "generated_at": "2026-08-20T01:16:26.289861+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -169,10 +169,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Japan, \u3012305-0818 Ibaraki, Tsukuba, Gakuenminami, 2-ch\u014dme\u2212\uff18\u2212\uff14",
-        "lat": 36.077187,
-        "lng": 140.078113,
-        "at": "2026-08-19T18:24:01.708+09:00",
+        "address": "2530-17 Karima, Tsukuba, Ibaraki 305-0822, Japan",
+        "lat": 36.076284,
+        "lng": 140.076719,
+        "at": "2026-08-20T09:59:36.259+09:00",
         "is_current": true
       }
     },
@@ -191,9 +191,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477281,
-        "lng": 140.329127,
-        "at": "2026-08-19T05:12:26.788-04:00",
+        "lat": 36.477285,
+        "lng": 140.329139,
+        "at": "2026-08-20T09:16:59.272+09:00",
         "is_current": true
       }
     },
@@ -233,9 +233,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.236541,
-        "lng": 138.924085,
-        "at": "2026-08-20T05:57:40.630+09:00",
+        "lat": 35.236547,
+        "lng": 138.92412,
+        "at": "2026-08-20T09:09:54.229+09:00",
         "is_current": true
       }
     },
@@ -311,9 +311,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578258,
-        "lng": 139.747059,
-        "at": "2026-08-19T04:56:50.211-04:00",
+        "lat": 35.578264,
+        "lng": 139.747065,
+        "at": "2026-08-20T10:00:30.701+09:00",
         "is_current": true
       }
     },
