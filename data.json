@@ -78,13 +78,13 @@
     }
   },
   "HD13": {
-    "hours": 834,
+    "hours": 837,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Ryo Suzuki",
-    "lastUpdated": "2026-08-18T07:07:49Z",
+    "lastUpdated": "2026-08-20T05:10:04Z",
     "postedBy": {
-      "id": "U09BGMLJCMR",
+      "id": "U0971UJ8RKQ",
       "name": null
     }
   },
