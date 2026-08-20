@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-20T05:31:38.617049+00:00",
+  "generated_at": "2026-08-20T06:47:26.593690+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -347,7 +347,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "74982.0",
+        "value": "75337.0",
         "unit": "km"
       },
       "recent_service_entries": [
