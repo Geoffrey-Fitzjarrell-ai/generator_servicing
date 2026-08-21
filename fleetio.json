@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T09:36:48.949272+00:00",
+  "generated_at": "2026-08-21T10:31:05.363728+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -305,15 +305,15 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "61329.0",
+        "value": "61570.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578259,
-        "lng": 139.747069,
-        "at": "2026-08-20T20:32:08.023-04:00",
+        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 5-ch\u014dme\u22128\u2212\uff11\uff12 Parking lot, \u6771\u4eac\u30b7\u30c6\u30a3\u89b3\u5149",
+        "lat": 35.57667,
+        "lng": 139.744539,
+        "at": "2026-08-21T18:41:46.870+09:00",
         "is_current": true
       }
     },
@@ -326,15 +326,15 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "76707.0",
+        "value": "76941.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.578266,
-        "lng": 139.747081,
-        "at": "2026-08-20T21:05:08.394-04:00",
+        "lng": 139.747082,
+        "at": "2026-08-21T19:28:50.648+09:00",
         "is_current": true
       }
     },
@@ -347,7 +347,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "75345.0",
+        "value": "75405.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -368,10 +368,10 @@
         }
       ],
       "location": {
-        "address": "1-1 Tsuchidana, Fujisawa, Kanagawa 252-0806, Japan",
-        "lat": 35.395627,
-        "lng": 139.452727,
-        "at": "2026-08-21T04:07:24.770-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578266,
+        "lng": 139.747075,
+        "at": "2026-08-21T19:28:41.741+09:00",
         "is_current": true
       }
     },
@@ -421,7 +421,7 @@
       "vin": "CYJ77D-7014032",
       "status": "Active",
       "meter": {
-        "value": "24198.0",
+        "value": "24497.0",
         "unit": "km"
       },
       "recent_service_entries": [
