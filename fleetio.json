@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-20T23:26:03.474284+00:00",
+  "generated_at": "2026-08-21T01:20:01.173827+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -169,10 +169,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "2530-17 Karima, Tsukuba, Ibaraki 305-0822, Japan",
-        "lat": 36.076284,
-        "lng": 140.076719,
-        "at": "2026-08-20T09:59:36.259+09:00",
+        "address": "Japan, \u3012305-0818 Ibaraki, Tsukuba, Gakuenminami, 2-ch\u014dme\u2212\uff12 \u30b5\u30a4\u30d0\u30fc\u30c0\u30a4\u30f3",
+        "lat": 36.08217,
+        "lng": 140.081962,
+        "at": "2026-08-20T19:40:26.737-04:00",
         "is_current": true
       }
     },
@@ -232,10 +232,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.237172,
-        "lng": 138.924067,
-        "at": "2026-08-20T17:09:56.106-04:00",
+        "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.237143,
+        "lng": 138.924682,
+        "at": "2026-08-20T20:28:54.574-04:00",
         "is_current": true
       }
     },
@@ -311,9 +311,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578264,
-        "lng": 139.747065,
-        "at": "2026-08-20T10:00:30.701+09:00",
+        "lat": 35.578259,
+        "lng": 139.747069,
+        "at": "2026-08-20T20:32:08.023-04:00",
         "is_current": true
       }
     },
@@ -326,15 +326,15 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "76638.0",
+        "value": "76707.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "2-ch\u014dme-6-3 Engy\u014d, Fujisawa, Kanagawa 252-0806, Japan",
-        "lat": 35.395806,
-        "lng": 139.45242,
-        "at": "2026-08-18T02:30:40.440-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578266,
+        "lng": 139.747081,
+        "at": "2026-08-20T21:05:08.394-04:00",
         "is_current": true
       }
     },
