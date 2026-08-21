@@ -31,7 +31,7 @@ const TASKS = [
   { key:"fuel_filter",       name:"Fuel filter change",          interval:500, type:"replace" },
   { key:"drive_belt",        name:"Check drive belt & tension",  interval:500, type:"service" },
   { key:"clean_radiator",    name:"Clean radiator",              interval:500, type:"service" },
-  { key:"airfilter_500",     name:"Change air filter",           interval:400, type:"replace" },
+  { key:"airfilter_500",     name:"Change air filter",           interval:500, type:"replace" },
 ];
 function tasksForTruck(id) {
   return TASKS.filter(t => t.key !== "airfilter_clean" || id === "HD5");
