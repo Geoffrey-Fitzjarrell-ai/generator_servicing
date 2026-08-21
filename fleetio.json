@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T12:49:12.526018+00:00",
+  "generated_at": "2026-08-21T13:45:20.708876+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -164,15 +164,15 @@
       "vin": "CYJ77D-7015279",
       "status": "Active",
       "meter": {
-        "value": "32038.0",
+        "value": "32176.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Japan, \u3012305-0818 Ibaraki, Tsukuba, Gakuenminami, 2-ch\u014dme\u2212\uff12 \u30b5\u30a4\u30d0\u30fc\u30c0\u30a4\u30f3",
-        "lat": 36.08217,
-        "lng": 140.081962,
-        "at": "2026-08-20T19:40:26.737-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578261,
+        "lng": 139.747061,
+        "at": "2026-08-21T09:02:30.002-04:00",
         "is_current": true
       }
     },
