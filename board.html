@@ -310,10 +310,10 @@
     {key:"oil_filter",        name:"Oil / filter change",       interval:150, type:"replace"},
     {key:"airfilter_clean",   name:"Air filter cleaning",       interval:250, type:"service"},
     {key:"coolant_lines",     name:"Check coolant lines",       interval:250, type:"service"},
-    {key:"fuel_filter",       name:"Fuel filter change",        interval:250, type:"replace"},
+    {key:"fuel_filter",       name:"Fuel filter change",        interval:500, type:"replace"},
     {key:"drive_belt",        name:"Check drive belt & tension",interval:500, type:"service"},
     {key:"clean_radiator",    name:"Clean radiator",            interval:500, type:"service"},
-    {key:"airfilter_500",     name:"Change air filter",         interval:500, type:"replace"}
+    {key:"airfilter_500",     name:"Change air filter",         interval:400, type:"replace"}
   ];
   function tasksFor(id){ return TASKS.filter(function(t){ return t.key!=="airfilter_clean" || id==="HD5"; }); }
 
