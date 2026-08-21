@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-08-20"
+    "updated": "2026-08-21"
   },
   "items": [
     {
@@ -757,6 +757,38 @@
       "startTime": "13:00",
       "endTime": "17:00",
       "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1787282353188",
+      "title": "HD10 ansible playbook",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD10",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-21",
+      "end": "2026-08-21",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "",
+      "jiraKey": "VCO-3484",
+      "jiraUrl": "https://appliedintuition.atlassian.net/browse/VCO-3484"
+    },
+    {
+      "id": "w_1787282353189",
+      "title": "DMX modifications",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-21",
+      "end": "2026-08-21",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "Install new FC bracket; measure roll observed",
       "jiraKey": "",
       "jiraUrl": ""
     }
