@@ -25,6 +25,7 @@ const TASKS = [
   { key:"airfilter_battery", name:"Air filter / Battery check", interval:50,  type:"service" },
   { key:"battery_box",       name:"Battery Box check",         interval:50,  type:"service" },
   { key:"oil_filter",        name:"Oil / filter change",        interval:150, type:"replace" },
+  { key:"spark_arrestor",        name:"Clean spark arrestor",        interval:150, type:"service" },
   { key:"airfilter_clean",   name:"Air filter cleaning",         interval:250, type:"service" },
   { key:"coolant_lines",     name:"Check coolant lines",         interval:250, type:"service" },
   { key:"fuel_filter",       name:"Fuel filter change",          interval:500, type:"replace" },

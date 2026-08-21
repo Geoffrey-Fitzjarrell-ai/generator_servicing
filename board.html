@@ -308,6 +308,7 @@
     {key:"airfilter_battery", name:"Air filter / Battery check", interval:50,  type:"service"},
     {key:"battery_box",       name:"Battery Box check",         interval:50,  type:"service"},
     {key:"oil_filter",        name:"Oil / filter change",       interval:150, type:"replace"},
+    {key:"spark_arrestor",        name:"Clean spark arrestor",       interval:150, type:"service"},
     {key:"airfilter_clean",   name:"Air filter cleaning",       interval:250, type:"service"},
     {key:"coolant_lines",     name:"Check coolant lines",       interval:250, type:"service"},
     {key:"fuel_filter",       name:"Fuel filter change",        interval:500, type:"replace"},
@@ -319,7 +320,7 @@
 
   // ── Language (set by the gate from the name password; Masakiyo → Japanese) ──
   var LANG=(function(){ try{ return localStorage.getItem("fleet_lang")==="ja"?"ja":"en"; }catch(e){ return "en"; } })();
-  var TJA={oil_filter:"オイル/オイルフィルター交換",fuel_filter:"燃料フィルター交換",airfilter_500:"エアフィルター交換",
+  var TJA={oil_filter:"オイル/オイルフィルター交換",spark_arrestor:"スパークアレスター清掃",fuel_filter:"燃料フィルター交換",airfilter_500:"エアフィルター交換",
     airfilter_battery:"エアフィルター/バッテリー点検",battery_box:"バッテリーボックス点検",airfilter_clean:"エアフィルター清掃",
     coolant_lines:"冷却水ライン点検",drive_belt:"ドライブベルト点検",clean_radiator:"ラジエーター清掃"};
   function tName(t){ return LANG==="ja"?(TJA[t.key]||t.name):t.name; }

@@ -530,6 +530,7 @@ const TASKS = [
   { key:"airfilter_battery", name:"Air filter / Battery check",               interval:50,  type:"service" },
   { key:"battery_box",       name:"Battery Box check",                        interval:50,  type:"service" },
   { key:"oil_filter",        name:"Oil / filter change",               interval:150, type:"replace" },
+  { key:"spark_arrestor",        name:"Clean spark arrestor",               interval:150, type:"service" },
   { key:"airfilter_clean",   name:"Air filter cleaning",               interval:250, type:"service" },
   { key:"coolant_lines",     name:"Check coolant lines",               interval:250, type:"service" },
   { key:"fuel_filter",       name:"Fuel filter change",                interval:500, type:"replace" },
@@ -589,6 +590,11 @@ const TASK_INFO = {
     replace: ["Engine oil (see manual for grade/quantity)", "Oil filter"],
     check:   ["Oil drain plug washer", "Filter gasket seating", "Oil level after fill"],
     notes:   "Warm engine before draining for better flow. Do not overtighten filter — hand tight plus 3/4 turn. Check for leaks after first startup."
+  },
+  spark_arrestor: {
+    replace: ["Nothing — cleaning task; replace the screen only if perforated or corroded"],
+    check:   ["Arrestor screen for carbon buildup", "Screen for holes, cracks, or corrosion", "Exhaust connections and clamps tight"],
+    notes:   "Let the exhaust cool fully before servicing. Remove the arrestor screen and clear carbon deposits with a wire brush or solvent soak, then reinstall securely. Replace the screen if perforated or corroded."
   },
   airfilter_clean: {
     replace: ["Air filter element if damaged or heavily soiled"],
