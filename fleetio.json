@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T09:27:13.092119+00:00",
+  "generated_at": "2026-08-22T10:23:44.099438+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -206,15 +206,15 @@
       "vin": "CYJ77D-7015192",
       "status": "Active",
       "meter": {
-        "value": "31572.0",
+        "value": "31864.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578476,
-        "lng": 139.7476,
-        "at": "2026-08-21T21:05:25.217-04:00",
+        "address": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.57846,
+        "lng": 139.7475,
+        "at": "2026-08-22T18:49:17.571+09:00",
         "is_current": true
       }
     },
@@ -227,15 +227,15 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "35453.0",
+        "value": "35942.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.237003,
-        "lng": 138.924526,
-        "at": "2026-08-22T05:32:32.625+09:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578282,
+        "lng": 139.747127,
+        "at": "2026-08-22T18:47:15.712+09:00",
         "is_current": true
       }
     },
