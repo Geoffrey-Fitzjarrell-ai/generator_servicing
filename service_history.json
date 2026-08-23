@@ -1027,6 +1027,31 @@
       "notes": [
         "Please continue to observe GND bus bar towards rear of battery box for symptoms of loose nut"
       ]
+    },
+    {
+      "date": "2026-08-23",
+      "hours": 960,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        },
+        {
+          "key": "airfilter_500",
+          "label": "Change air filter"
+        }
+      ],
+      "notes": [
+        "Fuel leak found posting pictures in a slack thread - source unknown; Would like to ground vehicle"
+      ],
+      "laborHours": 0,
+      "travelHours": 0,
+      "jobType": null
     }
   ],
   "HD13": [
