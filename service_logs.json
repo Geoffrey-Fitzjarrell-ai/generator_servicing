@@ -65,11 +65,11 @@
     "clean_radiator": 1569
   },
   "HD12": {
-    "oil_filter": 773,
+    "oil_filter": 960,
     "airfilter_battery": 773,
     "battery_box": 773,
-    "airfilter_500": 456,
-    "coolant_lines": 616,
+    "airfilter_500": 960,
+    "coolant_lines": 960,
     "fuel_filter": 616,
     "drive_belt": 616,
     "clean_radiator": 616
