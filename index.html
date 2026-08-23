@@ -1906,6 +1906,7 @@ function PlanningView({ onOpenTruck }){
   const [err,setErr]         = useState(false);
   const [weekStart,setWeekStart] = useState(()=> addDays(mondayOf(new Date()), -7));
   const [weeks,setWeeks]         = useState(4);
+  const dayGridRef = useRef(null);
   const [preset,setPreset]       = useState("all");
   const [show,setShow]           = useState({ label:true, eng:true, shift:false });
   const [gran,setGran]           = useState("week");   // "week" | "day"
@@ -2117,7 +2118,7 @@ function PlanningView({ onOpenTruck }){
       )
     );
   });
-  const dayGridEl = PH("div",{style:{border:"1px solid var(--border)",borderRadius:"var(--radius)",overflow:"auto",background:"var(--surface)",width:"100%"}},
+  const dayGridEl = PH("div",{ref:dayGridRef,style:{border:"1px solid var(--border)",borderRadius:"var(--radius)",overflow:"auto",background:"var(--surface)",width:"100%"}},
     PH("div",{style:{minWidth:LABELW+totalDays*DAYW}}, dayHeader, ...dayRows));
 
   return PH("div",{style:{padding:"14px 18px 40px",fontFamily:"var(--sans)"}},
@@ -2125,7 +2126,7 @@ function PlanningView({ onOpenTruck }){
     PH("div",{style:{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}},
       PH("div",{style:{display:"flex",gap:2,alignItems:"center"}},
         PH("button",{onClick:()=>setWeekStart(addDays(weekStart,-weeks*7)),style:navBtn},"‹"),
-        PH("button",{onClick:()=>setWeekStart(addDays(mondayOf(new Date()),-7)),style:navBtn},"Today"),
+        PH("button",{onClick:()=>{ setWeekStart(mondayOf(new Date())); if(dayGridRef.current) dayGridRef.current.scrollLeft=0; },style:navBtn},"Today"),
         PH("button",{onClick:()=>setWeekStart(addDays(weekStart,weeks*7)),style:navBtn},"›")
       ),
       PH("div",{style:{position:"relative",display:"flex",alignItems:"center"}},
@@ -2802,7 +2803,7 @@ function EngineersView(){
     PH("div",{style:{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:14}},
       PH("div",{style:{display:"flex",gap:2,alignItems:"center"}},
         PH("button",{onClick:()=>setWeekStart(addDays(weekStart,-weeks*7)),style:navBtn},"‹"),
-        PH("button",{onClick:()=>setWeekStart(addDays(mondayOf(new Date()),-7)),style:navBtn},"Today"),
+        PH("button",{onClick:()=>{ setWeekStart(mondayOf(new Date())); if(gridRef.current) gridRef.current.scrollLeft=0; },style:navBtn},"Today"),
         PH("button",{onClick:()=>setWeekStart(addDays(weekStart,weeks*7)),style:navBtn},"›")),
       PH("div",{style:{position:"relative",display:"flex",alignItems:"center"}},
         PH("input",{value:q,onChange:e=>setQ(e.target.value),placeholder:"Search work, engineer, asset…",style:{...sel,width:220,paddingLeft:26}}),
