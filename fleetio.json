@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T01:22:32.278649+00:00",
+  "generated_at": "2026-08-23T03:03:27.174342+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -18,7 +18,7 @@
       "status": "Inactive",
       "meter": {
         "value": "607.0",
-        "unit": "mi"
+        "unit": "km"
       },
       "recent_service_entries": [],
       "location": null
@@ -33,7 +33,7 @@
       "status": "Inactive",
       "meter": {
         "value": "637.0",
-        "unit": "mi"
+        "unit": "km"
       },
       "recent_service_entries": [],
       "location": null
@@ -48,7 +48,7 @@
       "status": "Inactive",
       "meter": {
         "value": "605.0",
-        "unit": "mi"
+        "unit": "km"
       },
       "recent_service_entries": [],
       "location": null
@@ -63,7 +63,7 @@
       "status": "Inactive",
       "meter": {
         "value": "698.0",
-        "unit": "mi"
+        "unit": "km"
       },
       "recent_service_entries": [],
       "location": null
@@ -78,7 +78,7 @@
       "status": "Inactive",
       "meter": {
         "value": "633.0",
-        "unit": "mi"
+        "unit": "km"
       },
       "recent_service_entries": [],
       "location": null
@@ -93,7 +93,7 @@
       "status": "Inactive",
       "meter": {
         "value": "633.0",
-        "unit": "mi"
+        "unit": "km"
       },
       "recent_service_entries": [],
       "location": null
@@ -108,7 +108,7 @@
       "status": "Inactive",
       "meter": {
         "value": "632.0",
-        "unit": "mi"
+        "unit": "km"
       },
       "recent_service_entries": [],
       "location": null
