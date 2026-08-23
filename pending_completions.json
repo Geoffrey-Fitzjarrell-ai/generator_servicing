@@ -36,5 +36,23 @@
     ],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD9",
+    "tasks": [
+      "Oil / filter change",
+      "Check coolant lines",
+      "Check drive belt & tension"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0ABG6DFW03",
+      "name": null
+    },
+    "loggedAt": "2026-08-23T09:22:11.217Z",
+    "hours": 1911,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
