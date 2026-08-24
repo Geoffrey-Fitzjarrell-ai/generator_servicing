@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "truck": "HD10",
+    "tasks": [
+      "Oil / filter change",
+      "Air filter / Battery check",
+      "Battery Box check"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U09P6572BK4",
+      "name": null
+    },
+    "loggedAt": "2026-08-24T02:22:40.010Z",
+    "hours": 1895,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
