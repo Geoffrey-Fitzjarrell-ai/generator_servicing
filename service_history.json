@@ -1894,6 +1894,29 @@
       "laborHours": 0,
       "travelHours": 0,
       "jobType": null
+    },
+    {
+      "date": "2026-08-24",
+      "hours": 578,
+      "technician": "Masakiyo",
+      "tasks": [
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        },
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        },
+        {
+          "key": "clean_radiator",
+          "label": "Clean radiator"
+        }
+      ],
+      "notes": [],
+      "laborHours": 0,
+      "travelHours": 0,
+      "jobType": null
     }
   ],
   "HD17": [
