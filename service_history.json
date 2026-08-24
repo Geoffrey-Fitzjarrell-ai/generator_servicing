@@ -812,6 +812,29 @@
       "notes": [
         "Nuts on the ground bus bar loose, zip ties reapplied to under cover hoses for bottom of generator, generator mount bolts torque checked. air filter was also changed due to condition"
       ]
+    },
+    {
+      "date": "2026-08-24",
+      "hours": 1895,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        }
+      ],
+      "notes": [],
+      "laborHours": 0,
+      "travelHours": 0,
+      "jobType": null
     }
   ],
   "HD11": [
