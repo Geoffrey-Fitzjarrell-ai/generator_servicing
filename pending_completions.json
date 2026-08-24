@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "truck": "HD6",
+    "tasks": [
+      "Air filter / Battery check",
+      "Battery Box check",
+      "Oil / filter change",
+      "Clean spark arrestor",
+      "Check coolant lines",
+      "Check drive belt & tension",
+      "Clean radiator"
+    ],
+    "technician": "masakiyo",
+    "postedBy": {
+      "id": "U09V64E0352",
+      "name": null
+    },
+    "loggedAt": "2026-08-24T11:04:18.559Z",
+    "hours": 2208,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
