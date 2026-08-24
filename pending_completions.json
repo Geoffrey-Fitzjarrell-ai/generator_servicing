@@ -52,5 +52,23 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD16",
+    "tasks": [
+      "Check coolant lines",
+      "Battery Box check",
+      "Clean radiator"
+    ],
+    "technician": "Masakiyo",
+    "postedBy": {
+      "id": "U09NG2B5316",
+      "name": null
+    },
+    "loggedAt": "2026-08-10T09:52:38.304Z",
+    "hours": 578,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
