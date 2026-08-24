@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T09:49:05.868065+00:00",
+  "generated_at": "2026-08-24T10:37:37.091478+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -164,15 +164,15 @@
       "vin": "CYJ77D-7015279",
       "status": "Active",
       "meter": {
-        "value": "32569.0",
+        "value": "32581.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477515,
-        "lng": 140.328968,
-        "at": "2026-08-23T21:42:06.666-04:00",
+        "lat": 36.477337,
+        "lng": 140.329235,
+        "at": "2026-08-24T19:03:45.113+09:00",
         "is_current": true
       }
     },
@@ -227,15 +227,15 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "35942.0",
+        "value": "36066.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578229,
-        "lng": 139.747018,
-        "at": "2026-08-24T12:20:54.402+09:00",
+        "lat": 35.578231,
+        "lng": 139.747022,
+        "at": "2026-08-24T19:14:50.689+09:00",
         "is_current": true
       }
     },
