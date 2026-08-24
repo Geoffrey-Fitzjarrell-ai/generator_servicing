@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T01:19:43.697544+00:00",
+  "generated_at": "2026-08-24T03:03:49.537317+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -169,10 +169,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578261,
-        "lng": 139.747063,
-        "at": "2026-08-21T23:00:38.029-04:00",
+        "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
+        "lat": 36.477515,
+        "lng": 140.328968,
+        "at": "2026-08-23T21:42:06.666-04:00",
         "is_current": true
       }
     },
@@ -190,10 +190,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477285,
-        "lng": 140.329139,
-        "at": "2026-08-20T09:16:59.272+09:00",
+        "address": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578429,
+        "lng": 139.747458,
+        "at": "2026-08-24T11:54:24.570+09:00",
         "is_current": true
       }
     },
@@ -233,9 +233,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578282,
-        "lng": 139.747127,
-        "at": "2026-08-22T18:47:15.712+09:00",
+        "lat": 35.578228,
+        "lng": 139.74701,
+        "at": "2026-08-23T21:54:27.576-04:00",
         "is_current": true
       }
     },
