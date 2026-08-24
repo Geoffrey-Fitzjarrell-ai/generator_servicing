@@ -5,14 +5,15 @@
     "drive_belt": 655
   },
   "HD6": {
-    "oil_filter": 2036,
-    "airfilter_battery": 2012,
-    "battery_box": 2012,
+    "oil_filter": 2208,
+    "airfilter_battery": 2208,
+    "battery_box": 2208,
     "airfilter_500": 2012,
     "fuel_filter": 1897,
-    "coolant_lines": 1897,
-    "drive_belt": 1680,
-    "clean_radiator": 1578
+    "coolant_lines": 2208,
+    "drive_belt": 2208,
+    "clean_radiator": 2208,
+    "spark_arrestor": 2208
   },
   "HD7": {
     "airfilter_battery": 839,
