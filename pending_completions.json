@@ -124,5 +124,23 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD6",
+    "tasks": [
+      "Air filter / Battery check",
+      "Battery Box check",
+      "Change air filter"
+    ],
+    "technician": "Masakiyo",
+    "postedBy": {
+      "id": "U0AT1RYRS1Z",
+      "name": null
+    },
+    "loggedAt": "2026-08-10T10:10:53.415Z",
+    "hours": 2012,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
