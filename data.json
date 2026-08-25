@@ -54,13 +54,13 @@
     "grounded": false
   },
   "HD10": {
-    "hours": 1908,
+    "hours": 1916,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Takumi Arimura",
-    "lastUpdated": "2026-08-25T00:51:09Z",
+    "lastUpdated": "2026-08-25T11:34:13Z",
     "postedBy": {
-      "id": "U09P6572BK4",
+      "id": "U0B3CTWCKSS",
       "name": null
     }
   },
