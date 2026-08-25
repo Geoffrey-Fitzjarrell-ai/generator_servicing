@@ -1415,6 +1415,22 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1787639350461",
+      "title": "Elf",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-09-02",
+      "end": "2026-09-18",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
