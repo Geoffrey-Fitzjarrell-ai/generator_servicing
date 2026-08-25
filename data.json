@@ -8,7 +8,10 @@
     "postedBy": {
       "id": "U09V64E0352",
       "name": null
-    }
+    },
+    "grounded": true,
+    "groundedNote": "Out of service (Fleetio)",
+    "groundedSource": "fleetio"
   },
   "HD7": {
     "hours": 914,
@@ -19,7 +22,10 @@
     "postedBy": {
       "id": "U0AEE78SP2R",
       "name": null
-    }
+    },
+    "grounded": true,
+    "groundedNote": "Out of service (Fleetio)",
+    "groundedSource": "fleetio"
   },
   "HD8": {
     "hours": 1931,
@@ -30,7 +36,10 @@
     "postedBy": {
       "id": "U09TT0S0UF8",
       "name": null
-    }
+    },
+    "grounded": true,
+    "groundedNote": "Out of service (Fleetio)",
+    "groundedSource": "fleetio"
   },
   "HD9": {
     "hours": 1943,
