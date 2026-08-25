@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T01:17:35.518919+00:00",
+  "generated_at": "2026-08-25T02:59:18.013233+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -289,10 +289,10 @@
         }
       ],
       "location": {
-        "address": "POINT (-122.034518 37.38043)",
-        "lat": 37.38043,
-        "lng": -122.034518,
-        "at": "2026-08-24T16:49:32.000+09:00",
+        "address": "460 W California Ave, Sunnyvale, CA 94086, USA",
+        "lat": 37.380784,
+        "lng": -122.033468,
+        "at": "2026-08-25T11:58:40.826+09:00",
         "is_current": true
       }
     },
