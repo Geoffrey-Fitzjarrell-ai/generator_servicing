@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T11:28:02.320436+00:00",
+  "generated_at": "2026-08-25T12:48:30.230815+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -190,10 +190,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-8512, Japan",
-        "lat": 35.579262,
-        "lng": 139.744413,
-        "at": "2026-08-25T19:24:58.463+09:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.577536,
+        "lng": 139.747148,
+        "at": "2026-08-25T20:36:56.331+09:00",
         "is_current": true
       }
     },
@@ -233,9 +233,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578223,
-        "lng": 139.747017,
-        "at": "2026-08-25T18:11:39.129+09:00",
+        "lat": 35.578263,
+        "lng": 139.747061,
+        "at": "2026-08-25T20:36:30.485+09:00",
         "is_current": true
       }
     },
@@ -331,10 +331,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578451,
-        "lng": 139.747575,
-        "at": "2026-08-25T18:29:12.897+09:00",
+        "address": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578421,
+        "lng": 139.747465,
+        "at": "2026-08-25T20:41:30.702+09:00",
         "is_current": true
       }
     },
