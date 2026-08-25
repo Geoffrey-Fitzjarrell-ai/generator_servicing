@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at": "2026-08-24T21:58:18Z",
+  "checked_at": "2026-08-25T21:57:12Z",
   "passed": [
     "worker alive",
     "worker up to date (build 200d78b5)",
