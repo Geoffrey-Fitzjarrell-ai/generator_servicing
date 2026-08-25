@@ -78,14 +78,14 @@
     }
   },
   "HD13": {
-    "hours": 899,
+    "hours": 887,
     "intervalStart": 0,
     "overdue": false,
-    "technician": "Ryo Suzuki",
-    "lastUpdated": "2026-08-24T02:35:44Z",
+    "technician": "Kouya Yamazaki",
+    "lastUpdated": "2026-08-25T02:26:19Z",
     "postedBy": {
       "id": "U0B2SBGP32A",
-      "name": null
+      "name": "Kouya Yamazaki"
     }
   },
   "HD14": {
