@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T19:04:17.772571+00:00",
+  "generated_at": "2026-08-26T22:48:36.023622+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -122,7 +122,7 @@
       "vin": "CYJ77D-7015281",
       "status": "Active",
       "meter": {
-        "value": "15910.0",
+        "value": "16319.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -143,7 +143,7 @@
       "vin": "CYJ77D-7015280",
       "status": "Active",
       "meter": {
-        "value": "26931.0",
+        "value": "27318.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -185,7 +185,7 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "31910.0",
+        "value": "32297.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -206,7 +206,7 @@
       "vin": "CYJ77D-7015192",
       "status": "Active",
       "meter": {
-        "value": "34581.0",
+        "value": "35113.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -227,7 +227,7 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "36453.0",
+        "value": "36834.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -326,7 +326,7 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "78664.0",
+        "value": "79046.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -347,7 +347,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "78664.0",
+        "value": "78897.0",
         "unit": "km"
       },
       "recent_service_entries": [
