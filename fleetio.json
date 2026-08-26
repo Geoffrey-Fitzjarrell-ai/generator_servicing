@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T08:43:38.257710+00:00",
+  "generated_at": "2026-08-26T09:41:55.923460+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -164,15 +164,15 @@
       "vin": "CYJ77D-7015279",
       "status": "Active",
       "meter": {
-        "value": "32599.0",
+        "value": "32620.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477323,
-        "lng": 140.328989,
-        "at": "2026-08-25T20:16:59.345-04:00",
+        "lat": 36.477636,
+        "lng": 140.329189,
+        "at": "2026-08-26T18:25:32.013+09:00",
         "is_current": true
       }
     },
@@ -185,15 +185,15 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "31662.0",
+        "value": "31910.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578321,
-        "lng": 139.747208,
-        "at": "2026-08-26T10:07:48.695+09:00",
+        "address": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.579395,
+        "lng": 139.746094,
+        "at": "2026-08-26T18:30:45.704+09:00",
         "is_current": true
       }
     },
@@ -206,15 +206,15 @@
       "vin": "CYJ77D-7015192",
       "status": "Active",
       "meter": {
-        "value": "34047.0",
+        "value": "34581.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "7822-8 Miyakodach\u014d, Hamana-ku, Hamamatsu, Shizuoka 431-2102, Japan",
-        "lat": 34.842037,
-        "lng": 137.74757,
-        "at": "2026-08-26T06:00:08.755+09:00",
+        "address": "1-ch\u014dme-52 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.311778,
+        "lng": 136.682052,
+        "at": "2026-08-26T18:15:32.144+09:00",
         "is_current": true
       }
     },
@@ -347,7 +347,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "77914.0",
+        "value": "78388.0",
         "unit": "km"
       },
       "recent_service_entries": [
