@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T07:47:20.943347+00:00",
+  "generated_at": "2026-08-26T08:43:38.257710+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -289,11 +289,11 @@
         }
       ],
       "location": {
-        "address": "3471 Lafayette St, Santa Clara, CA 95054, USA",
-        "lat": 37.383566,
-        "lng": -121.9506006,
-        "at": "2026-08-04T10:29:00.000+09:00",
-        "is_current": false
+        "address": "POINT (-122.034276 37.380756)",
+        "lat": 37.380756,
+        "lng": -122.034276,
+        "at": "2026-08-26T13:10:35.000+09:00",
+        "is_current": true
       }
     },
     "HD11": {
