@@ -131,13 +131,13 @@
     }
   },
   "HD17": {
-    "hours": 594,
+    "hours": 604,
     "intervalStart": 0,
     "overdue": false,
     "technician": "",
-    "lastUpdated": "2026-08-26T00:54:54Z",
+    "lastUpdated": "2026-08-26T13:40:25Z",
     "postedBy": {
-      "id": "U0BEARESY3W",
+      "id": "U0BE3QDSBEZ",
       "name": null
     }
   },
