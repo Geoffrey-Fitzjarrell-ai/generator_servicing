@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T03:05:24.592819+00:00",
+  "generated_at": "2026-08-26T04:40:03.893856+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -289,11 +289,11 @@
         }
       ],
       "location": {
-        "address": "460 W California Ave, Sunnyvale, CA 94086, USA",
-        "lat": 37.380784,
-        "lng": -122.033468,
-        "at": "2026-08-25T11:58:40.826+09:00",
-        "is_current": true
+        "address": "3471 Lafayette St, Santa Clara, CA 95054, USA",
+        "lat": 37.383566,
+        "lng": -121.9506006,
+        "at": "2026-08-04T10:29:00.000+09:00",
+        "is_current": false
       }
     },
     "HD11": {
