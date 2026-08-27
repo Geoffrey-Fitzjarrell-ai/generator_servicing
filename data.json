@@ -28,13 +28,13 @@
     "groundedSource": "fleetio"
   },
   "HD8": {
-    "hours": 1931,
+    "hours": 1942,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Daichi Hayakawa",
-    "lastUpdated": "2026-08-22T00:38:52Z",
+    "lastUpdated": "2026-08-27T07:04:06Z",
     "postedBy": {
-      "id": "U09TT0S0UF8",
+      "id": "U0BGR7100UD",
       "name": null
     },
     "grounded": true,
