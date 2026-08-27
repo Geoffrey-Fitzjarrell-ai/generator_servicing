@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T22:48:36.023622+00:00",
+  "generated_at": "2026-08-27T04:20:23.436777+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -127,10 +127,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.577595,
-        "lng": 139.74723,
-        "at": "2026-08-26T05:43:23.790-04:00",
+        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 6-ch\u014dme\u22121\u2212\uff11 Distribution A Bldg., \u68df \uff21\uff37\uff14-\uff33",
+        "lat": 35.578329,
+        "lng": 139.747485,
+        "at": "2026-08-26T20:56:00.345-04:00",
         "is_current": true
       }
     },
@@ -148,10 +148,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "6-ch\u014dme-2-26 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.580528,
-        "lng": 139.750733,
-        "at": "2026-08-26T21:00:30.014+09:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.57791,
+        "lng": 139.74908,
+        "at": "2026-08-26T21:12:22.496-04:00",
         "is_current": true
       }
     },
@@ -191,9 +191,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578249,
-        "lng": 139.747066,
-        "at": "2026-08-26T20:50:01.579+09:00",
+        "lat": 35.578259,
+        "lng": 139.747062,
+        "at": "2026-08-26T20:52:09.839-04:00",
         "is_current": true
       }
     },
@@ -211,10 +211,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1-ch\u014dme-52 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.311778,
-        "lng": 136.682052,
-        "at": "2026-08-26T18:15:32.144+09:00",
+        "address": "1-ch\u014dme-52-1 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.311964,
+        "lng": 136.682373,
+        "at": "2026-08-26T19:41:46.983-04:00",
         "is_current": true
       }
     },
@@ -421,7 +421,7 @@
       "vin": "CYJ77D-7014032",
       "status": "Out of Service",
       "meter": {
-        "value": "24497.0",
+        "value": "24507.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -442,10 +442,10 @@
         }
       ],
       "location": {
-        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578552,
-        "lng": 139.74739,
-        "at": "2026-08-19T05:02:53.781-04:00",
+        "address": "1-ch\u014dme-3-2 Daishigawara, Kawasaki Ward, Kawasaki, Kanagawa 210-0811, Japan",
+        "lat": 35.537883,
+        "lng": 139.740442,
+        "at": "2026-08-26T21:59:14.369-04:00",
         "is_current": true
       }
     },
