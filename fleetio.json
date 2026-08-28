@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-28T01:18:38.252692+00:00",
+  "generated_at": "2026-08-28T13:53:41.865088+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -122,15 +122,15 @@
       "vin": "CYJ77D-7015281",
       "status": "Active",
       "meter": {
-        "value": "16833.0",
+        "value": "16951.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Parking lot, 5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.57864,
-        "lng": 139.745076,
-        "at": "2026-08-27T20:48:49.065-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578262,
+        "lng": 139.747051,
+        "at": "2026-08-28T06:07:08.211-04:00",
         "is_current": true
       }
     },
@@ -149,9 +149,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477396,
-        "lng": 140.329352,
-        "at": "2026-08-27T17:50:36.897-04:00",
+        "lat": 36.477543,
+        "lng": 140.329271,
+        "at": "2026-08-28T09:09:08.899-04:00",
         "is_current": true
       }
     },
@@ -191,9 +191,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477318,
-        "lng": 140.329082,
-        "at": "2026-08-27T17:57:42.664-04:00",
+        "lat": 36.477288,
+        "lng": 140.329119,
+        "at": "2026-08-28T09:10:21.033-04:00",
         "is_current": true
       }
     },
@@ -206,15 +206,15 @@
       "vin": "CYJ77D-7015192",
       "status": "Active",
       "meter": {
-        "value": "36152.0",
+        "value": "36686.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1-ch\u014dme-52-1 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.311977,
-        "lng": 136.682267,
-        "at": "2026-08-27T19:41:40.097-04:00",
+        "address": "1-ch\u014dme-45 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.31276,
+        "lng": 136.68199,
+        "at": "2026-08-28T06:49:19.991-04:00",
         "is_current": true
       }
     },
@@ -227,15 +227,15 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "37220.0",
+        "value": "37715.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578367,
+        "lat": 35.578256,
         "lng": 139.74705,
-        "at": "2026-08-27T16:09:32.951-04:00",
+        "at": "2026-08-28T09:13:48.838-04:00",
         "is_current": true
       }
     },
@@ -289,10 +289,10 @@
         }
       ],
       "location": {
-        "address": "POINT (-122.034383 37.380414)",
-        "lat": 37.380414,
-        "lng": -122.034383,
-        "at": "2026-08-26T17:49:15.000-04:00",
+        "address": "POINT (-122.034119 37.380325)",
+        "lat": 37.380325,
+        "lng": -122.034119,
+        "at": "2026-08-27T22:00:26.000-04:00",
         "is_current": true
       }
     },
@@ -305,15 +305,15 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "63113.0",
+        "value": "63336.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 5-ch\u014dme\u22128\u2212\uff11\uff12 Parking lot, \u6771\u4eac\u30b7\u30c6\u30a3\u89b3\u5149",
-        "lat": 35.57667,
-        "lng": 139.744539,
-        "at": "2026-08-21T18:41:46.870+09:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578583,
+        "lng": 139.74744,
+        "at": "2026-08-28T06:50:34.756-04:00",
         "is_current": true
       }
     },
@@ -326,15 +326,15 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "79218.0",
+        "value": "79527.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578256,
-        "lng": 139.747052,
-        "at": "2026-08-27T05:35:12.477-04:00",
+        "lat": 35.578258,
+        "lng": 139.747067,
+        "at": "2026-08-28T07:09:05.220-04:00",
         "is_current": true
       }
     },
@@ -347,7 +347,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "79601.0",
+        "value": "79902.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -368,10 +368,10 @@
         }
       ],
       "location": {
-        "address": "5-ch\u014dme-9-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.575836,
-        "lng": 139.74565,
-        "at": "2026-08-27T15:57:33.977-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578366,
+        "lng": 139.747051,
+        "at": "2026-08-28T07:22:40.150-04:00",
         "is_current": true
       }
     },
@@ -419,9 +419,9 @@
       "model": "CYJ77D-WX-D 23A",
       "year": 2025,
       "vin": "CYJ77D-7014032",
-      "status": "Out of Service",
+      "status": "Active",
       "meter": {
-        "value": "24507.0",
+        "value": "24515.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -442,10 +442,10 @@
         }
       ],
       "location": {
-        "address": "1-ch\u014dme-3-2 Daishigawara, Kawasaki Ward, Kawasaki, Kanagawa 210-0811, Japan",
-        "lat": 35.537883,
-        "lng": 139.740442,
-        "at": "2026-08-26T21:59:14.369-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578219,
+        "lng": 139.747005,
+        "at": "2026-08-28T05:03:09.374-04:00",
         "is_current": true
       }
     },
