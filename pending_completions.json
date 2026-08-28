@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "truck": "HD9",
+    "tasks": [
+      "Change air filter"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0AU900KF5M",
+      "name": null
+    },
+    "loggedAt": "2026-08-28T01:09:40.930Z",
+    "hours": 1989,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
