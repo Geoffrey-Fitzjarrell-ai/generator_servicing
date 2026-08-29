@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-29T17:03:57.237873+00:00",
+  "generated_at": "2026-08-29T20:31:25.556222+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -143,15 +143,15 @@
       "vin": "CYJ77D-7015280",
       "status": "Active",
       "meter": {
-        "value": "27725.0",
+        "value": "28040.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.4774,
-        "lng": 140.32935,
-        "at": "2026-08-29T21:27:33.591+09:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578568,
+        "lng": 139.74747,
+        "at": "2026-08-30T05:12:00.513+09:00",
         "is_current": true
       }
     },
@@ -185,15 +185,15 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "33045.0",
+        "value": "33363.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477387,
-        "lng": 140.329067,
-        "at": "2026-08-29T21:29:25.480+09:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578435,
+        "lng": 139.747555,
+        "at": "2026-08-30T05:22:51.022+09:00",
         "is_current": true
       }
     },
@@ -305,15 +305,15 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "63336.0",
+        "value": "63738.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578267,
-        "lng": 139.74707,
-        "at": "2026-08-29T21:00:12.969+09:00",
+        "address": "1-ch\u014dme-52-1 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.311788,
+        "lng": 136.682157,
+        "at": "2026-08-30T05:07:08.335+09:00",
         "is_current": true
       }
     },
