@@ -1,19 +1,18 @@
 {
-  "ok": false,
-  "checked_at": "2026-08-28T05:35:53Z",
+  "ok": true,
+  "checked_at": "2026-08-29T03:21:58Z",
   "passed": [
     "worker alive",
     "worker up to date (build 200d78b5)",
     "worker auth enforced (401 on bad key)",
     "slack token ok (generator_service_bot)",
+    "generator-hours.yml healthy",
+    "consistency-check.yml healthy",
+    "daily-digest.yml healthy",
     "weekly-summary.yml healthy",
     "pages-build-deployment healthy",
     "dashboard serving",
     "all 15 data files parse"
   ],
-  "issues": [
-    "Workflow generator-hours.yml: last successful run is 5h old (expected < 4h) — schedule may be dead",
-    "Workflow consistency-check.yml: latest completed run #56 -> failure (https://github.com/Geoffrey-Fitzjarrell-ai/generator_servicing/actions/runs/33132761136)",
-    "Workflow daily-digest.yml: last successful run is 27h old (expected < 26h) — schedule may be dead"
-  ]
+  "issues": []
 }
