@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-29T06:00:07.176950+00:00",
+  "generated_at": "2026-08-29T12:58:57.400097+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -149,9 +149,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477394,
-        "lng": 140.329138,
-        "at": "2026-08-29T07:08:39.699+09:00",
+        "lat": 36.4774,
+        "lng": 140.32935,
+        "at": "2026-08-29T21:27:33.591+09:00",
         "is_current": true
       }
     },
@@ -191,9 +191,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477287,
-        "lng": 140.329061,
-        "at": "2026-08-29T07:01:18.851+09:00",
+        "lat": 36.477387,
+        "lng": 140.329067,
+        "at": "2026-08-29T21:29:25.480+09:00",
         "is_current": true
       }
     },
@@ -289,10 +289,10 @@
         }
       ],
       "location": {
-        "address": "POINT (-122.034119 37.380325)",
-        "lat": 37.380325,
-        "lng": -122.034119,
-        "at": "2026-08-27T22:00:26.000-04:00",
+        "address": "POINT (-122.034438 37.380462)",
+        "lat": 37.380462,
+        "lng": -122.034438,
+        "at": "2026-08-29T08:49:44.000+09:00",
         "is_current": true
       }
     },
@@ -310,10 +310,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578583,
-        "lng": 139.74744,
-        "at": "2026-08-28T06:50:34.756-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578267,
+        "lng": 139.74707,
+        "at": "2026-08-29T21:00:12.969+09:00",
         "is_current": true
       }
     },
@@ -369,9 +369,9 @@
       ],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477284,
-        "lng": 140.329092,
-        "at": "2026-08-29T06:58:59.976+09:00",
+        "lat": 36.477514,
+        "lng": 140.329084,
+        "at": "2026-08-29T21:08:43.408+09:00",
         "is_current": true
       }
     },
