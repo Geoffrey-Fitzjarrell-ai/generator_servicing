@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-30T19:05:00.743491+00:00",
+  "generated_at": "2026-08-30T22:27:29.320034+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -305,15 +305,15 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "63738.0",
+        "value": "64060.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "1-ch\u014dme-52-1 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.311803,
-        "lng": 136.682114,
-        "at": "2026-08-30T07:00:23.732-04:00",
+        "lat": 35.311955,
+        "lng": 136.682236,
+        "at": "2026-08-30T16:02:22.889-04:00",
         "is_current": true
       }
     },
@@ -326,15 +326,15 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "79529.0",
+        "value": "80045.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "6-ch\u014dme-1-6-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.57994,
-        "lng": 139.74684,
-        "at": "2026-08-30T17:23:57.413+09:00",
+        "address": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578465,
+        "lng": 139.74747,
+        "at": "2026-08-30T17:30:11.556-04:00",
         "is_current": true
       }
     },
@@ -347,7 +347,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "80507.0",
+        "value": "80955.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -368,10 +368,10 @@
         }
       ],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578368,
-        "lng": 139.74705,
-        "at": "2026-08-30T08:05:14.392+09:00",
+        "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.2372,
+        "lng": 138.92464,
+        "at": "2026-08-30T17:06:13.442-04:00",
         "is_current": true
       }
     },
