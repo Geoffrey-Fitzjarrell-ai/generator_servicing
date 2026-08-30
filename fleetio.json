@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-30T04:06:57.085740+00:00",
+  "generated_at": "2026-08-30T10:17:52.590236+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -164,15 +164,15 @@
       "vin": "CYJ77D-7015279",
       "status": "Active",
       "meter": {
-        "value": "33251.0",
+        "value": "33255.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477272,
-        "lng": 140.32915,
-        "at": "2026-08-29T07:00:41.589+09:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.57857,
+        "lng": 139.74747,
+        "at": "2026-08-30T17:13:46.642+09:00",
         "is_current": true
       }
     },
@@ -289,10 +289,10 @@
         }
       ],
       "location": {
-        "address": "POINT (-122.034438 37.380462)",
-        "lat": 37.380462,
-        "lng": -122.034438,
-        "at": "2026-08-29T08:49:44.000+09:00",
+        "address": "POINT (-122.034503 37.380413)",
+        "lat": 37.380413,
+        "lng": -122.034503,
+        "at": "2026-08-30T06:30:24.000+09:00",
         "is_current": true
       }
     },
@@ -332,9 +332,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "6-ch\u014dme-1-6-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.5801,
-        "lng": 139.74652,
-        "at": "2026-08-30T09:56:32.459+09:00",
+        "lat": 35.57994,
+        "lng": 139.74684,
+        "at": "2026-08-30T17:23:57.413+09:00",
         "is_current": true
       }
     },
