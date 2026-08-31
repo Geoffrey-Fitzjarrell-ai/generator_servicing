@@ -1771,6 +1771,25 @@
       "laborHours": 0,
       "travelHours": 0,
       "jobType": null
+    },
+    {
+      "date": "2026-08-31",
+      "hours": 977,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        }
+      ],
+      "notes": [],
+      "laborHours": null,
+      "travelHours": null,
+      "jobType": null
     }
   ],
   "HD15": [
