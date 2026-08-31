@@ -67,5 +67,21 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD16",
+    "tasks": [
+      "Oil / filter change"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0BF5BSKQLQ",
+      "name": null
+    },
+    "loggedAt": "2026-08-31T11:35:06.953Z",
+    "hours": 733,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
