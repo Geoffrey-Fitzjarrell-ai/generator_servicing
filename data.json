@@ -22,7 +22,10 @@
     "postedBy": {
       "id": "U0BEARESY3W",
       "name": null
-    }
+    },
+    "grounded": true,
+    "groundedNote": "Out of service (Fleetio)",
+    "groundedSource": "fleetio"
   },
   "HD8": {
     "hours": 1942,
