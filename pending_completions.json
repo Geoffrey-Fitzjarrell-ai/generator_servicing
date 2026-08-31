@@ -50,5 +50,22 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD16",
+    "tasks": [
+      "Check coolant lines",
+      "Check drive belt & tension"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0BF5BSKQLQ",
+      "name": null
+    },
+    "loggedAt": "2026-08-31T11:19:53.757Z",
+    "hours": 733,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
