@@ -117,13 +117,14 @@
     "clean_radiator": 578
   },
   "HD17": {
-    "airfilter_battery": 532,
-    "battery_box": 532,
+    "airfilter_battery": 624,
+    "battery_box": 624,
     "oil_filter": 523,
     "coolant_lines": 523,
     "fuel_filter": 334,
-    "airfilter_500": 154,
+    "airfilter_500": 624,
     "drive_belt": 523,
-    "clean_radiator": 523
+    "clean_radiator": 523,
+    "spark_arrestor": 624
   }
 }
