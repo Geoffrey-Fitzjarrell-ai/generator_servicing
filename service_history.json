@@ -2311,6 +2311,25 @@
       "laborHours": 0,
       "travelHours": 0,
       "jobType": null
+    },
+    {
+      "date": "2026-08-31",
+      "hours": 733,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "coolant_lines",
+          "label": "Check coolant lines"
+        },
+        {
+          "key": "drive_belt",
+          "label": "Check drive belt & tension"
+        }
+      ],
+      "notes": [],
+      "laborHours": null,
+      "travelHours": null,
+      "jobType": null
     }
   ],
   "HD17": [
