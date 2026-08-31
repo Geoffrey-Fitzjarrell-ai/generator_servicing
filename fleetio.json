@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-30T22:27:29.320034+00:00",
+  "generated_at": "2026-08-31T01:07:40.512876+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -169,10 +169,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.57857,
-        "lng": 139.74747,
-        "at": "2026-08-30T17:13:46.642+09:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.57822,
+        "lng": 139.747006,
+        "at": "2026-08-30T20:52:32.378-04:00",
         "is_current": true
       }
     },
@@ -190,10 +190,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578435,
+        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 6-ch\u014dme\u22121\u2212\uff11 Distribution A Bldg., \u68df \uff21\uff37\uff14-\uff33",
+        "lat": 35.578382,
         "lng": 139.747555,
-        "at": "2026-08-30T05:22:51.022+09:00",
+        "at": "2026-08-30T20:46:08.776-04:00",
         "is_current": true
       }
     },
@@ -211,10 +211,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "926H+5M Yamakita, Kanagawa, Japan",
-        "lat": 35.36048,
-        "lng": 139.02916,
-        "at": "2026-08-28T16:26:31.635-04:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578606,
+        "lng": 139.74738,
+        "at": "2026-08-30T20:37:28.429-04:00",
         "is_current": true
       }
     },
