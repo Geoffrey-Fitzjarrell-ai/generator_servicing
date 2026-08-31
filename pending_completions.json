@@ -34,5 +34,21 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD14",
+    "tasks": [
+      "Clean spark arrestor"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0B3GPC0N0Z",
+      "name": null
+    },
+    "loggedAt": "2026-08-31T10:44:32.360Z",
+    "hours": 977,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
