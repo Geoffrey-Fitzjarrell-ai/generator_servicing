@@ -2419,6 +2419,33 @@
       "laborHours": 0,
       "travelHours": 0,
       "jobType": null
+    },
+    {
+      "date": "2026-08-31",
+      "hours": 624,
+      "technician": "Masakiyo",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        },
+        {
+          "key": "spark_arrestor",
+          "label": "Clean spark arrestor"
+        },
+        {
+          "key": "airfilter_500",
+          "label": "Change air filter"
+        }
+      ],
+      "notes": [],
+      "laborHours": 0,
+      "travelHours": 0,
+      "jobType": null
     }
   ]
 }
