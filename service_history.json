@@ -2374,6 +2374,23 @@
       "laborHours": null,
       "travelHours": null,
       "jobType": null
+    },
+    {
+      "date": "2026-08-31",
+      "hours": 733,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "airfilter_500",
+          "label": "Change air filter"
+        }
+      ],
+      "notes": [
+        "No air filters in stock, air filter, clean, replace as soon as stock comes in."
+      ],
+      "laborHours": null,
+      "travelHours": null,
+      "jobType": null
     }
   ],
   "HD17": [
