@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-31T08:12:55.064724+00:00",
+  "generated_at": "2026-08-31T16:46:17.101386+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -143,7 +143,7 @@
       "vin": "CYJ77D-7015280",
       "status": "Active",
       "meter": {
-        "value": "28040.0",
+        "value": "28331.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -164,15 +164,15 @@
       "vin": "CYJ77D-7015279",
       "status": "Active",
       "meter": {
-        "value": "33255.0",
+        "value": "33614.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.57822,
-        "lng": 139.747006,
-        "at": "2026-08-30T20:52:32.378-04:00",
+        "address": "2530-17 Karima, Tsukuba, Ibaraki 305-0822, Japan",
+        "lat": 36.0755,
+        "lng": 140.075251,
+        "at": "2026-08-31T05:09:59.587-04:00",
         "is_current": true
       }
     },
@@ -185,15 +185,15 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "33363.0",
+        "value": "33725.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 6-ch\u014dme\u22121\u2212\uff11 Distribution A Bldg., \u68df \uff21\uff37\uff14-\uff33",
-        "lat": 35.578382,
-        "lng": 139.747555,
-        "at": "2026-08-30T20:46:08.776-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578256,
+        "lng": 139.747047,
+        "at": "2026-08-31T07:39:06.849-04:00",
         "is_current": true
       }
     },
@@ -206,15 +206,15 @@
       "vin": "CYJ77D-7015192",
       "status": "Active",
       "meter": {
-        "value": "37149.0",
+        "value": "37595.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578606,
-        "lng": 139.74738,
-        "at": "2026-08-30T20:37:28.429-04:00",
+        "lat": 35.578575,
+        "lng": 139.74748,
+        "at": "2026-08-31T07:05:58.253-04:00",
         "is_current": true
       }
     },
@@ -289,10 +289,10 @@
         }
       ],
       "location": {
-        "address": "POINT (-122.034503 37.380413)",
-        "lat": 37.380413,
-        "lng": -122.034503,
-        "at": "2026-08-30T06:30:24.000+09:00",
+        "address": "POINT (-122.03446 37.380403)",
+        "lat": 37.380403,
+        "lng": -122.03446,
+        "at": "2026-08-30T16:25:43.000-04:00",
         "is_current": true
       }
     },
@@ -305,15 +305,15 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "64060.0",
+        "value": "64374.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1-ch\u014dme-52-1 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.312248,
-        "lng": 136.682205,
-        "at": "2026-08-30T21:35:43.850-04:00",
+        "address": "1-ch\u014dme-23 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.312271,
+        "lng": 136.682778,
+        "at": "2026-08-31T06:58:56.477-04:00",
         "is_current": true
       }
     },
@@ -326,15 +326,15 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "80045.0",
+        "value": "80501.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578465,
-        "lng": 139.74747,
-        "at": "2026-08-30T17:30:11.556-04:00",
+        "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.23655,
+        "lng": 138.924088,
+        "at": "2026-08-31T07:10:28.467-04:00",
         "is_current": true
       }
     },
@@ -347,7 +347,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "80955.0",
+        "value": "81354.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -369,9 +369,9 @@
       ],
       "location": {
         "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.2372,
-        "lng": 138.92464,
-        "at": "2026-08-30T17:06:13.442-04:00",
+        "lat": 35.237217,
+        "lng": 138.92473,
+        "at": "2026-08-31T07:10:54.564-04:00",
         "is_current": true
       }
     },
@@ -384,7 +384,7 @@
       "vin": "CYJ77D-7014033",
       "status": "Out of Service",
       "meter": {
-        "value": "68289.0",
+        "value": "68320.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -405,10 +405,10 @@
         }
       ],
       "location": {
-        "address": "3772 Ikonobech\u014d, Tsuzuki Ward, Yokohama, Kanagawa 224-0053, Japan",
-        "lat": 35.517106,
-        "lng": 139.573104,
-        "at": "2026-08-27T04:25:22.074-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.57826,
+        "lng": 139.747051,
+        "at": "2026-08-31T06:03:06.370-04:00",
         "is_current": true
       }
     },
@@ -419,7 +419,7 @@
       "model": "CYJ77D-WX-D 23A",
       "year": 2025,
       "vin": "CYJ77D-7014032",
-      "status": "Active",
+      "status": "Out of Service",
       "meter": {
         "value": "24515.0",
         "unit": "km"
