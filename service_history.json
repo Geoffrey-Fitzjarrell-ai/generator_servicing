@@ -1790,6 +1790,21 @@
       "laborHours": null,
       "travelHours": null,
       "jobType": null
+    },
+    {
+      "date": "2026-08-31",
+      "hours": 977,
+      "technician": "Geoff Fitzjarrell",
+      "tasks": [
+        {
+          "key": "spark_arrestor",
+          "label": "Clean spark arrestor"
+        }
+      ],
+      "notes": [],
+      "laborHours": null,
+      "travelHours": null,
+      "jobType": null
     }
   ],
   "HD15": [
