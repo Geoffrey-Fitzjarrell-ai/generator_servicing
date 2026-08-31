@@ -94,7 +94,8 @@
     "fuel_filter": 801,
     "coolant_lines": 801,
     "drive_belt": 801,
-    "clean_radiator": 801
+    "clean_radiator": 801,
+    "spark_arrestor": 977
   },
   "HD15": {
     "airfilter_battery": 805,
