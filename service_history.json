@@ -1569,6 +1569,39 @@
       "laborHours": null,
       "travelHours": null,
       "jobType": null
+    },
+    {
+      "date": "2026-08-31",
+      "hours": 965,
+      "technician": "Masakiyo Kato",
+      "tasks": [
+        {
+          "key": "airfilter_battery",
+          "label": "Air filter / Battery check"
+        },
+        {
+          "key": "battery_box",
+          "label": "Battery Box check"
+        },
+        {
+          "key": "oil_filter",
+          "label": "Oil / filter change"
+        },
+        {
+          "key": "spark_arrestor",
+          "label": "Clean spark arrestor"
+        },
+        {
+          "key": "airfilter_500",
+          "label": "Change air filter"
+        }
+      ],
+      "notes": [
+        "Air filter stock is empty, air filter was cleaned.  Will need to be replaced once in stock."
+      ],
+      "laborHours": 0,
+      "travelHours": 0,
+      "jobType": null
     }
   ],
   "HD14": [
