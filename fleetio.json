@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-31T16:46:17.101386+00:00",
+  "generated_at": "2026-08-31T21:44:48.557471+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -185,15 +185,15 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "33725.0",
+        "value": "34115.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.578256,
-        "lng": 139.747047,
-        "at": "2026-08-31T07:39:06.849-04:00",
+        "lng": 139.747051,
+        "at": "2026-08-31T15:30:52.894-04:00",
         "is_current": true
       }
     },
@@ -305,15 +305,15 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "64374.0",
+        "value": "64911.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1-ch\u014dme-23 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.312271,
-        "lng": 136.682778,
-        "at": "2026-08-31T06:58:56.477-04:00",
+        "address": "Japan, \u3012501-6304 Gifu, Hashima, Funabashich\u014d Dezuka, 2-ch\u014dme\u2212\uff11\uff19 \u30b7\u30e3\u30f3\u30da\u30fc\u30eb\u6d45\u4e95",
+        "lat": 35.311985,
+        "lng": 136.682545,
+        "at": "2026-08-31T16:23:38.214-04:00",
         "is_current": true
       }
     },
@@ -326,15 +326,15 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "80501.0",
+        "value": "81010.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "738-71 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.23655,
-        "lng": 138.924088,
-        "at": "2026-08-31T07:10:28.467-04:00",
+        "address": "1913-203 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.237542,
+        "lng": 138.924087,
+        "at": "2026-08-31T17:14:25.807-04:00",
         "is_current": true
       }
     },
@@ -347,7 +347,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "81354.0",
+        "value": "81862.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -369,9 +369,9 @@
       ],
       "location": {
         "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.237217,
-        "lng": 138.92473,
-        "at": "2026-08-31T07:10:54.564-04:00",
+        "lat": 35.23711,
+        "lng": 138.92456,
+        "at": "2026-08-31T17:34:19.357-04:00",
         "is_current": true
       }
     },
