@@ -104,5 +104,23 @@
     ],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD16",
+    "tasks": [
+      "Change air filter"
+    ],
+    "technician": "Geoff Fitzjarrell",
+    "postedBy": {
+      "id": "U0BF5BSKQLQ",
+      "name": null
+    },
+    "loggedAt": "2026-08-31T12:08:12.355Z",
+    "hours": 733,
+    "notes": [
+      "No air filters in stock, air filter, clean, replace as soon as stock comes in."
+    ],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
