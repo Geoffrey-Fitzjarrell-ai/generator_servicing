@@ -138,5 +138,27 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD13",
+    "tasks": [
+      "Air filter / Battery check",
+      "Battery Box check",
+      "Oil / filter change",
+      "Clean spark arrestor",
+      "Change air filter"
+    ],
+    "technician": "Masakiyo Kato",
+    "postedBy": {
+      "id": "U0971ULJJ0N",
+      "name": null
+    },
+    "loggedAt": "2026-08-31T12:30:34.384Z",
+    "hours": 965,
+    "notes": [
+      "Air filter stock is empty, air filter was cleaned.  Will need to be replaced once in stock."
+    ],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
