@@ -122,5 +122,21 @@
     ],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD14",
+    "tasks": [
+      "Oil / filter change"
+    ],
+    "technician": "Masakiyo Kato",
+    "postedBy": {
+      "id": "U0B3NMN2DS4",
+      "name": null
+    },
+    "loggedAt": "2026-08-31T12:29:53.628Z",
+    "hours": 986,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
