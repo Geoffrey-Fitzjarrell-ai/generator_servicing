@@ -2431,9 +2431,10 @@ function EngineersView(){
   const [weeks,setWeeks] = useState(4);
   const [q,setQ]         = useState("");
   const [form,setForm]   = useState(null);
+  const [dup,setDup]     = useState(null);   // {src, targets:[]} — duplicate an item to other engineers
   const [io,setIo]       = useState(null);
   const busyRef = useRef(false);
-  busyRef.current = !!form || !!io || saving;   // don't let a poll clobber an in-progress edit
+  busyRef.current = !!form || !!io || !!dup || saving;   // don't let a poll clobber an in-progress edit
 
   // ── Drag-to-reassign: hold a work bar and drop it on another engineer's lane ──
   // Pointer-events based so it works with mouse AND touch ("hold & move"). The live
@@ -2499,6 +2500,10 @@ function EngineersView(){
     try{ const res=await postWork({op:"upsert",item}); setItems(res.items); setEngineers(res.engineers); setSynced(Date.now()); return true; }
     catch(e){ setNetErr("Save failed: "+e.message); return false; }
     finally{ setSaving(false); } }
+  async function upsertMany(list){ setSaving(true); setNetErr("");
+    try{ const res=await postWork({op:"upsertMany",items:list}); setItems(res.items); setEngineers(res.engineers); setSynced(Date.now()); return true; }
+    catch(e){ setNetErr("Save failed: "+e.message); return false; }
+    finally{ setSaving(false); } }
   async function removeItem(id){ setSaving(true); setNetErr("");
     try{ const res=await postWork({op:"delete",id}); setItems(res.items); setEngineers(res.engineers); setSynced(Date.now()); return true; }
     catch(e){ setNetErr("Delete failed: "+e.message); return false; }
@@ -2555,19 +2560,41 @@ function EngineersView(){
   }
 
   const revealForm=()=>{ setTimeout(()=>{ try{ formRef.current&&formRef.current.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){} },60); };
-  function openNew(pref){ setIo(null); setForm({ id:"w_"+Date.now(), title:"", engineer:(pref&&pref.engineer)||"Geoff Fitzjarrell",
+  const mkId=(base,i)=> i===0 ? base : (base+"_c"+i+Math.random().toString(36).slice(2,5)).slice(0,40);
+  function openNew(pref){ setIo(null); setDup(null); const eng=(pref&&pref.engineer)||"Geoff Fitzjarrell";
+    setForm({ id:"w_"+Date.now(), title:"", engineer:eng, _assignees:[eng],
     asset:"", category:"build", status:"planned", start:(pref&&pref.start)||isoLocal(new Date()), end:"", allDay:true, startTime:"", endTime:"", notes:"", jiraKey:"", jiraUrl:"" }); revealForm(); }
-  function openEdit(it){ setIo(null); setForm({ ...it, end:it.end||"", allDay:it.allDay!==false, startTime:it.startTime||"", endTime:it.endTime||"", notes:it.notes||"", jiraKey:it.jiraKey||"", jiraUrl:it.jiraUrl||"" }); revealForm(); }
+  function openEdit(it){ setIo(null); setDup(null); setForm({ ...it, end:it.end||"", allDay:it.allDay!==false, startTime:it.startTime||"", endTime:it.endTime||"", notes:it.notes||"", jiraKey:it.jiraKey||"", jiraUrl:it.jiraUrl||"" }); revealForm(); }
   async function saveForm(){ if(!form.title.trim()||!form.start){ setForm({...form,_err:"Title and start date are required."}); return; }
-    const c={...form}; delete c._err; if(!c.end) c.end=c.start;
+    const isEdit=items.some(x=>x.id===form.id);
+    const c={...form}; delete c._err; delete c._assignees; if(!c.end) c.end=c.start;
     if(c.end<c.start){ setForm({...form,_err:"End date can't be before start."}); return; }
     if(c.jiraKey && !c.jiraUrl) c.jiraUrl="https://appliedintuition.atlassian.net/browse/"+c.jiraKey.trim().toUpperCase();
-    const ok=await upsert(c); if(ok) setForm(null); else setForm({...form,_err:"Server rejected the save — see status above."}); }
+    if(isEdit){ const ok=await upsert(c); if(ok) setForm(null); else setForm({...form,_err:"Server rejected the save — see status above."}); return; }
+    // NEW: one independent item per selected engineer
+    const who=(form._assignees&&form._assignees.length)?form._assignees:[c.engineer||"Geoff Fitzjarrell"];
+    const batch=who.map((eng,i)=>({...c, engineer:eng, id:mkId(c.id,i)}));
+    const ok=(batch.length>1)?await upsertMany(batch):await upsert(batch[0]);
+    if(ok) setForm(null); else setForm({...form,_err:"Server rejected the save — see status above."}); }
   async function deleteItem(id){ const ok=await removeItem(id); if(ok) setForm(null); }
+  function openDup(it){ setIo(null); setForm(null); setDup({src:it, targets:[]}); revealForm(); }
+  async function doDup(){ if(!dup||!dup.targets.length) return;
+    const {id,...rest}=dup.src;
+    const batch=dup.targets.map((eng,i)=>({...rest, engineer:eng, id:mkId("w_"+Date.now(),i+1)}));
+    const ok=(batch.length>1)?await upsertMany(batch):await upsert(batch[0]);
+    if(ok) setDup(null); }
 
   const fld = (label,node)=>PH("div",{style:{display:"flex",flexDirection:"column",gap:4}},
     PH("label",{style:fldL},label), node);
   const inp = (k,extra)=>PH("input",Object.assign({value:form[k]||"",onChange:e=>setForm({...form,[k]:e.target.value}),style:{...sel,width:"100%"}},extra||{}));
+  // Tap-to-toggle engineer chips. `selected` = array of names, onToggle(name) flips one.
+  const chipPick = (choices,selected,onToggle)=>PH("div",{style:{display:"flex",flexWrap:"wrap",gap:6}},
+    choices.map(n=>{ const on=selected.includes(n);
+      return PH("button",{key:n,type:"button",onClick:()=>onToggle(n),
+        style:{fontSize:12,padding:"6px 10px",borderRadius:8,cursor:"pointer",whiteSpace:"nowrap",
+          border:"1px solid "+(on?"var(--blue)":"var(--border2)"),
+          background:on?"var(--blue)":"var(--surface2)",color:on?"#fff":"var(--text-dim)"}},
+        (on?"✓ ":"")+n); }));
 
   // Drag handlers (curried on the item). A move past threshold becomes a drag;
   // a release under threshold is treated as a click → open the editor.
@@ -2694,7 +2721,10 @@ function EngineersView(){
         PH("span",{style:{fontSize:11,color:"var(--text-dim)",width:130,flexShrink:0}},canonEng(it.engineer)||"Unassigned"),
         it.asset?PH("span",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--text-dim)",background:"var(--surface3)",borderRadius:3,padding:"1px 5px",flexShrink:0}},it.asset):null,
         PH("span",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--text-faint)",width:170,flexShrink:0}},it.start+(it.end&&it.end!==it.start?" → "+it.end:"")),
-        PH("span",{style:{fontSize:9,letterSpacing:".04em",textTransform:"uppercase",color:it.status==="blocked"?"var(--red)":it.status==="done"?"var(--green)":"var(--text-dim)",flexShrink:0}},it.status)
+        PH("span",{style:{fontSize:9,letterSpacing:".04em",textTransform:"uppercase",color:it.status==="blocked"?"var(--red)":it.status==="done"?"var(--green)":"var(--text-dim)",flexShrink:0}},it.status),
+        (!isViewOnly())?PH("button",{title:"Duplicate to another engineer",
+          onClick:e=>{ e.stopPropagation(); openDup(it); },
+          style:{...navBtn,flexShrink:0,padding:"2px 8px",fontSize:12,borderColor:"var(--border2)",color:"var(--text-dim)"}},"⧉"):null
       );
     }):PH("div",{style:{padding:"12px 6px",color:"var(--text-faint)",fontSize:12}},"No work items yet — click “+ Add work”.")
   );
@@ -2703,8 +2733,12 @@ function EngineersView(){
     PH("div",{style:panelH}, items.some(x=>x.id===form.id)?"EDIT WORK ITEM":"NEW WORK ITEM"),
     PH("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:12}},
       fld("Title", inp("title",{placeholder:"e.g. D-Max truck build"})),
-      fld("Engineer", PH("select",{value:form.engineer||ENGINEERS[0],onChange:e=>setForm({...form,engineer:e.target.value}),style:{...sel,width:"100%"}},
-        (form.engineer&&!ENGINEERS.includes(form.engineer)?[form.engineer,...ENGINEERS]:ENGINEERS).map(n=>PH("option",{key:n,value:n},n)))),
+      (items.some(x=>x.id===form.id)
+        ? fld("Engineer", PH("select",{value:form.engineer||ENGINEERS[0],onChange:e=>setForm({...form,engineer:e.target.value}),style:{...sel,width:"100%"}},
+            (form.engineer&&!ENGINEERS.includes(form.engineer)?[form.engineer,...ENGINEERS]:ENGINEERS).map(n=>PH("option",{key:n,value:n},n))))
+        : fld("Assign to · one item created per engineer",
+            chipPick(ENGINEERS, form._assignees||[], n=>{ const cur=form._assignees||[];
+              setForm({...form,_assignees: cur.includes(n)?cur.filter(x=>x!==n):[...cur,n]}); }))),
       fld("Asset / vehicle (optional)", inp("asset",{placeholder:"D-Max, HD7, shop…"})),
       fld("Category", PH("select",{value:form.category,onChange:e=>setForm({...form,category:e.target.value}),style:{...sel,width:"100%"}},
         WORK_CATS.map(c=>PH("option",{key:c,value:c},WORK_META[c].lbl)))),
@@ -2739,8 +2773,28 @@ function EngineersView(){
     PH("div",{style:{display:"flex",gap:8,marginTop:14}},
       PH("button",{onClick:saveForm,disabled:saving,style:{...navBtn,background:"var(--blue)",borderColor:"var(--blue)",color:"#fff",opacity:saving?.6:1}},saving?"Saving…":"Save"),
       PH("button",{onClick:()=>setForm(null),style:navBtn},"Cancel"),
+      items.some(x=>x.id===form.id)?PH("button",{disabled:saving,
+        onClick:()=>openDup((()=>{ const s={...form}; delete s._err; delete s._assignees; return s; })()),
+        style:{...navBtn,marginLeft:"auto",borderColor:"var(--blue)",color:"var(--blue)"}},"⧉ Duplicate to…"):null,
       items.some(x=>x.id===form.id)?PH("button",{onClick:()=>deleteItem(form.id),disabled:saving,
-        style:{...navBtn,marginLeft:"auto",background:"var(--red-dim)",borderColor:"var(--red)",color:"var(--red)"}},"Delete"):null)
+        style:{...navBtn,background:"var(--red-dim)",borderColor:"var(--red)",color:"var(--red)"}},"Delete"):null)
+  ):null;
+
+  // ── Duplicate-to panel: copy an item to one or more other engineers ──
+  const dupEl = dup?PH("div",{ref:formRef,style:{...panel,marginTop:16,borderColor:"var(--blue)"}},
+    PH("div",{style:panelH}, "DUPLICATE TO OTHER ENGINEERS"),
+    PH("div",{style:{fontSize:12,color:"var(--text-dim)",marginBottom:10}},
+      "Copying ", PH("b",{style:{color:"var(--text)"}},dup.src.title),
+      " (", (dup.src.start||"")+(dup.src.end&&dup.src.end!==dup.src.start?" → "+dup.src.end:""), ")",
+      " — currently on ", PH("b",{style:{color:"var(--text)"}}, canonEng(dup.src.engineer)||"Unassigned"),
+      ". Pick who else gets a copy:"),
+    chipPick(ENGINEERS.filter(n=>n!==canonEng(dup.src.engineer)), dup.targets, n=>{
+      const cur=dup.targets; setDup({...dup, targets: cur.includes(n)?cur.filter(x=>x!==n):[...cur,n]}); }),
+    PH("div",{style:{display:"flex",gap:8,marginTop:14}},
+      PH("button",{onClick:doDup,disabled:saving||!dup.targets.length,
+        style:{...navBtn,background:"var(--blue)",borderColor:"var(--blue)",color:"#fff",opacity:(saving||!dup.targets.length)?.6:1}},
+        saving?"Copying…":("Create "+(dup.targets.length||"")+" cop"+(dup.targets.length===1?"y":"ies"))),
+      PH("button",{onClick:()=>setDup(null),style:navBtn},"Cancel"))
   ):null;
 
   const ioEl = io?PH("div",{style:{...panel,marginTop:16,borderColor:"var(--amber)"}},
@@ -2823,7 +2877,7 @@ function EngineersView(){
       WORK_CATS.map(c=>PH("span",{key:c,style:{display:"flex",gap:5,alignItems:"center"}},
         PH("span",{style:{width:10,height:10,borderRadius:2,background:WORK_META[c].c}}),WORK_META[c].lbl)),
       PH("span",{style:{display:"flex",gap:5,alignItems:"center"}},PH("span",{style:{width:14,height:10,borderRadius:2,border:"1px dashed var(--text-dim)"}}),"planned")),
-    grid, formEl, ioEl, list,
+    grid, formEl, dupEl, ioEl, list,
     drag?PH("div",{style:{position:"fixed",left:drag.x+12,top:drag.y+12,zIndex:9999,pointerEvents:"none",
       background:"var(--surface2)",border:`1px solid ${drag.color}`,borderLeft:`3px solid ${drag.color}`,
       borderRadius:4,padding:"3px 9px",fontSize:12,fontWeight:600,color:"var(--text)",maxWidth:240,

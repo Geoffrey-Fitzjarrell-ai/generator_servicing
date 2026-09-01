@@ -1251,6 +1251,17 @@ export default {
             if (!d.engineers.some(n => String(n).toLowerCase() === name.toLowerCase())) d.engineers.push(name);
             if (d.engineers.length > 100) d.engineers = d.engineers.slice(0, 100);
           }, "Engineer roster: add " + name);
+        } else if (op === "upsertMany") {
+          const arr = Array.isArray(payload.items) ? payload.items : null;
+          if (!arr) return json({ error: "Missing items" }, 400);
+          if (arr.length > 100) return json({ error: "Too many items (max 100)" }, 400);
+          const cleaned = arr.map(cleanWorkItem).filter(x => x.title && x.start);
+          if (!cleaned.length) return json({ error: "No valid items" }, 400);
+          cleaned.forEach(it => { if (!it.end) it.end = it.start; });
+          doc = await mutateWork(env, d => {
+            const ids = new Set(cleaned.map(x => x.id));
+            d.items = [...d.items.filter(x => !ids.has(x.id)), ...cleaned];
+          }, "Engineer work: upsertMany (" + cleaned.length + " items)");
         } else {
           const it = cleanWorkItem(payload.item || {});
           if (!it.title || !it.start) return json({ error: "Missing title/start" }, 400);
