@@ -1505,9 +1505,9 @@
       "status": "planned",
       "start": "2026-08-31",
       "end": "2026-08-31",
-      "allDay": true,
-      "startTime": "",
-      "endTime": "",
+      "allDay": false,
+      "startTime": "17:00",
+      "endTime": "20:00",
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
