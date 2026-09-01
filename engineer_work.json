@@ -1559,6 +1559,22 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1788228891618",
+      "title": "HD16 Radar harness install",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD16",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-09-01",
+      "end": "2026-09-01",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
