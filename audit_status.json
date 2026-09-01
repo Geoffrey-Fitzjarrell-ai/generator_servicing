@@ -1,9 +1,9 @@
 {
   "ok": true,
-  "checked_at": "2026-09-01T00:46:34Z",
+  "checked_at": "2026-09-01T23:32:22Z",
   "passed": [
     "worker alive",
-    "worker up to date (build 200d78b5)",
+    "worker up to date (build ac1b7014)",
     "worker auth enforced (401 on bad key)",
     "slack token ok (generator_service_bot)",
     "generator-hours.yml healthy",
