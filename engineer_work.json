@@ -1687,6 +1687,22 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1788235722731",
+      "title": "HD15 generator maintenance",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD15",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-09-03",
+      "end": "2026-09-03",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
