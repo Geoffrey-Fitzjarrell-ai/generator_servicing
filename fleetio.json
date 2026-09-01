@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T13:10:34.890250+00:00",
+  "generated_at": "2026-09-01T17:39:19.525546+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -110,8 +110,14 @@
         "value": "632.0",
         "unit": "km"
       },
-      "recent_service_entries": [],
-      "location": null
+      "recent_service_entries": [
+        {
+          "error": "HTTP Error 429: Too Many Requests"
+        }
+      ],
+      "location": {
+        "error": "HTTP Error 429: Too Many Requests"
+      }
     },
     "HD17": {
       "fleetio_id": 4608058,
@@ -125,13 +131,13 @@
         "value": "16951.0",
         "unit": "km"
       },
-      "recent_service_entries": [],
+      "recent_service_entries": [
+        {
+          "error": "HTTP Error 429: Too Many Requests"
+        }
+      ],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578262,
-        "lng": 139.747051,
-        "at": "2026-08-28T06:07:08.211-04:00",
-        "is_current": true
+        "error": "HTTP Error 429: Too Many Requests"
       }
     },
     "HD16": {
@@ -488,10 +494,10 @@
     }
   },
   "other_group_vehicles": [
-    "ACD-101",
     "ADT-201",
     "ADT-202",
     "ADT-203",
+    "AUS HM400-5",
     "CAT D6",
     "CAT-160M",
     "CHE-201",
@@ -505,6 +511,7 @@
     "DMX-201",
     "DMX-202",
     "ELF-201",
+    "F150",
     "FEN-101",
     "FOR-501",
     "FOR-601",
@@ -544,7 +551,6 @@
     "POR-102",
     "POR-911 (Martini)",
     "PRO-101",
-    "ROG-202",
     "ROG-203",
     "ROG-204",
     "ROG-205",
