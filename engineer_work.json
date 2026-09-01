@@ -1463,6 +1463,22 @@
       "notes": "Release/Trucking-1.2",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1788228740447",
+      "title": "Onboarding",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "",
+      "category": "admin",
+      "status": "planned",
+      "start": "2026-09-01",
+      "end": "2026-09-04",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "Onboarding Takahiro Ichikawa",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
