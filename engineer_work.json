@@ -1623,6 +1623,38 @@
       "notes": "Clean out and prep disposal material",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1788231079067_c1tlk",
+      "title": "Elf",
+      "engineer": "Masakiyo Kato",
+      "asset": "",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-09-02",
+      "end": "2026-09-11",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1788231079068_c2m0e",
+      "title": "Elf",
+      "engineer": "Andy Bui",
+      "asset": "",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-09-02",
+      "end": "2026-09-11",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
