@@ -1511,6 +1511,22 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1788228811080",
+      "title": "Generator Maintenance",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD16",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-31",
+      "end": "2026-08-31",
+      "allDay": false,
+      "startTime": "17:00",
+      "endTime": "20:00",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
