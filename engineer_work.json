@@ -1655,6 +1655,38 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1788232216628_c1czo",
+      "title": "kenshi",
+      "engineer": "Masakiyo Kato",
+      "asset": "",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-09-11",
+      "end": "2026-09-30",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1788232216628_c27m0",
+      "title": "kenshi",
+      "engineer": "Andy Bui",
+      "asset": "",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-09-11",
+      "end": "2026-09-30",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
