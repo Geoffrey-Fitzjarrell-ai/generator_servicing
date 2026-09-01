@@ -1543,6 +1543,22 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1788228870312",
+      "title": "Generator maintenance",
+      "engineer": "Masakiyo Kato",
+      "asset": "HD14",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-08-31",
+      "end": "2026-08-31",
+      "allDay": false,
+      "startTime": "17:00",
+      "endTime": "20:00",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
