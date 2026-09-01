@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-31T21:44:48.557471+00:00",
+  "generated_at": "2026-09-01T01:01:11.129780+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -170,9 +170,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "2530-17 Karima, Tsukuba, Ibaraki 305-0822, Japan",
-        "lat": 36.0755,
-        "lng": 140.075251,
-        "at": "2026-08-31T05:09:59.587-04:00",
+        "lat": 36.075555,
+        "lng": 140.07524,
+        "at": "2026-08-31T20:03:24.783-04:00",
         "is_current": true
       }
     },
@@ -191,9 +191,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578256,
-        "lng": 139.747051,
-        "at": "2026-08-31T15:30:52.894-04:00",
+        "lat": 35.578251,
+        "lng": 139.747041,
+        "at": "2026-08-31T20:47:28.010-04:00",
         "is_current": true
       }
     },
@@ -212,9 +212,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578575,
-        "lng": 139.74748,
-        "at": "2026-08-31T07:05:58.253-04:00",
+        "lat": 35.578564,
+        "lng": 139.74745,
+        "at": "2026-08-31T20:43:17.514-04:00",
         "is_current": true
       }
     },
@@ -310,10 +310,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Japan, \u3012501-6304 Gifu, Hashima, Funabashich\u014d Dezuka, 2-ch\u014dme\u2212\uff11\uff19 \u30b7\u30e3\u30f3\u30da\u30fc\u30eb\u6d45\u4e95",
-        "lat": 35.311985,
-        "lng": 136.682545,
-        "at": "2026-08-31T16:23:38.214-04:00",
+        "address": "1-ch\u014dme-52 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.312344,
+        "lng": 136.682039,
+        "at": "2026-08-31T20:24:12.386-04:00",
         "is_current": true
       }
     },
@@ -382,7 +382,7 @@
       "model": "CYJ77D-WX-D 23A",
       "year": 2025,
       "vin": "CYJ77D-7014033",
-      "status": "Out of Service",
+      "status": "Active",
       "meter": {
         "value": "68320.0",
         "unit": "km"
