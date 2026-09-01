@@ -1575,6 +1575,22 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1788228910287",
+      "title": "Generator overview",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD16",
+      "category": "maintenance",
+      "status": "planned",
+      "start": "2026-09-01",
+      "end": "2026-09-01",
+      "allDay": false,
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
