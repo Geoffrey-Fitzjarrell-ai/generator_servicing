@@ -1591,6 +1591,22 @@
       "notes": "",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1788229344379",
+      "title": "Tonox",
+      "engineer": "Masakiyo Kato",
+      "asset": "HD2/3",
+      "category": "build",
+      "status": "planned",
+      "start": "2026-09-01",
+      "end": "2026-09-01",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "Assist Tonox preparing the trucks for powering on",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
