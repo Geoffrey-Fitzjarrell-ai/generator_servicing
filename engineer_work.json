@@ -1607,6 +1607,22 @@
       "notes": "Assist Tonox preparing the trucks for powering on",
       "jiraKey": "",
       "jiraUrl": ""
+    },
+    {
+      "id": "w_1788229375464",
+      "title": "Disposal",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "Shop",
+      "category": "admin",
+      "status": "planned",
+      "start": "2026-09-01",
+      "end": "2026-09-01",
+      "allDay": false,
+      "startTime": "13:00",
+      "endTime": "17:00",
+      "notes": "Clean out and prep disposal material",
+      "jiraKey": "",
+      "jiraUrl": ""
     }
   ],
   "engineers": [
