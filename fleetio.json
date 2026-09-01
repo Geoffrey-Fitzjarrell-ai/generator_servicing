@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T20:40:07.994988+00:00",
+  "generated_at": "2026-09-01T23:04:44.122688+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -305,15 +305,15 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "65321.0",
+        "value": "65970.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1-ch\u014dme-10 Funabashich\u014d, Hashima, Gifu 501-6302, Japan",
-        "lat": 35.314241,
-        "lng": 136.685588,
-        "at": "2026-09-01T07:10:06.511-04:00",
+        "address": "1-ch\u014dme-52-1 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.311876,
+        "lng": 136.682234,
+        "at": "2026-09-01T18:05:20.861-04:00",
         "is_current": true
       }
     },
