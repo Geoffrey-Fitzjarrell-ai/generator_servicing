@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T23:04:44.122688+00:00",
+  "generated_at": "2026-09-02T03:19:51.638415+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -127,10 +127,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578262,
-        "lng": 139.747051,
-        "at": "2026-08-28T06:07:08.211-04:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.57857,
+        "lng": 139.74748,
+        "at": "2026-09-02T09:57:43.647+09:00",
         "is_current": true
       }
     },
@@ -148,10 +148,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "5-ch\u014dme-4-1 Heiwajima, Ota City, Tokyo 143-8512, Japan",
-        "lat": 35.57933,
-        "lng": 139.745155,
-        "at": "2026-09-01T16:38:44.762-04:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578588,
+        "lng": 139.749905,
+        "at": "2026-09-02T09:42:31.381+09:00",
         "is_current": true
       }
     },
@@ -170,9 +170,9 @@
       "recent_service_entries": [],
       "location": {
         "address": "1-ch\u014dme-\uff11\u756a\u5730 Gakuenminami, Tsukuba, Ibaraki 305-0818, Japan",
-        "lat": 36.081477,
-        "lng": 140.07769,
-        "at": "2026-09-01T05:00:59.742-04:00",
+        "lat": 36.081526,
+        "lng": 140.077655,
+        "at": "2026-09-01T20:01:08.888-04:00",
         "is_current": true
       }
     },
@@ -190,10 +190,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "5-ch\u014dme-5-21 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.576769,
-        "lng": 139.74753,
-        "at": "2026-09-01T16:24:25.890-04:00",
+        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 6-ch\u014dme\u22121\u2212\uff11 Distribution A Bldg., \u68df \uff21\uff37\uff14-\uff33",
+        "lat": 35.578393,
+        "lng": 139.747503,
+        "at": "2026-09-02T09:51:12.567+09:00",
         "is_current": true
       }
     },
@@ -227,7 +227,7 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "37715.0",
+        "value": "37733.0",
         "unit": "km"
       },
       "recent_service_entries": [],
@@ -310,10 +310,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1-ch\u014dme-52-1 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
-        "lat": 35.311876,
-        "lng": 136.682234,
-        "at": "2026-09-01T18:05:20.861-04:00",
+        "address": "1-ch\u014dme-45 Funabashich\u014d Dezuka, Hashima, Gifu 501-6304, Japan",
+        "lat": 35.31266,
+        "lng": 136.681967,
+        "at": "2026-09-01T20:06:04.173-04:00",
         "is_current": true
       }
     },
