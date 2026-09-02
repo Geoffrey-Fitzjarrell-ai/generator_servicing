@@ -18,5 +18,24 @@
     "notes": [],
     "alreadyLogged": true,
     "notified": true
+  },
+  {
+    "truck": "HD9",
+    "tasks": [
+      "Air filter / Battery check",
+      "Battery Box check",
+      "Oil / filter change",
+      "Clean spark arrestor"
+    ],
+    "technician": "Masakiyo",
+    "postedBy": {
+      "id": "U0AU900KF5M",
+      "name": null
+    },
+    "loggedAt": "2026-09-02T12:37:30.122Z",
+    "hours": 2083,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
   }
 ]
