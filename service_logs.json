@@ -99,14 +99,15 @@
     "spark_arrestor": 977
   },
   "HD15": {
-    "airfilter_battery": 805,
-    "battery_box": 805,
-    "oil_filter": 805,
+    "airfilter_battery": 973,
+    "battery_box": 973,
+    "oil_filter": 973,
     "airfilter_500": 691,
-    "coolant_lines": 691,
+    "coolant_lines": 973,
     "fuel_filter": 691,
     "drive_belt": 527,
-    "clean_radiator": 527
+    "clean_radiator": 527,
+    "spark_arrestor": 973
   },
   "HD16": {
     "airfilter_battery": 733,
