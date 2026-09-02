@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-02T20:38:09.057228+00:00",
+  "generated_at": "2026-09-02T23:02:24.910248+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -143,15 +143,15 @@
       "vin": "CYJ77D-7015280",
       "status": "Active",
       "meter": {
-        "value": "29454.0",
+        "value": "29965.0",
         "unit": "km"
       },
       "recent_service_entries": [],
       "location": {
-        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578588,
-        "lng": 139.749905,
-        "at": "2026-09-02T09:42:31.381+09:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578256,
+        "lng": 139.747055,
+        "at": "2026-09-02T17:11:40.692-04:00",
         "is_current": true
       }
     },
@@ -252,6 +252,16 @@
         "unit": "km"
       },
       "recent_service_entries": [
+        {
+          "id": 54455208,
+          "status": "completed",
+          "completed_at": "2026-09-02T04:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "Coast Counties Peterbilt - San Jose",
+          "reference": "",
+          "labels": [],
+          "meter": "23414.0"
+        },
         {
           "id": 52339410,
           "status": "completed",
