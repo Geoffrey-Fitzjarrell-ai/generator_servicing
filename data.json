@@ -28,13 +28,13 @@
     "groundedSource": "manual"
   },
   "HD8": {
-    "hours": 1949,
+    "hours": 1953,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Daichi Hayakawa",
-    "lastUpdated": "2026-09-01T08:18:29Z",
+    "lastUpdated": "2026-09-02T00:23:52Z",
     "postedBy": {
-      "id": "U0971UJ8RKQ",
+      "id": "U0B2SBGP32A",
       "name": null
     }
   },
