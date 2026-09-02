@@ -36,14 +36,15 @@
     "clean_radiator": 1429
   },
   "HD9": {
-    "oil_filter": 1911,
-    "airfilter_battery": 1989,
-    "battery_box": 1989,
+    "oil_filter": 2083,
+    "airfilter_battery": 2083,
+    "battery_box": 2083,
     "airfilter_500": 1989,
     "clean_radiator": 1706,
     "drive_belt": 1911,
     "fuel_filter": 1706,
-    "coolant_lines": 1911
+    "coolant_lines": 1911,
+    "spark_arrestor": 2083
   },
   "HD10": {
     "oil_filter": 1895,
