@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "truck": "HD15",
+    "tasks": [
+      "Air filter / Battery check",
+      "Battery Box check",
+      "Oil / filter change",
+      "Clean spark arrestor",
+      "Check coolant lines"
+    ],
+    "technician": "Masakiyo",
+    "postedBy": {
+      "id": "U0A1A2S0YP6",
+      "name": null
+    },
+    "loggedAt": "2026-09-02T11:34:38.189Z",
+    "hours": 973,
+    "notes": [],
+    "alreadyLogged": true,
+    "notified": true
+  }
+]
