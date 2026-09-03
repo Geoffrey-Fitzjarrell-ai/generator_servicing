@@ -59,25 +59,52 @@ jobs:
                   resp = json.loads(r.read())
               return json.loads(base64.b64decode(resp["content"]).decode())
 
-          # Mirrors index.html TASKS / tasksForTruck / truckStatus exactly.
-          TASKS = [
-              {"key": "airfilter_battery", "interval": 50,  "jp": "エアフィルター・バッテリー点検", "en": "Air filter / battery check"},
-              {"key": "oil_filter",        "interval": 150, "jp": "オイル／フィルター交換",         "en": "Oil / filter change"},
-              {"key": "airfilter_clean",   "interval": 250, "jp": "エアフィルター清掃",             "en": "Air filter cleaning"},
-              {"key": "coolant_lines",     "interval": 250, "jp": "クーラントライン点検",           "en": "Coolant line check"},
-              {"key": "fuel_filter",       "interval": 250, "jp": "燃料フィルター交換",             "en": "Fuel filter change"},
-              {"key": "drive_belt",        "interval": 500, "jp": "ドライブベルト点検",             "en": "Drive belt check"},
-              {"key": "clean_radiator",    "interval": 500, "jp": "ラジエーター清掃",               "en": "Radiator cleaning"},
-              {"key": "airfilter_500",     "interval": 500, "jp": "エアフィルター交換",             "en": "Air filter replacement"},
+          # ---- Canonical service model: single source of truth (service_model.json) ----
+          # Loaded from the repo so genki-kun can NEVER drift from index.html again.
+          # type "replace" -> escalates to OVERDUE (red alarm) past interval (oil / fuel /
+          # air-filter change). type "service" -> a check or cleaning: past interval it shows
+          # a calm DUE state and NEVER raises the red overdue alarm, the overdue count, or a DM.
+          # Fallback below matches index.html exactly in case the file fetch ever fails.
+          FALLBACK_TASKS = [
+              {"key":"airfilter_battery","interval":50, "type":"service","jp":"エアフィルター・バッテリー点検","en":"Air filter / battery check"},
+              {"key":"battery_box",      "interval":50, "type":"service","jp":"バッテリーボックス点検",      "en":"Battery box check"},
+              {"key":"oil_filter",       "interval":150,"type":"replace","jp":"オイル／フィルター交換",      "en":"Oil / filter change"},
+              {"key":"spark_arrestor",   "interval":150,"type":"service","jp":"スパークアレスター清掃",      "en":"Clean spark arrestor"},
+              {"key":"airfilter_clean",  "interval":250,"type":"service","jp":"エアフィルター清掃",          "en":"Air filter cleaning","hd5_only":True},
+              {"key":"coolant_lines",    "interval":250,"type":"service","jp":"クーラントライン点検",        "en":"Coolant line check"},
+              {"key":"fuel_filter",      "interval":500,"type":"replace","jp":"燃料フィルター交換",          "en":"Fuel filter change"},
+              {"key":"drive_belt",       "interval":500,"type":"service","jp":"ドライブベルト点検",          "en":"Drive belt check"},
+              {"key":"clean_radiator",   "interval":500,"type":"service","jp":"ラジエーター清掃",            "en":"Radiator cleaning"},
+              {"key":"airfilter_500",    "interval":500,"type":"replace","jp":"エアフィルター交換",          "en":"Air filter replacement"},
           ]
+          try:
+              _model = gh_get("service_model.json")
+              TASKS = _model.get("tasks") or FALLBACK_TASKS
+              print(f"service_model.json v{_model.get('version','?')} loaded ({len(TASKS)} tasks)")
+          except Exception as _e:
+              TASKS = FALLBACK_TASKS
+              print(f"service_model.json load failed ({_e}); using built-in fallback")
 
           def tasks_for_truck(truck_id):
-              return [t for t in TASKS if t["key"] != "airfilter_clean" or truck_id == "HD5"]
+              return [t for t in TASKS if not t.get("hd5_only") or truck_id == "HD5"]
 
           fleet    = gh_get("data.json")
           svc_logs = gh_get("service_logs.json")
 
-          # Build a per-truck row: hours, worst task, pct through its interval.
+          def worst_of(tasks, hours, tl):
+              worst = None
+              for task in tasks:
+                  last = tl.get(task["key"])
+                  if last is None:
+                      last = 0  # never recorded -> measure from 0h
+                  since = hours - last
+                  ratio = since / task["interval"]
+                  if worst is None or ratio > worst["ratio"]:
+                      worst = {"task": task, "ratio": ratio, "rem": task["interval"] - since}
+              return worst
+
+          # Per-truck: alarm status is driven ONLY by replacement tasks. Service checks
+          # past interval are surfaced separately as a calm (non-alarming) note.
           def critical_info(truck_id):
               td = fleet.get(truck_id) or {}
               hours = td.get("hours")
@@ -86,24 +113,30 @@ jobs:
               if not hours:
                   return None
               tl = svc_logs.get(truck_id) or {}
-              worst = None
-              for task in tasks_for_truck(truck_id):
-                  last = tl.get(task["key"])
-                  if last is None:
-                      if hours < task["interval"]:
-                          last = 0
-                      else:
-                          last = 0  # never done and past interval -> fully overdue
-                  since = hours - last
-                  ratio = since / task["interval"]
-                  if worst is None or ratio > worst["ratio"]:
-                      worst = {"task": task, "ratio": ratio, "rem": task["interval"] - since}
-              if worst is None:
-                  return None
-              st = "overdue" if worst["ratio"] >= 1 else "warn" if worst["ratio"] >= 0.9 else "ok"
-              return {"status": st, "hours": hours, "task": worst["task"]["jp"],
-                      "task_en": worst["task"].get("en", worst["task"]["jp"]),
-                      "ratio": worst["ratio"], "rem": worst["rem"]}
+              tt = tasks_for_truck(truck_id)
+              wr = worst_of([t for t in tt if t.get("type") == "replace"], hours, tl)
+              ws = worst_of([t for t in tt if t.get("type") != "replace"], hours, tl)
+              if wr is None:
+                  st = "ok"
+              elif wr["ratio"] >= 1:
+                  st = "overdue"
+              elif wr["ratio"] >= 0.9:
+                  st = "warn"
+              else:
+                  st = "ok"
+              info = {"status": st, "hours": hours,
+                      "task": wr["task"]["jp"] if wr else "",
+                      "task_en": (wr["task"].get("en", wr["task"]["jp"]) if wr else ""),
+                      "ratio": wr["ratio"] if wr else 0.0,
+                      "rem": wr["rem"] if wr else 0.0}
+              # calm "check due" note only when a service check is actually past interval
+              if ws is not None and ws["ratio"] >= 1:
+                  info["check"] = {"task": ws["task"]["jp"],
+                                   "task_en": ws["task"].get("en", ws["task"]["jp"]),
+                                   "ratio": ws["ratio"], "rem": ws["rem"], "hours": hours}
+              else:
+                  info["check"] = None
+              return info
 
           def bar(ratio, width=10):
               filled = min(width, max(0, round(min(ratio, 1.0) * width)))
@@ -117,40 +150,45 @@ jobs:
 
           overdue  = sorted([(t, i) for t, i in rows if i["status"] == "overdue"], key=lambda x: x[1]["rem"])
           warn     = sorted([(t, i) for t, i in rows if i["status"] == "warn"],    key=lambda x: x[1]["rem"])
-          ok       = sorted([(t, i) for t, i in rows if i["status"] == "ok"],      key=lambda x: x[1]["rem"])
+          checks   = sorted([(t, i) for t, i in rows if i["status"] == "ok" and i.get("check")],
+                            key=lambda x: x[1]["check"]["rem"])
+          ok       = sorted([(t, i) for t, i in rows if i["status"] == "ok" and not i.get("check")],
+                            key=lambda x: x[1]["rem"])
           grounded = [(t, i) for t, i in rows if i["status"] == "grounded"]
 
-          def row_line(t, i):
-              # e.g.  HD9   1494h ▓▓▓▓▓▓▓▓░░  80% エアフィルター・バッテリー点検 (あと10h)
-              rem = i["rem"]
-              tail = f"超過{abs(round(rem))}h" if rem <= 0 else f"あと{round(rem)}h"
-              pct = min(round(i["ratio"] * 100), 999)
-              return f"{t:<5} {str(i['hours'])+'h':>6} {bar(i['ratio'])} {pct:>3}% {i['task']}（{tail}）"
+          def _fmt(t, hours, ratio, rem, label, jp=True):
+              if jp:
+                  tail = f"超過{abs(round(rem))}h" if rem <= 0 else f"あと{round(rem)}h"
+                  wrap = "（{}）"
+              else:
+                  tail = f"over {abs(round(rem))}h" if rem <= 0 else f"in {round(rem)}h"
+                  wrap = " ({})"
+              pct = min(round(ratio * 100), 999)
+              return f"{t:<5} {str(hours)+'h':>6} {bar(ratio)} {pct:>3}% {label}{wrap.format(tail)}"
 
-          def row_line_en(t, i):
-              rem = i["rem"]
-              tail = f"over {abs(round(rem))}h" if rem <= 0 else f"in {round(rem)}h"
-              pct = min(round(i["ratio"] * 100), 999)
-              return f"{t:<5} {str(i['hours'])+'h':>6} {bar(i['ratio'])} {pct:>3}% {i['task_en']} ({tail})"
+          def row_line(t, i):    return _fmt(t, i["hours"], i["ratio"], i["rem"], i["task"], jp=True)
+          def row_line_en(t, i): return _fmt(t, i["hours"], i["ratio"], i["rem"], i["task_en"], jp=False)
+          def check_line(t, i):
+              c = i["check"]; return _fmt(t, c["hours"], c["ratio"], c["rem"], c["task"], jp=True)
 
           WEEKDAYS = ["月", "火", "水", "木", "金", "土", "日"]
           header = f"🌅 げんきくん 朝の整備サマリー — {NOW_JST.month}/{NOW_JST.day}（{WEEKDAYS[NOW_JST.weekday()]}）"
 
-          blocks = [
-              {"type": "header", "text": {"type": "plain_text", "text": header, "emoji": True}},
-          ]
+          blocks = [{"type": "header", "text": {"type": "plain_text", "text": header, "emoji": True}}]
 
-          def section_with_rows(title, items):
-              body = "\n".join(row_line(t, i) for t, i in items)
+          def section_with_rows(title, items, liner=row_line):
+              body = "\n".join(liner(t, i) for t, i in items)
               blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": f"{title}\n```{body}```"}})
 
           if overdue:
-              section_with_rows("🔴 *整備期限超過 — 本日中の対応をお願いします🔧*", overdue)
+              section_with_rows("🔴 *整備期限超過（交換作業）— 本日中の対応をお願いします🔧*", overdue)
           if warn:
-              section_with_rows("🟡 *まもなく整備時期*", warn)
+              section_with_rows("🟡 *まもなく整備時期（交換作業）*", warn)
           if not overdue and not warn:
               blocks.append({"type": "section", "text": {"type": "mrkdwn",
-                  "text": "🟢 *全車両、整備スケジュール内です！*"}})
+                  "text": "🟢 *全車両、交換整備はスケジュール内です！*"}})
+          if checks:
+              section_with_rows("🔵 *点検・清掃の推奨時期（緊急ではありません）*", checks, check_line)
           if ok:
               section_with_rows("🟢 *スケジュール内*", ok)
           if grounded:
@@ -159,20 +197,19 @@ jobs:
 
           blocks.append({"type": "divider"})
           blocks.append({"type": "context", "elements": [{"type": "mrkdwn",
-              "text": "▓ = 整備インターバル消化率 ｜ <https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/|📊 ダッシュボード> ｜ 本日も安全運行をよろしくお願いします🙏"}]})
+              "text": "▓ = 整備インターバル消化率 ｜ 🔴🟡 交換作業 ｜ 🔵 点検・清掃 ｜ <https://geoffrey-fitzjarrell-ai.github.io/generator_servicing/|📊 ダッシュボード> ｜ 本日も安全運行をよろしくお願いします🙏"}]})
 
           # Plain-text fallback for notifications / clients that don't render blocks.
-          fallback = f"{header} — 超過{len(overdue)}台 / まもなく{len(warn)}台 / 修理中{len(grounded)}台"
+          fallback = f"{header} — 超過{len(overdue)}台 / まもなく{len(warn)}台 / 点検{len(checks)}台 / 修理中{len(grounded)}台"
 
           result = slack_post({"channel": CHANNEL, "text": fallback, "blocks": blocks})
           print("Posted." if result.get("ok") else f"Failed: {result.get('error')}")
 
           # ---- Direct alerts: DM Geoff + Masakiyo on NEW warn/overdue (edge-triggered) ----
-          # Reuses the overdue/warn lists computed above so DM alerts never diverge from the
-          # channel digest. service_alert_state.json records the last level we alerted per
-          # truck, so nobody is re-pinged daily for the same thing. A truck must leave
-          # warn/overdue (serviced or grounded) and come back to alert again; warn -> overdue
-          # counts as a new alert (escalation).
+          # overdue/warn are REPLACEMENT-only now, so visual checks never DM anyone.
+          # service_alert_state.json records the last level alerted per truck so nobody is
+          # re-pinged daily for the same thing. A truck must leave warn/overdue (serviced or
+          # grounded) and come back to alert again; warn -> overdue counts as a new alert.
           # (uid, lang) — Geoff gets English, Masakiyo gets Japanese.
           ALERT_RECIPIENTS = [("U07RU3LH24F", "en"), ("U0BBE3JUHUY", "jp")]
           STATE_PATH  = "service_alert_state.json"
@@ -210,10 +247,11 @@ jobs:
           cur = {t: "overdue" for t, _ in overdue}
           cur.update({t: "warn" for t, _ in warn})
 
-          # Fire when a truck newly enters overdue (incl. warn -> overdue escalation) or
-          # newly enters warn.
+          # Fire when a truck newly enters overdue (incl. warn -> overdue escalation) or warn.
           fired_over = [(t, i) for t, i in overdue if prev.get(t) != "overdue"]
           fired_warn = [(t, i) for t, i in warn    if prev.get(t) is None]
+          # Recovery: a truck that WAS in warn/overdue and is now clear -> notify recipients.
+          cleared = sorted(t for t in prev if t not in cur)
 
           if fired_over or fired_warn:
               L = {
@@ -249,6 +287,21 @@ jobs:
                   print(f"DM {uid} ({lang}): " + ("ok" if res.get("ok") else f"FAILED {res.get('error')}"))
           else:
               print("No new warn/overdue transitions; no DM sent.")
+
+          # Recovery DM — edge-triggered when a truck returns to schedule (serviced/grounded).
+          if cleared:
+              REC = {"en": ("✅ Back on schedule", "returned to schedule"),
+                     "jp": ("✅ 整備スケジュール内に復帰", "が整備スケジュール内に戻りました")}
+              for uid, lang in ALERT_RECIPIENTS:
+                  head, phr = REC[lang]
+                  listing = ", ".join(cleared)
+                  txt = (f"{listing} {phr}." if lang == "en" else f"{listing}{phr}。")
+                  res = slack_post({"channel": uid, "text": f"{head} — {listing}",
+                                    "blocks": [
+                                        {"type": "header", "text": {"type": "plain_text", "text": head, "emoji": True}},
+                                        {"type": "section", "text": {"type": "mrkdwn", "text": txt}},
+                                    ]})
+                  print(f"recovery DM {uid} ({lang}): " + ("ok" if res.get("ok") else f"FAILED {res.get('error')}"))
 
           # Persist current levels; trucks now ok/grounded drop out so a future re-entry
           # alerts again. Only write when something changed.

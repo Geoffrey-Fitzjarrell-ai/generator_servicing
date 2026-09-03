@@ -129,6 +129,46 @@ jobs:
               issues.append(f"No hours update anywhere in fleet for {(NOW - max(fresh)).total_seconds()/3600:.0f}h "
                             f"— Slack sync may be broken")
 
+          # 7. Service-model drift — index.html TASKS must match service_model.json.
+          #    service_model.json is the single source the workflows (digest, weekly) read;
+          #    index.html is what people look at. If they disagree, genki-kun and the
+          #    dashboard will report different overdue states (the fuel-filter 250-vs-500
+          #    class of bug). Fail loudly so it's caught the same night, not weeks later.
+          import re as _re
+          def gh_get_text(path):
+              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
+              req = urllib.request.Request(url, headers={
+                  "Authorization": f"Bearer {GH_TOKEN}", "Accept": "application/vnd.github+json"})
+              with _urlopen(req) as r:
+                  return base64.b64decode(json.loads(r.read())["content"]).decode()
+          try:
+              model = gh_get("service_model.json")
+              model_map = {t["key"]: (int(t["interval"]), t.get("type"))
+                           for t in model.get("tasks", [])}
+              html = gh_get_text("index.html")
+              m = _re.search(r"const\s+TASKS\s*=\s*\[(.*?)\];", html, _re.S)
+              if not m:
+                  issues.append("model-drift: could not locate TASKS array in index.html")
+              else:
+                  html_map = {}
+                  for key, iv, typ in _re.findall(
+                          r'key:\s*"(\w+)"[^}]*?interval:\s*(\d+)[^}]*?type:\s*"(\w+)"', m.group(1)):
+                      html_map[key] = (int(iv), typ)
+                  if not html_map:
+                      issues.append("model-drift: parsed 0 tasks from index.html TASKS")
+                  else:
+                      for key, mv in model_map.items():
+                          hv = html_map.get(key)
+                          if hv is None:
+                              issues.append(f"model-drift: '{key}' in service_model.json but not in index.html")
+                          elif hv != mv:
+                              issues.append(f"model-drift: '{key}' index.html={hv} != service_model.json={mv}")
+                      for key in html_map:
+                          if key not in model_map:
+                              issues.append(f"model-drift: '{key}' in index.html but not in service_model.json")
+          except Exception as e:
+              issues.append(f"model-drift: check errored: {e}")
+
           if issues:
               text = ("⚠️ *Generator tracker nightly consistency check failed* "
                       f"({len(issues)} issue(s), {NOW.strftime('%Y-%m-%d %H:%M UTC')}):\n"

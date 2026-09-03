@@ -59,22 +59,33 @@ jobs:
                   resp = json.loads(r.read())
               return json.loads(base64.b64decode(resp["content"]).decode()), resp["sha"]
 
-          # Mirrors the TASKS array + tasksForTruck + truckStatus logic in
-          # index.html exactly, so this summary's fleet-health counts always
-          # agree with what the dashboard shows.
-          TASKS = [
-              {"key": "airfilter_battery", "interval": 50},
-              {"key": "oil_filter",        "interval": 150},
-              {"key": "airfilter_clean",   "interval": 250},
-              {"key": "coolant_lines",     "interval": 250},
-              {"key": "fuel_filter",       "interval": 250},
-              {"key": "drive_belt",        "interval": 500},
-              {"key": "clean_radiator",    "interval": 500},
-              {"key": "airfilter_500",     "interval": 500},
+          # Canonical service model (service_model.json) — single source of truth shared
+          # with index.html and the daily digest, so these fleet-health counts can never
+          # drift from the dashboard. Only REPLACEMENT tasks (oil / fuel / air-filter
+          # change) count toward overdue/warn; checks & cleanings past interval do NOT
+          # inflate the overdue count. Fallback matches index.html if the fetch fails.
+          FALLBACK_TASKS = [
+              {"key":"airfilter_battery","interval":50, "type":"service"},
+              {"key":"battery_box",      "interval":50, "type":"service"},
+              {"key":"oil_filter",       "interval":150,"type":"replace"},
+              {"key":"spark_arrestor",   "interval":150,"type":"service"},
+              {"key":"airfilter_clean",  "interval":250,"type":"service","hd5_only":True},
+              {"key":"coolant_lines",    "interval":250,"type":"service"},
+              {"key":"fuel_filter",      "interval":500,"type":"replace"},
+              {"key":"drive_belt",       "interval":500,"type":"service"},
+              {"key":"clean_radiator",   "interval":500,"type":"service"},
+              {"key":"airfilter_500",    "interval":500,"type":"replace"},
           ]
+          try:
+              _model, _ = gh_get("service_model.json")
+              TASKS = _model.get("tasks") or FALLBACK_TASKS
+              print(f"service_model.json v{_model.get('version','?')} loaded ({len(TASKS)} tasks)")
+          except Exception as _e:
+              TASKS = FALLBACK_TASKS
+              print(f"service_model.json load failed ({_e}); using built-in fallback")
 
           def tasks_for_truck(truck_id):
-              return [t for t in TASKS if t["key"] != "airfilter_clean" or truck_id == "HD5"]
+              return [t for t in TASKS if not t.get("hd5_only") or truck_id == "HD5"]
 
           def truck_status(truck_id, fleet, svc_logs):
               td = fleet.get(truck_id) or {}
@@ -85,11 +96,13 @@ jobs:
                   return "none"
               tl = svc_logs.get(truck_id) or {}
               statuses = []
+              # Alarm status is driven ONLY by replacement tasks.
               for task in tasks_for_truck(truck_id):
+                  if task.get("type") != "replace":
+                      continue
                   last = tl.get(task["key"])
                   if last is None:
-                      statuses.append("ok" if (task["key"] == "airfilter_clean" or hours < task["interval"]) else "overdue")
-                      continue
+                      last = 0
                   since = hours - last
                   if since >= task["interval"]:
                       statuses.append("overdue")

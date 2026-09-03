@@ -5,7 +5,7 @@ name: Sync Fleetio Vehicle Data
 # Writes fleetio.json. Bounded + deduped => no runaway paging, no rate limits.
 on:
   schedule:
-    - cron: '0 * * * *'    # top of every hour (was daily 06:00 JST); GitHub best-effort, may slip a few min under load
+    - cron: '*/15 * * * *'    # every 15 min (was hourly) so Fleetio OOS / back-in-service flips reach Slack within ~15 min instead of ~60; GitHub best-effort, may slip a few min under load
   workflow_dispatch:
 
 jobs:
@@ -182,14 +182,25 @@ jobs:
               with _urlopen(req) as r:
                   return json.loads(r.read())
 
+          # Edge-triggered BOTH directions: Active -> OOS announces GROUNDED; OOS -> Active
+          # announces BACK IN SERVICE. Compared against the previously committed fleetio.json
+          # so nothing is re-announced while the status holds. At the 15-min sync cadence a
+          # flip in Fleetio reaches Slack within ~15 min.
           try:
               prev = (gh_get_json("fleetio.json") or {}).get("trucks", {}) or {}
-              newly = [(k, rec) for k, rec in out["trucks"].items()
-                       if is_oos(rec.get("status")) and not is_oos(prev.get(k, {}).get("status"))]
-              if not newly:
-                  print("grounded-announce: no trucks newly grounded")
+              newly    = [(k, rec) for k, rec in out["trucks"].items()
+                          if is_oos(rec.get("status")) and not is_oos(prev.get(k, {}).get("status"))]
+              # only announce recovery for trucks we actually knew about before (avoids
+              # spurious "back in service" on first-ever sync of a new truck)
+              restored = [(k, rec) for k, rec in out["trucks"].items()
+                          if (not is_oos(rec.get("status"))) and k in prev
+                          and is_oos(prev.get(k, {}).get("status"))]
+
+              if not newly and not restored:
+                  print("status-announce: no OOS transitions")
               elif not SLACK_TOKEN:
-                  print(f"grounded-announce: WARN {len(newly)} newly grounded but SLACK_TOKEN unset; skipped")
+                  print(f"status-announce: WARN {len(newly)} grounded / {len(restored)} restored "
+                        f"but SLACK_TOKEN unset; skipped")
               else:
                   for k, rec in newly:
                       name = rec.get("name") or k
@@ -212,9 +223,23 @@ jobs:
                       ]
                       fallback = f"🚨 {k} ({name}) 運行停止 / Out of Service (source: Fleetio)"
                       res = slack_post({"channel": CHANNEL, "text": fallback, "blocks": blocks})
-                      print(f"grounded-announce: {k} slack ok={res.get('ok')} {res.get('error','')}")
+                      print(f"status-announce: GROUNDED {k} slack ok={res.get('ok')} {res.get('error','')}")
+
+                  for k, rec in restored:
+                      name = rec.get("name") or k
+                      body = (f"*{k}* ({name}) が *運行再開 (Back in Service)* しました。\n"
+                              f"*{k}* ({name}) is *Back in Service*")
+                      blocks = [
+                          {"type": "header", "text": {"type": "plain_text",
+                              "text": "✅ 車両 運行再開 / BACK IN SERVICE", "emoji": True}},
+                          {"type": "section", "text": {"type": "mrkdwn", "text": body}},
+                          {"type": "context", "elements": [{"type": "mrkdwn", "text": "◆ SOURCE: FLEETIO"}]},
+                      ]
+                      fallback = f"✅ {k} ({name}) 運行再開 / Back in Service (source: Fleetio)"
+                      res = slack_post({"channel": CHANNEL, "text": fallback, "blocks": blocks})
+                      print(f"status-announce: RESTORED {k} slack ok={res.get('ok')} {res.get('error','')}")
           except Exception as _e:
-              print(f"grounded-announce: WARN step failed (sync continues): {_e}")
+              print(f"status-announce: WARN step failed (sync continues): {_e}")
 
           # ---- reflect Fleetio OOS into the dashboard's own grounded flag (data.json) ----
           # So a truck marked Out of Service in Fleetio actually renders as grounded on

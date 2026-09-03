@@ -1,0 +1,16 @@
+{
+  "_comment": "CANONICAL service task model — single source of truth. Mirrors index.html TASKS exactly. daily-digest.yml and weekly-summary.yml READ this file so genki-kun can never drift from the dashboard. type 'replace' = a real replacement (oil/fuel/air-filter change) that escalates to OVERDUE (red alarm) past its interval. type 'service' = a check or cleaning that past interval shows a calm DUE state and NEVER raises the overdue alarm, overdue count, or DM. airfilter_clean applies to HD5 only. If you change intervals/types here, the dashboard and genki-kun both follow. consistency-check.yml fails if index.html drifts from this file.",
+  "version": 1,
+  "tasks": [
+    { "key": "airfilter_battery", "interval": 50,  "type": "service", "jp": "エアフィルター・バッテリー点検", "en": "Air filter / battery check" },
+    { "key": "battery_box",       "interval": 50,  "type": "service", "jp": "バッテリーボックス点検",       "en": "Battery box check" },
+    { "key": "oil_filter",        "interval": 150, "type": "replace", "jp": "オイル／フィルター交換",       "en": "Oil / filter change" },
+    { "key": "spark_arrestor",    "interval": 150, "type": "service", "jp": "スパークアレスター清掃",       "en": "Clean spark arrestor" },
+    { "key": "airfilter_clean",   "interval": 250, "type": "service", "jp": "エアフィルター清掃",           "en": "Air filter cleaning", "hd5_only": true },
+    { "key": "coolant_lines",     "interval": 250, "type": "service", "jp": "クーラントライン点検",         "en": "Coolant line check" },
+    { "key": "fuel_filter",       "interval": 500, "type": "replace", "jp": "燃料フィルター交換",           "en": "Fuel filter change" },
+    { "key": "drive_belt",        "interval": 500, "type": "service", "jp": "ドライブベルト点検",           "en": "Drive belt check" },
+    { "key": "clean_radiator",    "interval": 500, "type": "service", "jp": "ラジエーター清掃",             "en": "Radiator cleaning" },
+    { "key": "airfilter_500",     "interval": 500, "type": "replace", "jp": "エアフィルター交換",           "en": "Air filter replacement" }
+  ]
+}
