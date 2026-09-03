@@ -78,11 +78,11 @@
     }
   },
   "HD13": {
-    "hours": 974,
+    "hours": 984,
     "intervalStart": 0,
     "overdue": false,
     "technician": "Kouya Yamazaki",
-    "lastUpdated": "2026-09-01T01:02:15Z",
+    "lastUpdated": "2026-09-03T01:26:22Z",
     "postedBy": {
       "id": "U0971ULJJ0N",
       "name": null
