@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T04:21:35.931725+00:00",
+  "generated_at": "2026-09-03T09:04:20.378078+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -169,10 +169,10 @@
       },
       "recent_service_entries": [],
       "location": {
-        "address": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578493,
-        "lng": 139.747422,
-        "at": "2026-09-02T20:52:25.226-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578263,
+        "lng": 139.747055,
+        "at": "2026-09-03T01:34:01.929-04:00",
         "is_current": true
       }
     },
@@ -398,6 +398,41 @@
         "unit": "km"
       },
       "recent_service_entries": [
+        {
+          "id": 54474365,
+          "status": "completed",
+          "completed_at": "2026-08-31T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u6e2f\u5317\u652f\u5e97",
+          "reference": "",
+          "labels": [],
+          "meter": "68289.0"
+        },
+        {
+          "id": 54474354,
+          "status": "completed",
+          "completed_at": "2026-07-07T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "48526.0"
+        },
+        {
+          "id": 54474330,
+          "status": "completed",
+          "completed_at": "2026-03-12T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [
+            {
+              "id": 403826,
+              "name": "Base vehicle"
+            }
+          ],
+          "meter": "16269.0"
+        },
         {
           "id": 43362166,
           "status": "completed",
