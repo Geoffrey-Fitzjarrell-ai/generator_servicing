@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T04:30:48.864130+00:00",
+  "generated_at": "2026-09-04T09:03:36.813200+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -164,7 +164,7 @@
       "vin": "CYJ77D-7015280",
       "status": "Active",
       "meter": {
-        "value": "29975.0",
+        "value": "29982.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -192,8 +192,8 @@
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.578263,
-        "lng": 139.747054,
-        "at": "2026-09-03T21:05:49.765-04:00",
+        "lng": 139.747051,
+        "at": "2026-09-04T17:52:33.982+09:00",
         "is_current": true
       }
     },
@@ -405,10 +405,10 @@
         }
       ],
       "location": {
-        "address": "490 W California Ave, Sunnyvale, CA 94086, USA",
-        "lat": 37.380528,
-        "lng": -122.034662,
-        "at": "2026-09-03T23:02:35.970-04:00",
+        "address": "POINT (-122.034535 37.380421)",
+        "lat": 37.380421,
+        "lng": -122.034535,
+        "at": "2026-09-04T12:37:21.000+09:00",
         "is_current": true
       }
     },
@@ -463,7 +463,7 @@
       "vin": "CYJ77D-7014035",
       "status": "Active",
       "meter": {
-        "value": "83848.0",
+        "value": "84267.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -479,10 +479,10 @@
         }
       ],
       "location": {
-        "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.237057,
-        "lng": 138.92453,
-        "at": "2026-09-04T08:56:39.252+09:00",
+        "address": "903 Kusagaya, Mori, Shuchi District, Shizuoka 437-0214, Japan",
+        "lat": 34.826515,
+        "lng": 137.90758,
+        "at": "2026-09-04T17:13:27.169+09:00",
         "is_current": true
       }
     },
@@ -562,7 +562,7 @@
       "vin": "CYJ77D-7014033",
       "status": "Active",
       "meter": {
-        "value": "69694.0",
+        "value": "70077.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -722,10 +722,10 @@
         }
       ],
       "location": {
-        "address": "Japan, \u3012144-0034 Tokyo, Ota City, Nishik\u014djiya, 2-ch\u014dme\u221212\u2212\uff15 \u30aa\u30ad\u30b7\u30ed\u7fbd\u7530\u30d3\u30eb",
-        "lat": 35.55942,
-        "lng": 139.737666,
-        "at": "2026-08-23T17:53:51.157+09:00",
+        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 3-ch\u014dme\u22123\u2212\uff18 \u5c71\u4e5d\u5e73\u548c\u5cf6\u30ed\u30b8\u30b9\u30c6\u30a3\u30af\u30b9\u30bb\u30f3\u30bf\u30fc 106",
+        "lat": 35.581345,
+        "lng": 139.7446,
+        "at": "2026-09-04T13:52:12.615+09:00",
         "is_current": true
       }
     }
