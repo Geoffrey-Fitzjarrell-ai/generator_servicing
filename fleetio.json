@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T09:03:36.813200+00:00",
+  "generated_at": "2026-09-04T13:31:55.007531+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -149,9 +149,9 @@
       ],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.478416,
-        "lng": 140.32858,
-        "at": "2026-09-03T22:18:41.426+09:00",
+        "lat": 36.477463,
+        "lng": 140.32907,
+        "at": "2026-09-04T22:10:10.545+09:00",
         "is_current": true
       }
     },
@@ -238,7 +238,7 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "36619.0",
+        "value": "37057.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -339,9 +339,9 @@
       ],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477271,
-        "lng": 140.329087,
-        "at": "2026-09-03T22:11:23.232+09:00",
+        "lat": 36.47734,
+        "lng": 140.329071,
+        "at": "2026-09-04T22:12:56.504+09:00",
         "is_current": true
       }
     },
@@ -421,7 +421,7 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "67518.0",
+        "value": "68075.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -447,10 +447,10 @@
         }
       ],
       "location": {
-        "address": "Japan, \u3012501-6304 Gifu, Hashima, Funabashich\u014d Dezuka, 2-ch\u014dme\u2212\uff11\uff19 \u30b7\u30e3\u30f3\u30da\u30fc\u30eb\u6d45\u4e95",
-        "lat": 35.311794,
-        "lng": 136.682673,
-        "at": "2026-09-04T09:07:22.730+09:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578267,
+        "lng": 139.747054,
+        "at": "2026-09-04T19:53:49.833+09:00",
         "is_current": true
       }
     },
@@ -479,10 +479,10 @@
         }
       ],
       "location": {
-        "address": "903 Kusagaya, Mori, Shuchi District, Shizuoka 437-0214, Japan",
-        "lat": 34.826515,
-        "lng": 137.90758,
-        "at": "2026-09-04T17:13:27.169+09:00",
+        "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.236644,
+        "lng": 138.924772,
+        "at": "2026-09-04T19:42:41.475+09:00",
         "is_current": true
       }
     },
@@ -495,7 +495,7 @@
       "vin": "CYJ77D-7014034",
       "status": "Active",
       "meter": {
-        "value": "83208.0",
+        "value": "83722.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -547,9 +547,9 @@
       ],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578249,
-        "lng": 139.74704,
-        "at": "2026-09-03T20:43:21.881-04:00",
+        "lat": 35.578257,
+        "lng": 139.747054,
+        "at": "2026-09-04T20:19:08.813+09:00",
         "is_current": true
       }
     },
@@ -618,10 +618,10 @@
         }
       ],
       "location": {
-        "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.23689,
-        "lng": 138.924866,
-        "at": "2026-09-03T20:50:13.125+09:00",
+        "address": "1913-229 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.237407,
+        "lng": 138.925038,
+        "at": "2026-09-04T20:09:40.784+09:00",
         "is_current": true
       }
     },
@@ -634,7 +634,7 @@
       "vin": "CYJ77D-7014032",
       "status": "Active",
       "meter": {
-        "value": "24888.0",
+        "value": "25324.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -666,9 +666,9 @@
       ],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578229,
-        "lng": 139.747012,
-        "at": "2026-09-03T20:33:03.464-04:00",
+        "lat": 35.578266,
+        "lng": 139.746998,
+        "at": "2026-09-04T20:55:18.676+09:00",
         "is_current": true
       }
     },
@@ -681,7 +681,7 @@
       "vin": "CYJ77D-7014031",
       "status": "Active",
       "meter": {
-        "value": "77597.0",
+        "value": "77837.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -722,10 +722,10 @@
         }
       ],
       "location": {
-        "address": "Japan, \u3012143-0006 Tokyo, Ota City, Heiwajima, 3-ch\u014dme\u22123\u2212\uff18 \u5c71\u4e5d\u5e73\u548c\u5cf6\u30ed\u30b8\u30b9\u30c6\u30a3\u30af\u30b9\u30bb\u30f3\u30bf\u30fc 106",
-        "lat": 35.581345,
-        "lng": 139.7446,
-        "at": "2026-09-04T13:52:12.615+09:00",
+        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.579536,
+        "lng": 139.74687,
+        "at": "2026-09-04T19:45:13.696+09:00",
         "is_current": true
       }
     }
@@ -778,21 +778,21 @@
     "MCE-116",
     "MCE-117",
     "MCE-118",
+    "MCE-119",
     "MCE-202",
     "MCE-203",
     "MCE-204",
     "MCE-205",
     "MCE-206",
+    "MCE-207",
+    "MCE-208",
+    "MCE-209",
+    "MCE-210",
     "PAN-101",
     "POR-101",
     "POR-102",
     "POR-911 (Martini)",
     "PRO-101",
-    "ROG-203",
-    "ROG-204",
-    "ROG-205",
-    "ROG-206",
-    "ROG-207",
     "ROG-208",
     "ROG-209",
     "ROG-210",
