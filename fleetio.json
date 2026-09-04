@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T00:07:41.725177+00:00",
+  "generated_at": "2026-09-04T04:30:48.864130+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -125,7 +125,28 @@
         "value": "17927.0",
         "unit": "km"
       },
-      "recent_service_entries": [],
+      "recent_service_entries": [
+        {
+          "id": 54586054,
+          "status": "completed",
+          "completed_at": "2026-06-22T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "6114.0"
+        },
+        {
+          "id": 54585676,
+          "status": "completed",
+          "completed_at": "2026-03-25T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "Tonox Hiratsuka Plant",
+          "reference": "",
+          "labels": [],
+          "meter": "0.0"
+        }
+      ],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
         "lat": 36.478416,
@@ -146,12 +167,33 @@
         "value": "29975.0",
         "unit": "km"
       },
-      "recent_service_entries": [],
+      "recent_service_entries": [
+        {
+          "id": 54587613,
+          "status": "completed",
+          "completed_at": "2026-05-24T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "Tonox Hiratsuka Plant",
+          "reference": "",
+          "labels": [],
+          "meter": "1.0"
+        },
+        {
+          "id": 54584824,
+          "status": "completed",
+          "completed_at": "2026-06-24T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "7131.0"
+        }
+      ],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.578263,
-        "lng": 139.747053,
-        "at": "2026-09-03T05:48:09.000-04:00",
+        "lng": 139.747054,
+        "at": "2026-09-03T21:05:49.765-04:00",
         "is_current": true
       }
     },
@@ -167,7 +209,18 @@
         "value": "34298.0",
         "unit": "km"
       },
-      "recent_service_entries": [],
+      "recent_service_entries": [
+        {
+          "id": 54584474,
+          "status": "completed",
+          "completed_at": "2026-06-19T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "11911.0"
+        }
+      ],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.578255,
@@ -188,7 +241,28 @@
         "value": "36619.0",
         "unit": "km"
       },
-      "recent_service_entries": [],
+      "recent_service_entries": [
+        {
+          "id": 54588422,
+          "status": "completed",
+          "completed_at": "2026-03-19T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "Tonox Hiratsuka Plant",
+          "reference": "",
+          "labels": [],
+          "meter": "0.0"
+        },
+        {
+          "id": 54584116,
+          "status": "completed",
+          "completed_at": "2026-06-06T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "11976.0"
+        }
+      ],
       "location": {
         "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
         "lat": 35.23706,
@@ -209,7 +283,28 @@
         "value": "38426.0",
         "unit": "km"
       },
-      "recent_service_entries": [],
+      "recent_service_entries": [
+        {
+          "id": 54587671,
+          "status": "completed",
+          "completed_at": "2026-03-09T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "Tonox Hiratsuka Plant",
+          "reference": "",
+          "labels": [],
+          "meter": "26.0"
+        },
+        {
+          "id": 54583701,
+          "status": "completed",
+          "completed_at": "2026-06-06T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "9339.0"
+        }
+      ],
       "location": {
         "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
         "lat": 35.578556,
@@ -230,7 +325,18 @@
         "value": "38537.0",
         "unit": "km"
       },
-      "recent_service_entries": [],
+      "recent_service_entries": [
+        {
+          "id": 54583118,
+          "status": "completed",
+          "completed_at": "2026-06-06T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "15843.0"
+        }
+      ],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
         "lat": 36.477271,
@@ -300,9 +406,9 @@
       ],
       "location": {
         "address": "490 W California Ave, Sunnyvale, CA 94086, USA",
-        "lat": 37.380504,
-        "lng": -122.034691,
-        "at": "2026-09-02T21:48:11.313-04:00",
+        "lat": 37.380528,
+        "lng": -122.034662,
+        "at": "2026-09-03T23:02:35.970-04:00",
         "is_current": true
       }
     },
@@ -315,10 +421,31 @@
       "vin": "CYJ77D-7014036",
       "status": "Active",
       "meter": {
-        "value": "66983.0",
+        "value": "67518.0",
         "unit": "km"
       },
-      "recent_service_entries": [],
+      "recent_service_entries": [
+        {
+          "id": 54582177,
+          "status": "completed",
+          "completed_at": "2026-08-18T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca \u85e4\u6ca2\u5de5\u5834",
+          "reference": "",
+          "labels": [],
+          "meter": "61022.0"
+        },
+        {
+          "id": 54581715,
+          "status": "completed",
+          "completed_at": "2026-07-10T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "51337.0"
+        }
+      ],
       "location": {
         "address": "Japan, \u3012501-6304 Gifu, Hashima, Funabashich\u014d Dezuka, 2-ch\u014dme\u2212\uff11\uff19 \u30b7\u30e3\u30f3\u30da\u30fc\u30eb\u6d45\u4e95",
         "lat": 35.311794,
@@ -339,7 +466,18 @@
         "value": "83848.0",
         "unit": "km"
       },
-      "recent_service_entries": [],
+      "recent_service_entries": [
+        {
+          "id": 54579285,
+          "status": "completed",
+          "completed_at": "2026-08-20T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca \u85e4\u6ca2\u5de5\u5834",
+          "reference": "",
+          "labels": [],
+          "meter": "76640.0"
+        }
+      ],
       "location": {
         "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
         "lat": 35.237057,
@@ -362,6 +500,36 @@
       },
       "recent_service_entries": [
         {
+          "id": 54578653,
+          "status": "completed",
+          "completed_at": "2026-08-21T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca \u85e4\u6ca2\u5de5\u5834",
+          "reference": "",
+          "labels": [],
+          "meter": "75339.0"
+        },
+        {
+          "id": 54577996,
+          "status": "completed",
+          "completed_at": "2026-04-13T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "28785.0"
+        },
+        {
+          "id": 54577469,
+          "status": "completed",
+          "completed_at": "2026-07-07T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "57037.0"
+        },
+        {
           "id": 43362178,
           "status": "completed",
           "completed_at": "2025-12-13T00:00:00.000+09:00",
@@ -379,9 +547,9 @@
       ],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.57825,
-        "lng": 139.747041,
-        "at": "2026-09-03T05:31:53.958-04:00",
+        "lat": 35.578249,
+        "lng": 139.74704,
+        "at": "2026-09-03T20:43:21.881-04:00",
         "is_current": true
       }
     },
@@ -471,6 +639,16 @@
       },
       "recent_service_entries": [
         {
+          "id": 54576674,
+          "status": "completed",
+          "completed_at": "2026-08-03T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "22195.0"
+        },
+        {
           "id": 42875001,
           "status": "completed",
           "completed_at": "2026-02-22T00:00:00.000+09:00",
@@ -488,9 +666,9 @@
       ],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578222,
-        "lng": 139.747024,
-        "at": "2026-09-03T07:06:47.659-04:00",
+        "lat": 35.578229,
+        "lng": 139.747012,
+        "at": "2026-09-03T20:33:03.464-04:00",
         "is_current": true
       }
     },
@@ -507,6 +685,26 @@
         "unit": "km"
       },
       "recent_service_entries": [
+        {
+          "id": 54575517,
+          "status": "completed",
+          "completed_at": "2026-05-16T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "35732.0"
+        },
+        {
+          "id": 54574590,
+          "status": "completed",
+          "completed_at": "2026-08-01T00:00:00.000+09:00",
+          "started_at": null,
+          "vendor": "\u3044\u3059\u309e\u81ea\u52d5\u8eca\u9996\u90fd\u570f\u3231 \u5ddd\u5d0e\u30b5\u30fc\u30d3\u30b9\u30bb\u30f3\u30bf\u30fc",
+          "reference": "",
+          "labels": [],
+          "meter": "65508.0"
+        },
         {
           "id": 42874982,
           "status": "completed",
