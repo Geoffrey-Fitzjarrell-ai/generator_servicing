@@ -86,7 +86,10 @@
     "postedBy": {
       "id": "U0971ULJJ0N",
       "name": null
-    }
+    },
+    "grounded": true,
+    "groundedNote": "Out of service (Fleetio)",
+    "groundedSource": "fleetio"
   },
   "HD14": {
     "hours": 1051,
