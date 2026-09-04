@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Editable engineer work board — non-truck-bound work (builds, shop tasks, admin, etc.). Edited in-browser via the Engineers tab; local edits live in localStorage and can be Exported here to become the shared/published baseline.",
-    "updated": "2026-09-01"
+    "updated": "2026-09-04"
   },
   "items": [
     {
@@ -1701,6 +1701,22 @@
       "startTime": "08:00",
       "endTime": "12:00",
       "notes": "",
+      "jiraKey": "",
+      "jiraUrl": ""
+    },
+    {
+      "id": "w_1788487171201",
+      "title": "Switch swap",
+      "engineer": "Geoff Fitzjarrell",
+      "asset": "HD17",
+      "category": "repair",
+      "status": "planned",
+      "start": "2026-09-07",
+      "end": "2026-09-07",
+      "allDay": true,
+      "startTime": "",
+      "endTime": "",
+      "notes": "Swap switch 2 and 4 on HD17 to check for issues on the port following the switch. ",
       "jiraKey": "",
       "jiraUrl": ""
     }
