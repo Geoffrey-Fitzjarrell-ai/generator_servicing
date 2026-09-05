@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T06:03:08.061760+00:00",
+  "generated_at": "2026-09-05T10:33:42.212231+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -238,7 +238,7 @@
       "vin": "CYJ77D-7015278",
       "status": "Active",
       "meter": {
-        "value": "37057.0",
+        "value": "37188.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -264,10 +264,10 @@
         }
       ],
       "location": {
-        "address": "5-ch\u014dme-5-10 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.57807,
-        "lng": 139.746757,
-        "at": "2026-09-04T20:32:40.983-04:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.577586,
+        "lng": 139.747174,
+        "at": "2026-09-05T17:25:41.365+09:00",
         "is_current": true
       }
     },
