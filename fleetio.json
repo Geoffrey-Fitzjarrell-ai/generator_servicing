@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T10:33:42.212231+00:00",
+  "generated_at": "2026-09-05T13:32:29.402878+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -149,9 +149,9 @@
       ],
       "location": {
         "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.477463,
-        "lng": 140.32907,
-        "at": "2026-09-04T22:10:10.545+09:00",
+        "lat": 36.4775,
+        "lng": 140.3291,
+        "at": "2026-09-05T21:58:11.148+09:00",
         "is_current": true
       }
     },
@@ -322,7 +322,7 @@
       "vin": "CYJ77D-7015191",
       "status": "Active",
       "meter": {
-        "value": "38830.0",
+        "value": "38845.0",
         "unit": "km"
       },
       "recent_service_entries": [
@@ -338,10 +338,10 @@
         }
       ],
       "location": {
-        "address": "1328-23 Osaka, Shirosato, Higashiibaraki District, Ibaraki 311-4316, Japan",
-        "lat": 36.47734,
-        "lng": 140.329071,
-        "at": "2026-09-04T22:12:56.504+09:00",
+        "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578261,
+        "lng": 139.747136,
+        "at": "2026-09-05T07:44:58.758-04:00",
         "is_current": true
       }
     },
@@ -448,9 +448,9 @@
       ],
       "location": {
         "address": "Annex, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578267,
-        "lng": 139.747054,
-        "at": "2026-09-04T19:53:49.833+09:00",
+        "lat": 35.578311,
+        "lng": 139.7472,
+        "at": "2026-09-05T07:53:15.509-04:00",
         "is_current": true
       }
     },
@@ -618,10 +618,10 @@
         }
       ],
       "location": {
-        "address": "1913-229 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
-        "lat": 35.237407,
-        "lng": 138.925038,
-        "at": "2026-09-04T20:09:40.784+09:00",
+        "address": "719 K\u014dyama, Gotemba, Shizuoka 412-0033, Japan",
+        "lat": 35.237129,
+        "lng": 138.924933,
+        "at": "2026-09-05T06:58:32.139-04:00",
         "is_current": true
       }
     },
