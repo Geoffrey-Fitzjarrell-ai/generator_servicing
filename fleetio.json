@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T01:25:09.929345+00:00",
+  "generated_at": "2026-09-05T06:03:08.061760+00:00",
   "source": "fleetio",
   "account": "a0294e2c81",
   "total_listed": 100,
@@ -306,10 +306,10 @@
         }
       ],
       "location": {
-        "address": "6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
-        "lat": 35.578556,
-        "lng": 139.74745,
-        "at": "2026-09-03T07:37:15.662-04:00",
+        "address": "1, 6-ch\u014dme-1-1 Heiwajima, Ota City, Tokyo 143-0006, Japan",
+        "lat": 35.578564,
+        "lng": 139.74751,
+        "at": "2026-09-04T23:48:35.915-04:00",
         "is_current": true
       }
     },
@@ -405,10 +405,10 @@
         }
       ],
       "location": {
-        "address": "POINT (-122.034535 37.380421)",
-        "lat": 37.380421,
-        "lng": -122.034535,
-        "at": "2026-09-04T12:37:21.000+09:00",
+        "address": "490 W California Ave, Sunnyvale, CA 94086, USA",
+        "lat": 37.380533,
+        "lng": -122.034723,
+        "at": "2026-09-04T21:52:59.759-04:00",
         "is_current": true
       }
     },
